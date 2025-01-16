@@ -1,0 +1,6 @@
+nimcache/
+nimblecache/
+htmldocs/
+
+tests/t_*
+!tests/t_*.nim

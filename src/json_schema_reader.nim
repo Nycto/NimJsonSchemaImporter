@@ -1,7 +1,11 @@
-# This is just an example to get you started. A typical library package
-# exports the main API in this file. Note that you cannot rename this file
-# but you can remove it if you wish.
+##
+## Library for generating native nim types from a JSON schema
+##
 
-proc add*(x, y: int): int =
-  ## Adds two numbers together.
-  return x + y
+import std/[json], json_schema_reader/[parse, gen]
+
+proc parseJsonSchema*(schema: JsonNode, name: string): NimNode {.compileTime.} =
+    return parseSchema(schema).genDeclarations(name)
+
+proc parseJsonSchema*(schema, name: string): NimNode {.compileTime.} =
+    parseJsonSchema(schema.parseJson, name)
