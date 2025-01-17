@@ -11,5 +11,7 @@ suite "Parsing example json schema":
     # buildTest("examples/ldtk")
     buildTest("address")
     buildTest("blog")
+    # buildTest("ecommerce")
+    buildTest("location")
 
 

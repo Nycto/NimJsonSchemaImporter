@@ -27,6 +27,8 @@ proc parseTypedStr(node: JsonNode, ctx: ParseContext): TypeDef =
     let typ = node{"type"}.getStr
     case typ
     of "string": return TypeDef(kind: StringType)
+    of "number": return TypeDef(kind: NumberType)
+    of "object": return parseObj(node, ctx)
     of "array": return parseArray(node, ctx)
     else: raise newException(ValueError, fmt"Unsupported type {typ} in {node}")
 
@@ -39,8 +41,6 @@ proc parseTyped(node: JsonNode, ctx: ParseContext): TypeDef =
 proc parseType(node: JsonNode, ctx: ParseContext): TypeDef =
     if "$ref" in node:
         return parseRef(node, ctx)
-    elif "properties" in node:
-        return parseObj(node, ctx)
     elif "type" in node:
         return parseTyped(node, ctx)
     else:

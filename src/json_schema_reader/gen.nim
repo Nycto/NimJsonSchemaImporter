@@ -52,6 +52,7 @@ proc genType(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
     of ObjType: return genObj(typ, name, ctx)
     of StringType: return bindSym("string")
     of ArrayType: return genArray(typ, name, ctx)
+    of NumberType: return bindSym("float64")
     else: raise newException(AssertionDefect, "Could not generate code for " & $typ.kind)
 
 proc genDeclarations*(schema: JsonSchema, name: string): NimNode =
