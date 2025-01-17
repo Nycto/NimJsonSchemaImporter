@@ -42,11 +42,16 @@ proc genObj(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
         )
     )
 
+proc genArray(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
+    assert(typ.kind == ArrayType)
+    result = nnkBracketExpr.newTree(bindSym("seq"), genType(typ.items, name, ctx))
+
 proc genType(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
     ## Generates code for an arbitrary type
     case typ.kind
     of ObjType: return genObj(typ, name, ctx)
     of StringType: return bindSym("string")
+    of ArrayType: return genArray(typ, name, ctx)
     else: raise newException(AssertionDefect, "Could not generate code for " & $typ.kind)
 
 proc genDeclarations*(schema: JsonSchema, name: string): NimNode =

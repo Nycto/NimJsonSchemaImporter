@@ -17,6 +17,9 @@ proc parseObj(node: JsonNode, ctx: ParseContext): TypeDef =
     for key, typeDef in node{"properties"}:
         result.properties[key] = typeDef.parseType(ctx)
 
+proc parseArray(node: JsonNode, ctx: ParseContext): TypeDef =
+    return TypeDef(kind: ArrayType, items: parseType(node{"items"}, ctx))
+
 proc parseRef(node: JsonNode, ctx: ParseContext): TypeDef =
     parseRef(node{"$ref"}.getStr).resolve(ctx).parseType(ctx)
 
@@ -24,6 +27,7 @@ proc parseTypedStr(node: JsonNode, ctx: ParseContext): TypeDef =
     let typ = node{"type"}.getStr
     case typ
     of "string": return TypeDef(kind: StringType)
+    of "array": return parseArray(node, ctx)
     else: raise newException(ValueError, fmt"Unsupported type {typ} in {node}")
 
 proc parseTyped(node: JsonNode, ctx: ParseContext): TypeDef =
