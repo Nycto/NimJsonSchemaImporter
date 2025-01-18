@@ -1,6 +1,6 @@
 import std/[json, tables, options]
 type
-  HealthHealth* = object
+  `HealthHealth`* = object
     `dateOfBirth`*: string
     `emergencyContact`*: Option[string]
     `patientName`*: string

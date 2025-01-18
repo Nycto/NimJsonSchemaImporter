@@ -9,11 +9,21 @@ type GenContext = ref object
 proc add(ctx: GenContext, name, typ: NimNode) =
     ctx.accum.add(nnkTypeDef.newTree(postfix(name, "*"), newEmptyNode(), typ))
 
+proc cleanupIdent(name: string): string =
+    result = name.strip(leading = true, trailing = true, chars = {'_'})
+    while true:
+        var newOutput = result
+        newOutput = newOutput.replace("__", "_")
+        if newOutput == result:
+            break
+        else:
+            result = newOutput
+
 proc genName(ctx: GenContext, name: string, typ: TypeDef): NimNode =
     var basename: string = typ.sref.getName()
     if basename == "":
         basename = name
-    return (ctx.prefix & basename.capitalizeAscii).ident
+    return nnkAccQuoted.newTree((ctx.prefix & basename.cleanupIdent.capitalizeAscii).ident)
 
 proc genType(typ: TypeDef, name: string, ctx: GenContext): NimNode
     ## Forward declaration for a proc that generates code for an arbitrary type
@@ -28,7 +38,7 @@ proc genObj(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     for key, keyType in typ.properties:
         records.add(
             nnkIdentDefs.newTree(
-                postfix(nnkAccQuoted.newTree(key.ident), "*"),
+                postfix(nnkAccQuoted.newTree(key.cleanupIdent.ident), "*"),
                 keyType.genType(key, ctx),
                 newEmptyNode()
             )

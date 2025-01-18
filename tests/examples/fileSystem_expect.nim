@@ -1,18 +1,18 @@
 import std/[json, tables, options]
 type
-  FileSystemType* = enum
+  `FileSystemType`* = enum
     disk
-  FileSystemDiskDevice* = object
-    `type`*: FileSystemType
+  `FileSystemDiskDevice`* = object
+    `type`*: `FileSystemType`
     `device`*: string
-  FileSystemType* = enum
+  `FileSystemType`* = enum
     disk
-  FileSystemDiskUUID* = object
-    `type`*: FileSystemType
+  `FileSystemDiskUUID`* = object
+    `type`*: `FileSystemType`
     `label`*: string
-  FileSystemType* = enum
+  `FileSystemType`* = enum
     nfs
-  FileSystemServer* = object
+  `FileSystemServer`* = object
     case kind: range[0 .. 2]
     of 0:
       key0: JsonNode
@@ -20,29 +20,29 @@ type
       key1: JsonNode
     of 2:
       key2: JsonNode
-  FileSystemNfs* = object
-    `type`*: FileSystemType
-    `server`*: FileSystemServer
+  `FileSystemNfs`* = object
+    `type`*: `FileSystemType`
+    `server`*: `FileSystemServer`
     `remotePath`*: string
-  FileSystemType* = enum
+  `FileSystemType`* = enum
     tmpfs
-  FileSystemTmpfs* = object
-    `type`*: FileSystemType
+  `FileSystemTmpfs`* = object
+    `type`*: `FileSystemType`
     `sizeInMB`*: BiggestInt
-  FileSystemStorage* = object
+  `FileSystemStorage`* = object
     case kind: range[0 .. 3]
     of 0:
-      key0: FileSystemDiskDevice
+      key0: `FileSystemDiskDevice`
     of 1:
-      key1: FileSystemDiskUUID
+      key1: `FileSystemDiskUUID`
     of 2:
-      key2: FileSystemNfs
+      key2: `FileSystemNfs`
     of 3:
-      key3: FileSystemTmpfs
-  FileSystemFstype* = enum
+      key3: `FileSystemTmpfs`
+  `FileSystemFstype`* = enum
     ext4, btrfs, ext3
-  FileSystemFileSystem* = object
+  `FileSystemFileSystem`* = object
     `options`*: Option[seq[string]]
     `readonly`*: Option[bool]
-    `storage`*: FileSystemStorage
-    `fstype`*: Option[FileSystemFstype]
+    `storage`*: `FileSystemStorage`
+    `fstype`*: Option[`FileSystemFstype`]

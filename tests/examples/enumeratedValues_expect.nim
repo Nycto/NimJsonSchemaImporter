@@ -1,4 +1,4 @@
 import std/[json, tables, options]
 type
-  EnumeratedValuesEnumeratedValues* = object
+  `EnumeratedValuesEnumeratedValues`* = object
     `data`*: Option[JsonNode]

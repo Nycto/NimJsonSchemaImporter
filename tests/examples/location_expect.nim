@@ -1,5 +1,5 @@
 import std/[json, tables, options]
 type
-  LocationLocation* = object
+  `LocationLocation`* = object
     `latitude`*: BiggestFloat
     `longitude`*: BiggestFloat

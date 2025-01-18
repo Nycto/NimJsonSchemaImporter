@@ -1,6 +1,6 @@
 import std/[json, tables, options]
 type
-  BlogBlog* = object
+  `BlogBlog`* = object
     `title`*: string
     `tags`*: Option[seq[string]]
     `content`*: string

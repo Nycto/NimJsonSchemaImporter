@@ -1,6 +1,6 @@
 import std/[json, tables, options]
 type
-  AddressAddress* = object
+  `AddressAddress`* = object
     `streetAddress`*: Option[string]
     `region`*: string
     `locality`*: string
