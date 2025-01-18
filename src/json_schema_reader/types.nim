@@ -11,7 +11,8 @@ type
         NumberType,
         BoolType,
         NullType,
-        EnumType
+        EnumType,
+        UnionType,
 
     TypeDef* = ref object
         id*, title*, description*, comment*: string
@@ -24,6 +25,8 @@ type
             schemaRef*: SchemaRef
         of ArrayType, SetType:
             items*: TypeDef
+        of UnionType:
+            subtypes*: seq[TypeDef]
         of IntegerType, StringType, NumberType, BoolType, NullType:
             discard
 

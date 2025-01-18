@@ -10,7 +10,7 @@ suite "Parsing example json schema":
             const expect = slurp("examples/" & name & "_expect.nim")
             check(parsed == expect)
 
-    # buildTest("examples/ldtk")
+    # https://json-schema.org/learn/json-schema-examples
     buildTest("address")
     buildTest("blog")
     buildTest("ecommerce")
@@ -18,3 +18,9 @@ suite "Parsing example json schema":
     buildTest("health")
     buildTest("movie")
     buildTest("user_profile")
+
+    # Specific use cases
+    buildTest("union")
+
+    # Specific applications
+    # buildTest("ldtk")

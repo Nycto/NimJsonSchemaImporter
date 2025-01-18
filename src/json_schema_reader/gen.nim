@@ -1,4 +1,4 @@
-import types, std/[macros, tables, sets]
+import types, std/[macros, tables, sets, strformat]
 
 type GenContext = ref object
     accum: NimNode
@@ -44,11 +44,49 @@ proc genEnum(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
     result = name
 
     var enumTyp = nnkEnumTy.newTree(newEmptyNode())
-
     for value in typ.values:
         enumTyp.add(value.ident)
 
     ctx.add(result, enumTyp)
+
+# dumpAstGen:
+#     type Foo = object
+#         case kind: range[0..2]
+#         of 0: key0: string
+#         of 1: key1: int
+#         of 2: key2: float
+
+proc genUnion(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
+    assert(typ.kind == UnionType)
+
+    if typ.subtypes.len == 0:
+        raise newException(AssertionDefect, "Empty union type")
+    elif typ.subtypes.len == 1:
+        return typ.subtypes[0].genType(name, ctx)
+
+    result = name
+
+    var cases = nnkRecCase.newTree(
+        nnkIdentDefs.newTree(
+            newIdentNode("kind"),
+            nnkBracketExpr.newTree(bindSym("range"), infix(0.newLit, "..", newLit(typ.subtypes.len - 1))),
+            newEmptyNode()
+        )
+    )
+
+    for i, subtype in typ.subtypes:
+        cases.add(
+            nnkOfBranch.newTree(
+                i.newLit,
+                nnkIdentDefs.newTree(
+                    ident(fmt"key{i}"),
+                    subtype.genType(ident(fmt"{name.strVal}{i}"), ctx),
+                    newEmptyNode()
+                )
+            )
+        )
+
+    ctx.add(result, nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), nnkRecList.newTree(cases)))
 
 proc genType(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
     ## Generates code for an arbitrary type
@@ -59,6 +97,7 @@ proc genType(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
     of NumberType: return bindSym("BiggestFloat")
     of IntegerType: return bindSym("BiggestInt")
     of EnumType: return genEnum(typ, name, ctx)
+    of UnionType: return genUnion(typ, name, ctx)
     else: raise newException(AssertionDefect, "Could not generate code for " & $typ.kind)
 
 proc genDeclarations*(schema: JsonSchema, name: string): NimNode =

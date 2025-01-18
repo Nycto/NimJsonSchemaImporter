@@ -1,0 +1,13 @@
+{
+  "$id": "https://example.com/address.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "key1": {
+      "type": [ "string", "integer" ]
+    },
+    "key2": {
+      "type": [ "string" ]
+    }
+  }
+}

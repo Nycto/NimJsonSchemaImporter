@@ -19,28 +19,40 @@ proc parseArray(node: JsonNode, ctx: ParseContext): TypeDef =
 proc parseRef(node: JsonNode, ctx: ParseContext): TypeDef =
     parseRef(node{"$ref"}.getStr).resolve(ctx).parseType(ctx)
 
+proc parseTypeStr(typ: string): TypeDef =
+    case typ
+    of "string": return TypeDef(kind: StringType)
+    of "number": return TypeDef(kind: NumberType)
+    of "integer": return TypeDef(kind: IntegerType)
+    else: raise newException(ValueError, fmt"Unsupported type {typ}")
+
+proc parseTypeArray(types: JsonNode, ctx: ParseContext): TypeDef =
+    result = TypeDef(kind: UnionType, subtypes: newSeq[TypeDef]())
+    for subtype in types:
+        result.subtypes.add(parseTypeStr(subtype.getStr))
+
 proc parseStr(node: JsonNode, ctx: ParseContext): TypeDef =
     if "enum" in node:
         result = TypeDef(kind: EnumType, values: initHashSet[string]())
         for value in node{"enum"}:
             result.values.incl(value.getStr)
     else:
-        return TypeDef(kind: StringType)
+        return parseTypeStr("string")
 
 proc parseTypedStr(node: JsonNode, ctx: ParseContext): TypeDef =
     let typ = node{"type"}.getStr
     case typ
     of "string": return parseStr(node, ctx)
-    of "number": return TypeDef(kind: NumberType)
-    of "integer": return TypeDef(kind: IntegerType)
+    of "number", "integer": return parseTypeStr(typ)
     of "object": return parseObj(node, ctx)
     of "array": return parseArray(node, ctx)
-    else: raise newException(ValueError, fmt"Unsupported type {typ} in {node}")
+    else: raise newException(ValueError, fmt"Unsupported type '{typ}' in {node}")
 
 proc parseTyped(node: JsonNode, ctx: ParseContext): TypeDef =
     let typ = node{"type"}
     case typ.kind
     of JString: return parseTypedStr(node, ctx)
+    of JArray: return parseTypeArray(typ, ctx)
     else: raise newException(ValueError, fmt"Unsupported type {typ} in {node}")
 
 proc parseType(node: JsonNode, ctx: ParseContext): TypeDef =
