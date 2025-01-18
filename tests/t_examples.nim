@@ -31,6 +31,9 @@ suite "Parsing example json schema":
     buildTest("enumeratedValues")
     buildTest("complexObject")
 
+    # https://json-schema.org/learn/file-system#full-entry
+    buildTest("fileSystem")
+
     # Specific use cases
     buildTest("union")
 
