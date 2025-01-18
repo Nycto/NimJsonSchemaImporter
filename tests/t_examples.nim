@@ -1,4 +1,4 @@
-import std/[unittest, json, os, paths, strutils], json_schema_reader
+import std/[unittest, json, os, paths, strutils], json_schema_types
 
 proc testResolver(uri: string): JsonNode = parseJson("""{"type":"string"}""")
 

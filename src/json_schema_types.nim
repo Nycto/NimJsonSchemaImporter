@@ -2,7 +2,7 @@
 ## Library for generating native nim types from a JSON schema
 ##
 
-import std/[json], json_schema_reader/[parse, gen, schemaRef]
+import std/[json], json_schema_types/[parse, gen, schemaRef]
 
 proc parseJsonSchema*(
     schema: JsonNode,

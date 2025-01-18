@@ -1,4 +1,4 @@
-import std/unittest, json_schema_reader/schemaRef
+import std/unittest, json_schema_types/schemaRef
 
 suite "Parsing schema references":
 
