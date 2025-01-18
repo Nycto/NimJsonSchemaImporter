@@ -25,6 +25,12 @@ suite "Parsing example json schema":
     buildTest("movie")
     buildTest("user_profile")
 
+    # https://json-schema.org/learn/miscellaneous-examples
+    buildTest("basic")
+    buildTest("arrayOfThings")
+    buildTest("enumeratedValues")
+    buildTest("complexObject")
+
     # Specific use cases
     buildTest("union")
 
