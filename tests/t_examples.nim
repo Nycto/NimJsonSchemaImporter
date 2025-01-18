@@ -16,5 +16,4 @@ suite "Parsing example json schema":
     # buildTest("ecommerce")
     buildTest("location")
     buildTest("health")
-
-
+    buildTest("movie")

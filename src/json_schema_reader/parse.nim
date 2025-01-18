@@ -9,12 +9,7 @@ proc resolve(sref: SchemaRef, ctx: ParseContext): JsonNode = resolve(sref, ctx.d
 proc parseType(node: JsonNode, ctx: ParseContext): TypeDef
 
 proc parseObj(node: JsonNode, ctx: ParseContext): TypeDef =
-    result = TypeDef(
-        kind: ObjType,
-        required: initHashSet[string](),
-        properties: initTable[string, TypeDef]()
-    )
-
+    result = TypeDef(kind: ObjType, properties: initTable[string, TypeDef]())
     for key, typeDef in node{"properties"}:
         result.properties[key] = typeDef.parseType(ctx)
 
@@ -24,10 +19,18 @@ proc parseArray(node: JsonNode, ctx: ParseContext): TypeDef =
 proc parseRef(node: JsonNode, ctx: ParseContext): TypeDef =
     parseRef(node{"$ref"}.getStr).resolve(ctx).parseType(ctx)
 
+proc parseStr(node: JsonNode, ctx: ParseContext): TypeDef =
+    if "enum" in node:
+        result = TypeDef(kind: EnumType, values: initHashSet[string]())
+        for value in node{"enum"}:
+            result.values.incl(value.getStr)
+    else:
+        return TypeDef(kind: StringType)
+
 proc parseTypedStr(node: JsonNode, ctx: ParseContext): TypeDef =
     let typ = node{"type"}.getStr
     case typ
-    of "string": return TypeDef(kind: StringType)
+    of "string": return parseStr(node, ctx)
     of "number": return TypeDef(kind: NumberType)
     of "object": return parseObj(node, ctx)
     of "array": return parseArray(node, ctx)

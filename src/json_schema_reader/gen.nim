@@ -1,15 +1,11 @@
-import types, std/[macros, tables]
+import types, std/[macros, tables, sets]
 
 type GenContext = ref object
     accum: NimNode
     nextId: uint
 
-proc add(ctx: GenContext, node: NimNode) =
-    ctx.accum.add(node)
-
-# dumpAstGen:
-#     type Foo* = object
-#         baz*: string
+proc add(ctx: GenContext, name, typ: NimNode) =
+    ctx.accum.add(nnkTypeDef.newTree(postfix(name, "*"), newEmptyNode(), typ))
 
 proc genType(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode
     ## Forward declaration for a proc that generates code for an arbitrary type
@@ -31,20 +27,28 @@ proc genObj(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
         )
 
     ctx.add(
-        nnkTypeDef.newTree(
-            postfix(result, "*"),
+        result,
+        nnkObjectTy.newTree(
             newEmptyNode(),
-            nnkObjectTy.newTree(
-                newEmptyNode(),
-                newEmptyNode(),
-                records
-            )
+            newEmptyNode(),
+            records
         )
     )
 
 proc genArray(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
     assert(typ.kind == ArrayType)
     result = nnkBracketExpr.newTree(bindSym("seq"), genType(typ.items, name, ctx))
+
+proc genEnum(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
+    assert(typ.kind == EnumType)
+    result = name
+
+    var enumTyp = nnkEnumTy.newTree(newEmptyNode())
+
+    for value in typ.values:
+        enumTyp.add(value.ident)
+
+    ctx.add(result, enumTyp)
 
 proc genType(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
     ## Generates code for an arbitrary type
@@ -53,6 +57,7 @@ proc genType(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
     of StringType: return bindSym("string")
     of ArrayType: return genArray(typ, name, ctx)
     of NumberType: return bindSym("float64")
+    of EnumType: return genEnum(typ, name, ctx)
     else: raise newException(AssertionDefect, "Could not generate code for " & $typ.kind)
 
 proc genDeclarations*(schema: JsonSchema, name: string): NimNode =
