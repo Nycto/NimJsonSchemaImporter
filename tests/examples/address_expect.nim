@@ -1,5 +1,5 @@
 type
-  address* = object
+  AddressAddress* = object
     streetAddress*: string
     region*: string
     locality*: string

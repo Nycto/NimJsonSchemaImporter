@@ -1,10 +1,10 @@
 type
-  genre* = enum
+  MovieGenre* = enum
     Comedy, Science Fiction, Action, Drama
-  movie* = object
+  MovieMovie* = object
     duration*: string
     releaseDate*: string
-    genre*: genre
+    genre*: MovieGenre
     title*: string
     cast*: seq[string]
     director*: string

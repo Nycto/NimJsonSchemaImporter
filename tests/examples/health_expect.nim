@@ -1,5 +1,5 @@
 type
-  health* = object
+  HealthHealth* = object
     dateOfBirth*: string
     emergencyContact*: string
     patientName*: string

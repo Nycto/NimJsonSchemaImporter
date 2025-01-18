@@ -1,4 +1,4 @@
-import std/[unittest, json, os, paths], json_schema_reader
+import std/[unittest, json, os, paths, strutils], json_schema_reader
 
 proc testResolver(uri: string): JsonNode = parseJson("""{"type":"string"}""")
 
@@ -6,7 +6,9 @@ suite "Parsing example json schema":
 
     template buildTest(name: static string) =
         test name:
-            const parsed = slurp("examples" / (name & ".json")).parseJsonSchema(name, testResolver).repr
+            const parsed = slurp("examples" / (name & ".json"))
+                .parseJsonSchema(name, name.capitalizeAscii, testResolver)
+                .repr
             const expectPath = "examples" / (name & "_expect.nim")
             when defined(rebuild):
                 writeFile(currentSourcePath.parentDir() / expectPath, parsed)

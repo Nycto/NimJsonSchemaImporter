@@ -1,5 +1,5 @@
 type
-  user_profile* = object
+  User_profileUser_profile* = object
     interests*: seq[string]
     fullName*: string
     age*: BiggestInt

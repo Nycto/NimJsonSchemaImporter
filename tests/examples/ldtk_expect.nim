@@ -1,203 +1,203 @@
 type
-  backupRelPath* = object
+  LdtkBackupRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  pngFilePattern* = object
+  LdtkPngFilePattern* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  when* = enum
+  LdtkWhen* = enum
     AfterLoad, BeforeSave, AfterSave, Manual
-  customCommands* = object
+  LdtkCustomCommands* = object
     command*: string
-    when*: when
-  exportPng* = object
+    when*: LdtkWhen
+  LdtkExportPng* = object
     case kind: range[0 .. 1]
     of 0:
       key0: bool
     of 1:
       key1: pointer
-  worldGridWidth* = object
+  LdtkWorldGridWidth* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  defaultLevelHeight* = object
+  LdtkDefaultLevelHeight* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  iids* = object
+  LdtkIids* = object
     layerIid*: string
     levelIid*: string
     entityIid*: string
     worldIid*: string
-  instancesData* = object
+  LdtkInstancesData* = object
     worldY*: BiggestInt
     fields*: JsonNode
     widPx*: BiggestInt
-    iids*: iids
+    iids*: LdtkIids
     heiPx*: BiggestInt
     worldX*: BiggestInt
-  instances* = object
+  LdtkInstances* = object
     layerIid*: string
     levelIid*: string
     entityIid*: string
     worldIid*: string
-  toc* = object
-    instancesData*: seq[instancesData]
+  LdtkToc* = object
+    instancesData*: seq[LdtkInstancesData]
     identifier*: string
-    instances*: seq[instances]
-  worldLayout* = enum
+    instances*: seq[LdtkInstances]
+  LdtkWorldLayout* = enum
     LinearHorizontal, LinearVertical, , GridVania, Free
-  bgColor* = object
+  LdtkBgColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  externalRelPath* = object
+  LdtkExternalRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  bgRelPath* = object
+  LdtkBgRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  levelUid* = object
+  LdtkLevelUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  __neighbours* = object
-    levelUid*: levelUid
+  Ldtk__neighbours* = object
+    levelUid*: LdtkLevelUid
     levelIid*: string
     dir*: string
-  bgPos* = enum
+  LdtkBgPos* = enum
     CoverDirty, Repeat, , Contain, Cover, Unscaled
-  gridTiles* = object
+  LdtkGridTiles* = object
     px*: seq[BiggestInt]
     t*: BiggestInt
     d*: seq[BiggestInt]
     a*: BiggestFloat
     src*: seq[BiggestInt]
     f*: BiggestInt
-  overrideTilesetUid* = object
+  LdtkOverrideTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  intGrid* = object
+  LdtkIntGrid* = object
     coordId*: BiggestInt
     v*: BiggestInt
-  autoLayerTiles* = object
+  LdtkAutoLayerTiles* = object
     px*: seq[BiggestInt]
     t*: BiggestInt
     d*: seq[BiggestInt]
     a*: BiggestFloat
     src*: seq[BiggestInt]
     f*: BiggestInt
-  __worldY* = object
+  Ldtk__worldY* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  __tile1* = object
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  __tile1* = object
+      key1: Ldtk__tile1
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  fieldInstances* = object
+      key1: Ldtk__tile1
+  LdtkFieldInstances* = object
     realEditorValues*: seq[JsonNode]
     __value*: JsonNode
-    __tile*: __tile
+    __tile*: Ldtk__tile
     __type*: string
     __identifier*: string
     defUid*: BiggestInt
-  __worldX* = object
+  Ldtk__worldX* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  entityInstances* = object
-    __worldY*: __worldY
-    __tile*: __tile
+  LdtkEntityInstances* = object
+    __worldY*: Ldtk__worldY
+    __tile*: Ldtk__tile
     __identifier*: string
     __tags*: seq[string]
     height*: BiggestInt
     px*: seq[BiggestInt]
     defUid*: BiggestInt
     __pivot*: seq[BiggestFloat]
-    fieldInstances*: seq[fieldInstances]
+    fieldInstances*: seq[LdtkFieldInstances]
     iid*: string
     width*: BiggestInt
-    __worldX*: __worldX
+    __worldX*: Ldtk__worldX
     __grid*: seq[BiggestInt]
     __smartColor*: string
-  __tilesetRelPath* = object
+  Ldtk__tilesetRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  __tilesetDefUid* = object
+  Ldtk__tilesetDefUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  layerInstances* = object
+  LdtkLayerInstances* = object
     __opacity*: BiggestFloat
     optionalRules*: seq[BiggestInt]
     __gridSize*: BiggestInt
     __pxTotalOffsetX*: BiggestInt
-    gridTiles*: seq[gridTiles]
+    gridTiles*: seq[LdtkGridTiles]
     __type*: string
     __identifier*: string
-    overrideTilesetUid*: overrideTilesetUid
+    overrideTilesetUid*: LdtkOverrideTilesetUid
     levelId*: BiggestInt
-    intGrid*: seq[intGrid]
-    autoLayerTiles*: seq[autoLayerTiles]
+    intGrid*: seq[LdtkIntGrid]
+    autoLayerTiles*: seq[LdtkAutoLayerTiles]
     layerDefUid*: BiggestInt
-    entityInstances*: seq[entityInstances]
+    entityInstances*: seq[LdtkEntityInstances]
     intGridCsv*: seq[BiggestInt]
     pxOffsetX*: BiggestInt
-    __tilesetRelPath*: __tilesetRelPath
-    __tilesetDefUid*: __tilesetDefUid
+    __tilesetRelPath*: Ldtk__tilesetRelPath
+    __tilesetDefUid*: Ldtk__tilesetDefUid
     __cHei*: BiggestInt
     seed*: BiggestInt
     visible*: bool
@@ -205,238 +205,238 @@ type
     iid*: string
     __pxTotalOffsetY*: BiggestInt
     __cWid*: BiggestInt
-  __tile1* = object
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  fieldInstances* = object
+      key1: Ldtk__tile1
+  LdtkFieldInstances* = object
     realEditorValues*: seq[JsonNode]
     __value*: JsonNode
-    __tile*: __tile
+    __tile*: Ldtk__tile
     __type*: string
     __identifier*: string
     defUid*: BiggestInt
-  __bgPos1* = object
+  Ldtk__bgPos1* = object
     scale*: seq[BiggestFloat]
     cropRect*: seq[BiggestFloat]
     topLeftPx*: seq[BiggestInt]
-  __bgPos* = object
+  Ldtk__bgPos* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __bgPos1
-  levels* = object
+      key1: Ldtk__bgPos1
+  LdtkLevels* = object
     pxHei*: BiggestInt
     useAutoIdentifier*: bool
     __bgColor*: string
-    bgColor*: bgColor
-    externalRelPath*: externalRelPath
+    bgColor*: LdtkBgColor
+    externalRelPath*: LdtkExternalRelPath
     worldY*: BiggestInt
-    bgRelPath*: bgRelPath
+    bgRelPath*: LdtkBgRelPath
     identifier*: string
     pxWid*: BiggestInt
     worldDepth*: BiggestInt
     bgPivotX*: BiggestFloat
-    __neighbours*: seq[__neighbours]
+    __neighbours*: seq[Ldtk__neighbours]
     uid*: BiggestInt
-    bgPos*: bgPos
-    layerInstances*: seq[layerInstances]
-    fieldInstances*: seq[fieldInstances]
-    __bgPos*: __bgPos
+    bgPos*: LdtkBgPos
+    layerInstances*: seq[LdtkLayerInstances]
+    fieldInstances*: seq[LdtkFieldInstances]
+    __bgPos*: Ldtk__bgPos
     worldX*: BiggestInt
     iid*: string
     bgPivotY*: BiggestFloat
     __smartColor*: string
-  worlds* = object
+  LdtkWorlds* = object
     worldGridWidth*: BiggestInt
     defaultLevelHeight*: BiggestInt
     identifier*: string
-    worldLayout*: worldLayout
+    worldLayout*: LdtkWorldLayout
     iid*: string
     defaultLevelWidth*: BiggestInt
     worldGridHeight*: BiggestInt
-    levels*: seq[levels]
-  imageExportMode* = enum
+    levels*: seq[LdtkLevels]
+  LdtkImageExportMode* = enum
     LayersAndLevels, OneImagePerLayer, None, OneImagePerLevel
-  when* = enum
+  LdtkWhen* = enum
     AfterLoad, BeforeSave, AfterSave, Manual
-  CustomCommand* = object
+  LdtkCustomCommand* = object
     command*: string
-    when*: when
-  tile1* = object
+    when*: LdtkWhen
+  LdtkTile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  tile* = object
+  LdtkTile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: tile1
-  identifier* = object
+      key1: LdtkTile1
+  LdtkIdentifier* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  IntGridValueDef* = object
-    tile*: tile
+  LdtkIntGridValueDef* = object
+    tile*: LdtkTile
     color*: string
-    identifier*: identifier
+    identifier*: LdtkIdentifier
     groupUid*: BiggestInt
     value*: BiggestInt
-  bgColor* = object
+  LdtkBgColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  externalRelPath* = object
+  LdtkExternalRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  bgRelPath* = object
+  LdtkBgRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  levelUid* = object
+  LdtkLevelUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  __neighbours* = object
-    levelUid*: levelUid
+  Ldtk__neighbours* = object
+    levelUid*: LdtkLevelUid
     levelIid*: string
     dir*: string
-  bgPos* = enum
+  LdtkBgPos* = enum
     CoverDirty, Repeat, , Contain, Cover, Unscaled
-  gridTiles* = object
+  LdtkGridTiles* = object
     px*: seq[BiggestInt]
     t*: BiggestInt
     d*: seq[BiggestInt]
     a*: BiggestFloat
     src*: seq[BiggestInt]
     f*: BiggestInt
-  overrideTilesetUid* = object
+  LdtkOverrideTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  intGrid* = object
+  LdtkIntGrid* = object
     coordId*: BiggestInt
     v*: BiggestInt
-  autoLayerTiles* = object
+  LdtkAutoLayerTiles* = object
     px*: seq[BiggestInt]
     t*: BiggestInt
     d*: seq[BiggestInt]
     a*: BiggestFloat
     src*: seq[BiggestInt]
     f*: BiggestInt
-  __worldY* = object
+  Ldtk__worldY* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  __tile1* = object
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  __tile1* = object
+      key1: Ldtk__tile1
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  fieldInstances* = object
+      key1: Ldtk__tile1
+  LdtkFieldInstances* = object
     realEditorValues*: seq[JsonNode]
     __value*: JsonNode
-    __tile*: __tile
+    __tile*: Ldtk__tile
     __type*: string
     __identifier*: string
     defUid*: BiggestInt
-  __worldX* = object
+  Ldtk__worldX* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  entityInstances* = object
-    __worldY*: __worldY
-    __tile*: __tile
+  LdtkEntityInstances* = object
+    __worldY*: Ldtk__worldY
+    __tile*: Ldtk__tile
     __identifier*: string
     __tags*: seq[string]
     height*: BiggestInt
     px*: seq[BiggestInt]
     defUid*: BiggestInt
     __pivot*: seq[BiggestFloat]
-    fieldInstances*: seq[fieldInstances]
+    fieldInstances*: seq[LdtkFieldInstances]
     iid*: string
     width*: BiggestInt
-    __worldX*: __worldX
+    __worldX*: Ldtk__worldX
     __grid*: seq[BiggestInt]
     __smartColor*: string
-  __tilesetRelPath* = object
+  Ldtk__tilesetRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  __tilesetDefUid* = object
+  Ldtk__tilesetDefUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  layerInstances* = object
+  LdtkLayerInstances* = object
     __opacity*: BiggestFloat
     optionalRules*: seq[BiggestInt]
     __gridSize*: BiggestInt
     __pxTotalOffsetX*: BiggestInt
-    gridTiles*: seq[gridTiles]
+    gridTiles*: seq[LdtkGridTiles]
     __type*: string
     __identifier*: string
-    overrideTilesetUid*: overrideTilesetUid
+    overrideTilesetUid*: LdtkOverrideTilesetUid
     levelId*: BiggestInt
-    intGrid*: seq[intGrid]
-    autoLayerTiles*: seq[autoLayerTiles]
+    intGrid*: seq[LdtkIntGrid]
+    autoLayerTiles*: seq[LdtkAutoLayerTiles]
     layerDefUid*: BiggestInt
-    entityInstances*: seq[entityInstances]
+    entityInstances*: seq[LdtkEntityInstances]
     intGridCsv*: seq[BiggestInt]
     pxOffsetX*: BiggestInt
-    __tilesetRelPath*: __tilesetRelPath
-    __tilesetDefUid*: __tilesetDefUid
+    __tilesetRelPath*: Ldtk__tilesetRelPath
+    __tilesetDefUid*: Ldtk__tilesetDefUid
     __cHei*: BiggestInt
     seed*: BiggestInt
     visible*: bool
@@ -444,541 +444,541 @@ type
     iid*: string
     __pxTotalOffsetY*: BiggestInt
     __cWid*: BiggestInt
-  __tile1* = object
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  fieldInstances* = object
+      key1: Ldtk__tile1
+  LdtkFieldInstances* = object
     realEditorValues*: seq[JsonNode]
     __value*: JsonNode
-    __tile*: __tile
+    __tile*: Ldtk__tile
     __type*: string
     __identifier*: string
     defUid*: BiggestInt
-  __bgPos1* = object
+  Ldtk__bgPos1* = object
     scale*: seq[BiggestFloat]
     cropRect*: seq[BiggestFloat]
     topLeftPx*: seq[BiggestInt]
-  __bgPos* = object
+  Ldtk__bgPos* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __bgPos1
-  Level* = object
+      key1: Ldtk__bgPos1
+  LdtkLevel* = object
     pxHei*: BiggestInt
     useAutoIdentifier*: bool
     __bgColor*: string
-    bgColor*: bgColor
-    externalRelPath*: externalRelPath
+    bgColor*: LdtkBgColor
+    externalRelPath*: LdtkExternalRelPath
     worldY*: BiggestInt
-    bgRelPath*: bgRelPath
+    bgRelPath*: LdtkBgRelPath
     identifier*: string
     pxWid*: BiggestInt
     worldDepth*: BiggestInt
     bgPivotX*: BiggestFloat
-    __neighbours*: seq[__neighbours]
+    __neighbours*: seq[Ldtk__neighbours]
     uid*: BiggestInt
-    bgPos*: bgPos
-    layerInstances*: seq[layerInstances]
-    fieldInstances*: seq[fieldInstances]
-    __bgPos*: __bgPos
+    bgPos*: LdtkBgPos
+    layerInstances*: seq[LdtkLayerInstances]
+    fieldInstances*: seq[LdtkFieldInstances]
+    __bgPos*: Ldtk__bgPos
     worldX*: BiggestInt
     iid*: string
     bgPivotY*: BiggestFloat
     __smartColor*: string
-  allowedRefsEntityUid* = object
+  LdtkAllowedRefsEntityUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  textLanguageMode* = enum
+  LdtkTextLanguageMode* = enum
     LangMarkdown, LangPython, LangLog, LangC, LangLua, LangHaxe, LangJS,
     LangRuby, , LangJson, LangXml
-  editorDisplayPos* = enum
+  LdtkEditorDisplayPos* = enum
     Beneath, Above, Center
-  editorDisplayMode* = enum
+  LdtkEditorDisplayMode* = enum
     PointPath, PointStar, ValueOnly, Hidden, Points, NameAndValue,
     ArrayCountNoLabel, EntityTile, PointPathLoop, RadiusPx, LevelTile,
     RadiusGrid, RefLinkBetweenCenters, RefLinkBetweenPivots, ArrayCountWithLabel
-  regex* = object
+  LdtkRegex* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorLinkStyle* = enum
+  LdtkEditorLinkStyle* = enum
     DashedLine, CurvedArrow, ArrowsLine, ZigZag, StraightArrow
-  allowedRefs* = enum
+  LdtkAllowedRefs* = enum
     Any, OnlyTags, OnlySame, OnlySpecificEntity
-  editorTextSuffix* = object
+  LdtkEditorTextSuffix* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  doc* = object
+  LdtkDoc* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorTextPrefix* = object
+  LdtkEditorTextPrefix* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorDisplayColor* = object
+  LdtkEditorDisplayColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  tilesetUid* = object
+  LdtkTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  arrayMaxLength* = object
+  LdtkArrayMaxLength* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  arrayMinLength* = object
+  LdtkArrayMinLength* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  min* = object
+  LdtkMin* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestFloat
     of 1:
       key1: pointer
-  max* = object
+  LdtkMax* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestFloat
     of 1:
       key1: pointer
-  levelFields* = object
+  LdtkLevelFields* = object
     type*: string
     editorDisplayScale*: BiggestFloat
     __type*: string
-    allowedRefsEntityUid*: allowedRefsEntityUid
-    textLanguageMode*: textLanguageMode
+    allowedRefsEntityUid*: LdtkAllowedRefsEntityUid
+    textLanguageMode*: LdtkTextLanguageMode
     editorAlwaysShow*: bool
     defaultOverride*: JsonNode
     autoChainRef*: bool
-    editorDisplayPos*: editorDisplayPos
-    editorDisplayMode*: editorDisplayMode
+    editorDisplayPos*: LdtkEditorDisplayPos
+    editorDisplayMode*: LdtkEditorDisplayMode
     identifier*: string
-    regex*: regex
+    regex*: LdtkRegex
     isArray*: bool
-    editorLinkStyle*: editorLinkStyle
-    allowedRefs*: allowedRefs
+    editorLinkStyle*: LdtkEditorLinkStyle
+    allowedRefs*: LdtkAllowedRefs
     useForSmartColor*: bool
-    editorTextSuffix*: editorTextSuffix
-    doc*: doc
-    editorTextPrefix*: editorTextPrefix
+    editorTextSuffix*: LdtkEditorTextSuffix
+    doc*: LdtkDoc
+    editorTextPrefix*: LdtkEditorTextPrefix
     editorCutLongValues*: bool
     canBeNull*: bool
     allowedRefTags*: seq[string]
     uid*: BiggestInt
     symmetricalRef*: bool
-    editorDisplayColor*: editorDisplayColor
+    editorDisplayColor*: LdtkEditorDisplayColor
     allowOutOfLevelRef*: bool
     acceptFileTypes*: seq[string]
     editorShowInWorld*: bool
-    tilesetUid*: tilesetUid
-    arrayMaxLength*: arrayMaxLength
-    arrayMinLength*: arrayMinLength
+    tilesetUid*: LdtkTilesetUid
+    arrayMaxLength*: LdtkArrayMaxLength
+    arrayMinLength*: LdtkArrayMinLength
     searchable*: bool
-    min*: min
+    min*: LdtkMin
     exportToToc*: bool
-    max*: max
-  tagsSourceEnumUid* = object
+    max*: LdtkMax
+  LdtkTagsSourceEnumUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  embedAtlas* = enum
+  LdtkEmbedAtlas* = enum
     LdtkIcons, 
-  cachedPixelData* = object
+  LdtkCachedPixelData* = object
     case kind: range[0 .. 1]
     of 0:
       key0: Table[string, JsonNode]
     of 1:
       key1: pointer
-  enumTags* = object
+  LdtkEnumTags* = object
     tileIds*: seq[BiggestInt]
     enumValueId*: string
-  customData* = object
+  LdtkCustomData* = object
     data*: string
     tileId*: BiggestInt
-  relPath* = object
+  LdtkRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  tilesets* = object
+  LdtkTilesets* = object
     pxHei*: BiggestInt
     savedSelections*: seq[Table[string, JsonNode]]
     padding*: BiggestInt
     spacing*: BiggestInt
-    tagsSourceEnumUid*: tagsSourceEnumUid
-    embedAtlas*: embedAtlas
+    tagsSourceEnumUid*: LdtkTagsSourceEnumUid
+    embedAtlas*: LdtkEmbedAtlas
     identifier*: string
-    cachedPixelData*: cachedPixelData
-    enumTags*: seq[enumTags]
+    cachedPixelData*: LdtkCachedPixelData
+    enumTags*: seq[LdtkEnumTags]
     pxWid*: BiggestInt
     tileGridSize*: BiggestInt
-    customData*: seq[customData]
+    customData*: seq[LdtkCustomData]
     uid*: BiggestInt
     __cHei*: BiggestInt
     __cWid*: BiggestInt
-    relPath*: relPath
+    relPath*: LdtkRelPath
     tags*: seq[string]
-  limitScope* = enum
+  LdtkLimitScope* = enum
     PerLayer, PerWorld, PerLevel
-  limitBehavior* = enum
+  LdtkLimitBehavior* = enum
     PreventAdding, MoveLastOne, DiscardOldOnes
-  renderMode* = enum
+  LdtkRenderMode* = enum
     Tile, Cross, Ellipse, Rectangle
-  tilesetId* = object
+  LdtkTilesetId* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  minWidth* = object
+  LdtkMinWidth* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  tileId* = object
+  LdtkTileId* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  doc* = object
+  LdtkDoc* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  allowedRefsEntityUid* = object
+  LdtkAllowedRefsEntityUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  textLanguageMode* = enum
+  LdtkTextLanguageMode* = enum
     LangMarkdown, LangPython, LangLog, LangC, LangLua, LangHaxe, LangJS,
     LangRuby, , LangJson, LangXml
-  editorDisplayPos* = enum
+  LdtkEditorDisplayPos* = enum
     Beneath, Above, Center
-  editorDisplayMode* = enum
+  LdtkEditorDisplayMode* = enum
     PointPath, PointStar, ValueOnly, Hidden, Points, NameAndValue,
     ArrayCountNoLabel, EntityTile, PointPathLoop, RadiusPx, LevelTile,
     RadiusGrid, RefLinkBetweenCenters, RefLinkBetweenPivots, ArrayCountWithLabel
-  regex* = object
+  LdtkRegex* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorLinkStyle* = enum
+  LdtkEditorLinkStyle* = enum
     DashedLine, CurvedArrow, ArrowsLine, ZigZag, StraightArrow
-  allowedRefs* = enum
+  LdtkAllowedRefs* = enum
     Any, OnlyTags, OnlySame, OnlySpecificEntity
-  editorTextSuffix* = object
+  LdtkEditorTextSuffix* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  doc* = object
+  LdtkDoc* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorTextPrefix* = object
+  LdtkEditorTextPrefix* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorDisplayColor* = object
+  LdtkEditorDisplayColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  tilesetUid* = object
+  LdtkTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  arrayMaxLength* = object
+  LdtkArrayMaxLength* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  arrayMinLength* = object
+  LdtkArrayMinLength* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  min* = object
+  LdtkMin* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestFloat
     of 1:
       key1: pointer
-  max* = object
+  LdtkMax* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestFloat
     of 1:
       key1: pointer
-  fieldDefs* = object
+  LdtkFieldDefs* = object
     type*: string
     editorDisplayScale*: BiggestFloat
     __type*: string
-    allowedRefsEntityUid*: allowedRefsEntityUid
-    textLanguageMode*: textLanguageMode
+    allowedRefsEntityUid*: LdtkAllowedRefsEntityUid
+    textLanguageMode*: LdtkTextLanguageMode
     editorAlwaysShow*: bool
     defaultOverride*: JsonNode
     autoChainRef*: bool
-    editorDisplayPos*: editorDisplayPos
-    editorDisplayMode*: editorDisplayMode
+    editorDisplayPos*: LdtkEditorDisplayPos
+    editorDisplayMode*: LdtkEditorDisplayMode
     identifier*: string
-    regex*: regex
+    regex*: LdtkRegex
     isArray*: bool
-    editorLinkStyle*: editorLinkStyle
-    allowedRefs*: allowedRefs
+    editorLinkStyle*: LdtkEditorLinkStyle
+    allowedRefs*: LdtkAllowedRefs
     useForSmartColor*: bool
-    editorTextSuffix*: editorTextSuffix
-    doc*: doc
-    editorTextPrefix*: editorTextPrefix
+    editorTextSuffix*: LdtkEditorTextSuffix
+    doc*: LdtkDoc
+    editorTextPrefix*: LdtkEditorTextPrefix
     editorCutLongValues*: bool
     canBeNull*: bool
     allowedRefTags*: seq[string]
     uid*: BiggestInt
     symmetricalRef*: bool
-    editorDisplayColor*: editorDisplayColor
+    editorDisplayColor*: LdtkEditorDisplayColor
     allowOutOfLevelRef*: bool
     acceptFileTypes*: seq[string]
     editorShowInWorld*: bool
-    tilesetUid*: tilesetUid
-    arrayMaxLength*: arrayMaxLength
-    arrayMinLength*: arrayMinLength
+    tilesetUid*: LdtkTilesetUid
+    arrayMaxLength*: LdtkArrayMaxLength
+    arrayMinLength*: LdtkArrayMinLength
     searchable*: bool
-    min*: min
+    min*: LdtkMin
     exportToToc*: bool
-    max*: max
-  tileRenderMode* = enum
+    max*: LdtkMax
+  LdtkTileRenderMode* = enum
     FullSizeCropped, FullSizeUncropped, Repeat, FitInside, NineSlice, Cover,
     Stretch
-  uiTileRect1* = object
+  LdtkUiTileRect1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  uiTileRect* = object
+  LdtkUiTileRect* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: uiTileRect1
-  minHeight* = object
+      key1: LdtkUiTileRect1
+  LdtkMinHeight* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  tileRect1* = object
+  LdtkTileRect1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  tileRect* = object
+  LdtkTileRect* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: tileRect1
-  maxWidth* = object
+      key1: LdtkTileRect1
+  LdtkMaxWidth* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  maxHeight* = object
+  LdtkMaxHeight* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  entities* = object
+  LdtkEntities* = object
     allowOutOfBounds*: bool
     pivotY*: BiggestFloat
     tileOpacity*: BiggestFloat
     color*: string
-    limitScope*: limitScope
-    limitBehavior*: limitBehavior
+    limitScope*: LdtkLimitScope
+    limitBehavior*: LdtkLimitBehavior
     hollow*: bool
     height*: BiggestInt
-    renderMode*: renderMode
-    tilesetId*: tilesetId
+    renderMode*: LdtkRenderMode
+    tilesetId*: LdtkTilesetId
     keepAspectRatio*: bool
-    minWidth*: minWidth
+    minWidth*: LdtkMinWidth
     showName*: bool
     resizableX*: bool
     identifier*: string
     maxCount*: BiggestInt
-    tileId*: tileId
+    tileId*: LdtkTileId
     pivotX*: BiggestFloat
-    doc*: doc
-    fieldDefs*: seq[fieldDefs]
+    doc*: LdtkDoc
+    fieldDefs*: seq[LdtkFieldDefs]
     uid*: BiggestInt
-    tileRenderMode*: tileRenderMode
-    uiTileRect*: uiTileRect
+    tileRenderMode*: LdtkTileRenderMode
+    uiTileRect*: LdtkUiTileRect
     resizableY*: bool
     lineOpacity*: BiggestFloat
-    minHeight*: minHeight
-    tileRect*: tileRect
+    minHeight*: LdtkMinHeight
+    tileRect*: LdtkTileRect
     nineSliceBorders*: seq[BiggestInt]
-    maxWidth*: maxWidth
+    maxWidth*: LdtkMaxWidth
     width*: BiggestInt
     tags*: seq[string]
-    maxHeight*: maxHeight
+    maxHeight*: LdtkMaxHeight
     exportToToc*: bool
     fillOpacity*: BiggestFloat
-  tileId* = object
+  LdtkTileId* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  tileRect1* = object
+  LdtkTileRect1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  tileRect* = object
+  LdtkTileRect* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: tileRect1
-  values* = object
+      key1: LdtkTileRect1
+  LdtkValues* = object
     __tileSrcRect*: seq[BiggestInt]
     color*: BiggestInt
     id*: string
-    tileId*: tileId
-    tileRect*: tileRect
-  externalRelPath* = object
+    tileId*: LdtkTileId
+    tileRect*: LdtkTileRect
+  LdtkExternalRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  externalFileChecksum* = object
+  LdtkExternalFileChecksum* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  iconTilesetUid* = object
+  LdtkIconTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  enums* = object
-    values*: seq[values]
-    externalRelPath*: externalRelPath
+  LdtkEnums* = object
+    values*: seq[LdtkValues]
+    externalRelPath*: LdtkExternalRelPath
     identifier*: string
-    externalFileChecksum*: externalFileChecksum
-    iconTilesetUid*: iconTilesetUid
+    externalFileChecksum*: LdtkExternalFileChecksum
+    iconTilesetUid*: LdtkIconTilesetUid
     uid*: BiggestInt
     tags*: seq[string]
-  type* = enum
+  LdtkType* = enum
     Tiles, Entities, AutoLayer, IntGrid
-  autoTilesetDefUid* = object
+  LdtkAutoTilesetDefUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  biomeFieldUid* = object
+  LdtkBiomeFieldUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  autoTilesKilledByOtherLayerUid* = object
+  LdtkAutoTilesKilledByOtherLayerUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  color* = object
+  LdtkColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  collapsed* = object
+  LdtkCollapsed* = object
     case kind: range[0 .. 1]
     of 0:
       key0: bool
     of 1:
       key1: pointer
-  checker* = enum
+  LdtkChecker* = enum
     Horizontal, Vertical, None
-  tileMode* = enum
+  LdtkTileMode* = enum
     Single, Stamp
-  outOfBoundsValue* = object
+  LdtkOutOfBoundsValue* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  rules* = object
-    checker*: checker
+  LdtkRules* = object
+    checker*: LdtkChecker
     pivotY*: BiggestFloat
     breakOnMatch*: bool
     perlinOctaves*: BiggestFloat
     yModulo*: BiggestInt
     size*: BiggestInt
-    tileMode*: tileMode
+    tileMode*: LdtkTileMode
     tileRandomXMax*: BiggestInt
     tileRandomXMin*: BiggestInt
     xModulo*: BiggestInt
@@ -989,7 +989,7 @@ type
     tileRandomYMax*: BiggestInt
     perlinActive*: bool
     perlinScale*: BiggestFloat
-    outOfBoundsValue*: outOfBoundsValue
+    outOfBoundsValue*: LdtkOutOfBoundsValue
     pivotX*: BiggestFloat
     flipY*: bool
     active*: bool
@@ -1003,107 +1003,107 @@ type
     xOffset*: BiggestInt
     tileRandomYMin*: BiggestInt
     perlinSeed*: BiggestFloat
-  icon1* = object
+  LdtkIcon1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  icon* = object
+  LdtkIcon* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: icon1
-  autoRuleGroups* = object
+      key1: LdtkIcon1
+  LdtkAutoRuleGroups* = object
     isOptional*: bool
-    color*: color
-    collapsed*: collapsed
+    color*: LdtkColor
+    collapsed*: LdtkCollapsed
     usesWizard*: bool
     biomeRequirementMode*: BiggestInt
-    rules*: seq[rules]
-    icon*: icon
+    rules*: seq[LdtkRules]
+    icon*: LdtkIcon
     active*: bool
     uid*: BiggestInt
     name*: string
     requiredBiomeValues*: seq[string]
-  tilesetDefUid* = object
+  LdtkTilesetDefUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  uiColor* = object
+  LdtkUiColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  doc* = object
+  LdtkDoc* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  autoSourceLayerDefUid* = object
+  LdtkAutoSourceLayerDefUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  color* = object
+  LdtkColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  identifier* = object
+  LdtkIdentifier* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  intGridValuesGroups* = object
-    color*: color
-    identifier*: identifier
+  LdtkIntGridValuesGroups* = object
+    color*: LdtkColor
+    identifier*: LdtkIdentifier
     uid*: BiggestInt
-  tile1* = object
+  LdtkTile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  tile* = object
+  LdtkTile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: tile1
-  identifier* = object
+      key1: LdtkTile1
+  LdtkIdentifier* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  intGridValues* = object
-    tile*: tile
+  LdtkIntGridValues* = object
+    tile*: LdtkTile
     color*: string
-    identifier*: identifier
+    identifier*: LdtkIdentifier
     groupUid*: BiggestInt
     value*: BiggestInt
-  layers* = object
-    type*: type
-    autoTilesetDefUid*: autoTilesetDefUid
+  LdtkLayers* = object
+    type*: LdtkType
+    autoTilesetDefUid*: LdtkAutoTilesetDefUid
     parallaxScaling*: bool
-    biomeFieldUid*: biomeFieldUid
-    autoTilesKilledByOtherLayerUid*: autoTilesKilledByOtherLayerUid
+    biomeFieldUid*: LdtkBiomeFieldUid
+    autoTilesKilledByOtherLayerUid*: LdtkAutoTilesKilledByOtherLayerUid
     inactiveOpacity*: BiggestFloat
     __type*: string
-    autoRuleGroups*: seq[autoRuleGroups]
+    autoRuleGroups*: seq[LdtkAutoRuleGroups]
     gridSize*: BiggestInt
     hideInList*: bool
-    tilesetDefUid*: tilesetDefUid
-    uiColor*: uiColor
+    tilesetDefUid*: LdtkTilesetDefUid
+    uiColor*: LdtkUiColor
     requiredTags*: seq[string]
     tilePivotX*: BiggestFloat
     uiFilterTags*: seq[string]
@@ -1114,270 +1114,270 @@ type
     pxOffsetX*: BiggestInt
     tilePivotY*: BiggestFloat
     excludedTags*: seq[string]
-    doc*: doc
+    doc*: LdtkDoc
     uid*: BiggestInt
     guideGridHei*: BiggestInt
-    autoSourceLayerDefUid*: autoSourceLayerDefUid
+    autoSourceLayerDefUid*: LdtkAutoSourceLayerDefUid
     displayOpacity*: BiggestFloat
-    intGridValuesGroups*: seq[intGridValuesGroups]
+    intGridValuesGroups*: seq[LdtkIntGridValuesGroups]
     hideFieldsWhenInactive*: bool
     useAsyncRender*: bool
     pxOffsetY*: BiggestInt
     parallaxFactorY*: BiggestFloat
-    intGridValues*: seq[intGridValues]
+    intGridValues*: seq[LdtkIntGridValues]
     renderInWorldView*: bool
-  tileId* = object
+  LdtkTileId* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  tileRect1* = object
+  LdtkTileRect1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  tileRect* = object
+  LdtkTileRect* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: tileRect1
-  values* = object
+      key1: LdtkTileRect1
+  LdtkValues* = object
     __tileSrcRect*: seq[BiggestInt]
     color*: BiggestInt
     id*: string
-    tileId*: tileId
-    tileRect*: tileRect
-  externalRelPath* = object
+    tileId*: LdtkTileId
+    tileRect*: LdtkTileRect
+  LdtkExternalRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  externalFileChecksum* = object
+  LdtkExternalFileChecksum* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  iconTilesetUid* = object
+  LdtkIconTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  externalEnums* = object
-    values*: seq[values]
-    externalRelPath*: externalRelPath
+  LdtkExternalEnums* = object
+    values*: seq[LdtkValues]
+    externalRelPath*: LdtkExternalRelPath
     identifier*: string
-    externalFileChecksum*: externalFileChecksum
-    iconTilesetUid*: iconTilesetUid
+    externalFileChecksum*: LdtkExternalFileChecksum
+    iconTilesetUid*: LdtkIconTilesetUid
     uid*: BiggestInt
     tags*: seq[string]
-  Definitions* = object
-    levelFields*: seq[levelFields]
-    tilesets*: seq[tilesets]
-    entities*: seq[entities]
-    enums*: seq[enums]
-    layers*: seq[layers]
-    externalEnums*: seq[externalEnums]
-  tileId* = object
+  LdtkDefinitions* = object
+    levelFields*: seq[LdtkLevelFields]
+    tilesets*: seq[LdtkTilesets]
+    entities*: seq[LdtkEntities]
+    enums*: seq[LdtkEnums]
+    layers*: seq[LdtkLayers]
+    externalEnums*: seq[LdtkExternalEnums]
+  LdtkTileId* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  tileRect1* = object
+  LdtkTileRect1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  tileRect* = object
+  LdtkTileRect* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: tileRect1
-  values* = object
+      key1: LdtkTileRect1
+  LdtkValues* = object
     __tileSrcRect*: seq[BiggestInt]
     color*: BiggestInt
     id*: string
-    tileId*: tileId
-    tileRect*: tileRect
-  externalRelPath* = object
+    tileId*: LdtkTileId
+    tileRect*: LdtkTileRect
+  LdtkExternalRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  externalFileChecksum* = object
+  LdtkExternalFileChecksum* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  iconTilesetUid* = object
+  LdtkIconTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  EnumDef* = object
-    values*: seq[values]
-    externalRelPath*: externalRelPath
+  LdtkEnumDef* = object
+    values*: seq[LdtkValues]
+    externalRelPath*: LdtkExternalRelPath
     identifier*: string
-    externalFileChecksum*: externalFileChecksum
-    iconTilesetUid*: iconTilesetUid
+    externalFileChecksum*: LdtkExternalFileChecksum
+    iconTilesetUid*: LdtkIconTilesetUid
     uid*: BiggestInt
     tags*: seq[string]
-  allowedRefsEntityUid* = object
+  LdtkAllowedRefsEntityUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  textLanguageMode* = enum
+  LdtkTextLanguageMode* = enum
     LangMarkdown, LangPython, LangLog, LangC, LangLua, LangHaxe, LangJS,
     LangRuby, , LangJson, LangXml
-  editorDisplayPos* = enum
+  LdtkEditorDisplayPos* = enum
     Beneath, Above, Center
-  editorDisplayMode* = enum
+  LdtkEditorDisplayMode* = enum
     PointPath, PointStar, ValueOnly, Hidden, Points, NameAndValue,
     ArrayCountNoLabel, EntityTile, PointPathLoop, RadiusPx, LevelTile,
     RadiusGrid, RefLinkBetweenCenters, RefLinkBetweenPivots, ArrayCountWithLabel
-  regex* = object
+  LdtkRegex* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorLinkStyle* = enum
+  LdtkEditorLinkStyle* = enum
     DashedLine, CurvedArrow, ArrowsLine, ZigZag, StraightArrow
-  allowedRefs* = enum
+  LdtkAllowedRefs* = enum
     Any, OnlyTags, OnlySame, OnlySpecificEntity
-  editorTextSuffix* = object
+  LdtkEditorTextSuffix* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  doc* = object
+  LdtkDoc* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorTextPrefix* = object
+  LdtkEditorTextPrefix* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorDisplayColor* = object
+  LdtkEditorDisplayColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  tilesetUid* = object
+  LdtkTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  arrayMaxLength* = object
+  LdtkArrayMaxLength* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  arrayMinLength* = object
+  LdtkArrayMinLength* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  min* = object
+  LdtkMin* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestFloat
     of 1:
       key1: pointer
-  max* = object
+  LdtkMax* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestFloat
     of 1:
       key1: pointer
-  FieldDef* = object
+  LdtkFieldDef* = object
     type*: string
     editorDisplayScale*: BiggestFloat
     __type*: string
-    allowedRefsEntityUid*: allowedRefsEntityUid
-    textLanguageMode*: textLanguageMode
+    allowedRefsEntityUid*: LdtkAllowedRefsEntityUid
+    textLanguageMode*: LdtkTextLanguageMode
     editorAlwaysShow*: bool
     defaultOverride*: JsonNode
     autoChainRef*: bool
-    editorDisplayPos*: editorDisplayPos
-    editorDisplayMode*: editorDisplayMode
+    editorDisplayPos*: LdtkEditorDisplayPos
+    editorDisplayMode*: LdtkEditorDisplayMode
     identifier*: string
-    regex*: regex
+    regex*: LdtkRegex
     isArray*: bool
-    editorLinkStyle*: editorLinkStyle
-    allowedRefs*: allowedRefs
+    editorLinkStyle*: LdtkEditorLinkStyle
+    allowedRefs*: LdtkAllowedRefs
     useForSmartColor*: bool
-    editorTextSuffix*: editorTextSuffix
-    doc*: doc
-    editorTextPrefix*: editorTextPrefix
+    editorTextSuffix*: LdtkEditorTextSuffix
+    doc*: LdtkDoc
+    editorTextPrefix*: LdtkEditorTextPrefix
     editorCutLongValues*: bool
     canBeNull*: bool
     allowedRefTags*: seq[string]
     uid*: BiggestInt
     symmetricalRef*: bool
-    editorDisplayColor*: editorDisplayColor
+    editorDisplayColor*: LdtkEditorDisplayColor
     allowOutOfLevelRef*: bool
     acceptFileTypes*: seq[string]
     editorShowInWorld*: bool
-    tilesetUid*: tilesetUid
-    arrayMaxLength*: arrayMaxLength
-    arrayMinLength*: arrayMinLength
+    tilesetUid*: LdtkTilesetUid
+    arrayMaxLength*: LdtkArrayMaxLength
+    arrayMinLength*: LdtkArrayMinLength
     searchable*: bool
-    min*: min
+    min*: LdtkMin
     exportToToc*: bool
-    max*: max
-  color* = object
+    max*: LdtkMax
+  LdtkColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  collapsed* = object
+  LdtkCollapsed* = object
     case kind: range[0 .. 1]
     of 0:
       key0: bool
     of 1:
       key1: pointer
-  checker* = enum
+  LdtkChecker* = enum
     Horizontal, Vertical, None
-  tileMode* = enum
+  LdtkTileMode* = enum
     Single, Stamp
-  outOfBoundsValue* = object
+  LdtkOutOfBoundsValue* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  rules* = object
-    checker*: checker
+  LdtkRules* = object
+    checker*: LdtkChecker
     pivotY*: BiggestFloat
     breakOnMatch*: bool
     perlinOctaves*: BiggestFloat
     yModulo*: BiggestInt
     size*: BiggestInt
-    tileMode*: tileMode
+    tileMode*: LdtkTileMode
     tileRandomXMax*: BiggestInt
     tileRandomXMin*: BiggestInt
     xModulo*: BiggestInt
@@ -1388,7 +1388,7 @@ type
     tileRandomYMax*: BiggestInt
     perlinActive*: bool
     perlinScale*: BiggestFloat
-    outOfBoundsValue*: outOfBoundsValue
+    outOfBoundsValue*: LdtkOutOfBoundsValue
     pivotX*: BiggestFloat
     flipY*: bool
     active*: bool
@@ -1402,376 +1402,376 @@ type
     xOffset*: BiggestInt
     tileRandomYMin*: BiggestInt
     perlinSeed*: BiggestFloat
-  icon1* = object
+  LdtkIcon1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  icon* = object
+  LdtkIcon* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: icon1
-  AutoLayerRuleGroup* = object
+      key1: LdtkIcon1
+  LdtkAutoLayerRuleGroup* = object
     isOptional*: bool
-    color*: color
-    collapsed*: collapsed
+    color*: LdtkColor
+    collapsed*: LdtkCollapsed
     usesWizard*: bool
     biomeRequirementMode*: BiggestInt
-    rules*: seq[rules]
-    icon*: icon
+    rules*: seq[LdtkRules]
+    icon*: LdtkIcon
     active*: bool
     uid*: BiggestInt
     name*: string
     requiredBiomeValues*: seq[string]
-  tagsSourceEnumUid* = object
+  LdtkTagsSourceEnumUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  embedAtlas* = enum
+  LdtkEmbedAtlas* = enum
     LdtkIcons, 
-  cachedPixelData* = object
+  LdtkCachedPixelData* = object
     case kind: range[0 .. 1]
     of 0:
       key0: Table[string, JsonNode]
     of 1:
       key1: pointer
-  enumTags* = object
+  LdtkEnumTags* = object
     tileIds*: seq[BiggestInt]
     enumValueId*: string
-  customData* = object
+  LdtkCustomData* = object
     data*: string
     tileId*: BiggestInt
-  relPath* = object
+  LdtkRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  TilesetDef* = object
+  LdtkTilesetDef* = object
     pxHei*: BiggestInt
     savedSelections*: seq[Table[string, JsonNode]]
     padding*: BiggestInt
     spacing*: BiggestInt
-    tagsSourceEnumUid*: tagsSourceEnumUid
-    embedAtlas*: embedAtlas
+    tagsSourceEnumUid*: LdtkTagsSourceEnumUid
+    embedAtlas*: LdtkEmbedAtlas
     identifier*: string
-    cachedPixelData*: cachedPixelData
-    enumTags*: seq[enumTags]
+    cachedPixelData*: LdtkCachedPixelData
+    enumTags*: seq[LdtkEnumTags]
     pxWid*: BiggestInt
     tileGridSize*: BiggestInt
-    customData*: seq[customData]
+    customData*: seq[LdtkCustomData]
     uid*: BiggestInt
     __cHei*: BiggestInt
     __cWid*: BiggestInt
-    relPath*: relPath
+    relPath*: LdtkRelPath
     tags*: seq[string]
-  iids* = object
+  LdtkIids* = object
     layerIid*: string
     levelIid*: string
     entityIid*: string
     worldIid*: string
-  instancesData* = object
+  LdtkInstancesData* = object
     worldY*: BiggestInt
     fields*: JsonNode
     widPx*: BiggestInt
-    iids*: iids
+    iids*: LdtkIids
     heiPx*: BiggestInt
     worldX*: BiggestInt
-  instances* = object
+  LdtkInstances* = object
     layerIid*: string
     levelIid*: string
     entityIid*: string
     worldIid*: string
-  TableOfContentEntry* = object
-    instancesData*: seq[instancesData]
+  LdtkTableOfContentEntry* = object
+    instancesData*: seq[LdtkInstancesData]
     identifier*: string
-    instances*: seq[instances]
-  limitScope* = enum
+    instances*: seq[LdtkInstances]
+  LdtkLimitScope* = enum
     PerLayer, PerWorld, PerLevel
-  limitBehavior* = enum
+  LdtkLimitBehavior* = enum
     PreventAdding, MoveLastOne, DiscardOldOnes
-  renderMode* = enum
+  LdtkRenderMode* = enum
     Tile, Cross, Ellipse, Rectangle
-  tilesetId* = object
+  LdtkTilesetId* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  minWidth* = object
+  LdtkMinWidth* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  tileId* = object
+  LdtkTileId* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  doc* = object
+  LdtkDoc* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  allowedRefsEntityUid* = object
+  LdtkAllowedRefsEntityUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  textLanguageMode* = enum
+  LdtkTextLanguageMode* = enum
     LangMarkdown, LangPython, LangLog, LangC, LangLua, LangHaxe, LangJS,
     LangRuby, , LangJson, LangXml
-  editorDisplayPos* = enum
+  LdtkEditorDisplayPos* = enum
     Beneath, Above, Center
-  editorDisplayMode* = enum
+  LdtkEditorDisplayMode* = enum
     PointPath, PointStar, ValueOnly, Hidden, Points, NameAndValue,
     ArrayCountNoLabel, EntityTile, PointPathLoop, RadiusPx, LevelTile,
     RadiusGrid, RefLinkBetweenCenters, RefLinkBetweenPivots, ArrayCountWithLabel
-  regex* = object
+  LdtkRegex* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorLinkStyle* = enum
+  LdtkEditorLinkStyle* = enum
     DashedLine, CurvedArrow, ArrowsLine, ZigZag, StraightArrow
-  allowedRefs* = enum
+  LdtkAllowedRefs* = enum
     Any, OnlyTags, OnlySame, OnlySpecificEntity
-  editorTextSuffix* = object
+  LdtkEditorTextSuffix* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  doc* = object
+  LdtkDoc* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorTextPrefix* = object
+  LdtkEditorTextPrefix* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorDisplayColor* = object
+  LdtkEditorDisplayColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  tilesetUid* = object
+  LdtkTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  arrayMaxLength* = object
+  LdtkArrayMaxLength* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  arrayMinLength* = object
+  LdtkArrayMinLength* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  min* = object
+  LdtkMin* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestFloat
     of 1:
       key1: pointer
-  max* = object
+  LdtkMax* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestFloat
     of 1:
       key1: pointer
-  fieldDefs* = object
+  LdtkFieldDefs* = object
     type*: string
     editorDisplayScale*: BiggestFloat
     __type*: string
-    allowedRefsEntityUid*: allowedRefsEntityUid
-    textLanguageMode*: textLanguageMode
+    allowedRefsEntityUid*: LdtkAllowedRefsEntityUid
+    textLanguageMode*: LdtkTextLanguageMode
     editorAlwaysShow*: bool
     defaultOverride*: JsonNode
     autoChainRef*: bool
-    editorDisplayPos*: editorDisplayPos
-    editorDisplayMode*: editorDisplayMode
+    editorDisplayPos*: LdtkEditorDisplayPos
+    editorDisplayMode*: LdtkEditorDisplayMode
     identifier*: string
-    regex*: regex
+    regex*: LdtkRegex
     isArray*: bool
-    editorLinkStyle*: editorLinkStyle
-    allowedRefs*: allowedRefs
+    editorLinkStyle*: LdtkEditorLinkStyle
+    allowedRefs*: LdtkAllowedRefs
     useForSmartColor*: bool
-    editorTextSuffix*: editorTextSuffix
-    doc*: doc
-    editorTextPrefix*: editorTextPrefix
+    editorTextSuffix*: LdtkEditorTextSuffix
+    doc*: LdtkDoc
+    editorTextPrefix*: LdtkEditorTextPrefix
     editorCutLongValues*: bool
     canBeNull*: bool
     allowedRefTags*: seq[string]
     uid*: BiggestInt
     symmetricalRef*: bool
-    editorDisplayColor*: editorDisplayColor
+    editorDisplayColor*: LdtkEditorDisplayColor
     allowOutOfLevelRef*: bool
     acceptFileTypes*: seq[string]
     editorShowInWorld*: bool
-    tilesetUid*: tilesetUid
-    arrayMaxLength*: arrayMaxLength
-    arrayMinLength*: arrayMinLength
+    tilesetUid*: LdtkTilesetUid
+    arrayMaxLength*: LdtkArrayMaxLength
+    arrayMinLength*: LdtkArrayMinLength
     searchable*: bool
-    min*: min
+    min*: LdtkMin
     exportToToc*: bool
-    max*: max
-  tileRenderMode* = enum
+    max*: LdtkMax
+  LdtkTileRenderMode* = enum
     FullSizeCropped, FullSizeUncropped, Repeat, FitInside, NineSlice, Cover,
     Stretch
-  uiTileRect1* = object
+  LdtkUiTileRect1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  uiTileRect* = object
+  LdtkUiTileRect* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: uiTileRect1
-  minHeight* = object
+      key1: LdtkUiTileRect1
+  LdtkMinHeight* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  tileRect1* = object
+  LdtkTileRect1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  tileRect* = object
+  LdtkTileRect* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: tileRect1
-  maxWidth* = object
+      key1: LdtkTileRect1
+  LdtkMaxWidth* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  maxHeight* = object
+  LdtkMaxHeight* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  EntityDef* = object
+  LdtkEntityDef* = object
     allowOutOfBounds*: bool
     pivotY*: BiggestFloat
     tileOpacity*: BiggestFloat
     color*: string
-    limitScope*: limitScope
-    limitBehavior*: limitBehavior
+    limitScope*: LdtkLimitScope
+    limitBehavior*: LdtkLimitBehavior
     hollow*: bool
     height*: BiggestInt
-    renderMode*: renderMode
-    tilesetId*: tilesetId
+    renderMode*: LdtkRenderMode
+    tilesetId*: LdtkTilesetId
     keepAspectRatio*: bool
-    minWidth*: minWidth
+    minWidth*: LdtkMinWidth
     showName*: bool
     resizableX*: bool
     identifier*: string
     maxCount*: BiggestInt
-    tileId*: tileId
+    tileId*: LdtkTileId
     pivotX*: BiggestFloat
-    doc*: doc
-    fieldDefs*: seq[fieldDefs]
+    doc*: LdtkDoc
+    fieldDefs*: seq[LdtkFieldDefs]
     uid*: BiggestInt
-    tileRenderMode*: tileRenderMode
-    uiTileRect*: uiTileRect
+    tileRenderMode*: LdtkTileRenderMode
+    uiTileRect*: LdtkUiTileRect
     resizableY*: bool
     lineOpacity*: BiggestFloat
-    minHeight*: minHeight
-    tileRect*: tileRect
+    minHeight*: LdtkMinHeight
+    tileRect*: LdtkTileRect
     nineSliceBorders*: seq[BiggestInt]
-    maxWidth*: maxWidth
+    maxWidth*: LdtkMaxWidth
     width*: BiggestInt
     tags*: seq[string]
-    maxHeight*: maxHeight
+    maxHeight*: LdtkMaxHeight
     exportToToc*: bool
     fillOpacity*: BiggestFloat
-  __tile1* = object
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  FieldInstance* = object
+      key1: Ldtk__tile1
+  LdtkFieldInstance* = object
     realEditorValues*: seq[JsonNode]
     __value*: JsonNode
-    __tile*: __tile
+    __tile*: Ldtk__tile
     __type*: string
     __identifier*: string
     defUid*: BiggestInt
-  EntityReferenceInfos* = object
+  LdtkEntityReferenceInfos* = object
     layerIid*: string
     levelIid*: string
     entityIid*: string
     worldIid*: string
-  LevelBgPosInfos* = object
+  LdtkLevelBgPosInfos* = object
     scale*: seq[BiggestFloat]
     cropRect*: seq[BiggestFloat]
     topLeftPx*: seq[BiggestInt]
-  TileCustomMetadata* = object
+  LdtkTileCustomMetadata* = object
     data*: string
     tileId*: BiggestInt
-  Tile* = object
+  LdtkTile* = object
     px*: seq[BiggestInt]
     t*: BiggestInt
     d*: seq[BiggestInt]
     a*: BiggestFloat
     src*: seq[BiggestInt]
     f*: BiggestInt
-  checker* = enum
+  LdtkChecker* = enum
     Horizontal, Vertical, None
-  tileMode* = enum
+  LdtkTileMode* = enum
     Single, Stamp
-  outOfBoundsValue* = object
+  LdtkOutOfBoundsValue* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  AutoRuleDef* = object
-    checker*: checker
+  LdtkAutoRuleDef* = object
+    checker*: LdtkChecker
     pivotY*: BiggestFloat
     breakOnMatch*: bool
     perlinOctaves*: BiggestFloat
     yModulo*: BiggestInt
     size*: BiggestInt
-    tileMode*: tileMode
+    tileMode*: LdtkTileMode
     tileRandomXMax*: BiggestInt
     tileRandomXMin*: BiggestInt
     xModulo*: BiggestInt
@@ -1782,7 +1782,7 @@ type
     tileRandomYMax*: BiggestInt
     perlinActive*: bool
     perlinScale*: BiggestFloat
-    outOfBoundsValue*: outOfBoundsValue
+    outOfBoundsValue*: LdtkOutOfBoundsValue
     pivotX*: BiggestFloat
     flipY*: bool
     active*: bool
@@ -1796,197 +1796,197 @@ type
     xOffset*: BiggestInt
     tileRandomYMin*: BiggestInt
     perlinSeed*: BiggestFloat
-  levelUid* = object
+  LdtkLevelUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  NeighbourLevel* = object
-    levelUid*: levelUid
+  LdtkNeighbourLevel* = object
+    levelUid*: LdtkLevelUid
     levelIid*: string
     dir*: string
-  GridPoint* = object
+  LdtkGridPoint* = object
     cx*: BiggestInt
     cy*: BiggestInt
-  __worldY* = object
+  Ldtk__worldY* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  __tile1* = object
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  __tile1* = object
+      key1: Ldtk__tile1
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  fieldInstances* = object
+      key1: Ldtk__tile1
+  LdtkFieldInstances* = object
     realEditorValues*: seq[JsonNode]
     __value*: JsonNode
-    __tile*: __tile
+    __tile*: Ldtk__tile
     __type*: string
     __identifier*: string
     defUid*: BiggestInt
-  __worldX* = object
+  Ldtk__worldX* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  EntityInstance* = object
-    __worldY*: __worldY
-    __tile*: __tile
+  LdtkEntityInstance* = object
+    __worldY*: Ldtk__worldY
+    __tile*: Ldtk__tile
     __identifier*: string
     __tags*: seq[string]
     height*: BiggestInt
     px*: seq[BiggestInt]
     defUid*: BiggestInt
     __pivot*: seq[BiggestFloat]
-    fieldInstances*: seq[fieldInstances]
+    fieldInstances*: seq[LdtkFieldInstances]
     iid*: string
     width*: BiggestInt
-    __worldX*: __worldX
+    __worldX*: Ldtk__worldX
     __grid*: seq[BiggestInt]
     __smartColor*: string
-  TilesetRect* = object
+  LdtkTilesetRect* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  EnumTagValue* = object
+  LdtkEnumTagValue* = object
     tileIds*: seq[BiggestInt]
     enumValueId*: string
-  gridTiles* = object
+  LdtkGridTiles* = object
     px*: seq[BiggestInt]
     t*: BiggestInt
     d*: seq[BiggestInt]
     a*: BiggestFloat
     src*: seq[BiggestInt]
     f*: BiggestInt
-  overrideTilesetUid* = object
+  LdtkOverrideTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  intGrid* = object
+  LdtkIntGrid* = object
     coordId*: BiggestInt
     v*: BiggestInt
-  autoLayerTiles* = object
+  LdtkAutoLayerTiles* = object
     px*: seq[BiggestInt]
     t*: BiggestInt
     d*: seq[BiggestInt]
     a*: BiggestFloat
     src*: seq[BiggestInt]
     f*: BiggestInt
-  __worldY* = object
+  Ldtk__worldY* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  __tile1* = object
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  __tile1* = object
+      key1: Ldtk__tile1
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  fieldInstances* = object
+      key1: Ldtk__tile1
+  LdtkFieldInstances* = object
     realEditorValues*: seq[JsonNode]
     __value*: JsonNode
-    __tile*: __tile
+    __tile*: Ldtk__tile
     __type*: string
     __identifier*: string
     defUid*: BiggestInt
-  __worldX* = object
+  Ldtk__worldX* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  entityInstances* = object
-    __worldY*: __worldY
-    __tile*: __tile
+  LdtkEntityInstances* = object
+    __worldY*: Ldtk__worldY
+    __tile*: Ldtk__tile
     __identifier*: string
     __tags*: seq[string]
     height*: BiggestInt
     px*: seq[BiggestInt]
     defUid*: BiggestInt
     __pivot*: seq[BiggestFloat]
-    fieldInstances*: seq[fieldInstances]
+    fieldInstances*: seq[LdtkFieldInstances]
     iid*: string
     width*: BiggestInt
-    __worldX*: __worldX
+    __worldX*: Ldtk__worldX
     __grid*: seq[BiggestInt]
     __smartColor*: string
-  __tilesetRelPath* = object
+  Ldtk__tilesetRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  __tilesetDefUid* = object
+  Ldtk__tilesetDefUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  LayerInstance* = object
+  LdtkLayerInstance* = object
     __opacity*: BiggestFloat
     optionalRules*: seq[BiggestInt]
     __gridSize*: BiggestInt
     __pxTotalOffsetX*: BiggestInt
-    gridTiles*: seq[gridTiles]
+    gridTiles*: seq[LdtkGridTiles]
     __type*: string
     __identifier*: string
-    overrideTilesetUid*: overrideTilesetUid
+    overrideTilesetUid*: LdtkOverrideTilesetUid
     levelId*: BiggestInt
-    intGrid*: seq[intGrid]
-    autoLayerTiles*: seq[autoLayerTiles]
+    intGrid*: seq[LdtkIntGrid]
+    autoLayerTiles*: seq[LdtkAutoLayerTiles]
     layerDefUid*: BiggestInt
-    entityInstances*: seq[entityInstances]
+    entityInstances*: seq[LdtkEntityInstances]
     intGridCsv*: seq[BiggestInt]
     pxOffsetX*: BiggestInt
-    __tilesetRelPath*: __tilesetRelPath
-    __tilesetDefUid*: __tilesetDefUid
+    __tilesetRelPath*: Ldtk__tilesetRelPath
+    __tilesetDefUid*: Ldtk__tilesetDefUid
     __cHei*: BiggestInt
     seed*: BiggestInt
     visible*: bool
@@ -1994,152 +1994,152 @@ type
     iid*: string
     __pxTotalOffsetY*: BiggestInt
     __cWid*: BiggestInt
-  IntGridValueInstance* = object
+  LdtkIntGridValueInstance* = object
     coordId*: BiggestInt
     v*: BiggestInt
-  worldLayout* = enum
+  LdtkWorldLayout* = enum
     LinearHorizontal, LinearVertical, , GridVania, Free
-  bgColor* = object
+  LdtkBgColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  externalRelPath* = object
+  LdtkExternalRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  bgRelPath* = object
+  LdtkBgRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  levelUid* = object
+  LdtkLevelUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  __neighbours* = object
-    levelUid*: levelUid
+  Ldtk__neighbours* = object
+    levelUid*: LdtkLevelUid
     levelIid*: string
     dir*: string
-  bgPos* = enum
+  LdtkBgPos* = enum
     CoverDirty, Repeat, , Contain, Cover, Unscaled
-  gridTiles* = object
+  LdtkGridTiles* = object
     px*: seq[BiggestInt]
     t*: BiggestInt
     d*: seq[BiggestInt]
     a*: BiggestFloat
     src*: seq[BiggestInt]
     f*: BiggestInt
-  overrideTilesetUid* = object
+  LdtkOverrideTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  intGrid* = object
+  LdtkIntGrid* = object
     coordId*: BiggestInt
     v*: BiggestInt
-  autoLayerTiles* = object
+  LdtkAutoLayerTiles* = object
     px*: seq[BiggestInt]
     t*: BiggestInt
     d*: seq[BiggestInt]
     a*: BiggestFloat
     src*: seq[BiggestInt]
     f*: BiggestInt
-  __worldY* = object
+  Ldtk__worldY* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  __tile1* = object
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  __tile1* = object
+      key1: Ldtk__tile1
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  fieldInstances* = object
+      key1: Ldtk__tile1
+  LdtkFieldInstances* = object
     realEditorValues*: seq[JsonNode]
     __value*: JsonNode
-    __tile*: __tile
+    __tile*: Ldtk__tile
     __type*: string
     __identifier*: string
     defUid*: BiggestInt
-  __worldX* = object
+  Ldtk__worldX* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  entityInstances* = object
-    __worldY*: __worldY
-    __tile*: __tile
+  LdtkEntityInstances* = object
+    __worldY*: Ldtk__worldY
+    __tile*: Ldtk__tile
     __identifier*: string
     __tags*: seq[string]
     height*: BiggestInt
     px*: seq[BiggestInt]
     defUid*: BiggestInt
     __pivot*: seq[BiggestFloat]
-    fieldInstances*: seq[fieldInstances]
+    fieldInstances*: seq[LdtkFieldInstances]
     iid*: string
     width*: BiggestInt
-    __worldX*: __worldX
+    __worldX*: Ldtk__worldX
     __grid*: seq[BiggestInt]
     __smartColor*: string
-  __tilesetRelPath* = object
+  Ldtk__tilesetRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  __tilesetDefUid* = object
+  Ldtk__tilesetDefUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  layerInstances* = object
+  LdtkLayerInstances* = object
     __opacity*: BiggestFloat
     optionalRules*: seq[BiggestInt]
     __gridSize*: BiggestInt
     __pxTotalOffsetX*: BiggestInt
-    gridTiles*: seq[gridTiles]
+    gridTiles*: seq[LdtkGridTiles]
     __type*: string
     __identifier*: string
-    overrideTilesetUid*: overrideTilesetUid
+    overrideTilesetUid*: LdtkOverrideTilesetUid
     levelId*: BiggestInt
-    intGrid*: seq[intGrid]
-    autoLayerTiles*: seq[autoLayerTiles]
+    intGrid*: seq[LdtkIntGrid]
+    autoLayerTiles*: seq[LdtkAutoLayerTiles]
     layerDefUid*: BiggestInt
-    entityInstances*: seq[entityInstances]
+    entityInstances*: seq[LdtkEntityInstances]
     intGridCsv*: seq[BiggestInt]
     pxOffsetX*: BiggestInt
-    __tilesetRelPath*: __tilesetRelPath
-    __tilesetDefUid*: __tilesetDefUid
+    __tilesetRelPath*: Ldtk__tilesetRelPath
+    __tilesetDefUid*: Ldtk__tilesetDefUid
     __cHei*: BiggestInt
     seed*: BiggestInt
     visible*: bool
@@ -2147,116 +2147,116 @@ type
     iid*: string
     __pxTotalOffsetY*: BiggestInt
     __cWid*: BiggestInt
-  __tile1* = object
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  fieldInstances* = object
+      key1: Ldtk__tile1
+  LdtkFieldInstances* = object
     realEditorValues*: seq[JsonNode]
     __value*: JsonNode
-    __tile*: __tile
+    __tile*: Ldtk__tile
     __type*: string
     __identifier*: string
     defUid*: BiggestInt
-  __bgPos1* = object
+  Ldtk__bgPos1* = object
     scale*: seq[BiggestFloat]
     cropRect*: seq[BiggestFloat]
     topLeftPx*: seq[BiggestInt]
-  __bgPos* = object
+  Ldtk__bgPos* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __bgPos1
-  levels* = object
+      key1: Ldtk__bgPos1
+  LdtkLevels* = object
     pxHei*: BiggestInt
     useAutoIdentifier*: bool
     __bgColor*: string
-    bgColor*: bgColor
-    externalRelPath*: externalRelPath
+    bgColor*: LdtkBgColor
+    externalRelPath*: LdtkExternalRelPath
     worldY*: BiggestInt
-    bgRelPath*: bgRelPath
+    bgRelPath*: LdtkBgRelPath
     identifier*: string
     pxWid*: BiggestInt
     worldDepth*: BiggestInt
     bgPivotX*: BiggestFloat
-    __neighbours*: seq[__neighbours]
+    __neighbours*: seq[Ldtk__neighbours]
     uid*: BiggestInt
-    bgPos*: bgPos
-    layerInstances*: seq[layerInstances]
-    fieldInstances*: seq[fieldInstances]
-    __bgPos*: __bgPos
+    bgPos*: LdtkBgPos
+    layerInstances*: seq[LdtkLayerInstances]
+    fieldInstances*: seq[LdtkFieldInstances]
+    __bgPos*: Ldtk__bgPos
     worldX*: BiggestInt
     iid*: string
     bgPivotY*: BiggestFloat
     __smartColor*: string
-  World* = object
+  LdtkWorld* = object
     worldGridWidth*: BiggestInt
     defaultLevelHeight*: BiggestInt
     identifier*: string
-    worldLayout*: worldLayout
+    worldLayout*: LdtkWorldLayout
     iid*: string
     defaultLevelWidth*: BiggestInt
     worldGridHeight*: BiggestInt
-    levels*: seq[levels]
-  type* = enum
+    levels*: seq[LdtkLevels]
+  LdtkType* = enum
     Tiles, Entities, AutoLayer, IntGrid
-  autoTilesetDefUid* = object
+  LdtkAutoTilesetDefUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  biomeFieldUid* = object
+  LdtkBiomeFieldUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  autoTilesKilledByOtherLayerUid* = object
+  LdtkAutoTilesKilledByOtherLayerUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  color* = object
+  LdtkColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  collapsed* = object
+  LdtkCollapsed* = object
     case kind: range[0 .. 1]
     of 0:
       key0: bool
     of 1:
       key1: pointer
-  checker* = enum
+  LdtkChecker* = enum
     Horizontal, Vertical, None
-  tileMode* = enum
+  LdtkTileMode* = enum
     Single, Stamp
-  outOfBoundsValue* = object
+  LdtkOutOfBoundsValue* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  rules* = object
-    checker*: checker
+  LdtkRules* = object
+    checker*: LdtkChecker
     pivotY*: BiggestFloat
     breakOnMatch*: bool
     perlinOctaves*: BiggestFloat
     yModulo*: BiggestInt
     size*: BiggestInt
-    tileMode*: tileMode
+    tileMode*: LdtkTileMode
     tileRandomXMax*: BiggestInt
     tileRandomXMin*: BiggestInt
     xModulo*: BiggestInt
@@ -2267,7 +2267,7 @@ type
     tileRandomYMax*: BiggestInt
     perlinActive*: bool
     perlinScale*: BiggestFloat
-    outOfBoundsValue*: outOfBoundsValue
+    outOfBoundsValue*: LdtkOutOfBoundsValue
     pivotX*: BiggestFloat
     flipY*: bool
     active*: bool
@@ -2281,107 +2281,107 @@ type
     xOffset*: BiggestInt
     tileRandomYMin*: BiggestInt
     perlinSeed*: BiggestFloat
-  icon1* = object
+  LdtkIcon1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  icon* = object
+  LdtkIcon* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: icon1
-  autoRuleGroups* = object
+      key1: LdtkIcon1
+  LdtkAutoRuleGroups* = object
     isOptional*: bool
-    color*: color
-    collapsed*: collapsed
+    color*: LdtkColor
+    collapsed*: LdtkCollapsed
     usesWizard*: bool
     biomeRequirementMode*: BiggestInt
-    rules*: seq[rules]
-    icon*: icon
+    rules*: seq[LdtkRules]
+    icon*: LdtkIcon
     active*: bool
     uid*: BiggestInt
     name*: string
     requiredBiomeValues*: seq[string]
-  tilesetDefUid* = object
+  LdtkTilesetDefUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  uiColor* = object
+  LdtkUiColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  doc* = object
+  LdtkDoc* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  autoSourceLayerDefUid* = object
+  LdtkAutoSourceLayerDefUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  color* = object
+  LdtkColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  identifier* = object
+  LdtkIdentifier* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  intGridValuesGroups* = object
-    color*: color
-    identifier*: identifier
+  LdtkIntGridValuesGroups* = object
+    color*: LdtkColor
+    identifier*: LdtkIdentifier
     uid*: BiggestInt
-  tile1* = object
+  LdtkTile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  tile* = object
+  LdtkTile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: tile1
-  identifier* = object
+      key1: LdtkTile1
+  LdtkIdentifier* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  intGridValues* = object
-    tile*: tile
+  LdtkIntGridValues* = object
+    tile*: LdtkTile
     color*: string
-    identifier*: identifier
+    identifier*: LdtkIdentifier
     groupUid*: BiggestInt
     value*: BiggestInt
-  LayerDef* = object
-    type*: type
-    autoTilesetDefUid*: autoTilesetDefUid
+  LdtkLayerDef* = object
+    type*: LdtkType
+    autoTilesetDefUid*: LdtkAutoTilesetDefUid
     parallaxScaling*: bool
-    biomeFieldUid*: biomeFieldUid
-    autoTilesKilledByOtherLayerUid*: autoTilesKilledByOtherLayerUid
+    biomeFieldUid*: LdtkBiomeFieldUid
+    autoTilesKilledByOtherLayerUid*: LdtkAutoTilesKilledByOtherLayerUid
     inactiveOpacity*: BiggestFloat
     __type*: string
-    autoRuleGroups*: seq[autoRuleGroups]
+    autoRuleGroups*: seq[LdtkAutoRuleGroups]
     gridSize*: BiggestInt
     hideInList*: bool
-    tilesetDefUid*: tilesetDefUid
-    uiColor*: uiColor
+    tilesetDefUid*: LdtkTilesetDefUid
+    uiColor*: LdtkUiColor
     requiredTags*: seq[string]
     tilePivotX*: BiggestFloat
     uiFilterTags*: seq[string]
@@ -2392,583 +2392,583 @@ type
     pxOffsetX*: BiggestInt
     tilePivotY*: BiggestFloat
     excludedTags*: seq[string]
-    doc*: doc
+    doc*: LdtkDoc
     uid*: BiggestInt
     guideGridHei*: BiggestInt
-    autoSourceLayerDefUid*: autoSourceLayerDefUid
+    autoSourceLayerDefUid*: LdtkAutoSourceLayerDefUid
     displayOpacity*: BiggestFloat
-    intGridValuesGroups*: seq[intGridValuesGroups]
+    intGridValuesGroups*: seq[LdtkIntGridValuesGroups]
     hideFieldsWhenInactive*: bool
     useAsyncRender*: bool
     pxOffsetY*: BiggestInt
     parallaxFactorY*: BiggestFloat
-    intGridValues*: seq[intGridValues]
+    intGridValues*: seq[LdtkIntGridValues]
     renderInWorldView*: bool
-  color* = object
+  LdtkColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  identifier* = object
+  LdtkIdentifier* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  IntGridValueGroupDef* = object
-    color*: color
-    identifier*: identifier
+  LdtkIntGridValueGroupDef* = object
+    color*: LdtkColor
+    identifier*: LdtkIdentifier
     uid*: BiggestInt
-  iids* = object
+  LdtkIids* = object
     layerIid*: string
     levelIid*: string
     entityIid*: string
     worldIid*: string
-  TocInstanceData* = object
+  LdtkTocInstanceData* = object
     worldY*: BiggestInt
     fields*: JsonNode
     widPx*: BiggestInt
-    iids*: iids
+    iids*: LdtkIids
     heiPx*: BiggestInt
     worldX*: BiggestInt
-  tileId* = object
+  LdtkTileId* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  tileRect1* = object
+  LdtkTileRect1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  tileRect* = object
+  LdtkTileRect* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: tileRect1
-  EnumDefValues* = object
+      key1: LdtkTileRect1
+  LdtkEnumDefValues* = object
     __tileSrcRect*: seq[BiggestInt]
     color*: BiggestInt
     id*: string
-    tileId*: tileId
-    tileRect*: tileRect
-  __FORCED_REFS* = object
-    CustomCommand*: CustomCommand
-    IntGridValueDef*: IntGridValueDef
-    Level*: Level
-    Definitions*: Definitions
-    EnumDef*: EnumDef
-    FieldDef*: FieldDef
-    AutoLayerRuleGroup*: AutoLayerRuleGroup
-    TilesetDef*: TilesetDef
-    TableOfContentEntry*: TableOfContentEntry
-    EntityDef*: EntityDef
-    FieldInstance*: FieldInstance
-    EntityReferenceInfos*: EntityReferenceInfos
-    LevelBgPosInfos*: LevelBgPosInfos
-    TileCustomMetadata*: TileCustomMetadata
-    Tile*: Tile
-    AutoRuleDef*: AutoRuleDef
-    NeighbourLevel*: NeighbourLevel
-    GridPoint*: GridPoint
-    EntityInstance*: EntityInstance
-    TilesetRect*: TilesetRect
-    EnumTagValue*: EnumTagValue
-    LayerInstance*: LayerInstance
-    IntGridValueInstance*: IntGridValueInstance
-    World*: World
-    LayerDef*: LayerDef
-    IntGridValueGroupDef*: IntGridValueGroupDef
-    TocInstanceData*: TocInstanceData
-    EnumDefValues*: EnumDefValues
-  allowedRefsEntityUid* = object
+    tileId*: LdtkTileId
+    tileRect*: LdtkTileRect
+  Ldtk__FORCED_REFS* = object
+    CustomCommand*: LdtkCustomCommand
+    IntGridValueDef*: LdtkIntGridValueDef
+    Level*: LdtkLevel
+    Definitions*: LdtkDefinitions
+    EnumDef*: LdtkEnumDef
+    FieldDef*: LdtkFieldDef
+    AutoLayerRuleGroup*: LdtkAutoLayerRuleGroup
+    TilesetDef*: LdtkTilesetDef
+    TableOfContentEntry*: LdtkTableOfContentEntry
+    EntityDef*: LdtkEntityDef
+    FieldInstance*: LdtkFieldInstance
+    EntityReferenceInfos*: LdtkEntityReferenceInfos
+    LevelBgPosInfos*: LdtkLevelBgPosInfos
+    TileCustomMetadata*: LdtkTileCustomMetadata
+    Tile*: LdtkTile
+    AutoRuleDef*: LdtkAutoRuleDef
+    NeighbourLevel*: LdtkNeighbourLevel
+    GridPoint*: LdtkGridPoint
+    EntityInstance*: LdtkEntityInstance
+    TilesetRect*: LdtkTilesetRect
+    EnumTagValue*: LdtkEnumTagValue
+    LayerInstance*: LdtkLayerInstance
+    IntGridValueInstance*: LdtkIntGridValueInstance
+    World*: LdtkWorld
+    LayerDef*: LdtkLayerDef
+    IntGridValueGroupDef*: LdtkIntGridValueGroupDef
+    TocInstanceData*: LdtkTocInstanceData
+    EnumDefValues*: LdtkEnumDefValues
+  LdtkAllowedRefsEntityUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  textLanguageMode* = enum
+  LdtkTextLanguageMode* = enum
     LangMarkdown, LangPython, LangLog, LangC, LangLua, LangHaxe, LangJS,
     LangRuby, , LangJson, LangXml
-  editorDisplayPos* = enum
+  LdtkEditorDisplayPos* = enum
     Beneath, Above, Center
-  editorDisplayMode* = enum
+  LdtkEditorDisplayMode* = enum
     PointPath, PointStar, ValueOnly, Hidden, Points, NameAndValue,
     ArrayCountNoLabel, EntityTile, PointPathLoop, RadiusPx, LevelTile,
     RadiusGrid, RefLinkBetweenCenters, RefLinkBetweenPivots, ArrayCountWithLabel
-  regex* = object
+  LdtkRegex* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorLinkStyle* = enum
+  LdtkEditorLinkStyle* = enum
     DashedLine, CurvedArrow, ArrowsLine, ZigZag, StraightArrow
-  allowedRefs* = enum
+  LdtkAllowedRefs* = enum
     Any, OnlyTags, OnlySame, OnlySpecificEntity
-  editorTextSuffix* = object
+  LdtkEditorTextSuffix* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  doc* = object
+  LdtkDoc* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorTextPrefix* = object
+  LdtkEditorTextPrefix* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorDisplayColor* = object
+  LdtkEditorDisplayColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  tilesetUid* = object
+  LdtkTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  arrayMaxLength* = object
+  LdtkArrayMaxLength* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  arrayMinLength* = object
+  LdtkArrayMinLength* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  min* = object
+  LdtkMin* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestFloat
     of 1:
       key1: pointer
-  max* = object
+  LdtkMax* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestFloat
     of 1:
       key1: pointer
-  levelFields* = object
+  LdtkLevelFields* = object
     type*: string
     editorDisplayScale*: BiggestFloat
     __type*: string
-    allowedRefsEntityUid*: allowedRefsEntityUid
-    textLanguageMode*: textLanguageMode
+    allowedRefsEntityUid*: LdtkAllowedRefsEntityUid
+    textLanguageMode*: LdtkTextLanguageMode
     editorAlwaysShow*: bool
     defaultOverride*: JsonNode
     autoChainRef*: bool
-    editorDisplayPos*: editorDisplayPos
-    editorDisplayMode*: editorDisplayMode
+    editorDisplayPos*: LdtkEditorDisplayPos
+    editorDisplayMode*: LdtkEditorDisplayMode
     identifier*: string
-    regex*: regex
+    regex*: LdtkRegex
     isArray*: bool
-    editorLinkStyle*: editorLinkStyle
-    allowedRefs*: allowedRefs
+    editorLinkStyle*: LdtkEditorLinkStyle
+    allowedRefs*: LdtkAllowedRefs
     useForSmartColor*: bool
-    editorTextSuffix*: editorTextSuffix
-    doc*: doc
-    editorTextPrefix*: editorTextPrefix
+    editorTextSuffix*: LdtkEditorTextSuffix
+    doc*: LdtkDoc
+    editorTextPrefix*: LdtkEditorTextPrefix
     editorCutLongValues*: bool
     canBeNull*: bool
     allowedRefTags*: seq[string]
     uid*: BiggestInt
     symmetricalRef*: bool
-    editorDisplayColor*: editorDisplayColor
+    editorDisplayColor*: LdtkEditorDisplayColor
     allowOutOfLevelRef*: bool
     acceptFileTypes*: seq[string]
     editorShowInWorld*: bool
-    tilesetUid*: tilesetUid
-    arrayMaxLength*: arrayMaxLength
-    arrayMinLength*: arrayMinLength
+    tilesetUid*: LdtkTilesetUid
+    arrayMaxLength*: LdtkArrayMaxLength
+    arrayMinLength*: LdtkArrayMinLength
     searchable*: bool
-    min*: min
+    min*: LdtkMin
     exportToToc*: bool
-    max*: max
-  tagsSourceEnumUid* = object
+    max*: LdtkMax
+  LdtkTagsSourceEnumUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  embedAtlas* = enum
+  LdtkEmbedAtlas* = enum
     LdtkIcons, 
-  cachedPixelData* = object
+  LdtkCachedPixelData* = object
     case kind: range[0 .. 1]
     of 0:
       key0: Table[string, JsonNode]
     of 1:
       key1: pointer
-  enumTags* = object
+  LdtkEnumTags* = object
     tileIds*: seq[BiggestInt]
     enumValueId*: string
-  customData* = object
+  LdtkCustomData* = object
     data*: string
     tileId*: BiggestInt
-  relPath* = object
+  LdtkRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  tilesets* = object
+  LdtkTilesets* = object
     pxHei*: BiggestInt
     savedSelections*: seq[Table[string, JsonNode]]
     padding*: BiggestInt
     spacing*: BiggestInt
-    tagsSourceEnumUid*: tagsSourceEnumUid
-    embedAtlas*: embedAtlas
+    tagsSourceEnumUid*: LdtkTagsSourceEnumUid
+    embedAtlas*: LdtkEmbedAtlas
     identifier*: string
-    cachedPixelData*: cachedPixelData
-    enumTags*: seq[enumTags]
+    cachedPixelData*: LdtkCachedPixelData
+    enumTags*: seq[LdtkEnumTags]
     pxWid*: BiggestInt
     tileGridSize*: BiggestInt
-    customData*: seq[customData]
+    customData*: seq[LdtkCustomData]
     uid*: BiggestInt
     __cHei*: BiggestInt
     __cWid*: BiggestInt
-    relPath*: relPath
+    relPath*: LdtkRelPath
     tags*: seq[string]
-  limitScope* = enum
+  LdtkLimitScope* = enum
     PerLayer, PerWorld, PerLevel
-  limitBehavior* = enum
+  LdtkLimitBehavior* = enum
     PreventAdding, MoveLastOne, DiscardOldOnes
-  renderMode* = enum
+  LdtkRenderMode* = enum
     Tile, Cross, Ellipse, Rectangle
-  tilesetId* = object
+  LdtkTilesetId* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  minWidth* = object
+  LdtkMinWidth* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  tileId* = object
+  LdtkTileId* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  doc* = object
+  LdtkDoc* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  allowedRefsEntityUid* = object
+  LdtkAllowedRefsEntityUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  textLanguageMode* = enum
+  LdtkTextLanguageMode* = enum
     LangMarkdown, LangPython, LangLog, LangC, LangLua, LangHaxe, LangJS,
     LangRuby, , LangJson, LangXml
-  editorDisplayPos* = enum
+  LdtkEditorDisplayPos* = enum
     Beneath, Above, Center
-  editorDisplayMode* = enum
+  LdtkEditorDisplayMode* = enum
     PointPath, PointStar, ValueOnly, Hidden, Points, NameAndValue,
     ArrayCountNoLabel, EntityTile, PointPathLoop, RadiusPx, LevelTile,
     RadiusGrid, RefLinkBetweenCenters, RefLinkBetweenPivots, ArrayCountWithLabel
-  regex* = object
+  LdtkRegex* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorLinkStyle* = enum
+  LdtkEditorLinkStyle* = enum
     DashedLine, CurvedArrow, ArrowsLine, ZigZag, StraightArrow
-  allowedRefs* = enum
+  LdtkAllowedRefs* = enum
     Any, OnlyTags, OnlySame, OnlySpecificEntity
-  editorTextSuffix* = object
+  LdtkEditorTextSuffix* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  doc* = object
+  LdtkDoc* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorTextPrefix* = object
+  LdtkEditorTextPrefix* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  editorDisplayColor* = object
+  LdtkEditorDisplayColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  tilesetUid* = object
+  LdtkTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  arrayMaxLength* = object
+  LdtkArrayMaxLength* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  arrayMinLength* = object
+  LdtkArrayMinLength* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  min* = object
+  LdtkMin* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestFloat
     of 1:
       key1: pointer
-  max* = object
+  LdtkMax* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestFloat
     of 1:
       key1: pointer
-  fieldDefs* = object
+  LdtkFieldDefs* = object
     type*: string
     editorDisplayScale*: BiggestFloat
     __type*: string
-    allowedRefsEntityUid*: allowedRefsEntityUid
-    textLanguageMode*: textLanguageMode
+    allowedRefsEntityUid*: LdtkAllowedRefsEntityUid
+    textLanguageMode*: LdtkTextLanguageMode
     editorAlwaysShow*: bool
     defaultOverride*: JsonNode
     autoChainRef*: bool
-    editorDisplayPos*: editorDisplayPos
-    editorDisplayMode*: editorDisplayMode
+    editorDisplayPos*: LdtkEditorDisplayPos
+    editorDisplayMode*: LdtkEditorDisplayMode
     identifier*: string
-    regex*: regex
+    regex*: LdtkRegex
     isArray*: bool
-    editorLinkStyle*: editorLinkStyle
-    allowedRefs*: allowedRefs
+    editorLinkStyle*: LdtkEditorLinkStyle
+    allowedRefs*: LdtkAllowedRefs
     useForSmartColor*: bool
-    editorTextSuffix*: editorTextSuffix
-    doc*: doc
-    editorTextPrefix*: editorTextPrefix
+    editorTextSuffix*: LdtkEditorTextSuffix
+    doc*: LdtkDoc
+    editorTextPrefix*: LdtkEditorTextPrefix
     editorCutLongValues*: bool
     canBeNull*: bool
     allowedRefTags*: seq[string]
     uid*: BiggestInt
     symmetricalRef*: bool
-    editorDisplayColor*: editorDisplayColor
+    editorDisplayColor*: LdtkEditorDisplayColor
     allowOutOfLevelRef*: bool
     acceptFileTypes*: seq[string]
     editorShowInWorld*: bool
-    tilesetUid*: tilesetUid
-    arrayMaxLength*: arrayMaxLength
-    arrayMinLength*: arrayMinLength
+    tilesetUid*: LdtkTilesetUid
+    arrayMaxLength*: LdtkArrayMaxLength
+    arrayMinLength*: LdtkArrayMinLength
     searchable*: bool
-    min*: min
+    min*: LdtkMin
     exportToToc*: bool
-    max*: max
-  tileRenderMode* = enum
+    max*: LdtkMax
+  LdtkTileRenderMode* = enum
     FullSizeCropped, FullSizeUncropped, Repeat, FitInside, NineSlice, Cover,
     Stretch
-  uiTileRect1* = object
+  LdtkUiTileRect1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  uiTileRect* = object
+  LdtkUiTileRect* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: uiTileRect1
-  minHeight* = object
+      key1: LdtkUiTileRect1
+  LdtkMinHeight* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  tileRect1* = object
+  LdtkTileRect1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  tileRect* = object
+  LdtkTileRect* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: tileRect1
-  maxWidth* = object
+      key1: LdtkTileRect1
+  LdtkMaxWidth* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  maxHeight* = object
+  LdtkMaxHeight* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  entities* = object
+  LdtkEntities* = object
     allowOutOfBounds*: bool
     pivotY*: BiggestFloat
     tileOpacity*: BiggestFloat
     color*: string
-    limitScope*: limitScope
-    limitBehavior*: limitBehavior
+    limitScope*: LdtkLimitScope
+    limitBehavior*: LdtkLimitBehavior
     hollow*: bool
     height*: BiggestInt
-    renderMode*: renderMode
-    tilesetId*: tilesetId
+    renderMode*: LdtkRenderMode
+    tilesetId*: LdtkTilesetId
     keepAspectRatio*: bool
-    minWidth*: minWidth
+    minWidth*: LdtkMinWidth
     showName*: bool
     resizableX*: bool
     identifier*: string
     maxCount*: BiggestInt
-    tileId*: tileId
+    tileId*: LdtkTileId
     pivotX*: BiggestFloat
-    doc*: doc
-    fieldDefs*: seq[fieldDefs]
+    doc*: LdtkDoc
+    fieldDefs*: seq[LdtkFieldDefs]
     uid*: BiggestInt
-    tileRenderMode*: tileRenderMode
-    uiTileRect*: uiTileRect
+    tileRenderMode*: LdtkTileRenderMode
+    uiTileRect*: LdtkUiTileRect
     resizableY*: bool
     lineOpacity*: BiggestFloat
-    minHeight*: minHeight
-    tileRect*: tileRect
+    minHeight*: LdtkMinHeight
+    tileRect*: LdtkTileRect
     nineSliceBorders*: seq[BiggestInt]
-    maxWidth*: maxWidth
+    maxWidth*: LdtkMaxWidth
     width*: BiggestInt
     tags*: seq[string]
-    maxHeight*: maxHeight
+    maxHeight*: LdtkMaxHeight
     exportToToc*: bool
     fillOpacity*: BiggestFloat
-  tileId* = object
+  LdtkTileId* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  tileRect1* = object
+  LdtkTileRect1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  tileRect* = object
+  LdtkTileRect* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: tileRect1
-  values* = object
+      key1: LdtkTileRect1
+  LdtkValues* = object
     __tileSrcRect*: seq[BiggestInt]
     color*: BiggestInt
     id*: string
-    tileId*: tileId
-    tileRect*: tileRect
-  externalRelPath* = object
+    tileId*: LdtkTileId
+    tileRect*: LdtkTileRect
+  LdtkExternalRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  externalFileChecksum* = object
+  LdtkExternalFileChecksum* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  iconTilesetUid* = object
+  LdtkIconTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  enums* = object
-    values*: seq[values]
-    externalRelPath*: externalRelPath
+  LdtkEnums* = object
+    values*: seq[LdtkValues]
+    externalRelPath*: LdtkExternalRelPath
     identifier*: string
-    externalFileChecksum*: externalFileChecksum
-    iconTilesetUid*: iconTilesetUid
+    externalFileChecksum*: LdtkExternalFileChecksum
+    iconTilesetUid*: LdtkIconTilesetUid
     uid*: BiggestInt
     tags*: seq[string]
-  type* = enum
+  LdtkType* = enum
     Tiles, Entities, AutoLayer, IntGrid
-  autoTilesetDefUid* = object
+  LdtkAutoTilesetDefUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  biomeFieldUid* = object
+  LdtkBiomeFieldUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  autoTilesKilledByOtherLayerUid* = object
+  LdtkAutoTilesKilledByOtherLayerUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  color* = object
+  LdtkColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  collapsed* = object
+  LdtkCollapsed* = object
     case kind: range[0 .. 1]
     of 0:
       key0: bool
     of 1:
       key1: pointer
-  checker* = enum
+  LdtkChecker* = enum
     Horizontal, Vertical, None
-  tileMode* = enum
+  LdtkTileMode* = enum
     Single, Stamp
-  outOfBoundsValue* = object
+  LdtkOutOfBoundsValue* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  rules* = object
-    checker*: checker
+  LdtkRules* = object
+    checker*: LdtkChecker
     pivotY*: BiggestFloat
     breakOnMatch*: bool
     perlinOctaves*: BiggestFloat
     yModulo*: BiggestInt
     size*: BiggestInt
-    tileMode*: tileMode
+    tileMode*: LdtkTileMode
     tileRandomXMax*: BiggestInt
     tileRandomXMin*: BiggestInt
     xModulo*: BiggestInt
@@ -2979,7 +2979,7 @@ type
     tileRandomYMax*: BiggestInt
     perlinActive*: bool
     perlinScale*: BiggestFloat
-    outOfBoundsValue*: outOfBoundsValue
+    outOfBoundsValue*: LdtkOutOfBoundsValue
     pivotX*: BiggestFloat
     flipY*: bool
     active*: bool
@@ -2993,107 +2993,107 @@ type
     xOffset*: BiggestInt
     tileRandomYMin*: BiggestInt
     perlinSeed*: BiggestFloat
-  icon1* = object
+  LdtkIcon1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  icon* = object
+  LdtkIcon* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: icon1
-  autoRuleGroups* = object
+      key1: LdtkIcon1
+  LdtkAutoRuleGroups* = object
     isOptional*: bool
-    color*: color
-    collapsed*: collapsed
+    color*: LdtkColor
+    collapsed*: LdtkCollapsed
     usesWizard*: bool
     biomeRequirementMode*: BiggestInt
-    rules*: seq[rules]
-    icon*: icon
+    rules*: seq[LdtkRules]
+    icon*: LdtkIcon
     active*: bool
     uid*: BiggestInt
     name*: string
     requiredBiomeValues*: seq[string]
-  tilesetDefUid* = object
+  LdtkTilesetDefUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  uiColor* = object
+  LdtkUiColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  doc* = object
+  LdtkDoc* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  autoSourceLayerDefUid* = object
+  LdtkAutoSourceLayerDefUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  color* = object
+  LdtkColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  identifier* = object
+  LdtkIdentifier* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  intGridValuesGroups* = object
-    color*: color
-    identifier*: identifier
+  LdtkIntGridValuesGroups* = object
+    color*: LdtkColor
+    identifier*: LdtkIdentifier
     uid*: BiggestInt
-  tile1* = object
+  LdtkTile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  tile* = object
+  LdtkTile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: tile1
-  identifier* = object
+      key1: LdtkTile1
+  LdtkIdentifier* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  intGridValues* = object
-    tile*: tile
+  LdtkIntGridValues* = object
+    tile*: LdtkTile
     color*: string
-    identifier*: identifier
+    identifier*: LdtkIdentifier
     groupUid*: BiggestInt
     value*: BiggestInt
-  layers* = object
-    type*: type
-    autoTilesetDefUid*: autoTilesetDefUid
+  LdtkLayers* = object
+    type*: LdtkType
+    autoTilesetDefUid*: LdtkAutoTilesetDefUid
     parallaxScaling*: bool
-    biomeFieldUid*: biomeFieldUid
-    autoTilesKilledByOtherLayerUid*: autoTilesKilledByOtherLayerUid
+    biomeFieldUid*: LdtkBiomeFieldUid
+    autoTilesKilledByOtherLayerUid*: LdtkAutoTilesKilledByOtherLayerUid
     inactiveOpacity*: BiggestFloat
     __type*: string
-    autoRuleGroups*: seq[autoRuleGroups]
+    autoRuleGroups*: seq[LdtkAutoRuleGroups]
     gridSize*: BiggestInt
     hideInList*: bool
-    tilesetDefUid*: tilesetDefUid
-    uiColor*: uiColor
+    tilesetDefUid*: LdtkTilesetDefUid
+    uiColor*: LdtkUiColor
     requiredTags*: seq[string]
     tilePivotX*: BiggestFloat
     uiFilterTags*: seq[string]
@@ -3104,242 +3104,242 @@ type
     pxOffsetX*: BiggestInt
     tilePivotY*: BiggestFloat
     excludedTags*: seq[string]
-    doc*: doc
+    doc*: LdtkDoc
     uid*: BiggestInt
     guideGridHei*: BiggestInt
-    autoSourceLayerDefUid*: autoSourceLayerDefUid
+    autoSourceLayerDefUid*: LdtkAutoSourceLayerDefUid
     displayOpacity*: BiggestFloat
-    intGridValuesGroups*: seq[intGridValuesGroups]
+    intGridValuesGroups*: seq[LdtkIntGridValuesGroups]
     hideFieldsWhenInactive*: bool
     useAsyncRender*: bool
     pxOffsetY*: BiggestInt
     parallaxFactorY*: BiggestFloat
-    intGridValues*: seq[intGridValues]
+    intGridValues*: seq[LdtkIntGridValues]
     renderInWorldView*: bool
-  tileId* = object
+  LdtkTileId* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  tileRect1* = object
+  LdtkTileRect1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  tileRect* = object
+  LdtkTileRect* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: tileRect1
-  values* = object
+      key1: LdtkTileRect1
+  LdtkValues* = object
     __tileSrcRect*: seq[BiggestInt]
     color*: BiggestInt
     id*: string
-    tileId*: tileId
-    tileRect*: tileRect
-  externalRelPath* = object
+    tileId*: LdtkTileId
+    tileRect*: LdtkTileRect
+  LdtkExternalRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  externalFileChecksum* = object
+  LdtkExternalFileChecksum* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  iconTilesetUid* = object
+  LdtkIconTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  externalEnums* = object
-    values*: seq[values]
-    externalRelPath*: externalRelPath
+  LdtkExternalEnums* = object
+    values*: seq[LdtkValues]
+    externalRelPath*: LdtkExternalRelPath
     identifier*: string
-    externalFileChecksum*: externalFileChecksum
-    iconTilesetUid*: iconTilesetUid
+    externalFileChecksum*: LdtkExternalFileChecksum
+    iconTilesetUid*: LdtkIconTilesetUid
     uid*: BiggestInt
     tags*: seq[string]
-  defs* = object
-    levelFields*: seq[levelFields]
-    tilesets*: seq[tilesets]
-    entities*: seq[entities]
-    enums*: seq[enums]
-    layers*: seq[layers]
-    externalEnums*: seq[externalEnums]
-  tutorialDesc* = object
+  LdtkDefs* = object
+    levelFields*: seq[LdtkLevelFields]
+    tilesets*: seq[LdtkTilesets]
+    entities*: seq[LdtkEntities]
+    enums*: seq[LdtkEnums]
+    layers*: seq[LdtkLayers]
+    externalEnums*: seq[LdtkExternalEnums]
+  LdtkTutorialDesc* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  worldLayout* = enum
+  LdtkWorldLayout* = enum
     LinearHorizontal, LinearVertical, , GridVania, Free
-  defaultLevelWidth* = object
+  LdtkDefaultLevelWidth* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  flags* = enum
+  LdtkFlags* = enum
     ExportPreCsvIntGridFormat, DiscardPreCsvIntGrid,
     ExportOldTableOfContentData, PrependIndexToLevelFileNames, MultiWorlds,
     UseMultilinesType, IgnoreBackupSuggest
-  identifierStyle* = enum
+  LdtkIdentifierStyle* = enum
     Lowercase, Free, Capitalize, Uppercase
-  worldGridHeight* = object
+  LdtkWorldGridHeight* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  bgColor* = object
+  LdtkBgColor* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  externalRelPath* = object
+  LdtkExternalRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  bgRelPath* = object
+  LdtkBgRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  levelUid* = object
+  LdtkLevelUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  __neighbours* = object
-    levelUid*: levelUid
+  Ldtk__neighbours* = object
+    levelUid*: LdtkLevelUid
     levelIid*: string
     dir*: string
-  bgPos* = enum
+  LdtkBgPos* = enum
     CoverDirty, Repeat, , Contain, Cover, Unscaled
-  gridTiles* = object
+  LdtkGridTiles* = object
     px*: seq[BiggestInt]
     t*: BiggestInt
     d*: seq[BiggestInt]
     a*: BiggestFloat
     src*: seq[BiggestInt]
     f*: BiggestInt
-  overrideTilesetUid* = object
+  LdtkOverrideTilesetUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  intGrid* = object
+  LdtkIntGrid* = object
     coordId*: BiggestInt
     v*: BiggestInt
-  autoLayerTiles* = object
+  LdtkAutoLayerTiles* = object
     px*: seq[BiggestInt]
     t*: BiggestInt
     d*: seq[BiggestInt]
     a*: BiggestFloat
     src*: seq[BiggestInt]
     f*: BiggestInt
-  __worldY* = object
+  Ldtk__worldY* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  __tile1* = object
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  __tile1* = object
+      key1: Ldtk__tile1
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  fieldInstances* = object
+      key1: Ldtk__tile1
+  LdtkFieldInstances* = object
     realEditorValues*: seq[JsonNode]
     __value*: JsonNode
-    __tile*: __tile
+    __tile*: Ldtk__tile
     __type*: string
     __identifier*: string
     defUid*: BiggestInt
-  __worldX* = object
+  Ldtk__worldX* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  entityInstances* = object
-    __worldY*: __worldY
-    __tile*: __tile
+  LdtkEntityInstances* = object
+    __worldY*: Ldtk__worldY
+    __tile*: Ldtk__tile
     __identifier*: string
     __tags*: seq[string]
     height*: BiggestInt
     px*: seq[BiggestInt]
     defUid*: BiggestInt
     __pivot*: seq[BiggestFloat]
-    fieldInstances*: seq[fieldInstances]
+    fieldInstances*: seq[LdtkFieldInstances]
     iid*: string
     width*: BiggestInt
-    __worldX*: __worldX
+    __worldX*: Ldtk__worldX
     __grid*: seq[BiggestInt]
     __smartColor*: string
-  __tilesetRelPath* = object
+  Ldtk__tilesetRelPath* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  __tilesetDefUid* = object
+  Ldtk__tilesetDefUid* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  layerInstances* = object
+  LdtkLayerInstances* = object
     __opacity*: BiggestFloat
     optionalRules*: seq[BiggestInt]
     __gridSize*: BiggestInt
     __pxTotalOffsetX*: BiggestInt
-    gridTiles*: seq[gridTiles]
+    gridTiles*: seq[LdtkGridTiles]
     __type*: string
     __identifier*: string
-    overrideTilesetUid*: overrideTilesetUid
+    overrideTilesetUid*: LdtkOverrideTilesetUid
     levelId*: BiggestInt
-    intGrid*: seq[intGrid]
-    autoLayerTiles*: seq[autoLayerTiles]
+    intGrid*: seq[LdtkIntGrid]
+    autoLayerTiles*: seq[LdtkAutoLayerTiles]
     layerDefUid*: BiggestInt
-    entityInstances*: seq[entityInstances]
+    entityInstances*: seq[LdtkEntityInstances]
     intGridCsv*: seq[BiggestInt]
     pxOffsetX*: BiggestInt
-    __tilesetRelPath*: __tilesetRelPath
-    __tilesetDefUid*: __tilesetDefUid
+    __tilesetRelPath*: Ldtk__tilesetRelPath
+    __tilesetDefUid*: Ldtk__tilesetDefUid
     __cHei*: BiggestInt
     seed*: BiggestInt
     visible*: bool
@@ -3347,93 +3347,93 @@ type
     iid*: string
     __pxTotalOffsetY*: BiggestInt
     __cWid*: BiggestInt
-  __tile1* = object
+  Ldtk__tile1* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  __tile* = object
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __tile1
-  fieldInstances* = object
+      key1: Ldtk__tile1
+  LdtkFieldInstances* = object
     realEditorValues*: seq[JsonNode]
     __value*: JsonNode
-    __tile*: __tile
+    __tile*: Ldtk__tile
     __type*: string
     __identifier*: string
     defUid*: BiggestInt
-  __bgPos1* = object
+  Ldtk__bgPos1* = object
     scale*: seq[BiggestFloat]
     cropRect*: seq[BiggestFloat]
     topLeftPx*: seq[BiggestInt]
-  __bgPos* = object
+  Ldtk__bgPos* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
     of 1:
-      key1: __bgPos1
-  levels* = object
+      key1: Ldtk__bgPos1
+  LdtkLevels* = object
     pxHei*: BiggestInt
     useAutoIdentifier*: bool
     __bgColor*: string
-    bgColor*: bgColor
-    externalRelPath*: externalRelPath
+    bgColor*: LdtkBgColor
+    externalRelPath*: LdtkExternalRelPath
     worldY*: BiggestInt
-    bgRelPath*: bgRelPath
+    bgRelPath*: LdtkBgRelPath
     identifier*: string
     pxWid*: BiggestInt
     worldDepth*: BiggestInt
     bgPivotX*: BiggestFloat
-    __neighbours*: seq[__neighbours]
+    __neighbours*: seq[Ldtk__neighbours]
     uid*: BiggestInt
-    bgPos*: bgPos
-    layerInstances*: seq[layerInstances]
-    fieldInstances*: seq[fieldInstances]
-    __bgPos*: __bgPos
+    bgPos*: LdtkBgPos
+    layerInstances*: seq[LdtkLayerInstances]
+    fieldInstances*: seq[LdtkFieldInstances]
+    __bgPos*: Ldtk__bgPos
     worldX*: BiggestInt
     iid*: string
     bgPivotY*: BiggestFloat
     __smartColor*: string
-  ldtk* = object
+  LdtkLdtk* = object
     backupLimit*: BiggestInt
     simplifiedExport*: bool
     externalLevels*: bool
-    backupRelPath*: backupRelPath
+    backupRelPath*: LdtkBackupRelPath
     jsonVersion*: string
     bgColor*: string
     appBuildId*: BiggestFloat
     defaultEntityHeight*: BiggestInt
-    pngFilePattern*: pngFilePattern
-    customCommands*: seq[customCommands]
+    pngFilePattern*: LdtkPngFilePattern
+    customCommands*: seq[LdtkCustomCommands]
     exportTiled*: bool
-    exportPng*: exportPng
-    worldGridWidth*: worldGridWidth
-    defaultLevelHeight*: defaultLevelHeight
-    toc*: seq[toc]
-    worlds*: seq[worlds]
-    imageExportMode*: imageExportMode
+    exportPng*: LdtkExportPng
+    worldGridWidth*: LdtkWorldGridWidth
+    defaultLevelHeight*: LdtkDefaultLevelHeight
+    toc*: seq[LdtkToc]
+    worlds*: seq[LdtkWorlds]
+    imageExportMode*: LdtkImageExportMode
     dummyWorldIid*: string
-    __FORCED_REFS*: __FORCED_REFS
+    __FORCED_REFS*: Ldtk__FORCED_REFS
     defaultPivotY*: BiggestFloat
     exportLevelBg*: bool
     nextUid*: BiggestInt
     levelNamePattern*: string
-    defs*: defs
+    defs*: LdtkDefs
     defaultPivotX*: BiggestFloat
-    tutorialDesc*: tutorialDesc
-    worldLayout*: worldLayout
+    tutorialDesc*: LdtkTutorialDesc
+    worldLayout*: LdtkWorldLayout
     defaultEntityWidth*: BiggestInt
     iid*: string
     defaultGridSize*: BiggestInt
-    defaultLevelWidth*: defaultLevelWidth
+    defaultLevelWidth*: LdtkDefaultLevelWidth
     minifyJson*: bool
     backupOnSave*: bool
-    flags*: seq[flags]
+    flags*: seq[LdtkFlags]
     defaultLevelBgColor*: string
-    identifierStyle*: identifierStyle
-    worldGridHeight*: worldGridHeight
-    levels*: seq[levels]
+    identifierStyle*: LdtkIdentifierStyle
+    worldGridHeight*: LdtkWorldGridHeight
+    levels*: seq[LdtkLevels]

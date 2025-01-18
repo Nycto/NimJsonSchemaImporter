@@ -1,5 +1,5 @@
 type
-  blog* = object
+  BlogBlog* = object
     title*: string
     tags*: seq[string]
     content*: string
