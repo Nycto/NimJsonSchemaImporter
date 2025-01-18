@@ -1,0 +1,415 @@
+{
+  "$ref": "#/definitions/SpriteSheet",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "ArrayFrame": {
+      "additionalProperties": false,
+      "description": "A frame definition within a frames array when selecting Array format during export in Aseprite. This is the same as the  {@link  Frame }  type but with an additional  {@link  filename }  property.",
+      "properties": {
+        "duration": {
+          "description": "The frame duration in milliseconds.",
+          "type": "number"
+        },
+        "filename": {
+          "description": "The frame filename. When sprite sheet image is splitted by layers and/or tags (in which case multiple definitions exists per frame) then this filename property contains crucial information like the layer name, tag name and the actual frame number which is not the same as the frames index within the frames array. So without parsing this filename it is quite impossible to correctly import a splitted sprite sheet in a universal way because the filename format can be freely customized during export in Aseprite and an importer can't know this format.\n\nSo the easiest way is to not enable the \"Split Layers\" and \"Split Tags\" feature of Aseprite so the element indices within the frames array are the actual frame numbers which start by 0 and you can completely ignore the frame filename. But then you lose other features like control over the frame layers.\n\nThis is a very annoying flaw in Aseprite's JSON format. Consider up-voting https://community.aseprite.org/t/10158 to hopefully get a better solution in the future.",
+          "type": "string"
+        },
+        "frame": {
+          "$ref": "#/definitions/Rectangle",
+          "description": "Rectangle of the frame within the sprite sheet image."
+        },
+        "rotated": {
+          "description": "True if frame is rotated within the sprite sheet image to save space. As far as I know Aseprite doesn't support this so this is always `false`.",
+          "type": "boolean"
+        },
+        "sourceSize": {
+          "$ref": "#/definitions/Size",
+          "description": "The actual frame (sprite) size."
+        },
+        "spriteSourceSize": {
+          "$ref": "#/definitions/Rectangle",
+          "description": "The trimmed rectangle within the sprite. Will be the same as  {@link  sourceSize }  with coordinates x=0 y=0 when frame is not trimmed."
+        },
+        "trimmed": {
+          "description": "True if frame was trimmed by selecting \"Trim Sprite\" or \"Trim Cels\" in Aseprite.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "duration",
+        "filename",
+        "frame",
+        "rotated",
+        "sourceSize",
+        "spriteSourceSize",
+        "trimmed"
+      ],
+      "type": "object"
+    },
+    "BlendMode": {
+      "description": "Layer blend modes.",
+      "enum": [
+        "normal",
+        "darken",
+        "multiply",
+        "color_burn",
+        "lighten",
+        "screen",
+        "color_dodge",
+        "addition",
+        "overlay",
+        "soft_light",
+        "hard_light",
+        "difference",
+        "exclusion",
+        "subtract",
+        "divide",
+        "hsl_hue",
+        "hsl_saturation",
+        "hsl_color",
+        "hsl_luminosity"
+      ],
+      "type": "string"
+    },
+    "Color": {
+      "description": "A color in 32 Bit RGBA hex format (Example: `#40e0d0ff` for fully opaque turquoise).",
+      "pattern": "^#[0-9a-f]{8}$",
+      "type": "string"
+    },
+    "Direction": {
+      "description": "Frame animation direction.",
+      "enum": [
+        "forward",
+        "reverse",
+        "pingpong"
+      ],
+      "type": "string"
+    },
+    "Format": {
+      "description": "Sprite image format.",
+      "enum": [
+        "RGBA8888",
+        "I8"
+      ],
+      "type": "string"
+    },
+    "Frame": {
+      "additionalProperties": false,
+      "description": "A frame definition within a frames object when selecting Hash format during export in Aseprite. This is the same as the  {@link  ArrayFrame  }  type but without its additional  {@link  ArrayFrame.filename  }  property because the filename is the object key in Hash format.",
+      "properties": {
+        "duration": {
+          "description": "The frame duration in milliseconds.",
+          "type": "number"
+        },
+        "frame": {
+          "$ref": "#/definitions/Rectangle",
+          "description": "Rectangle of the frame within the sprite sheet image."
+        },
+        "rotated": {
+          "description": "True if frame is rotated within the sprite sheet image to save space. As far as I know Aseprite doesn't support this so this is always `false`.",
+          "type": "boolean"
+        },
+        "sourceSize": {
+          "$ref": "#/definitions/Size",
+          "description": "The actual frame (sprite) size."
+        },
+        "spriteSourceSize": {
+          "$ref": "#/definitions/Rectangle",
+          "description": "The trimmed rectangle within the sprite. Will be the same as  {@link  sourceSize }  with coordinates x=0 y=0 when frame is not trimmed."
+        },
+        "trimmed": {
+          "description": "True if frame was trimmed by selecting \"Trim Sprite\" or \"Trim Cels\" in Aseprite.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "frame",
+        "rotated",
+        "trimmed",
+        "spriteSourceSize",
+        "sourceSize",
+        "duration"
+      ],
+      "type": "object"
+    },
+    "FrameTag": {
+      "additionalProperties": false,
+      "description": "A tagged frame group which is a way to define a single animation within the sprite sheet.",
+      "properties": {
+        "direction": {
+          "$ref": "#/definitions/Direction",
+          "description": "Animation direction."
+        },
+        "from": {
+          "description": "Start frame number.",
+          "type": "number"
+        },
+        "name": {
+          "description": "The tag name.",
+          "type": "string"
+        },
+        "to": {
+          "description": "End frame number.",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "from",
+        "to",
+        "direction"
+      ],
+      "type": "object"
+    },
+    "Layer": {
+      "additionalProperties": false,
+      "description": "A sprite layer or layer group. Layer information only makes sense when sprite sheet image is splitted by layer because otherwise the layers are already flattened.",
+      "properties": {
+        "blendMode": {
+          "$ref": "#/definitions/BlendMode",
+          "description": "Blend mode of the layer. Not present when layer is actually a layer group."
+        },
+        "color": {
+          "$ref": "#/definitions/Color",
+          "description": "Optional color with which the layer is displayed in Aseprite. Only present when color is not fully transparent."
+        },
+        "data": {
+          "description": "Optional custom data. Only present when string is not empty.",
+          "type": "string"
+        },
+        "group": {
+          "description": "Optional parent group. Not present when on root level.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The layer name.",
+          "type": "string"
+        },
+        "opacity": {
+          "description": "Opacity (0-255) of the layer. Not present when layer is actually a layer group.",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
+    "Meta": {
+      "additionalProperties": false,
+      "description": "Sprite sheet meta data.",
+      "properties": {
+        "app": {
+          "description": "The application which produced the sprite sheet (Usually `http://www.aseprite.org/`).",
+          "type": "string"
+        },
+        "format": {
+          "$ref": "#/definitions/Format",
+          "description": "The pixel format of the sprite sheet image file."
+        },
+        "frameTags": {
+          "description": "List of tags. Only present when tags export is enabled in Aseprite.",
+          "items": {
+            "$ref": "#/definitions/FrameTag"
+          },
+          "type": "array"
+        },
+        "image": {
+          "description": "Relative path to the sprite sheet image file.",
+          "type": "string"
+        },
+        "layers": {
+          "description": "List of layers. Only present when layers export is enabled in Aseprite.",
+          "items": {
+            "$ref": "#/definitions/Layer"
+          },
+          "type": "array"
+        },
+        "scale": {
+          "description": "The scale. Usually always `1`. It is a string instead of a number, most likely to be compatible to whatever application used this kind of sprite sheet JSON format first (TexturePacker?).",
+          "type": "string"
+        },
+        "size": {
+          "$ref": "#/definitions/Size",
+          "description": "The pixel size of the sprite sheet image file."
+        },
+        "slices": {
+          "description": "List of slices. Only present when slices export is enabled in Aseprite.",
+          "items": {
+            "$ref": "#/definitions/Slice"
+          },
+          "type": "array"
+        },
+        "version": {
+          "description": "The version of the application which produced the sprite sheet.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "app",
+        "version",
+        "image",
+        "format",
+        "size",
+        "scale"
+      ],
+      "type": "object"
+    },
+    "Point": {
+      "additionalProperties": false,
+      "description": "A point with an X and Y coordinate",
+      "properties": {
+        "x": {
+          "description": "The X coordinate.",
+          "type": "number"
+        },
+        "y": {
+          "description": "The Y coordinate.",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "type": "object"
+    },
+    "Rectangle": {
+      "additionalProperties": false,
+      "description": "A rectangle.",
+      "properties": {
+        "h": {
+          "description": "The rectangle height.",
+          "type": "number"
+        },
+        "w": {
+          "description": "The rectangle width.",
+          "type": "number"
+        },
+        "x": {
+          "description": "The left edge of the rectangle.",
+          "type": "number"
+        },
+        "y": {
+          "description": "The top edge of the rectangle.",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "type": "object"
+    },
+    "Size": {
+      "additionalProperties": false,
+      "description": "A size with width and height component.",
+      "properties": {
+        "h": {
+          "description": "The height",
+          "type": "number"
+        },
+        "w": {
+          "description": "The width",
+          "type": "number"
+        }
+      },
+      "required": [
+        "w",
+        "h"
+      ],
+      "type": "object"
+    },
+    "Slice": {
+      "additionalProperties": false,
+      "description": "A slice within the sprite.",
+      "properties": {
+        "color": {
+          "$ref": "#/definitions/Color",
+          "description": "Optional color with which the slice frame is displayed in Aseprite. Only present when color is not fully transparent."
+        },
+        "data": {
+          "description": "Optional custom data. Only present when string is not empty.",
+          "type": "string"
+        },
+        "keys": {
+          "description": "The list of slice keys.",
+          "items": {
+            "$ref": "#/definitions/SliceKey"
+          },
+          "type": "array"
+        },
+        "name": {
+          "description": "The slice name.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "keys"
+      ],
+      "type": "object"
+    },
+    "SliceKey": {
+      "additionalProperties": false,
+      "description": "A slice key defining the slice rectangle in a specific frame.",
+      "properties": {
+        "bounds": {
+          "$ref": "#/definitions/Rectangle",
+          "description": "The outer slice bounds within the frame."
+        },
+        "center": {
+          "$ref": "#/definitions/Rectangle",
+          "description": "Optional rectangle within the slice defining the center area of a nine-patch slice."
+        },
+        "frame": {
+          "description": "The frame number.",
+          "type": "number"
+        },
+        "pivot": {
+          "$ref": "#/definitions/Point",
+          "description": "Optional pivot point within the slice."
+        }
+      },
+      "required": [
+        "frame",
+        "bounds"
+      ],
+      "type": "object"
+    },
+    "SpriteSheet": {
+      "additionalProperties": false,
+      "description": "Aseprite sprite sheet. This is the root type in an Aseprite JSON file.",
+      "properties": {
+        "frames": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "$ref": "#/definitions/Frame"
+              },
+              "type": "object"
+            },
+            {
+              "items": {
+                "$ref": "#/definitions/ArrayFrame"
+              },
+              "type": "array"
+            }
+          ],
+          "description": "Array or map (depending on export settings) with sprite frame definitions. When exported in Hash format then the keys of this map are the frame filenames. See  {@link  ArrayFrame [\"filename\"] }  for important information regarding the filename format."
+        },
+        "meta": {
+          "$ref": "#/definitions/Meta",
+          "description": "Sprite sheet meta data."
+        }
+      },
+      "required": [
+        "frames",
+        "meta"
+      ],
+      "type": "object"
+    }
+  }
+}

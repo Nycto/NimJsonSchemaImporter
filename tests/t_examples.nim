@@ -28,3 +28,4 @@ suite "Parsing example json schema":
 
     # Specific applications
     buildTest("ldtk")
+    buildTest("aseprite")
