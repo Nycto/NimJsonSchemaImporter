@@ -1,12 +1,12 @@
 type
   FileSystemType* = enum
     disk
-  FileSystemStorage0* = object
+  FileSystemDiskDevice* = object
     `type`*: FileSystemType
     `device`*: string
   FileSystemType* = enum
     disk
-  FileSystemStorage1* = object
+  FileSystemDiskUUID* = object
     `type`*: FileSystemType
     `label`*: string
   FileSystemType* = enum
@@ -19,25 +19,25 @@ type
       key1: JsonNode
     of 2:
       key2: JsonNode
-  FileSystemStorage2* = object
+  FileSystemNfs* = object
     `type`*: FileSystemType
     `server`*: FileSystemServer
     `remotePath`*: string
   FileSystemType* = enum
     tmpfs
-  FileSystemStorage3* = object
+  FileSystemTmpfs* = object
     `type`*: FileSystemType
     `sizeInMB`*: BiggestInt
   FileSystemStorage* = object
     case kind: range[0 .. 3]
     of 0:
-      key0: FileSystemStorage0
+      key0: FileSystemDiskDevice
     of 1:
-      key1: FileSystemStorage1
+      key1: FileSystemDiskUUID
     of 2:
-      key2: FileSystemStorage2
+      key2: FileSystemNfs
     of 3:
-      key3: FileSystemStorage3
+      key3: FileSystemTmpfs
   FileSystemFstype* = enum
     ext4, btrfs, ext3
   FileSystemFileSystem* = object

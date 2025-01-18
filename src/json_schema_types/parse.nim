@@ -35,7 +35,9 @@ proc parseArray(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
 
 proc parseRef(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JObject)
-    parseRef(node{"$ref"}.getStr).resolve(ctx).parseType(ctx, history)
+    let sref = parseRef(node{"$ref"}.getStr)
+    result = sref.resolve(ctx).parseType(ctx, history)
+    result.sref = sref
 
 proc parseTypeStr(typ: string, history: History): TypeDef =
     case typ

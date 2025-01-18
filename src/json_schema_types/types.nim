@@ -18,6 +18,7 @@ type
 
     TypeDef* = ref object
         id*, title*, description*, comment*: string
+        sref*: SchemaRef
         case kind*: TypeDefKind
         of ObjType:
             properties*: Table[string, TypeDef]

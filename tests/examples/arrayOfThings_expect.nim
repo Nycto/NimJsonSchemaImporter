@@ -1,7 +1,7 @@
 type
-  ArrayOfThingsVegetables* = object
+  ArrayOfThingsVeggie* = object
     `veggieName`*: string
     `veggieLike`*: bool
   ArrayOfThingsArrayOfThings* = object
-    `vegetables`*: seq[ArrayOfThingsVegetables]
+    `vegetables`*: seq[ArrayOfThingsVeggie]
     `fruits`*: seq[string]

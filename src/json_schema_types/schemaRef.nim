@@ -94,6 +94,16 @@ proc parseRef*(input: string): SchemaRef =
         input.required(parsedChars > 0)
         return SchemaRef(kind: UrlRef, url: url, next: parseHash(input, parsedChars))
 
+proc getName*(sref: SchemaRef): string =
+    if sref == nil:
+        return ""
+    elif sref.next != nil:
+        return sref.next.getName()
+    else:
+        case sref.kind
+        of UrlRef, RootRef: return ""
+        of SubRef, AnchorRef: return sref.name
+
 proc resolve*(sref: SchemaRef, node: JsonNode, resolveUrl: UrlResolver): JsonNode =
     if sref == nil:
         return node

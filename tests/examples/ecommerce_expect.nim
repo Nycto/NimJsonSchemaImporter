@@ -1,7 +1,7 @@
 type
-  EcommerceItems* = object
+  EcommerceProductSchema* = object
     `name`*: string
     `price`*: BiggestFloat
-  EcommerceEcommerce* = object
-    `items`*: seq[EcommerceItems]
+  EcommerceOrderSchema* = object
+    `items`*: seq[EcommerceProductSchema]
     `orderId`*: string

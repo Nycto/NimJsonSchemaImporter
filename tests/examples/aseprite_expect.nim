@@ -1,54 +1,54 @@
 type
-  AsepriteSourceSize* = object
+  AsepriteSize* = object
     `w`*: BiggestFloat
     `h`*: BiggestFloat
-  AsepriteSpriteSourceSize* = object
+  AsepriteRectangle* = object
+    `x`*: BiggestFloat
+    `w`*: BiggestFloat
+    `y`*: BiggestFloat
+    `h`*: BiggestFloat
+  AsepriteRectangle* = object
     `x`*: BiggestFloat
     `w`*: BiggestFloat
     `y`*: BiggestFloat
     `h`*: BiggestFloat
   AsepriteFrame* = object
-    `x`*: BiggestFloat
-    `w`*: BiggestFloat
-    `y`*: BiggestFloat
-    `h`*: BiggestFloat
-  AsepriteFrames0* = object
-    `sourceSize`*: AsepriteSourceSize
+    `sourceSize`*: AsepriteSize
     `duration`*: BiggestFloat
     `rotated`*: bool
     `trimmed`*: bool
-    `spriteSourceSize`*: AsepriteSpriteSourceSize
-    `frame`*: AsepriteFrame
-  AsepriteSourceSize* = object
+    `spriteSourceSize`*: AsepriteRectangle
+    `frame`*: AsepriteRectangle
+  AsepriteSize* = object
     `w`*: BiggestFloat
     `h`*: BiggestFloat
-  AsepriteSpriteSourceSize* = object
+  AsepriteRectangle* = object
     `x`*: BiggestFloat
     `w`*: BiggestFloat
     `y`*: BiggestFloat
     `h`*: BiggestFloat
-  AsepriteFrame* = object
+  AsepriteRectangle* = object
     `x`*: BiggestFloat
     `w`*: BiggestFloat
     `y`*: BiggestFloat
     `h`*: BiggestFloat
-  AsepriteFrames1* = object
-    `sourceSize`*: AsepriteSourceSize
+  AsepriteArrayFrame* = object
+    `sourceSize`*: AsepriteSize
     `duration`*: BiggestFloat
     `rotated`*: bool
     `trimmed`*: bool
-    `spriteSourceSize`*: AsepriteSpriteSourceSize
+    `spriteSourceSize`*: AsepriteRectangle
     `filename`*: string
-    `frame`*: AsepriteFrame
+    `frame`*: AsepriteRectangle
   AsepriteFrames* = object
     case kind: range[0 .. 1]
     of 0:
-      key0: Table[string, AsepriteFrames0]
+      key0: Table[string, AsepriteFrame]
     of 1:
-      key1: seq[AsepriteFrames1]
+      key1: seq[AsepriteArrayFrame]
   AsepriteDirection* = enum
     pingpong, forward, reverse
-  AsepriteFrameTags* = object
+  AsepriteFrameTag* = object
     `direction`*: AsepriteDirection
     `from`*: BiggestFloat
     `to`*: BiggestFloat
@@ -58,34 +58,34 @@ type
   AsepriteSize* = object
     `w`*: BiggestFloat
     `h`*: BiggestFloat
-  AsepritePivot* = object
+  AsepritePoint* = object
     `x`*: BiggestFloat
     `y`*: BiggestFloat
-  AsepriteCenter* = object
-    `x`*: BiggestFloat
-    `w`*: BiggestFloat
-    `y`*: BiggestFloat
-    `h`*: BiggestFloat
-  AsepriteBounds* = object
+  AsepriteRectangle* = object
     `x`*: BiggestFloat
     `w`*: BiggestFloat
     `y`*: BiggestFloat
     `h`*: BiggestFloat
-  AsepriteKeys* = object
-    `pivot`*: AsepritePivot
-    `center`*: AsepriteCenter
-    `bounds`*: AsepriteBounds
+  AsepriteRectangle* = object
+    `x`*: BiggestFloat
+    `w`*: BiggestFloat
+    `y`*: BiggestFloat
+    `h`*: BiggestFloat
+  AsepriteSliceKey* = object
+    `pivot`*: AsepritePoint
+    `center`*: AsepriteRectangle
+    `bounds`*: AsepriteRectangle
     `frame`*: BiggestFloat
-  AsepriteSlices* = object
+  AsepriteSlice* = object
     `data`*: string
     `color`*: string
     `name`*: string
-    `keys`*: seq[AsepriteKeys]
+    `keys`*: seq[AsepriteSliceKey]
   AsepriteBlendMode* = enum
     multiply, overlay, color_burn, exclusion, color_dodge, hsl_saturation,
     hsl_color, subtract, divide, hsl_luminosity, darken, normal, hard_light,
     screen, lighten, soft_light, addition, hsl_hue, difference
-  AsepriteLayers* = object
+  AsepriteLayer* = object
     `blendMode`*: AsepriteBlendMode
     `data`*: string
     `color`*: string
@@ -94,14 +94,14 @@ type
     `opacity`*: BiggestFloat
   AsepriteMeta* = object
     `scale`*: string
-    `frameTags`*: seq[AsepriteFrameTags]
+    `frameTags`*: seq[AsepriteFrameTag]
     `format`*: AsepriteFormat
     `size`*: AsepriteSize
-    `slices`*: seq[AsepriteSlices]
+    `slices`*: seq[AsepriteSlice]
     `version`*: string
-    `layers`*: seq[AsepriteLayers]
+    `layers`*: seq[AsepriteLayer]
     `app`*: string
     `image`*: string
-  AsepriteAseprite* = object
+  AsepriteSpriteSheet* = object
     `frames`*: AsepriteFrames
     `meta`*: AsepriteMeta

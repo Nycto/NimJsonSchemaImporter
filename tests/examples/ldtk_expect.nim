@@ -13,7 +13,7 @@ type
       key1: pointer
   LdtkWhen* = enum
     AfterLoad, BeforeSave, AfterSave, Manual
-  LdtkCustomCommands* = object
+  LdtkCustomCommand* = object
     `command`*: string
     `when`*: LdtkWhen
   LdtkExportPng* = object
@@ -34,27 +34,27 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkIids* = object
+  LdtkEntityReferenceInfos* = object
     `layerIid`*: string
     `levelIid`*: string
     `entityIid`*: string
     `worldIid`*: string
-  LdtkInstancesData* = object
+  LdtkTocInstanceData* = object
     `worldY`*: BiggestInt
     `fields`*: JsonNode
     `widPx`*: BiggestInt
-    `iids`*: LdtkIids
+    `iids`*: LdtkEntityReferenceInfos
     `heiPx`*: BiggestInt
     `worldX`*: BiggestInt
-  LdtkInstances* = object
+  LdtkEntityReferenceInfos* = object
     `layerIid`*: string
     `levelIid`*: string
     `entityIid`*: string
     `worldIid`*: string
-  LdtkToc* = object
-    `instancesData`*: seq[LdtkInstancesData]
+  LdtkTableOfContentEntry* = object
+    `instancesData`*: seq[LdtkTocInstanceData]
     `identifier`*: string
-    `instances`*: seq[LdtkInstances]
+    `instances`*: seq[LdtkEntityReferenceInfos]
   LdtkWorldLayout* = enum
     LinearHorizontal, LinearVertical, , GridVania, Free
   LdtkBgColor* = object
@@ -81,13 +81,13 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  Ldtk__neighbours* = object
+  LdtkNeighbourLevel* = object
     `levelUid`*: LdtkLevelUid
     `levelIid`*: string
     `dir`*: string
   LdtkBgPos* = enum
     CoverDirty, Repeat, , Contain, Cover, Unscaled
-  LdtkGridTiles* = object
+  LdtkTile* = object
     `px`*: seq[BiggestInt]
     `t`*: BiggestInt
     `d`*: seq[BiggestInt]
@@ -100,10 +100,10 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkIntGrid* = object
+  LdtkIntGridValueInstance* = object
     `coordId`*: BiggestInt
     `v`*: BiggestInt
-  LdtkAutoLayerTiles* = object
+  LdtkTile* = object
     `px`*: seq[BiggestInt]
     `t`*: BiggestInt
     `d`*: seq[BiggestInt]
@@ -116,7 +116,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  Ldtk__tile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -127,8 +127,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  Ldtk__tile1* = object
+      key1: LdtkTilesetRect
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -139,8 +139,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  LdtkFieldInstances* = object
+      key1: LdtkTilesetRect
+  LdtkFieldInstance* = object
     `realEditorValues`*: seq[JsonNode]
     `__value`*: JsonNode
     `__tile`*: Ldtk__tile
@@ -153,7 +153,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkEntityInstances* = object
+  LdtkEntityInstance* = object
     `__worldY`*: Ldtk__worldY
     `__tile`*: Ldtk__tile
     `__identifier`*: string
@@ -162,7 +162,7 @@ type
     `px`*: seq[BiggestInt]
     `defUid`*: BiggestInt
     `__pivot`*: seq[BiggestFloat]
-    `fieldInstances`*: seq[LdtkFieldInstances]
+    `fieldInstances`*: seq[LdtkFieldInstance]
     `iid`*: string
     `width`*: BiggestInt
     `__worldX`*: Ldtk__worldX
@@ -180,20 +180,20 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkLayerInstances* = object
+  LdtkLayerInstance* = object
     `__opacity`*: BiggestFloat
     `optionalRules`*: seq[BiggestInt]
     `__gridSize`*: BiggestInt
     `__pxTotalOffsetX`*: BiggestInt
-    `gridTiles`*: seq[LdtkGridTiles]
+    `gridTiles`*: seq[LdtkTile]
     `__type`*: string
     `__identifier`*: string
     `overrideTilesetUid`*: LdtkOverrideTilesetUid
     `levelId`*: BiggestInt
-    `intGrid`*: seq[LdtkIntGrid]
-    `autoLayerTiles`*: seq[LdtkAutoLayerTiles]
+    `intGrid`*: seq[LdtkIntGridValueInstance]
+    `autoLayerTiles`*: seq[LdtkTile]
     `layerDefUid`*: BiggestInt
-    `entityInstances`*: seq[LdtkEntityInstances]
+    `entityInstances`*: seq[LdtkEntityInstance]
     `intGridCsv`*: seq[BiggestInt]
     `pxOffsetX`*: BiggestInt
     `__tilesetRelPath`*: Ldtk__tilesetRelPath
@@ -205,7 +205,7 @@ type
     `iid`*: string
     `__pxTotalOffsetY`*: BiggestInt
     `__cWid`*: BiggestInt
-  Ldtk__tile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -216,15 +216,15 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  LdtkFieldInstances* = object
+      key1: LdtkTilesetRect
+  LdtkFieldInstance* = object
     `realEditorValues`*: seq[JsonNode]
     `__value`*: JsonNode
     `__tile`*: Ldtk__tile
     `__type`*: string
     `__identifier`*: string
     `defUid`*: BiggestInt
-  Ldtk__bgPos1* = object
+  LdtkLevelBgPosInfos* = object
     `scale`*: seq[BiggestFloat]
     `cropRect`*: seq[BiggestFloat]
     `topLeftPx`*: seq[BiggestInt]
@@ -233,8 +233,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__bgPos1
-  LdtkLevels* = object
+      key1: LdtkLevelBgPosInfos
+  LdtkLevel* = object
     `pxHei`*: BiggestInt
     `useAutoIdentifier`*: bool
     `__bgColor`*: string
@@ -246,17 +246,17 @@ type
     `pxWid`*: BiggestInt
     `worldDepth`*: BiggestInt
     `bgPivotX`*: BiggestFloat
-    `__neighbours`*: seq[Ldtk__neighbours]
+    `__neighbours`*: seq[LdtkNeighbourLevel]
     `uid`*: BiggestInt
     `bgPos`*: LdtkBgPos
-    `layerInstances`*: seq[LdtkLayerInstances]
-    `fieldInstances`*: seq[LdtkFieldInstances]
+    `layerInstances`*: seq[LdtkLayerInstance]
+    `fieldInstances`*: seq[LdtkFieldInstance]
     `__bgPos`*: Ldtk__bgPos
     `worldX`*: BiggestInt
     `iid`*: string
     `bgPivotY`*: BiggestFloat
     `__smartColor`*: string
-  LdtkWorlds* = object
+  LdtkWorld* = object
     `worldGridWidth`*: BiggestInt
     `defaultLevelHeight`*: BiggestInt
     `identifier`*: string
@@ -264,7 +264,7 @@ type
     `iid`*: string
     `defaultLevelWidth`*: BiggestInt
     `worldGridHeight`*: BiggestInt
-    `levels`*: seq[LdtkLevels]
+    `levels`*: seq[LdtkLevel]
   LdtkImageExportMode* = enum
     LayersAndLevels, OneImagePerLayer, None, OneImagePerLevel
   LdtkWhen* = enum
@@ -272,7 +272,7 @@ type
   LdtkCustomCommand* = object
     `command`*: string
     `when`*: LdtkWhen
-  LdtkTile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -283,7 +283,7 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkTile1
+      key1: LdtkTilesetRect
   LdtkIdentifier* = object
     case kind: range[0 .. 1]
     of 0:
@@ -320,13 +320,13 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  Ldtk__neighbours* = object
+  LdtkNeighbourLevel* = object
     `levelUid`*: LdtkLevelUid
     `levelIid`*: string
     `dir`*: string
   LdtkBgPos* = enum
     CoverDirty, Repeat, , Contain, Cover, Unscaled
-  LdtkGridTiles* = object
+  LdtkTile* = object
     `px`*: seq[BiggestInt]
     `t`*: BiggestInt
     `d`*: seq[BiggestInt]
@@ -339,10 +339,10 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkIntGrid* = object
+  LdtkIntGridValueInstance* = object
     `coordId`*: BiggestInt
     `v`*: BiggestInt
-  LdtkAutoLayerTiles* = object
+  LdtkTile* = object
     `px`*: seq[BiggestInt]
     `t`*: BiggestInt
     `d`*: seq[BiggestInt]
@@ -355,7 +355,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  Ldtk__tile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -366,8 +366,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  Ldtk__tile1* = object
+      key1: LdtkTilesetRect
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -378,8 +378,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  LdtkFieldInstances* = object
+      key1: LdtkTilesetRect
+  LdtkFieldInstance* = object
     `realEditorValues`*: seq[JsonNode]
     `__value`*: JsonNode
     `__tile`*: Ldtk__tile
@@ -392,7 +392,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkEntityInstances* = object
+  LdtkEntityInstance* = object
     `__worldY`*: Ldtk__worldY
     `__tile`*: Ldtk__tile
     `__identifier`*: string
@@ -401,7 +401,7 @@ type
     `px`*: seq[BiggestInt]
     `defUid`*: BiggestInt
     `__pivot`*: seq[BiggestFloat]
-    `fieldInstances`*: seq[LdtkFieldInstances]
+    `fieldInstances`*: seq[LdtkFieldInstance]
     `iid`*: string
     `width`*: BiggestInt
     `__worldX`*: Ldtk__worldX
@@ -419,20 +419,20 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkLayerInstances* = object
+  LdtkLayerInstance* = object
     `__opacity`*: BiggestFloat
     `optionalRules`*: seq[BiggestInt]
     `__gridSize`*: BiggestInt
     `__pxTotalOffsetX`*: BiggestInt
-    `gridTiles`*: seq[LdtkGridTiles]
+    `gridTiles`*: seq[LdtkTile]
     `__type`*: string
     `__identifier`*: string
     `overrideTilesetUid`*: LdtkOverrideTilesetUid
     `levelId`*: BiggestInt
-    `intGrid`*: seq[LdtkIntGrid]
-    `autoLayerTiles`*: seq[LdtkAutoLayerTiles]
+    `intGrid`*: seq[LdtkIntGridValueInstance]
+    `autoLayerTiles`*: seq[LdtkTile]
     `layerDefUid`*: BiggestInt
-    `entityInstances`*: seq[LdtkEntityInstances]
+    `entityInstances`*: seq[LdtkEntityInstance]
     `intGridCsv`*: seq[BiggestInt]
     `pxOffsetX`*: BiggestInt
     `__tilesetRelPath`*: Ldtk__tilesetRelPath
@@ -444,7 +444,7 @@ type
     `iid`*: string
     `__pxTotalOffsetY`*: BiggestInt
     `__cWid`*: BiggestInt
-  Ldtk__tile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -455,15 +455,15 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  LdtkFieldInstances* = object
+      key1: LdtkTilesetRect
+  LdtkFieldInstance* = object
     `realEditorValues`*: seq[JsonNode]
     `__value`*: JsonNode
     `__tile`*: Ldtk__tile
     `__type`*: string
     `__identifier`*: string
     `defUid`*: BiggestInt
-  Ldtk__bgPos1* = object
+  LdtkLevelBgPosInfos* = object
     `scale`*: seq[BiggestFloat]
     `cropRect`*: seq[BiggestFloat]
     `topLeftPx`*: seq[BiggestInt]
@@ -472,7 +472,7 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__bgPos1
+      key1: LdtkLevelBgPosInfos
   LdtkLevel* = object
     `pxHei`*: BiggestInt
     `useAutoIdentifier`*: bool
@@ -485,11 +485,11 @@ type
     `pxWid`*: BiggestInt
     `worldDepth`*: BiggestInt
     `bgPivotX`*: BiggestFloat
-    `__neighbours`*: seq[Ldtk__neighbours]
+    `__neighbours`*: seq[LdtkNeighbourLevel]
     `uid`*: BiggestInt
     `bgPos`*: LdtkBgPos
-    `layerInstances`*: seq[LdtkLayerInstances]
-    `fieldInstances`*: seq[LdtkFieldInstances]
+    `layerInstances`*: seq[LdtkLayerInstance]
+    `fieldInstances`*: seq[LdtkFieldInstance]
     `__bgPos`*: Ldtk__bgPos
     `worldX`*: BiggestInt
     `iid`*: string
@@ -574,7 +574,7 @@ type
       key0: BiggestFloat
     of 1:
       key1: pointer
-  LdtkLevelFields* = object
+  LdtkFieldDef* = object
     `type`*: string
     `editorDisplayScale`*: BiggestFloat
     `__type`*: string
@@ -624,10 +624,10 @@ type
       key0: Table[string, JsonNode]
     of 1:
       key1: pointer
-  LdtkEnumTags* = object
+  LdtkEnumTagValue* = object
     `tileIds`*: seq[BiggestInt]
     `enumValueId`*: string
-  LdtkCustomData* = object
+  LdtkTileCustomMetadata* = object
     `data`*: string
     `tileId`*: BiggestInt
   LdtkRelPath* = object
@@ -636,7 +636,7 @@ type
       key0: string
     of 1:
       key1: pointer
-  LdtkTilesets* = object
+  LdtkTilesetDef* = object
     `pxHei`*: BiggestInt
     `savedSelections`*: seq[Table[string, JsonNode]]
     `padding`*: BiggestInt
@@ -645,10 +645,10 @@ type
     `embedAtlas`*: LdtkEmbedAtlas
     `identifier`*: string
     `cachedPixelData`*: LdtkCachedPixelData
-    `enumTags`*: seq[LdtkEnumTags]
+    `enumTags`*: seq[LdtkEnumTagValue]
     `pxWid`*: BiggestInt
     `tileGridSize`*: BiggestInt
-    `customData`*: seq[LdtkCustomData]
+    `customData`*: seq[LdtkTileCustomMetadata]
     `uid`*: BiggestInt
     `__cHei`*: BiggestInt
     `__cWid`*: BiggestInt
@@ -763,7 +763,7 @@ type
       key0: BiggestFloat
     of 1:
       key1: pointer
-  LdtkFieldDefs* = object
+  LdtkFieldDef* = object
     `type`*: string
     `editorDisplayScale`*: BiggestFloat
     `__type`*: string
@@ -802,7 +802,7 @@ type
   LdtkTileRenderMode* = enum
     FullSizeCropped, FullSizeUncropped, Repeat, FitInside, NineSlice, Cover,
     Stretch
-  LdtkUiTileRect1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -813,14 +813,14 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkUiTileRect1
+      key1: LdtkTilesetRect
   LdtkMinHeight* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkTileRect1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -831,7 +831,7 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkTileRect1
+      key1: LdtkTilesetRect
   LdtkMaxWidth* = object
     case kind: range[0 .. 1]
     of 0:
@@ -844,7 +844,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkEntities* = object
+  LdtkEntityDef* = object
     `allowOutOfBounds`*: bool
     `pivotY`*: BiggestFloat
     `tileOpacity`*: BiggestFloat
@@ -864,7 +864,7 @@ type
     `tileId`*: LdtkTileId
     `pivotX`*: BiggestFloat
     `doc`*: LdtkDoc
-    `fieldDefs`*: seq[LdtkFieldDefs]
+    `fieldDefs`*: seq[LdtkFieldDef]
     `uid`*: BiggestInt
     `tileRenderMode`*: LdtkTileRenderMode
     `uiTileRect`*: LdtkUiTileRect
@@ -885,7 +885,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkTileRect1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -896,8 +896,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkTileRect1
-  LdtkValues* = object
+      key1: LdtkTilesetRect
+  LdtkEnumDefValues* = object
     `__tileSrcRect`*: seq[BiggestInt]
     `color`*: BiggestInt
     `id`*: string
@@ -921,8 +921,8 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkEnums* = object
-    `values`*: seq[LdtkValues]
+  LdtkEnumDef* = object
+    `values`*: seq[LdtkEnumDefValues]
     `externalRelPath`*: LdtkExternalRelPath
     `identifier`*: string
     `externalFileChecksum`*: LdtkExternalFileChecksum
@@ -971,7 +971,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkRules* = object
+  LdtkAutoRuleDef* = object
     `checker`*: LdtkChecker
     `pivotY`*: BiggestFloat
     `breakOnMatch`*: bool
@@ -1003,7 +1003,7 @@ type
     `xOffset`*: BiggestInt
     `tileRandomYMin`*: BiggestInt
     `perlinSeed`*: BiggestFloat
-  LdtkIcon1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -1014,14 +1014,14 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkIcon1
-  LdtkAutoRuleGroups* = object
+      key1: LdtkTilesetRect
+  LdtkAutoLayerRuleGroup* = object
     `isOptional`*: bool
     `color`*: LdtkColor
     `collapsed`*: LdtkCollapsed
     `usesWizard`*: bool
     `biomeRequirementMode`*: BiggestInt
-    `rules`*: seq[LdtkRules]
+    `rules`*: seq[LdtkAutoRuleDef]
     `icon`*: LdtkIcon
     `active`*: bool
     `uid`*: BiggestInt
@@ -1063,11 +1063,11 @@ type
       key0: string
     of 1:
       key1: pointer
-  LdtkIntGridValuesGroups* = object
+  LdtkIntGridValueGroupDef* = object
     `color`*: LdtkColor
     `identifier`*: LdtkIdentifier
     `uid`*: BiggestInt
-  LdtkTile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -1078,20 +1078,20 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkTile1
+      key1: LdtkTilesetRect
   LdtkIdentifier* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  LdtkIntGridValues* = object
+  LdtkIntGridValueDef* = object
     `tile`*: LdtkTile
     `color`*: string
     `identifier`*: LdtkIdentifier
     `groupUid`*: BiggestInt
     `value`*: BiggestInt
-  LdtkLayers* = object
+  LdtkLayerDef* = object
     `type`*: LdtkType
     `autoTilesetDefUid`*: LdtkAutoTilesetDefUid
     `parallaxScaling`*: bool
@@ -1099,7 +1099,7 @@ type
     `autoTilesKilledByOtherLayerUid`*: LdtkAutoTilesKilledByOtherLayerUid
     `inactiveOpacity`*: BiggestFloat
     `__type`*: string
-    `autoRuleGroups`*: seq[LdtkAutoRuleGroups]
+    `autoRuleGroups`*: seq[LdtkAutoLayerRuleGroup]
     `gridSize`*: BiggestInt
     `hideInList`*: bool
     `tilesetDefUid`*: LdtkTilesetDefUid
@@ -1119,12 +1119,12 @@ type
     `guideGridHei`*: BiggestInt
     `autoSourceLayerDefUid`*: LdtkAutoSourceLayerDefUid
     `displayOpacity`*: BiggestFloat
-    `intGridValuesGroups`*: seq[LdtkIntGridValuesGroups]
+    `intGridValuesGroups`*: seq[LdtkIntGridValueGroupDef]
     `hideFieldsWhenInactive`*: bool
     `useAsyncRender`*: bool
     `pxOffsetY`*: BiggestInt
     `parallaxFactorY`*: BiggestFloat
-    `intGridValues`*: seq[LdtkIntGridValues]
+    `intGridValues`*: seq[LdtkIntGridValueDef]
     `renderInWorldView`*: bool
   LdtkTileId* = object
     case kind: range[0 .. 1]
@@ -1132,7 +1132,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkTileRect1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -1143,65 +1143,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkTileRect1
-  LdtkValues* = object
-    `__tileSrcRect`*: seq[BiggestInt]
-    `color`*: BiggestInt
-    `id`*: string
-    `tileId`*: LdtkTileId
-    `tileRect`*: LdtkTileRect
-  LdtkExternalRelPath* = object
-    case kind: range[0 .. 1]
-    of 0:
-      key0: string
-    of 1:
-      key1: pointer
-  LdtkExternalFileChecksum* = object
-    case kind: range[0 .. 1]
-    of 0:
-      key0: string
-    of 1:
-      key1: pointer
-  LdtkIconTilesetUid* = object
-    case kind: range[0 .. 1]
-    of 0:
-      key0: BiggestInt
-    of 1:
-      key1: pointer
-  LdtkExternalEnums* = object
-    `values`*: seq[LdtkValues]
-    `externalRelPath`*: LdtkExternalRelPath
-    `identifier`*: string
-    `externalFileChecksum`*: LdtkExternalFileChecksum
-    `iconTilesetUid`*: LdtkIconTilesetUid
-    `uid`*: BiggestInt
-    `tags`*: seq[string]
-  LdtkDefinitions* = object
-    `levelFields`*: seq[LdtkLevelFields]
-    `tilesets`*: seq[LdtkTilesets]
-    `entities`*: seq[LdtkEntities]
-    `enums`*: seq[LdtkEnums]
-    `layers`*: seq[LdtkLayers]
-    `externalEnums`*: seq[LdtkExternalEnums]
-  LdtkTileId* = object
-    case kind: range[0 .. 1]
-    of 0:
-      key0: BiggestInt
-    of 1:
-      key1: pointer
-  LdtkTileRect1* = object
-    `x`*: BiggestInt
-    `w`*: BiggestInt
-    `y`*: BiggestInt
-    `h`*: BiggestInt
-    `tilesetUid`*: BiggestInt
-  LdtkTileRect* = object
-    case kind: range[0 .. 1]
-    of 0:
-      key0: pointer
-    of 1:
-      key1: LdtkTileRect1
-  LdtkValues* = object
+      key1: LdtkTilesetRect
+  LdtkEnumDefValues* = object
     `__tileSrcRect`*: seq[BiggestInt]
     `color`*: BiggestInt
     `id`*: string
@@ -1226,7 +1169,64 @@ type
     of 1:
       key1: pointer
   LdtkEnumDef* = object
-    `values`*: seq[LdtkValues]
+    `values`*: seq[LdtkEnumDefValues]
+    `externalRelPath`*: LdtkExternalRelPath
+    `identifier`*: string
+    `externalFileChecksum`*: LdtkExternalFileChecksum
+    `iconTilesetUid`*: LdtkIconTilesetUid
+    `uid`*: BiggestInt
+    `tags`*: seq[string]
+  LdtkDefinitions* = object
+    `levelFields`*: seq[LdtkFieldDef]
+    `tilesets`*: seq[LdtkTilesetDef]
+    `entities`*: seq[LdtkEntityDef]
+    `enums`*: seq[LdtkEnumDef]
+    `layers`*: seq[LdtkLayerDef]
+    `externalEnums`*: seq[LdtkEnumDef]
+  LdtkTileId* = object
+    case kind: range[0 .. 1]
+    of 0:
+      key0: BiggestInt
+    of 1:
+      key1: pointer
+  LdtkTilesetRect* = object
+    `x`*: BiggestInt
+    `w`*: BiggestInt
+    `y`*: BiggestInt
+    `h`*: BiggestInt
+    `tilesetUid`*: BiggestInt
+  LdtkTileRect* = object
+    case kind: range[0 .. 1]
+    of 0:
+      key0: pointer
+    of 1:
+      key1: LdtkTilesetRect
+  LdtkEnumDefValues* = object
+    `__tileSrcRect`*: seq[BiggestInt]
+    `color`*: BiggestInt
+    `id`*: string
+    `tileId`*: LdtkTileId
+    `tileRect`*: LdtkTileRect
+  LdtkExternalRelPath* = object
+    case kind: range[0 .. 1]
+    of 0:
+      key0: string
+    of 1:
+      key1: pointer
+  LdtkExternalFileChecksum* = object
+    case kind: range[0 .. 1]
+    of 0:
+      key0: string
+    of 1:
+      key1: pointer
+  LdtkIconTilesetUid* = object
+    case kind: range[0 .. 1]
+    of 0:
+      key0: BiggestInt
+    of 1:
+      key1: pointer
+  LdtkEnumDef* = object
+    `values`*: seq[LdtkEnumDefValues]
     `externalRelPath`*: LdtkExternalRelPath
     `identifier`*: string
     `externalFileChecksum`*: LdtkExternalFileChecksum
@@ -1370,7 +1370,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkRules* = object
+  LdtkAutoRuleDef* = object
     `checker`*: LdtkChecker
     `pivotY`*: BiggestFloat
     `breakOnMatch`*: bool
@@ -1402,7 +1402,7 @@ type
     `xOffset`*: BiggestInt
     `tileRandomYMin`*: BiggestInt
     `perlinSeed`*: BiggestFloat
-  LdtkIcon1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -1413,14 +1413,14 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkIcon1
+      key1: LdtkTilesetRect
   LdtkAutoLayerRuleGroup* = object
     `isOptional`*: bool
     `color`*: LdtkColor
     `collapsed`*: LdtkCollapsed
     `usesWizard`*: bool
     `biomeRequirementMode`*: BiggestInt
-    `rules`*: seq[LdtkRules]
+    `rules`*: seq[LdtkAutoRuleDef]
     `icon`*: LdtkIcon
     `active`*: bool
     `uid`*: BiggestInt
@@ -1440,10 +1440,10 @@ type
       key0: Table[string, JsonNode]
     of 1:
       key1: pointer
-  LdtkEnumTags* = object
+  LdtkEnumTagValue* = object
     `tileIds`*: seq[BiggestInt]
     `enumValueId`*: string
-  LdtkCustomData* = object
+  LdtkTileCustomMetadata* = object
     `data`*: string
     `tileId`*: BiggestInt
   LdtkRelPath* = object
@@ -1461,36 +1461,36 @@ type
     `embedAtlas`*: LdtkEmbedAtlas
     `identifier`*: string
     `cachedPixelData`*: LdtkCachedPixelData
-    `enumTags`*: seq[LdtkEnumTags]
+    `enumTags`*: seq[LdtkEnumTagValue]
     `pxWid`*: BiggestInt
     `tileGridSize`*: BiggestInt
-    `customData`*: seq[LdtkCustomData]
+    `customData`*: seq[LdtkTileCustomMetadata]
     `uid`*: BiggestInt
     `__cHei`*: BiggestInt
     `__cWid`*: BiggestInt
     `relPath`*: LdtkRelPath
     `tags`*: seq[string]
-  LdtkIids* = object
+  LdtkEntityReferenceInfos* = object
     `layerIid`*: string
     `levelIid`*: string
     `entityIid`*: string
     `worldIid`*: string
-  LdtkInstancesData* = object
+  LdtkTocInstanceData* = object
     `worldY`*: BiggestInt
     `fields`*: JsonNode
     `widPx`*: BiggestInt
-    `iids`*: LdtkIids
+    `iids`*: LdtkEntityReferenceInfos
     `heiPx`*: BiggestInt
     `worldX`*: BiggestInt
-  LdtkInstances* = object
+  LdtkEntityReferenceInfos* = object
     `layerIid`*: string
     `levelIid`*: string
     `entityIid`*: string
     `worldIid`*: string
   LdtkTableOfContentEntry* = object
-    `instancesData`*: seq[LdtkInstancesData]
+    `instancesData`*: seq[LdtkTocInstanceData]
     `identifier`*: string
-    `instances`*: seq[LdtkInstances]
+    `instances`*: seq[LdtkEntityReferenceInfos]
   LdtkLimitScope* = enum
     PerLayer, PerWorld, PerLevel
   LdtkLimitBehavior* = enum
@@ -1600,7 +1600,7 @@ type
       key0: BiggestFloat
     of 1:
       key1: pointer
-  LdtkFieldDefs* = object
+  LdtkFieldDef* = object
     `type`*: string
     `editorDisplayScale`*: BiggestFloat
     `__type`*: string
@@ -1639,7 +1639,7 @@ type
   LdtkTileRenderMode* = enum
     FullSizeCropped, FullSizeUncropped, Repeat, FitInside, NineSlice, Cover,
     Stretch
-  LdtkUiTileRect1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -1650,14 +1650,14 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkUiTileRect1
+      key1: LdtkTilesetRect
   LdtkMinHeight* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkTileRect1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -1668,7 +1668,7 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkTileRect1
+      key1: LdtkTilesetRect
   LdtkMaxWidth* = object
     case kind: range[0 .. 1]
     of 0:
@@ -1701,7 +1701,7 @@ type
     `tileId`*: LdtkTileId
     `pivotX`*: BiggestFloat
     `doc`*: LdtkDoc
-    `fieldDefs`*: seq[LdtkFieldDefs]
+    `fieldDefs`*: seq[LdtkFieldDef]
     `uid`*: BiggestInt
     `tileRenderMode`*: LdtkTileRenderMode
     `uiTileRect`*: LdtkUiTileRect
@@ -1716,7 +1716,7 @@ type
     `maxHeight`*: LdtkMaxHeight
     `exportToToc`*: bool
     `fillOpacity`*: BiggestFloat
-  Ldtk__tile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -1727,7 +1727,7 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
+      key1: LdtkTilesetRect
   LdtkFieldInstance* = object
     `realEditorValues`*: seq[JsonNode]
     `__value`*: JsonNode
@@ -1815,7 +1815,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  Ldtk__tile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -1826,8 +1826,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  Ldtk__tile1* = object
+      key1: LdtkTilesetRect
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -1838,8 +1838,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  LdtkFieldInstances* = object
+      key1: LdtkTilesetRect
+  LdtkFieldInstance* = object
     `realEditorValues`*: seq[JsonNode]
     `__value`*: JsonNode
     `__tile`*: Ldtk__tile
@@ -1861,7 +1861,7 @@ type
     `px`*: seq[BiggestInt]
     `defUid`*: BiggestInt
     `__pivot`*: seq[BiggestFloat]
-    `fieldInstances`*: seq[LdtkFieldInstances]
+    `fieldInstances`*: seq[LdtkFieldInstance]
     `iid`*: string
     `width`*: BiggestInt
     `__worldX`*: Ldtk__worldX
@@ -1876,7 +1876,7 @@ type
   LdtkEnumTagValue* = object
     `tileIds`*: seq[BiggestInt]
     `enumValueId`*: string
-  LdtkGridTiles* = object
+  LdtkTile* = object
     `px`*: seq[BiggestInt]
     `t`*: BiggestInt
     `d`*: seq[BiggestInt]
@@ -1889,10 +1889,10 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkIntGrid* = object
+  LdtkIntGridValueInstance* = object
     `coordId`*: BiggestInt
     `v`*: BiggestInt
-  LdtkAutoLayerTiles* = object
+  LdtkTile* = object
     `px`*: seq[BiggestInt]
     `t`*: BiggestInt
     `d`*: seq[BiggestInt]
@@ -1905,7 +1905,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  Ldtk__tile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -1916,8 +1916,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  Ldtk__tile1* = object
+      key1: LdtkTilesetRect
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -1928,8 +1928,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  LdtkFieldInstances* = object
+      key1: LdtkTilesetRect
+  LdtkFieldInstance* = object
     `realEditorValues`*: seq[JsonNode]
     `__value`*: JsonNode
     `__tile`*: Ldtk__tile
@@ -1942,7 +1942,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkEntityInstances* = object
+  LdtkEntityInstance* = object
     `__worldY`*: Ldtk__worldY
     `__tile`*: Ldtk__tile
     `__identifier`*: string
@@ -1951,7 +1951,7 @@ type
     `px`*: seq[BiggestInt]
     `defUid`*: BiggestInt
     `__pivot`*: seq[BiggestFloat]
-    `fieldInstances`*: seq[LdtkFieldInstances]
+    `fieldInstances`*: seq[LdtkFieldInstance]
     `iid`*: string
     `width`*: BiggestInt
     `__worldX`*: Ldtk__worldX
@@ -1974,15 +1974,15 @@ type
     `optionalRules`*: seq[BiggestInt]
     `__gridSize`*: BiggestInt
     `__pxTotalOffsetX`*: BiggestInt
-    `gridTiles`*: seq[LdtkGridTiles]
+    `gridTiles`*: seq[LdtkTile]
     `__type`*: string
     `__identifier`*: string
     `overrideTilesetUid`*: LdtkOverrideTilesetUid
     `levelId`*: BiggestInt
-    `intGrid`*: seq[LdtkIntGrid]
-    `autoLayerTiles`*: seq[LdtkAutoLayerTiles]
+    `intGrid`*: seq[LdtkIntGridValueInstance]
+    `autoLayerTiles`*: seq[LdtkTile]
     `layerDefUid`*: BiggestInt
-    `entityInstances`*: seq[LdtkEntityInstances]
+    `entityInstances`*: seq[LdtkEntityInstance]
     `intGridCsv`*: seq[BiggestInt]
     `pxOffsetX`*: BiggestInt
     `__tilesetRelPath`*: Ldtk__tilesetRelPath
@@ -2023,13 +2023,13 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  Ldtk__neighbours* = object
+  LdtkNeighbourLevel* = object
     `levelUid`*: LdtkLevelUid
     `levelIid`*: string
     `dir`*: string
   LdtkBgPos* = enum
     CoverDirty, Repeat, , Contain, Cover, Unscaled
-  LdtkGridTiles* = object
+  LdtkTile* = object
     `px`*: seq[BiggestInt]
     `t`*: BiggestInt
     `d`*: seq[BiggestInt]
@@ -2042,10 +2042,10 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkIntGrid* = object
+  LdtkIntGridValueInstance* = object
     `coordId`*: BiggestInt
     `v`*: BiggestInt
-  LdtkAutoLayerTiles* = object
+  LdtkTile* = object
     `px`*: seq[BiggestInt]
     `t`*: BiggestInt
     `d`*: seq[BiggestInt]
@@ -2058,7 +2058,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  Ldtk__tile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -2069,8 +2069,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  Ldtk__tile1* = object
+      key1: LdtkTilesetRect
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -2081,8 +2081,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  LdtkFieldInstances* = object
+      key1: LdtkTilesetRect
+  LdtkFieldInstance* = object
     `realEditorValues`*: seq[JsonNode]
     `__value`*: JsonNode
     `__tile`*: Ldtk__tile
@@ -2095,7 +2095,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkEntityInstances* = object
+  LdtkEntityInstance* = object
     `__worldY`*: Ldtk__worldY
     `__tile`*: Ldtk__tile
     `__identifier`*: string
@@ -2104,7 +2104,7 @@ type
     `px`*: seq[BiggestInt]
     `defUid`*: BiggestInt
     `__pivot`*: seq[BiggestFloat]
-    `fieldInstances`*: seq[LdtkFieldInstances]
+    `fieldInstances`*: seq[LdtkFieldInstance]
     `iid`*: string
     `width`*: BiggestInt
     `__worldX`*: Ldtk__worldX
@@ -2122,20 +2122,20 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkLayerInstances* = object
+  LdtkLayerInstance* = object
     `__opacity`*: BiggestFloat
     `optionalRules`*: seq[BiggestInt]
     `__gridSize`*: BiggestInt
     `__pxTotalOffsetX`*: BiggestInt
-    `gridTiles`*: seq[LdtkGridTiles]
+    `gridTiles`*: seq[LdtkTile]
     `__type`*: string
     `__identifier`*: string
     `overrideTilesetUid`*: LdtkOverrideTilesetUid
     `levelId`*: BiggestInt
-    `intGrid`*: seq[LdtkIntGrid]
-    `autoLayerTiles`*: seq[LdtkAutoLayerTiles]
+    `intGrid`*: seq[LdtkIntGridValueInstance]
+    `autoLayerTiles`*: seq[LdtkTile]
     `layerDefUid`*: BiggestInt
-    `entityInstances`*: seq[LdtkEntityInstances]
+    `entityInstances`*: seq[LdtkEntityInstance]
     `intGridCsv`*: seq[BiggestInt]
     `pxOffsetX`*: BiggestInt
     `__tilesetRelPath`*: Ldtk__tilesetRelPath
@@ -2147,7 +2147,7 @@ type
     `iid`*: string
     `__pxTotalOffsetY`*: BiggestInt
     `__cWid`*: BiggestInt
-  Ldtk__tile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -2158,15 +2158,15 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  LdtkFieldInstances* = object
+      key1: LdtkTilesetRect
+  LdtkFieldInstance* = object
     `realEditorValues`*: seq[JsonNode]
     `__value`*: JsonNode
     `__tile`*: Ldtk__tile
     `__type`*: string
     `__identifier`*: string
     `defUid`*: BiggestInt
-  Ldtk__bgPos1* = object
+  LdtkLevelBgPosInfos* = object
     `scale`*: seq[BiggestFloat]
     `cropRect`*: seq[BiggestFloat]
     `topLeftPx`*: seq[BiggestInt]
@@ -2175,8 +2175,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__bgPos1
-  LdtkLevels* = object
+      key1: LdtkLevelBgPosInfos
+  LdtkLevel* = object
     `pxHei`*: BiggestInt
     `useAutoIdentifier`*: bool
     `__bgColor`*: string
@@ -2188,11 +2188,11 @@ type
     `pxWid`*: BiggestInt
     `worldDepth`*: BiggestInt
     `bgPivotX`*: BiggestFloat
-    `__neighbours`*: seq[Ldtk__neighbours]
+    `__neighbours`*: seq[LdtkNeighbourLevel]
     `uid`*: BiggestInt
     `bgPos`*: LdtkBgPos
-    `layerInstances`*: seq[LdtkLayerInstances]
-    `fieldInstances`*: seq[LdtkFieldInstances]
+    `layerInstances`*: seq[LdtkLayerInstance]
+    `fieldInstances`*: seq[LdtkFieldInstance]
     `__bgPos`*: Ldtk__bgPos
     `worldX`*: BiggestInt
     `iid`*: string
@@ -2206,7 +2206,7 @@ type
     `iid`*: string
     `defaultLevelWidth`*: BiggestInt
     `worldGridHeight`*: BiggestInt
-    `levels`*: seq[LdtkLevels]
+    `levels`*: seq[LdtkLevel]
   LdtkType* = enum
     Tiles, Entities, AutoLayer, IntGrid
   LdtkAutoTilesetDefUid* = object
@@ -2249,7 +2249,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkRules* = object
+  LdtkAutoRuleDef* = object
     `checker`*: LdtkChecker
     `pivotY`*: BiggestFloat
     `breakOnMatch`*: bool
@@ -2281,7 +2281,7 @@ type
     `xOffset`*: BiggestInt
     `tileRandomYMin`*: BiggestInt
     `perlinSeed`*: BiggestFloat
-  LdtkIcon1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -2292,14 +2292,14 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkIcon1
-  LdtkAutoRuleGroups* = object
+      key1: LdtkTilesetRect
+  LdtkAutoLayerRuleGroup* = object
     `isOptional`*: bool
     `color`*: LdtkColor
     `collapsed`*: LdtkCollapsed
     `usesWizard`*: bool
     `biomeRequirementMode`*: BiggestInt
-    `rules`*: seq[LdtkRules]
+    `rules`*: seq[LdtkAutoRuleDef]
     `icon`*: LdtkIcon
     `active`*: bool
     `uid`*: BiggestInt
@@ -2341,11 +2341,11 @@ type
       key0: string
     of 1:
       key1: pointer
-  LdtkIntGridValuesGroups* = object
+  LdtkIntGridValueGroupDef* = object
     `color`*: LdtkColor
     `identifier`*: LdtkIdentifier
     `uid`*: BiggestInt
-  LdtkTile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -2356,14 +2356,14 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkTile1
+      key1: LdtkTilesetRect
   LdtkIdentifier* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  LdtkIntGridValues* = object
+  LdtkIntGridValueDef* = object
     `tile`*: LdtkTile
     `color`*: string
     `identifier`*: LdtkIdentifier
@@ -2377,7 +2377,7 @@ type
     `autoTilesKilledByOtherLayerUid`*: LdtkAutoTilesKilledByOtherLayerUid
     `inactiveOpacity`*: BiggestFloat
     `__type`*: string
-    `autoRuleGroups`*: seq[LdtkAutoRuleGroups]
+    `autoRuleGroups`*: seq[LdtkAutoLayerRuleGroup]
     `gridSize`*: BiggestInt
     `hideInList`*: bool
     `tilesetDefUid`*: LdtkTilesetDefUid
@@ -2397,12 +2397,12 @@ type
     `guideGridHei`*: BiggestInt
     `autoSourceLayerDefUid`*: LdtkAutoSourceLayerDefUid
     `displayOpacity`*: BiggestFloat
-    `intGridValuesGroups`*: seq[LdtkIntGridValuesGroups]
+    `intGridValuesGroups`*: seq[LdtkIntGridValueGroupDef]
     `hideFieldsWhenInactive`*: bool
     `useAsyncRender`*: bool
     `pxOffsetY`*: BiggestInt
     `parallaxFactorY`*: BiggestFloat
-    `intGridValues`*: seq[LdtkIntGridValues]
+    `intGridValues`*: seq[LdtkIntGridValueDef]
     `renderInWorldView`*: bool
   LdtkColor* = object
     case kind: range[0 .. 1]
@@ -2420,7 +2420,7 @@ type
     `color`*: LdtkColor
     `identifier`*: LdtkIdentifier
     `uid`*: BiggestInt
-  LdtkIids* = object
+  LdtkEntityReferenceInfos* = object
     `layerIid`*: string
     `levelIid`*: string
     `entityIid`*: string
@@ -2429,7 +2429,7 @@ type
     `worldY`*: BiggestInt
     `fields`*: JsonNode
     `widPx`*: BiggestInt
-    `iids`*: LdtkIids
+    `iids`*: LdtkEntityReferenceInfos
     `heiPx`*: BiggestInt
     `worldX`*: BiggestInt
   LdtkTileId* = object
@@ -2438,7 +2438,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkTileRect1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -2449,7 +2449,7 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkTileRect1
+      key1: LdtkTilesetRect
   LdtkEnumDefValues* = object
     `__tileSrcRect`*: seq[BiggestInt]
     `color`*: BiggestInt
@@ -2564,7 +2564,7 @@ type
       key0: BiggestFloat
     of 1:
       key1: pointer
-  LdtkLevelFields* = object
+  LdtkFieldDef* = object
     `type`*: string
     `editorDisplayScale`*: BiggestFloat
     `__type`*: string
@@ -2614,10 +2614,10 @@ type
       key0: Table[string, JsonNode]
     of 1:
       key1: pointer
-  LdtkEnumTags* = object
+  LdtkEnumTagValue* = object
     `tileIds`*: seq[BiggestInt]
     `enumValueId`*: string
-  LdtkCustomData* = object
+  LdtkTileCustomMetadata* = object
     `data`*: string
     `tileId`*: BiggestInt
   LdtkRelPath* = object
@@ -2626,7 +2626,7 @@ type
       key0: string
     of 1:
       key1: pointer
-  LdtkTilesets* = object
+  LdtkTilesetDef* = object
     `pxHei`*: BiggestInt
     `savedSelections`*: seq[Table[string, JsonNode]]
     `padding`*: BiggestInt
@@ -2635,10 +2635,10 @@ type
     `embedAtlas`*: LdtkEmbedAtlas
     `identifier`*: string
     `cachedPixelData`*: LdtkCachedPixelData
-    `enumTags`*: seq[LdtkEnumTags]
+    `enumTags`*: seq[LdtkEnumTagValue]
     `pxWid`*: BiggestInt
     `tileGridSize`*: BiggestInt
-    `customData`*: seq[LdtkCustomData]
+    `customData`*: seq[LdtkTileCustomMetadata]
     `uid`*: BiggestInt
     `__cHei`*: BiggestInt
     `__cWid`*: BiggestInt
@@ -2753,7 +2753,7 @@ type
       key0: BiggestFloat
     of 1:
       key1: pointer
-  LdtkFieldDefs* = object
+  LdtkFieldDef* = object
     `type`*: string
     `editorDisplayScale`*: BiggestFloat
     `__type`*: string
@@ -2792,7 +2792,7 @@ type
   LdtkTileRenderMode* = enum
     FullSizeCropped, FullSizeUncropped, Repeat, FitInside, NineSlice, Cover,
     Stretch
-  LdtkUiTileRect1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -2803,14 +2803,14 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkUiTileRect1
+      key1: LdtkTilesetRect
   LdtkMinHeight* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkTileRect1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -2821,7 +2821,7 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkTileRect1
+      key1: LdtkTilesetRect
   LdtkMaxWidth* = object
     case kind: range[0 .. 1]
     of 0:
@@ -2834,7 +2834,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkEntities* = object
+  LdtkEntityDef* = object
     `allowOutOfBounds`*: bool
     `pivotY`*: BiggestFloat
     `tileOpacity`*: BiggestFloat
@@ -2854,7 +2854,7 @@ type
     `tileId`*: LdtkTileId
     `pivotX`*: BiggestFloat
     `doc`*: LdtkDoc
-    `fieldDefs`*: seq[LdtkFieldDefs]
+    `fieldDefs`*: seq[LdtkFieldDef]
     `uid`*: BiggestInt
     `tileRenderMode`*: LdtkTileRenderMode
     `uiTileRect`*: LdtkUiTileRect
@@ -2875,7 +2875,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkTileRect1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -2886,8 +2886,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkTileRect1
-  LdtkValues* = object
+      key1: LdtkTilesetRect
+  LdtkEnumDefValues* = object
     `__tileSrcRect`*: seq[BiggestInt]
     `color`*: BiggestInt
     `id`*: string
@@ -2911,8 +2911,8 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkEnums* = object
-    `values`*: seq[LdtkValues]
+  LdtkEnumDef* = object
+    `values`*: seq[LdtkEnumDefValues]
     `externalRelPath`*: LdtkExternalRelPath
     `identifier`*: string
     `externalFileChecksum`*: LdtkExternalFileChecksum
@@ -2961,7 +2961,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkRules* = object
+  LdtkAutoRuleDef* = object
     `checker`*: LdtkChecker
     `pivotY`*: BiggestFloat
     `breakOnMatch`*: bool
@@ -2993,7 +2993,7 @@ type
     `xOffset`*: BiggestInt
     `tileRandomYMin`*: BiggestInt
     `perlinSeed`*: BiggestFloat
-  LdtkIcon1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -3004,14 +3004,14 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkIcon1
-  LdtkAutoRuleGroups* = object
+      key1: LdtkTilesetRect
+  LdtkAutoLayerRuleGroup* = object
     `isOptional`*: bool
     `color`*: LdtkColor
     `collapsed`*: LdtkCollapsed
     `usesWizard`*: bool
     `biomeRequirementMode`*: BiggestInt
-    `rules`*: seq[LdtkRules]
+    `rules`*: seq[LdtkAutoRuleDef]
     `icon`*: LdtkIcon
     `active`*: bool
     `uid`*: BiggestInt
@@ -3053,11 +3053,11 @@ type
       key0: string
     of 1:
       key1: pointer
-  LdtkIntGridValuesGroups* = object
+  LdtkIntGridValueGroupDef* = object
     `color`*: LdtkColor
     `identifier`*: LdtkIdentifier
     `uid`*: BiggestInt
-  LdtkTile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -3068,20 +3068,20 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkTile1
+      key1: LdtkTilesetRect
   LdtkIdentifier* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
     of 1:
       key1: pointer
-  LdtkIntGridValues* = object
+  LdtkIntGridValueDef* = object
     `tile`*: LdtkTile
     `color`*: string
     `identifier`*: LdtkIdentifier
     `groupUid`*: BiggestInt
     `value`*: BiggestInt
-  LdtkLayers* = object
+  LdtkLayerDef* = object
     `type`*: LdtkType
     `autoTilesetDefUid`*: LdtkAutoTilesetDefUid
     `parallaxScaling`*: bool
@@ -3089,7 +3089,7 @@ type
     `autoTilesKilledByOtherLayerUid`*: LdtkAutoTilesKilledByOtherLayerUid
     `inactiveOpacity`*: BiggestFloat
     `__type`*: string
-    `autoRuleGroups`*: seq[LdtkAutoRuleGroups]
+    `autoRuleGroups`*: seq[LdtkAutoLayerRuleGroup]
     `gridSize`*: BiggestInt
     `hideInList`*: bool
     `tilesetDefUid`*: LdtkTilesetDefUid
@@ -3109,12 +3109,12 @@ type
     `guideGridHei`*: BiggestInt
     `autoSourceLayerDefUid`*: LdtkAutoSourceLayerDefUid
     `displayOpacity`*: BiggestFloat
-    `intGridValuesGroups`*: seq[LdtkIntGridValuesGroups]
+    `intGridValuesGroups`*: seq[LdtkIntGridValueGroupDef]
     `hideFieldsWhenInactive`*: bool
     `useAsyncRender`*: bool
     `pxOffsetY`*: BiggestInt
     `parallaxFactorY`*: BiggestFloat
-    `intGridValues`*: seq[LdtkIntGridValues]
+    `intGridValues`*: seq[LdtkIntGridValueDef]
     `renderInWorldView`*: bool
   LdtkTileId* = object
     case kind: range[0 .. 1]
@@ -3122,7 +3122,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkTileRect1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -3133,8 +3133,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: LdtkTileRect1
-  LdtkValues* = object
+      key1: LdtkTilesetRect
+  LdtkEnumDefValues* = object
     `__tileSrcRect`*: seq[BiggestInt]
     `color`*: BiggestInt
     `id`*: string
@@ -3158,21 +3158,21 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkExternalEnums* = object
-    `values`*: seq[LdtkValues]
+  LdtkEnumDef* = object
+    `values`*: seq[LdtkEnumDefValues]
     `externalRelPath`*: LdtkExternalRelPath
     `identifier`*: string
     `externalFileChecksum`*: LdtkExternalFileChecksum
     `iconTilesetUid`*: LdtkIconTilesetUid
     `uid`*: BiggestInt
     `tags`*: seq[string]
-  LdtkDefs* = object
-    `levelFields`*: seq[LdtkLevelFields]
-    `tilesets`*: seq[LdtkTilesets]
-    `entities`*: seq[LdtkEntities]
-    `enums`*: seq[LdtkEnums]
-    `layers`*: seq[LdtkLayers]
-    `externalEnums`*: seq[LdtkExternalEnums]
+  LdtkDefinitions* = object
+    `levelFields`*: seq[LdtkFieldDef]
+    `tilesets`*: seq[LdtkTilesetDef]
+    `entities`*: seq[LdtkEntityDef]
+    `enums`*: seq[LdtkEnumDef]
+    `layers`*: seq[LdtkLayerDef]
+    `externalEnums`*: seq[LdtkEnumDef]
   LdtkTutorialDesc* = object
     case kind: range[0 .. 1]
     of 0:
@@ -3223,13 +3223,13 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  Ldtk__neighbours* = object
+  LdtkNeighbourLevel* = object
     `levelUid`*: LdtkLevelUid
     `levelIid`*: string
     `dir`*: string
   LdtkBgPos* = enum
     CoverDirty, Repeat, , Contain, Cover, Unscaled
-  LdtkGridTiles* = object
+  LdtkTile* = object
     `px`*: seq[BiggestInt]
     `t`*: BiggestInt
     `d`*: seq[BiggestInt]
@@ -3242,10 +3242,10 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkIntGrid* = object
+  LdtkIntGridValueInstance* = object
     `coordId`*: BiggestInt
     `v`*: BiggestInt
-  LdtkAutoLayerTiles* = object
+  LdtkTile* = object
     `px`*: seq[BiggestInt]
     `t`*: BiggestInt
     `d`*: seq[BiggestInt]
@@ -3258,7 +3258,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  Ldtk__tile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -3269,8 +3269,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  Ldtk__tile1* = object
+      key1: LdtkTilesetRect
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -3281,8 +3281,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  LdtkFieldInstances* = object
+      key1: LdtkTilesetRect
+  LdtkFieldInstance* = object
     `realEditorValues`*: seq[JsonNode]
     `__value`*: JsonNode
     `__tile`*: Ldtk__tile
@@ -3295,7 +3295,7 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkEntityInstances* = object
+  LdtkEntityInstance* = object
     `__worldY`*: Ldtk__worldY
     `__tile`*: Ldtk__tile
     `__identifier`*: string
@@ -3304,7 +3304,7 @@ type
     `px`*: seq[BiggestInt]
     `defUid`*: BiggestInt
     `__pivot`*: seq[BiggestFloat]
-    `fieldInstances`*: seq[LdtkFieldInstances]
+    `fieldInstances`*: seq[LdtkFieldInstance]
     `iid`*: string
     `width`*: BiggestInt
     `__worldX`*: Ldtk__worldX
@@ -3322,20 +3322,20 @@ type
       key0: BiggestInt
     of 1:
       key1: pointer
-  LdtkLayerInstances* = object
+  LdtkLayerInstance* = object
     `__opacity`*: BiggestFloat
     `optionalRules`*: seq[BiggestInt]
     `__gridSize`*: BiggestInt
     `__pxTotalOffsetX`*: BiggestInt
-    `gridTiles`*: seq[LdtkGridTiles]
+    `gridTiles`*: seq[LdtkTile]
     `__type`*: string
     `__identifier`*: string
     `overrideTilesetUid`*: LdtkOverrideTilesetUid
     `levelId`*: BiggestInt
-    `intGrid`*: seq[LdtkIntGrid]
-    `autoLayerTiles`*: seq[LdtkAutoLayerTiles]
+    `intGrid`*: seq[LdtkIntGridValueInstance]
+    `autoLayerTiles`*: seq[LdtkTile]
     `layerDefUid`*: BiggestInt
-    `entityInstances`*: seq[LdtkEntityInstances]
+    `entityInstances`*: seq[LdtkEntityInstance]
     `intGridCsv`*: seq[BiggestInt]
     `pxOffsetX`*: BiggestInt
     `__tilesetRelPath`*: Ldtk__tilesetRelPath
@@ -3347,7 +3347,7 @@ type
     `iid`*: string
     `__pxTotalOffsetY`*: BiggestInt
     `__cWid`*: BiggestInt
-  Ldtk__tile1* = object
+  LdtkTilesetRect* = object
     `x`*: BiggestInt
     `w`*: BiggestInt
     `y`*: BiggestInt
@@ -3358,15 +3358,15 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__tile1
-  LdtkFieldInstances* = object
+      key1: LdtkTilesetRect
+  LdtkFieldInstance* = object
     `realEditorValues`*: seq[JsonNode]
     `__value`*: JsonNode
     `__tile`*: Ldtk__tile
     `__type`*: string
     `__identifier`*: string
     `defUid`*: BiggestInt
-  Ldtk__bgPos1* = object
+  LdtkLevelBgPosInfos* = object
     `scale`*: seq[BiggestFloat]
     `cropRect`*: seq[BiggestFloat]
     `topLeftPx`*: seq[BiggestInt]
@@ -3375,8 +3375,8 @@ type
     of 0:
       key0: pointer
     of 1:
-      key1: Ldtk__bgPos1
-  LdtkLevels* = object
+      key1: LdtkLevelBgPosInfos
+  LdtkLevel* = object
     `pxHei`*: BiggestInt
     `useAutoIdentifier`*: bool
     `__bgColor`*: string
@@ -3388,17 +3388,17 @@ type
     `pxWid`*: BiggestInt
     `worldDepth`*: BiggestInt
     `bgPivotX`*: BiggestFloat
-    `__neighbours`*: seq[Ldtk__neighbours]
+    `__neighbours`*: seq[LdtkNeighbourLevel]
     `uid`*: BiggestInt
     `bgPos`*: LdtkBgPos
-    `layerInstances`*: seq[LdtkLayerInstances]
-    `fieldInstances`*: seq[LdtkFieldInstances]
+    `layerInstances`*: seq[LdtkLayerInstance]
+    `fieldInstances`*: seq[LdtkFieldInstance]
     `__bgPos`*: Ldtk__bgPos
     `worldX`*: BiggestInt
     `iid`*: string
     `bgPivotY`*: BiggestFloat
     `__smartColor`*: string
-  LdtkLdtk* = object
+  LdtkLdtkJsonRoot* = object
     `backupLimit`*: BiggestInt
     `simplifiedExport`*: bool
     `externalLevels`*: bool
@@ -3408,13 +3408,13 @@ type
     `appBuildId`*: BiggestFloat
     `defaultEntityHeight`*: BiggestInt
     `pngFilePattern`*: LdtkPngFilePattern
-    `customCommands`*: seq[LdtkCustomCommands]
+    `customCommands`*: seq[LdtkCustomCommand]
     `exportTiled`*: bool
     `exportPng`*: LdtkExportPng
     `worldGridWidth`*: LdtkWorldGridWidth
     `defaultLevelHeight`*: LdtkDefaultLevelHeight
-    `toc`*: seq[LdtkToc]
-    `worlds`*: seq[LdtkWorlds]
+    `toc`*: seq[LdtkTableOfContentEntry]
+    `worlds`*: seq[LdtkWorld]
     `imageExportMode`*: LdtkImageExportMode
     `dummyWorldIid`*: string
     `__FORCED_REFS`*: Ldtk__FORCED_REFS
@@ -3422,7 +3422,7 @@ type
     `exportLevelBg`*: bool
     `nextUid`*: BiggestInt
     `levelNamePattern`*: string
-    `defs`*: LdtkDefs
+    `defs`*: LdtkDefinitions
     `defaultPivotX`*: BiggestFloat
     `tutorialDesc`*: LdtkTutorialDesc
     `worldLayout`*: LdtkWorldLayout
@@ -3436,4 +3436,4 @@ type
     `defaultLevelBgColor`*: string
     `identifierStyle`*: LdtkIdentifierStyle
     `worldGridHeight`*: LdtkWorldGridHeight
-    `levels`*: seq[LdtkLevels]
+    `levels`*: seq[LdtkLevel]

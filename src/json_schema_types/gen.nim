@@ -1,4 +1,4 @@
-import types, std/[macros, tables, sets, strformat, json, strutils]
+import types, schemaRef, std/[macros, tables, sets, strformat, json, strutils]
 
 type GenContext = ref object
     accum: NimNode
@@ -8,8 +8,11 @@ type GenContext = ref object
 proc add(ctx: GenContext, name, typ: NimNode) =
     ctx.accum.add(nnkTypeDef.newTree(postfix(name, "*"), newEmptyNode(), typ))
 
-proc genName(ctx: GenContext, name: string): NimNode =
-    return (ctx.prefix & name.capitalizeAscii).ident
+proc genName(ctx: GenContext, name: string, typ: TypeDef): NimNode =
+    var basename: string = typ.sref.getName()
+    if basename == "":
+        basename = name
+    return (ctx.prefix & basename.capitalizeAscii).ident
 
 proc genType(typ: TypeDef, name: string, ctx: GenContext): NimNode
     ## Forward declaration for a proc that generates code for an arbitrary type
@@ -18,7 +21,7 @@ proc genObj(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     ## Generates code for an object type
     assert(typ.kind == ObjType)
 
-    result = ctx.genName(name)
+    result = ctx.genName(name, typ)
 
     var records = nnkRecList.newTree()
     for key, keyType in typ.properties:
@@ -45,7 +48,7 @@ proc genArray(typ: TypeDef, name: string, ctx: GenContext): NimNode =
 
 proc genEnum(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     assert(typ.kind == EnumType)
-    result = ctx.genName(name)
+    result = ctx.genName(name, typ)
 
     var enumTyp = nnkEnumTy.newTree(newEmptyNode())
     for value in typ.values:
@@ -68,7 +71,7 @@ proc genUnion(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     elif typ.subtypes.len == 1:
         return typ.subtypes[0].genType(name, ctx)
 
-    result = ctx.genName(name)
+    result = ctx.genName(name, typ)
 
     var cases = nnkRecCase.newTree(
         nnkIdentDefs.newTree(
