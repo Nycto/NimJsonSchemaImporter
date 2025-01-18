@@ -13,6 +13,8 @@ type
         NullType,
         EnumType,
         UnionType,
+        JsonType,
+        MapType,
 
     TypeDef* = ref object
         id*, title*, description*, comment*: string
@@ -27,7 +29,9 @@ type
             items*: TypeDef
         of UnionType:
             subtypes*: seq[TypeDef]
-        of IntegerType, StringType, NumberType, BoolType, NullType:
+        of MapType:
+            entries*: TypeDef
+        of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
             discard
 
     JsonSchema* = ref object

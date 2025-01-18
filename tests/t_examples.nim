@@ -1,4 +1,4 @@
-import std/[unittest, json], json_schema_reader
+import std/[unittest, json, os, paths], json_schema_reader
 
 proc testResolver(uri: string): JsonNode = parseJson("""{"type":"string"}""")
 
@@ -6,9 +6,13 @@ suite "Parsing example json schema":
 
     template buildTest(name: static string) =
         test name:
-            const parsed = slurp("examples/" & name & ".json").parseJsonSchema(name, testResolver).repr
-            const expect = slurp("examples/" & name & "_expect.nim")
-            check(parsed == expect)
+            const parsed = slurp("examples" / (name & ".json")).parseJsonSchema(name, testResolver).repr
+            const expectPath = "examples" / (name & "_expect.nim")
+            when defined(rebuild):
+                writeFile(currentSourcePath.parentDir() / expectPath, parsed)
+            else:
+                const expect = slurp(expectPath)
+                check(parsed == expect)
 
     # https://json-schema.org/learn/json-schema-examples
     buildTest("address")
@@ -23,4 +27,4 @@ suite "Parsing example json schema":
     buildTest("union")
 
     # Specific applications
-    # buildTest("ldtk")
+    buildTest("ldtk")

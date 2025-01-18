@@ -1,4 +1,4 @@
-import types, std/[macros, tables, sets, strformat]
+import types, std/[macros, tables, sets, strformat, json]
 
 type GenContext = ref object
     accum: NimNode
@@ -88,6 +88,10 @@ proc genUnion(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
 
     ctx.add(result, nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), nnkRecList.newTree(cases)))
 
+proc genMap(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
+    assert(typ.kind == MapType)
+    return nnkBracketExpr.newTree(bindSym("Table"), bindSym("string"), genType(typ.entries, name, ctx))
+
 proc genType(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
     ## Generates code for an arbitrary type
     case typ.kind
@@ -98,6 +102,10 @@ proc genType(typ: TypeDef, name: NimNode, ctx: GenContext): NimNode =
     of IntegerType: return bindSym("BiggestInt")
     of EnumType: return genEnum(typ, name, ctx)
     of UnionType: return genUnion(typ, name, ctx)
+    of BoolType: return bindSym("bool")
+    of NullType: return bindSym("pointer")
+    of JsonType: return bindSym("JsonNode")
+    of MapType: return genMap(typ, name, ctx)
     else: raise newException(AssertionDefect, "Could not generate code for " & $typ.kind)
 
 proc genDeclarations*(schema: JsonSchema, name: string): NimNode =
