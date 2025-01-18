@@ -113,4 +113,7 @@ proc resolve*(sref: SchemaRef, node: JsonNode, resolveUrl: UrlResolver): JsonNod
         return sref.next.resolve(node{sref.name}, resolveUrl)
 
     of AnchorRef:
-        raise newException(ValueError, fmt"Anchor references are unsupported: {sref}")
+        for key, entry in node{"$defs"}:
+            if "$anchor" in entry and entry{"$anchor"}.getStr == sref.name:
+                return entry
+        raise newException(ValueError, fmt"Unable to find anchor reference: {sref}")
