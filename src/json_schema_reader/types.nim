@@ -2,7 +2,16 @@ import std/[sets, tables], schemaRef
 
 type
     TypeDefKind* = enum
-        ObjType, RefType, ArrayType, SetType, IntegerType, StringType, NumberType, BoolType, NullType, EnumType
+        ObjType,
+        RefType,
+        ArrayType,
+        SetType,
+        IntegerType,
+        StringType,
+        NumberType,
+        BoolType,
+        NullType,
+        EnumType
 
     TypeDef* = ref object
         id*, title*, description*, comment*: string

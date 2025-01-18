@@ -32,6 +32,7 @@ proc parseTypedStr(node: JsonNode, ctx: ParseContext): TypeDef =
     case typ
     of "string": return parseStr(node, ctx)
     of "number": return TypeDef(kind: NumberType)
+    of "integer": return TypeDef(kind: IntegerType)
     of "object": return parseObj(node, ctx)
     of "array": return parseArray(node, ctx)
     else: raise newException(ValueError, fmt"Unsupported type {typ} in {node}")

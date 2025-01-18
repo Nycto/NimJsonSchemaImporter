@@ -17,3 +17,4 @@ suite "Parsing example json schema":
     buildTest("location")
     buildTest("health")
     buildTest("movie")
+    buildTest("user_profile")
