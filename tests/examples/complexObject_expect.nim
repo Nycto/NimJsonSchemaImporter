@@ -1,11 +1,11 @@
 type
   ComplexObjectAddress* = object
-    street*: string
-    city*: string
-    postalCode*: string
-    state*: string
+    `street`*: string
+    `city`*: string
+    `postalCode`*: string
+    `state`*: string
   ComplexObjectComplexObject* = object
-    hobbies*: seq[string]
-    address*: ComplexObjectAddress
-    age*: BiggestInt
-    name*: string
+    `hobbies`*: seq[string]
+    `address`*: ComplexObjectAddress
+    `age`*: BiggestInt
+    `name`*: string

@@ -1,7 +1,7 @@
 type
   EcommerceItems* = object
-    name*: string
-    price*: BiggestFloat
+    `name`*: string
+    `price`*: BiggestFloat
   EcommerceEcommerce* = object
-    items*: seq[EcommerceItems]
-    orderId*: string
+    `items`*: seq[EcommerceItems]
+    `orderId`*: string

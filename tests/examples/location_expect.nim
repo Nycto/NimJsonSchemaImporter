@@ -1,4 +1,4 @@
 type
   LocationLocation* = object
-    latitude*: BiggestFloat
-    longitude*: BiggestFloat
+    `latitude`*: BiggestFloat
+    `longitude`*: BiggestFloat

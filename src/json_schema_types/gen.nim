@@ -24,7 +24,7 @@ proc genObj(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     for key, keyType in typ.properties:
         records.add(
             nnkIdentDefs.newTree(
-                postfix(key.ident, "*"),
+                postfix(nnkAccQuoted.newTree(key.ident), "*"),
                 keyType.genType(key, ctx),
                 newEmptyNode()
             )

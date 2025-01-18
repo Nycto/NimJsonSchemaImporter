@@ -1,9 +1,9 @@
 type
   HealthHealth* = object
-    dateOfBirth*: string
-    emergencyContact*: string
-    patientName*: string
-    bloodType*: string
-    medications*: seq[string]
-    conditions*: seq[string]
-    allergies*: seq[string]
+    `dateOfBirth`*: string
+    `emergencyContact`*: string
+    `patientName`*: string
+    `bloodType`*: string
+    `medications`*: seq[string]
+    `conditions`*: seq[string]
+    `allergies`*: seq[string]
