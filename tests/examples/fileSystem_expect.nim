@@ -1,3 +1,4 @@
+import std/[json, tables]
 type
   FileSystemType* = enum
     disk

@@ -1,3 +1,4 @@
+import std/[json, tables]
 type
   User_profileUser_profile* = object
     `interests`*: seq[string]

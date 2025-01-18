@@ -1,3 +1,4 @@
+import std/[json, tables]
 type
   UnionKey1* = object
     case kind: range[0 .. 1]

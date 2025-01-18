@@ -1,3 +1,4 @@
+import std/[json, tables]
 type
   MovieGenre* = enum
     Comedy, Science Fiction, Action, Drama

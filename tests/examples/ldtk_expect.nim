@@ -1,3 +1,4 @@
+import std/[json, tables]
 type
   LdtkBackupRelPath* = object
     case kind: range[0 .. 1]

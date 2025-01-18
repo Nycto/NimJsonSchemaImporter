@@ -1,3 +1,4 @@
+import std/[json, tables]
 type
   HealthHealth* = object
     `dateOfBirth`*: string

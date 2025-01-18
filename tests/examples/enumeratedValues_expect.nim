@@ -1,3 +1,4 @@
+import std/[json, tables]
 type
   EnumeratedValuesData* = enum
     , hello

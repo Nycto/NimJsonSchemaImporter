@@ -2,6 +2,8 @@ import std/[unittest, json, os, paths, strutils], json_schema_types
 
 proc testResolver(uri: string): JsonNode = parseJson("""{"type":"string"}""")
 
+proc addHeader(content: string): string = "import std/[json, tables]\n" & content
+
 suite "Parsing example json schema":
 
     template buildTest(name: static string) =
@@ -9,7 +11,10 @@ suite "Parsing example json schema":
             const parsed = slurp("examples" / (name & ".json"))
                 .parseJsonSchema(name, name.capitalizeAscii, testResolver)
                 .repr
+                .addHeader
+
             const expectPath = "examples" / (name & "_expect.nim")
+
             when defined(rebuild):
                 writeFile(currentSourcePath.parentDir() / expectPath, parsed)
             else:
