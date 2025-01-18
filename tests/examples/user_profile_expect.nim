@@ -1,9 +1,9 @@
-import std/[json, tables]
+import std/[json, tables, options]
 type
   User_profileUser_profile* = object
-    `interests`*: seq[string]
-    `fullName`*: string
-    `age`*: BiggestInt
+    `interests`*: Option[seq[string]]
+    `fullName`*: Option[string]
+    `age`*: Option[BiggestInt]
     `username`*: string
-    `location`*: string
+    `location`*: Option[string]
     `email`*: string

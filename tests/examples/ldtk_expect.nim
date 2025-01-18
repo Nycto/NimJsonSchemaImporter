@@ -1,4 +1,4 @@
-import std/[json, tables]
+import std/[json, tables, options]
 type
   LdtkBackupRelPath* = object
     case kind: range[0 .. 1]
@@ -50,7 +50,7 @@ type
   LdtkTableOfContentEntry* = object
     `instancesData`*: seq[LdtkTocInstanceData]
     `identifier`*: string
-    `instances`*: seq[LdtkEntityReferenceInfos]
+    `instances`*: Option[seq[LdtkEntityReferenceInfos]]
   LdtkWorldLayout* = enum
     LinearHorizontal, LinearVertical, GridVania, Free
   LdtkBgColor* = object
@@ -78,7 +78,7 @@ type
     of 1:
       key1: pointer
   LdtkNeighbourLevel* = object
-    `levelUid`*: LdtkLevelUid
+    `levelUid`*: Option[LdtkLevelUid]
     `levelIid`*: string
     `dir`*: string
   LdtkBgPos* = enum
@@ -99,7 +99,7 @@ type
   LdtkIntGridValueInstance* = object
     `coordId`*: BiggestInt
     `v`*: BiggestInt
-  Ldtk_worldY* = object
+  Ldtk__worldY* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
@@ -111,7 +111,13 @@ type
     `y`*: BiggestInt
     `h`*: BiggestInt
     `tilesetUid`*: BiggestInt
-  Ldtk_tile* = object
+  Ldtk__tile* = object
+    case kind: range[0 .. 1]
+    of 0:
+      key0: pointer
+    of 1:
+      key1: LdtkTilesetRect
+  Ldtk__tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
@@ -120,7 +126,7 @@ type
   LdtkFieldInstance* = object
     `realEditorValues`*: seq[JsonNode]
     `__value`*: JsonNode
-    `__tile`*: Ldtk__tile
+    `__tile`*: Option[Ldtk__tile]
     `__type`*: string
     `__identifier`*: string
     `defUid`*: BiggestInt
@@ -131,8 +137,8 @@ type
     of 1:
       key1: pointer
   LdtkEntityInstance* = object
-    `__worldY`*: Ldtk__worldY
-    `__tile`*: Ldtk__tile
+    `__worldY`*: Option[Ldtk__worldY]
+    `__tile`*: Option[Ldtk__tile]
     `__identifier`*: string
     `__tags`*: seq[string]
     `height`*: BiggestInt
@@ -142,7 +148,7 @@ type
     `fieldInstances`*: seq[LdtkFieldInstance]
     `iid`*: string
     `width`*: BiggestInt
-    `__worldX`*: Ldtk__worldX
+    `__worldX`*: Option[Ldtk__worldX]
     `__grid`*: seq[BiggestInt]
     `__smartColor`*: string
   Ldtk__tilesetRelPath* = object
@@ -165,16 +171,16 @@ type
     `gridTiles`*: seq[LdtkTile]
     `__type`*: string
     `__identifier`*: string
-    `overrideTilesetUid`*: LdtkOverrideTilesetUid
+    `overrideTilesetUid`*: Option[LdtkOverrideTilesetUid]
     `levelId`*: BiggestInt
-    `intGrid`*: seq[LdtkIntGridValueInstance]
+    `intGrid`*: Option[seq[LdtkIntGridValueInstance]]
     `autoLayerTiles`*: seq[LdtkTile]
     `layerDefUid`*: BiggestInt
     `entityInstances`*: seq[LdtkEntityInstance]
     `intGridCsv`*: seq[BiggestInt]
     `pxOffsetX`*: BiggestInt
-    `__tilesetRelPath`*: Ldtk__tilesetRelPath
-    `__tilesetDefUid`*: Ldtk__tilesetDefUid
+    `__tilesetRelPath`*: Option[Ldtk__tilesetRelPath]
+    `__tilesetDefUid`*: Option[Ldtk__tilesetDefUid]
     `__cHei`*: BiggestInt
     `seed`*: BiggestInt
     `visible`*: bool
@@ -196,20 +202,20 @@ type
     `pxHei`*: BiggestInt
     `useAutoIdentifier`*: bool
     `__bgColor`*: string
-    `bgColor`*: LdtkBgColor
-    `externalRelPath`*: LdtkExternalRelPath
+    `bgColor`*: Option[LdtkBgColor]
+    `externalRelPath`*: Option[LdtkExternalRelPath]
     `worldY`*: BiggestInt
-    `bgRelPath`*: LdtkBgRelPath
+    `bgRelPath`*: Option[LdtkBgRelPath]
     `identifier`*: string
     `pxWid`*: BiggestInt
     `worldDepth`*: BiggestInt
     `bgPivotX`*: BiggestFloat
     `__neighbours`*: seq[LdtkNeighbourLevel]
     `uid`*: BiggestInt
-    `bgPos`*: Option[LdtkBgPos]
-    `layerInstances`*: seq[LdtkLayerInstance]
+    `bgPos`*: Option[Option[LdtkBgPos]]
+    `layerInstances`*: Option[seq[LdtkLayerInstance]]
     `fieldInstances`*: seq[LdtkFieldInstance]
-    `__bgPos`*: Ldtk__bgPos
+    `__bgPos`*: Option[Ldtk__bgPos]
     `worldX`*: BiggestInt
     `iid`*: string
     `bgPivotY`*: BiggestFloat
@@ -238,9 +244,9 @@ type
     of 1:
       key1: pointer
   LdtkIntGridValueDef* = object
-    `tile`*: LdtkTile
+    `tile`*: Option[LdtkTile]
     `color`*: string
-    `identifier`*: LdtkIdentifier
+    `identifier`*: Option[LdtkIdentifier]
     `groupUid`*: BiggestInt
     `value`*: BiggestInt
   LdtkAllowedRefsEntityUid* = object
@@ -326,38 +332,38 @@ type
     `type`*: string
     `editorDisplayScale`*: BiggestFloat
     `__type`*: string
-    `allowedRefsEntityUid`*: LdtkAllowedRefsEntityUid
-    `textLanguageMode`*: Option[LdtkTextLanguageMode]
+    `allowedRefsEntityUid`*: Option[LdtkAllowedRefsEntityUid]
+    `textLanguageMode`*: Option[Option[LdtkTextLanguageMode]]
     `editorAlwaysShow`*: bool
-    `defaultOverride`*: JsonNode
+    `defaultOverride`*: Option[JsonNode]
     `autoChainRef`*: bool
     `editorDisplayPos`*: LdtkEditorDisplayPos
     `editorDisplayMode`*: LdtkEditorDisplayMode
     `identifier`*: string
-    `regex`*: LdtkRegex
+    `regex`*: Option[LdtkRegex]
     `isArray`*: bool
     `editorLinkStyle`*: LdtkEditorLinkStyle
     `allowedRefs`*: LdtkAllowedRefs
     `useForSmartColor`*: bool
-    `editorTextSuffix`*: LdtkEditorTextSuffix
-    `doc`*: LdtkDoc
-    `editorTextPrefix`*: LdtkEditorTextPrefix
+    `editorTextSuffix`*: Option[LdtkEditorTextSuffix]
+    `doc`*: Option[LdtkDoc]
+    `editorTextPrefix`*: Option[LdtkEditorTextPrefix]
     `editorCutLongValues`*: bool
     `canBeNull`*: bool
     `allowedRefTags`*: seq[string]
     `uid`*: BiggestInt
     `symmetricalRef`*: bool
-    `editorDisplayColor`*: LdtkEditorDisplayColor
+    `editorDisplayColor`*: Option[LdtkEditorDisplayColor]
     `allowOutOfLevelRef`*: bool
-    `acceptFileTypes`*: seq[string]
+    `acceptFileTypes`*: Option[seq[string]]
     `editorShowInWorld`*: bool
-    `tilesetUid`*: LdtkTilesetUid
-    `arrayMaxLength`*: LdtkArrayMaxLength
-    `arrayMinLength`*: LdtkArrayMinLength
+    `tilesetUid`*: Option[LdtkTilesetUid]
+    `arrayMaxLength`*: Option[LdtkArrayMaxLength]
+    `arrayMinLength`*: Option[LdtkArrayMinLength]
     `searchable`*: bool
-    `min`*: LdtkMin
+    `min`*: Option[LdtkMin]
     `exportToToc`*: bool
-    `max`*: LdtkMax
+    `max`*: Option[LdtkMax]
   LdtkTagsSourceEnumUid* = object
     case kind: range[0 .. 1]
     of 0:
@@ -389,10 +395,10 @@ type
     `savedSelections`*: seq[Table[string, JsonNode]]
     `padding`*: BiggestInt
     `spacing`*: BiggestInt
-    `tagsSourceEnumUid`*: LdtkTagsSourceEnumUid
-    `embedAtlas`*: Option[LdtkEmbedAtlas]
+    `tagsSourceEnumUid`*: Option[LdtkTagsSourceEnumUid]
+    `embedAtlas`*: Option[Option[LdtkEmbedAtlas]]
     `identifier`*: string
-    `cachedPixelData`*: LdtkCachedPixelData
+    `cachedPixelData`*: Option[LdtkCachedPixelData]
     `enumTags`*: seq[LdtkEnumTagValue]
     `pxWid`*: BiggestInt
     `tileGridSize`*: BiggestInt
@@ -400,7 +406,7 @@ type
     `uid`*: BiggestInt
     `__cHei`*: BiggestInt
     `__cWid`*: BiggestInt
-    `relPath`*: LdtkRelPath
+    `relPath`*: Option[LdtkRelPath]
     `tags`*: seq[string]
   LdtkLimitScope* = enum
     PerLayer, PerWorld, PerLevel
@@ -475,29 +481,29 @@ type
     `hollow`*: bool
     `height`*: BiggestInt
     `renderMode`*: LdtkRenderMode
-    `tilesetId`*: LdtkTilesetId
+    `tilesetId`*: Option[LdtkTilesetId]
     `keepAspectRatio`*: bool
-    `minWidth`*: LdtkMinWidth
+    `minWidth`*: Option[LdtkMinWidth]
     `showName`*: bool
     `resizableX`*: bool
     `identifier`*: string
     `maxCount`*: BiggestInt
-    `tileId`*: LdtkTileId
+    `tileId`*: Option[LdtkTileId]
     `pivotX`*: BiggestFloat
-    `doc`*: LdtkDoc
+    `doc`*: Option[LdtkDoc]
     `fieldDefs`*: seq[LdtkFieldDef]
     `uid`*: BiggestInt
     `tileRenderMode`*: LdtkTileRenderMode
-    `uiTileRect`*: LdtkUiTileRect
+    `uiTileRect`*: Option[LdtkUiTileRect]
     `resizableY`*: bool
     `lineOpacity`*: BiggestFloat
-    `minHeight`*: LdtkMinHeight
-    `tileRect`*: LdtkTileRect
+    `minHeight`*: Option[LdtkMinHeight]
+    `tileRect`*: Option[LdtkTileRect]
     `nineSliceBorders`*: seq[BiggestInt]
-    `maxWidth`*: LdtkMaxWidth
+    `maxWidth`*: Option[LdtkMaxWidth]
     `width`*: BiggestInt
     `tags`*: seq[string]
-    `maxHeight`*: LdtkMaxHeight
+    `maxHeight`*: Option[LdtkMaxHeight]
     `exportToToc`*: bool
     `fillOpacity`*: BiggestFloat
   LdtkTileId* = object
@@ -513,11 +519,11 @@ type
     of 1:
       key1: LdtkTilesetRect
   LdtkEnumDefValues* = object
-    `__tileSrcRect`*: seq[BiggestInt]
+    `__tileSrcRect`*: Option[seq[BiggestInt]]
     `color`*: BiggestInt
     `id`*: string
-    `tileId`*: LdtkTileId
-    `tileRect`*: LdtkTileRect
+    `tileId`*: Option[LdtkTileId]
+    `tileRect`*: Option[LdtkTileRect]
   LdtkExternalRelPath* = object
     case kind: range[0 .. 1]
     of 0:
@@ -538,10 +544,10 @@ type
       key1: pointer
   LdtkEnumDef* = object
     `values`*: seq[LdtkEnumDefValues]
-    `externalRelPath`*: LdtkExternalRelPath
+    `externalRelPath`*: Option[LdtkExternalRelPath]
     `identifier`*: string
-    `externalFileChecksum`*: LdtkExternalFileChecksum
-    `iconTilesetUid`*: LdtkIconTilesetUid
+    `externalFileChecksum`*: Option[LdtkExternalFileChecksum]
+    `iconTilesetUid`*: Option[LdtkIconTilesetUid]
     `uid`*: BiggestInt
     `tags`*: seq[string]
   LdtkType* = enum
@@ -604,12 +610,12 @@ type
     `tileRandomYMax`*: BiggestInt
     `perlinActive`*: bool
     `perlinScale`*: BiggestFloat
-    `outOfBoundsValue`*: LdtkOutOfBoundsValue
+    `outOfBoundsValue`*: Option[LdtkOutOfBoundsValue]
     `pivotX`*: BiggestFloat
     `flipY`*: bool
     `active`*: bool
     `uid`*: BiggestInt
-    `tileIds`*: seq[BiggestInt]
+    `tileIds`*: Option[seq[BiggestInt]]
     `invalidated`*: bool
     `pattern`*: seq[BiggestInt]
     `alpha`*: BiggestFloat
@@ -626,12 +632,12 @@ type
       key1: LdtkTilesetRect
   LdtkAutoLayerRuleGroup* = object
     `isOptional`*: bool
-    `color`*: LdtkColor
-    `collapsed`*: LdtkCollapsed
+    `color`*: Option[LdtkColor]
+    `collapsed`*: Option[LdtkCollapsed]
     `usesWizard`*: bool
     `biomeRequirementMode`*: BiggestInt
     `rules`*: seq[LdtkAutoRuleDef]
-    `icon`*: LdtkIcon
+    `icon`*: Option[LdtkIcon]
     `active`*: bool
     `uid`*: BiggestInt
     `name`*: string
@@ -673,22 +679,22 @@ type
     of 1:
       key1: pointer
   LdtkIntGridValueGroupDef* = object
-    `color`*: LdtkColor
-    `identifier`*: LdtkIdentifier
+    `color`*: Option[LdtkColor]
+    `identifier`*: Option[LdtkIdentifier]
     `uid`*: BiggestInt
   LdtkLayerDef* = object
     `type`*: LdtkType
-    `autoTilesetDefUid`*: LdtkAutoTilesetDefUid
+    `autoTilesetDefUid`*: Option[LdtkAutoTilesetDefUid]
     `parallaxScaling`*: bool
-    `biomeFieldUid`*: LdtkBiomeFieldUid
-    `autoTilesKilledByOtherLayerUid`*: LdtkAutoTilesKilledByOtherLayerUid
+    `biomeFieldUid`*: Option[LdtkBiomeFieldUid]
+    `autoTilesKilledByOtherLayerUid`*: Option[LdtkAutoTilesKilledByOtherLayerUid]
     `inactiveOpacity`*: BiggestFloat
     `__type`*: string
     `autoRuleGroups`*: seq[LdtkAutoLayerRuleGroup]
     `gridSize`*: BiggestInt
     `hideInList`*: bool
-    `tilesetDefUid`*: LdtkTilesetDefUid
-    `uiColor`*: LdtkUiColor
+    `tilesetDefUid`*: Option[LdtkTilesetDefUid]
+    `uiColor`*: Option[LdtkUiColor]
     `requiredTags`*: seq[string]
     `tilePivotX`*: BiggestFloat
     `uiFilterTags`*: seq[string]
@@ -699,10 +705,10 @@ type
     `pxOffsetX`*: BiggestInt
     `tilePivotY`*: BiggestFloat
     `excludedTags`*: seq[string]
-    `doc`*: LdtkDoc
+    `doc`*: Option[LdtkDoc]
     `uid`*: BiggestInt
     `guideGridHei`*: BiggestInt
-    `autoSourceLayerDefUid`*: LdtkAutoSourceLayerDefUid
+    `autoSourceLayerDefUid`*: Option[LdtkAutoSourceLayerDefUid]
     `displayOpacity`*: BiggestFloat
     `intGridValuesGroups`*: seq[LdtkIntGridValueGroupDef]
     `hideFieldsWhenInactive`*: bool
@@ -722,34 +728,34 @@ type
     `cx`*: BiggestInt
     `cy`*: BiggestInt
   Ldtk__FORCED_REFS* = object
-    `CustomCommand`*: LdtkCustomCommand
-    `IntGridValueDef`*: LdtkIntGridValueDef
-    `Level`*: LdtkLevel
-    `Definitions`*: LdtkDefinitions
-    `EnumDef`*: LdtkEnumDef
-    `FieldDef`*: LdtkFieldDef
-    `AutoLayerRuleGroup`*: LdtkAutoLayerRuleGroup
-    `TilesetDef`*: LdtkTilesetDef
-    `TableOfContentEntry`*: LdtkTableOfContentEntry
-    `EntityDef`*: LdtkEntityDef
-    `FieldInstance`*: LdtkFieldInstance
-    `EntityReferenceInfos`*: LdtkEntityReferenceInfos
-    `LevelBgPosInfos`*: LdtkLevelBgPosInfos
-    `TileCustomMetadata`*: LdtkTileCustomMetadata
-    `Tile`*: LdtkTile
-    `AutoRuleDef`*: LdtkAutoRuleDef
-    `NeighbourLevel`*: LdtkNeighbourLevel
-    `GridPoint`*: LdtkGridPoint
-    `EntityInstance`*: LdtkEntityInstance
-    `TilesetRect`*: LdtkTilesetRect
-    `EnumTagValue`*: LdtkEnumTagValue
-    `LayerInstance`*: LdtkLayerInstance
-    `IntGridValueInstance`*: LdtkIntGridValueInstance
-    `World`*: LdtkWorld
-    `LayerDef`*: LdtkLayerDef
-    `IntGridValueGroupDef`*: LdtkIntGridValueGroupDef
-    `TocInstanceData`*: LdtkTocInstanceData
-    `EnumDefValues`*: LdtkEnumDefValues
+    `CustomCommand`*: Option[LdtkCustomCommand]
+    `IntGridValueDef`*: Option[LdtkIntGridValueDef]
+    `Level`*: Option[LdtkLevel]
+    `Definitions`*: Option[LdtkDefinitions]
+    `EnumDef`*: Option[LdtkEnumDef]
+    `FieldDef`*: Option[LdtkFieldDef]
+    `AutoLayerRuleGroup`*: Option[LdtkAutoLayerRuleGroup]
+    `TilesetDef`*: Option[LdtkTilesetDef]
+    `TableOfContentEntry`*: Option[LdtkTableOfContentEntry]
+    `EntityDef`*: Option[LdtkEntityDef]
+    `FieldInstance`*: Option[LdtkFieldInstance]
+    `EntityReferenceInfos`*: Option[LdtkEntityReferenceInfos]
+    `LevelBgPosInfos`*: Option[LdtkLevelBgPosInfos]
+    `TileCustomMetadata`*: Option[LdtkTileCustomMetadata]
+    `Tile`*: Option[LdtkTile]
+    `AutoRuleDef`*: Option[LdtkAutoRuleDef]
+    `NeighbourLevel`*: Option[LdtkNeighbourLevel]
+    `GridPoint`*: Option[LdtkGridPoint]
+    `EntityInstance`*: Option[LdtkEntityInstance]
+    `TilesetRect`*: Option[LdtkTilesetRect]
+    `EnumTagValue`*: Option[LdtkEnumTagValue]
+    `LayerInstance`*: Option[LdtkLayerInstance]
+    `IntGridValueInstance`*: Option[LdtkIntGridValueInstance]
+    `World`*: Option[LdtkWorld]
+    `LayerDef`*: Option[LdtkLayerDef]
+    `IntGridValueGroupDef`*: Option[LdtkIntGridValueGroupDef]
+    `TocInstanceData`*: Option[LdtkTocInstanceData]
+    `EnumDefValues`*: Option[LdtkEnumDefValues]
   LdtkTutorialDesc* = object
     case kind: range[0 .. 1]
     of 0:
@@ -780,38 +786,38 @@ type
     `backupLimit`*: BiggestInt
     `simplifiedExport`*: bool
     `externalLevels`*: bool
-    `backupRelPath`*: LdtkBackupRelPath
+    `backupRelPath`*: Option[LdtkBackupRelPath]
     `jsonVersion`*: string
     `bgColor`*: string
     `appBuildId`*: BiggestFloat
     `defaultEntityHeight`*: BiggestInt
-    `pngFilePattern`*: LdtkPngFilePattern
+    `pngFilePattern`*: Option[LdtkPngFilePattern]
     `customCommands`*: seq[LdtkCustomCommand]
     `exportTiled`*: bool
-    `exportPng`*: LdtkExportPng
-    `worldGridWidth`*: LdtkWorldGridWidth
-    `defaultLevelHeight`*: LdtkDefaultLevelHeight
+    `exportPng`*: Option[LdtkExportPng]
+    `worldGridWidth`*: Option[LdtkWorldGridWidth]
+    `defaultLevelHeight`*: Option[LdtkDefaultLevelHeight]
     `toc`*: seq[LdtkTableOfContentEntry]
     `worlds`*: seq[LdtkWorld]
     `imageExportMode`*: LdtkImageExportMode
     `dummyWorldIid`*: string
-    `__FORCED_REFS`*: Ldtk__FORCED_REFS
+    `__FORCED_REFS`*: Option[Ldtk__FORCED_REFS]
     `defaultPivotY`*: BiggestFloat
     `exportLevelBg`*: bool
     `nextUid`*: BiggestInt
     `levelNamePattern`*: string
     `defs`*: LdtkDefinitions
     `defaultPivotX`*: BiggestFloat
-    `tutorialDesc`*: LdtkTutorialDesc
-    `worldLayout`*: Option[LdtkWorldLayout]
+    `tutorialDesc`*: Option[LdtkTutorialDesc]
+    `worldLayout`*: Option[Option[LdtkWorldLayout]]
     `defaultEntityWidth`*: BiggestInt
     `iid`*: string
     `defaultGridSize`*: BiggestInt
-    `defaultLevelWidth`*: LdtkDefaultLevelWidth
+    `defaultLevelWidth`*: Option[LdtkDefaultLevelWidth]
     `minifyJson`*: bool
     `backupOnSave`*: bool
     `flags`*: seq[LdtkFlags]
     `defaultLevelBgColor`*: string
     `identifierStyle`*: LdtkIdentifierStyle
-    `worldGridHeight`*: LdtkWorldGridHeight
+    `worldGridHeight`*: Option[LdtkWorldGridHeight]
     `levels`*: seq[LdtkLevel]

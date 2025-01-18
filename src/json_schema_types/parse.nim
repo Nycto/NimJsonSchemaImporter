@@ -17,9 +17,17 @@ proc expectKind(node: JsonNode, kind: JsonNodeKind) =
 
 proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JObject)
+
+    var required = initHashSet[string]()
+    if "required" in node:
+        for key in node{"required"}:
+            required.incl(key.getStr)
+
     result = TypeDef(kind: ObjType, properties: initTable[string, TypeDef]())
+
     for key, typeDef in node{"properties"}:
-        result.properties[key] = typeDef.parseType(ctx, history.add("properties").add(key))
+        let subtype = typeDef.parseType(ctx, history.add("properties").add(key))
+        result.properties[key] = if key in required: subtype else: subtype.optional()
 
 proc parseMap(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JObject)
@@ -72,7 +80,7 @@ proc parseEnum(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
 
     result = TypeDef(kind: EnumType, values: values)
     if isOptional:
-        result = TypeDef(kind: OptionalType, subtype: result)
+        result = result.optional()
 
 proc parseStr(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     return if "enum" in node: parseEnum(node, ctx, history) else: parseTypeStr("string", history)

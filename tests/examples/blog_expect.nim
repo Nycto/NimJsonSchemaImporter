@@ -1,7 +1,7 @@
-import std/[json, tables]
+import std/[json, tables, options]
 type
   BlogBlog* = object
     `title`*: string
-    `tags`*: seq[string]
+    `tags`*: Option[seq[string]]
     `content`*: string
-    `publishedDate`*: string
+    `publishedDate`*: Option[string]

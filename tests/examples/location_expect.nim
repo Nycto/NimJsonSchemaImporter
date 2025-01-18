@@ -1,4 +1,4 @@
-import std/[json, tables]
+import std/[json, tables, options]
 type
   LocationLocation* = object
     `latitude`*: BiggestFloat

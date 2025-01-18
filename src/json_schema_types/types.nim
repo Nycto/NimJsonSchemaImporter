@@ -41,3 +41,5 @@ type
     JsonSchema* = ref object
         rootType*: TypeDef
         defs*: Table[string, TypeDef]
+
+proc optional*(typ: TypeDef): TypeDef = TypeDef(kind: OptionalType, subtype: typ)

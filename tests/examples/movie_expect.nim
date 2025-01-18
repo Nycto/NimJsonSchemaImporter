@@ -1,11 +1,11 @@
-import std/[json, tables]
+import std/[json, tables, options]
 type
   MovieGenre* = enum
     Comedy, Science Fiction, Action, Drama
   MovieMovie* = object
-    `duration`*: string
+    `duration`*: Option[string]
     `releaseDate`*: string
-    `genre`*: MovieGenre
+    `genre`*: Option[MovieGenre]
     `title`*: string
-    `cast`*: seq[string]
+    `cast`*: Option[seq[string]]
     `director`*: string

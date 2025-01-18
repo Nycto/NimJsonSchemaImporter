@@ -1,4 +1,4 @@
-import std/[json, tables]
+import std/[json, tables, options]
 type
   ComplexObjectAddress* = object
     `street`*: string
@@ -6,7 +6,7 @@ type
     `postalCode`*: string
     `state`*: string
   ComplexObjectComplexObject* = object
-    `hobbies`*: seq[string]
-    `address`*: ComplexObjectAddress
+    `hobbies`*: Option[seq[string]]
+    `address`*: Option[ComplexObjectAddress]
     `age`*: BiggestInt
     `name`*: string

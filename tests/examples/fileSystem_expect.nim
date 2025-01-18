@@ -1,4 +1,4 @@
-import std/[json, tables]
+import std/[json, tables, options]
 type
   FileSystemType* = enum
     disk
@@ -42,7 +42,7 @@ type
   FileSystemFstype* = enum
     ext4, btrfs, ext3
   FileSystemFileSystem* = object
-    `options`*: seq[string]
-    `readonly`*: bool
+    `options`*: Option[seq[string]]
+    `readonly`*: Option[bool]
     `storage`*: FileSystemStorage
-    `fstype`*: FileSystemFstype
+    `fstype`*: Option[FileSystemFstype]

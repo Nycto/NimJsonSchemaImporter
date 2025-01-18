@@ -1,8 +1,8 @@
-import std/[json, tables]
+import std/[json, tables, options]
 type
   EcommerceProductSchema* = object
-    `name`*: string
-    `price`*: BiggestFloat
+    `name`*: Option[string]
+    `price`*: Option[BiggestFloat]
   EcommerceOrderSchema* = object
-    `items`*: seq[EcommerceProductSchema]
-    `orderId`*: string
+    `items`*: Option[seq[EcommerceProductSchema]]
+    `orderId`*: Option[string]

@@ -2,7 +2,7 @@ import std/[unittest, json, os, paths, strutils], json_schema_types
 
 proc testResolver(uri: string): JsonNode = parseJson("""{"type":"string"}""")
 
-proc addHeader(content: string): string = "import std/[json, tables]\n" & content
+proc addHeader(content: string): string = "import std/[json, tables, options]\n" & content
 
 suite "Parsing example json schema":
 

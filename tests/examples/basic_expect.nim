@@ -1,6 +1,6 @@
-import std/[json, tables]
+import std/[json, tables, options]
 type
   BasicBasic* = object
-    `firstName`*: string
-    `age`*: BiggestInt
-    `lastName`*: string
+    `firstName`*: Option[string]
+    `age`*: Option[BiggestInt]
+    `lastName`*: Option[string]

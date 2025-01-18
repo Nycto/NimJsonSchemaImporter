@@ -1,10 +1,10 @@
-import std/[json, tables]
+import std/[json, tables, options]
 type
   HealthHealth* = object
     `dateOfBirth`*: string
-    `emergencyContact`*: string
+    `emergencyContact`*: Option[string]
     `patientName`*: string
     `bloodType`*: string
-    `medications`*: seq[string]
-    `conditions`*: seq[string]
-    `allergies`*: seq[string]
+    `medications`*: Option[seq[string]]
+    `conditions`*: Option[seq[string]]
+    `allergies`*: Option[seq[string]]

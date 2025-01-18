@@ -1,10 +1,10 @@
-import std/[json, tables]
+import std/[json, tables, options]
 type
   AddressAddress* = object
-    `streetAddress`*: string
+    `streetAddress`*: Option[string]
     `region`*: string
     `locality`*: string
     `countryName`*: string
-    `postOfficeBox`*: string
-    `extendedAddress`*: string
-    `postalCode`*: string
+    `postOfficeBox`*: Option[string]
+    `extendedAddress`*: Option[string]
+    `postalCode`*: Option[string]

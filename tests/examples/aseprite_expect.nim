@@ -1,4 +1,4 @@
-import std/[json, tables]
+import std/[json, tables, options]
 type
   AsepriteSize* = object
     `w`*: BiggestFloat
@@ -42,13 +42,13 @@ type
     `x`*: BiggestFloat
     `y`*: BiggestFloat
   AsepriteSliceKey* = object
-    `pivot`*: AsepritePoint
-    `center`*: AsepriteRectangle
+    `pivot`*: Option[AsepritePoint]
+    `center`*: Option[AsepriteRectangle]
     `bounds`*: AsepriteRectangle
     `frame`*: BiggestFloat
   AsepriteSlice* = object
-    `data`*: string
-    `color`*: string
+    `data`*: Option[string]
+    `color`*: Option[string]
     `name`*: string
     `keys`*: seq[AsepriteSliceKey]
   AsepriteBlendMode* = enum
@@ -56,20 +56,20 @@ type
     hsl_color, subtract, divide, hsl_luminosity, darken, normal, hard_light,
     screen, lighten, soft_light, addition, hsl_hue, difference
   AsepriteLayer* = object
-    `blendMode`*: AsepriteBlendMode
-    `data`*: string
-    `color`*: string
-    `group`*: string
+    `blendMode`*: Option[AsepriteBlendMode]
+    `data`*: Option[string]
+    `color`*: Option[string]
+    `group`*: Option[string]
     `name`*: string
-    `opacity`*: BiggestFloat
+    `opacity`*: Option[BiggestFloat]
   AsepriteMeta* = object
     `scale`*: string
-    `frameTags`*: seq[AsepriteFrameTag]
+    `frameTags`*: Option[seq[AsepriteFrameTag]]
     `format`*: AsepriteFormat
     `size`*: AsepriteSize
-    `slices`*: seq[AsepriteSlice]
+    `slices`*: Option[seq[AsepriteSlice]]
     `version`*: string
-    `layers`*: seq[AsepriteLayer]
+    `layers`*: Option[seq[AsepriteLayer]]
     `app`*: string
     `image`*: string
   AsepriteSpriteSheet* = object
