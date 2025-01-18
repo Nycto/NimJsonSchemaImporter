@@ -3,15 +3,38 @@ import std/[strutils, parseutils, json, strformat]
 type
     RefKind* = enum
         RootRef,
-        SubRef
+        SubRef,
+        UrlRef,
+        AnchorRef
 
     SchemaRef* = ref object
         case kind*: RefKind
         of RootRef:
             discard
-        of SubRef:
+        of SubRef, AnchorRef:
             name*: string
+        of UrlRef:
+            url*: string
         next*: SchemaRef
+
+    UrlResolver* = proc (url: string): JsonNode
+        ## Callback that resolves remote URL references to a schema
+
+proc defaultResolver*(uri: string): JsonNode = nil
+
+proc dump*(sref: SchemaRef): string =
+    case sref.kind
+    of RootRef:
+        result = "(Root)"
+    of SubRef:
+        result = fmt"(Sub:{sref.name})"
+    of UrlRef:
+        result = fmt"(Url:{sref.url})"
+    of AnchorRef:
+        result = fmt"(Anchor:{sref.name})"
+
+    if sref.next != nil:
+        result &= "/" & sref.next.dump
 
 proc `$`*(sref: SchemaRef): string =
     case sref.kind
@@ -19,6 +42,10 @@ proc `$`*(sref: SchemaRef): string =
         result = "#"
     of SubRef:
         result = sref.name
+    of UrlRef:
+        result = sref.url
+    of AnchorRef:
+        result = "#" & sref.name
 
     if sref.next != nil:
         result &= "/" & $sref.next
@@ -39,20 +66,51 @@ proc parseSubref(input: string, offset: int): SchemaRef =
 
     return SchemaRef(kind: SubRef, name: token, next: parseSubref(input, offset + parsedChars + 1))
 
+proc parseHash(input: string, offset: int): SchemaRef =
+    case input.len - offset
+    of 0:
+        return nil
+    of 1:
+        input.required(input[offset] == '#')
+        return SchemaRef(kind: RootRef)
+    else:
+        input.required(input[offset] == '#')
+        if input[offset + 1] == '/':
+            return SchemaRef(kind: RootRef, next: parseSubRef(input, offset + 1))
+        else:
+            var token: string
+            let parsedChars = parseUntil(input, token, '/', offset + 1)
+            input.required(parsedChars > 0)
+            return SchemaRef(kind: AnchorRef, name: token, next: parseSubRef(input, offset + parsedChars + 1))
+
 proc parseRef*(input: string): SchemaRef =
-    if not input.startsWith("#"):
-        raise newException(ValueError, "Unsupported reference value: " & input)
+    input.required(input != "")
 
-    return SchemaRef(kind: RootRef, next: parseSubref(input, 1))
+    if input.startsWith("#"):
+        return parseHash(input, 0)
+    else:
+        var url: string
+        let parsedChars = parseUntil(input, url, '#', 0)
+        input.required(parsedChars > 0)
+        return SchemaRef(kind: UrlRef, url: url, next: parseHash(input, parsedChars))
 
-proc resolve*(sref: SchemaRef, node: JsonNode): JsonNode =
+proc resolve*(sref: SchemaRef, node: JsonNode, resolveUrl: UrlResolver): JsonNode =
     if sref == nil:
         return node
 
     case sref.kind
+    of UrlRef:
+        result = resolveUrl(sref.url)
+        if result == nil:
+            raise newException(ValueError, fmt"Unable to resolve url: {sref.url}")
+
     of RootRef:
-        return sref.next.resolve(node)
+        return sref.next.resolve(node, resolveUrl)
+
     of SubRef:
         if sref.name notin node:
             raise newException(ValueError, fmt"Unable to resolve reference: {sref} against {node}")
-        return sref.next.resolve(node{sref.name})
+        return sref.next.resolve(node{sref.name}, resolveUrl)
+
+    of AnchorRef:
+        raise newException(ValueError, fmt"Anchor references are unsupported: {sref}")

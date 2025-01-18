@@ -2,8 +2,9 @@ import std/[json, sets, tables, strformat], types, schemaRef
 
 type ParseContext = ref object
     doc: JsonNode
+    resolver: UrlResolver
 
-proc resolve(sref: SchemaRef, ctx: ParseContext): JsonNode = resolve(sref, ctx.doc)
+proc resolve(sref: SchemaRef, ctx: ParseContext): JsonNode = resolve(sref, ctx.doc, ctx.resolver)
 
 proc parseType(node: JsonNode, ctx: ParseContext): TypeDef
 
@@ -46,9 +47,9 @@ proc parseType(node: JsonNode, ctx: ParseContext): TypeDef =
     else:
         raise newException(ValueError, fmt"Unable to parse type: {node}")
 
-proc parseSchema*(node: JsonNode): JsonSchema =
+proc parseSchema*(node: JsonNode, resolver: UrlResolver = defaultResolver): JsonSchema =
     result = JsonSchema()
-    result.rootType = parseType(node, ParseContext(doc: node))
+    result.rootType = parseType(node, ParseContext(doc: node, resolver: resolver))
 
-proc parseSchema*(node: string): JsonSchema =
+proc parseSchema*(node: string, resolver: UrlResolver = defaultResolver): JsonSchema =
     node.parseJson.parseSchema
