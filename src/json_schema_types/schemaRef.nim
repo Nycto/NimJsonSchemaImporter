@@ -1,4 +1,4 @@
-import std/[strutils, parseutils, json, strformat]
+import std/[strutils, parseutils, json, strformat, hashes]
 
 type
     RefKind* = enum
@@ -37,6 +37,9 @@ proc dump*(sref: SchemaRef): string =
         result &= "/" & sref.next.dump
 
 proc `$`*(sref: SchemaRef): string =
+    if sref == nil:
+        return ""
+
     case sref.kind
     of RootRef:
         result = "#"
@@ -127,3 +130,25 @@ proc resolve*(sref: SchemaRef, node: JsonNode, resolveUrl: UrlResolver): JsonNod
             if "$anchor" in entry and entry{"$anchor"}.getStr == sref.name:
                 return entry
         raise newException(ValueError, fmt"Unable to find anchor reference: {sref}")
+
+proc `==`*(a, b: SchemaRef): bool =
+    if a.isNil and b.isNil:
+        return true
+    elif not a.isNil and not b.isNil and a.kind == b.kind:
+        return case a.kind
+        of RootRef: true
+        of SubRef, AnchorRef: a.name == b.name
+        of UrlRef: a.url == b.url
+
+proc hash*(sref: SchemaRef): Hash =
+    if not sref.isNil:
+        result = hash(sref.kind)
+
+        case sref.kind
+        of RootRef: discard
+        of SubRef, AnchorRef:
+            result = result !& hash(sref.name)
+        of UrlRef:
+            result = result !& hash(sref.url)
+
+        result = result !& hash(sref.next)

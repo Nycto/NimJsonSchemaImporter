@@ -7,11 +7,6 @@ type
     `w`*: BiggestFloat
     `y`*: BiggestFloat
     `h`*: BiggestFloat
-  AsepriteRectangle* = object
-    `x`*: BiggestFloat
-    `w`*: BiggestFloat
-    `y`*: BiggestFloat
-    `h`*: BiggestFloat
   AsepriteFrame* = object
     `sourceSize`*: AsepriteSize
     `duration`*: BiggestFloat
@@ -19,19 +14,6 @@ type
     `trimmed`*: bool
     `spriteSourceSize`*: AsepriteRectangle
     `frame`*: AsepriteRectangle
-  AsepriteSize* = object
-    `w`*: BiggestFloat
-    `h`*: BiggestFloat
-  AsepriteRectangle* = object
-    `x`*: BiggestFloat
-    `w`*: BiggestFloat
-    `y`*: BiggestFloat
-    `h`*: BiggestFloat
-  AsepriteRectangle* = object
-    `x`*: BiggestFloat
-    `w`*: BiggestFloat
-    `y`*: BiggestFloat
-    `h`*: BiggestFloat
   AsepriteArrayFrame* = object
     `sourceSize`*: AsepriteSize
     `duration`*: BiggestFloat
@@ -55,22 +37,9 @@ type
     `name`*: string
   AsepriteFormat* = enum
     I8, RGBA8888
-  AsepriteSize* = object
-    `w`*: BiggestFloat
-    `h`*: BiggestFloat
   AsepritePoint* = object
     `x`*: BiggestFloat
     `y`*: BiggestFloat
-  AsepriteRectangle* = object
-    `x`*: BiggestFloat
-    `w`*: BiggestFloat
-    `y`*: BiggestFloat
-    `h`*: BiggestFloat
-  AsepriteRectangle* = object
-    `x`*: BiggestFloat
-    `w`*: BiggestFloat
-    `y`*: BiggestFloat
-    `h`*: BiggestFloat
   AsepriteSliceKey* = object
     `pivot`*: AsepritePoint
     `center`*: AsepriteRectangle

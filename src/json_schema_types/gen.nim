@@ -4,6 +4,7 @@ type GenContext = ref object
     accum: NimNode
     nextId: uint
     prefix: string
+    cache: Table[SchemaRef, NimNode]
 
 proc add(ctx: GenContext, name, typ: NimNode) =
     ctx.accum.add(nnkTypeDef.newTree(postfix(name, "*"), newEmptyNode(), typ))
@@ -101,20 +102,27 @@ proc genMap(typ: TypeDef, name: string, ctx: GenContext): NimNode =
 
 proc genType(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     ## Generates code for an arbitrary type
+    if not typ.sref.isNil and typ.sref in ctx.cache:
+        return ctx.cache[typ.sref]
+
     case typ.kind
-    of ObjType: return genObj(typ, name, ctx)
-    of StringType: return bindSym("string")
-    of ArrayType: return genArray(typ, name, ctx)
-    of NumberType: return bindSym("BiggestFloat")
-    of IntegerType: return bindSym("BiggestInt")
-    of EnumType: return genEnum(typ, name, ctx)
-    of UnionType: return genUnion(typ, name, ctx)
-    of BoolType: return bindSym("bool")
-    of NullType: return bindSym("pointer")
-    of JsonType: return bindSym("JsonNode")
-    of MapType: return genMap(typ, name, ctx)
+    of ObjType: result = genObj(typ, name, ctx)
+    of StringType: result = bindSym("string")
+    of ArrayType: result = genArray(typ, name, ctx)
+    of NumberType: result = bindSym("BiggestFloat")
+    of IntegerType: result = bindSym("BiggestInt")
+    of EnumType: result = genEnum(typ, name, ctx)
+    of UnionType: result = genUnion(typ, name, ctx)
+    of BoolType: result = bindSym("bool")
+    of NullType: result = bindSym("pointer")
+    of JsonType: result = bindSym("JsonNode")
+    of MapType: result = genMap(typ, name, ctx)
     else: raise newException(AssertionDefect, "Could not generate code for " & $typ.kind)
+
+    if not typ.sref.isNil:
+        ctx.cache[typ.sref] = result
 
 proc genDeclarations*(schema: JsonSchema, name, namePrefix: string): NimNode =
     result = nnkTypeSection.newTree()
-    discard schema.rootType.genType(name, GenContext(accum: result, prefix: namePRefix))
+    let ctx = GenContext(accum: result, prefix: namePRefix, cache: initTable[SchemaRef, NimNode]())
+    discard schema.rootType.genType(name, ctx)
