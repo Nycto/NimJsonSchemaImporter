@@ -1,4 +1,4 @@
-import types, schemaRef, std/[macros, tables, sets, strformat, json, strutils]
+import types, schemaRef, std/[macros, tables, sets, strformat, json, strutils, options]
 
 type GenContext = ref object
     accum: NimNode
@@ -100,6 +100,10 @@ proc genMap(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     assert(typ.kind == MapType)
     return nnkBracketExpr.newTree(bindSym("Table"), bindSym("string"), genType(typ.entries, name, ctx))
 
+proc genOptional(typ: TypeDef, name: string, ctx: GenContext): NimNode =
+    assert(typ.kind == OptionalType)
+    return nnkBracketExpr.newTree(bindSym("Option"), genType(typ.subtype, name, ctx))
+
 proc genType(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     ## Generates code for an arbitrary type
     if not typ.sref.isNil and typ.sref in ctx.cache:
@@ -117,6 +121,7 @@ proc genType(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     of NullType: result = bindSym("pointer")
     of JsonType: result = bindSym("JsonNode")
     of MapType: result = genMap(typ, name, ctx)
+    of OptionalType: result = genOptional(typ, name, ctx)
     else: raise newException(AssertionDefect, "Could not generate code for " & $typ.kind)
 
     if not typ.sref.isNil:

@@ -15,6 +15,7 @@ type
         UnionType,
         JsonType,
         MapType,
+        OptionalType,
 
     TypeDef* = ref object
         id*, title*, description*, comment*: string
@@ -32,6 +33,8 @@ type
             subtypes*: seq[TypeDef]
         of MapType:
             entries*: TypeDef
+        of OptionalType:
+            subtype*: TypeDef
         of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
             discard
 

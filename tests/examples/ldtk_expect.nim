@@ -52,7 +52,7 @@ type
     `identifier`*: string
     `instances`*: seq[LdtkEntityReferenceInfos]
   LdtkWorldLayout* = enum
-    LinearHorizontal, LinearVertical, , GridVania, Free
+    LinearHorizontal, LinearVertical, GridVania, Free
   LdtkBgColor* = object
     case kind: range[0 .. 1]
     of 0:
@@ -82,7 +82,7 @@ type
     `levelIid`*: string
     `dir`*: string
   LdtkBgPos* = enum
-    CoverDirty, Repeat, , Contain, Cover, Unscaled
+    CoverDirty, Repeat, Contain, Cover, Unscaled
   LdtkTile* = object
     `px`*: seq[BiggestInt]
     `t`*: BiggestInt
@@ -99,7 +99,7 @@ type
   LdtkIntGridValueInstance* = object
     `coordId`*: BiggestInt
     `v`*: BiggestInt
-  Ldtk__worldY* = object
+  Ldtk_worldY* = object
     case kind: range[0 .. 1]
     of 0:
       key0: BiggestInt
@@ -111,13 +111,7 @@ type
     `y`*: BiggestInt
     `h`*: BiggestInt
     `tilesetUid`*: BiggestInt
-  Ldtk__tile* = object
-    case kind: range[0 .. 1]
-    of 0:
-      key0: pointer
-    of 1:
-      key1: LdtkTilesetRect
-  Ldtk__tile* = object
+  Ldtk_tile* = object
     case kind: range[0 .. 1]
     of 0:
       key0: pointer
@@ -212,7 +206,7 @@ type
     `bgPivotX`*: BiggestFloat
     `__neighbours`*: seq[LdtkNeighbourLevel]
     `uid`*: BiggestInt
-    `bgPos`*: LdtkBgPos
+    `bgPos`*: Option[LdtkBgPos]
     `layerInstances`*: seq[LdtkLayerInstance]
     `fieldInstances`*: seq[LdtkFieldInstance]
     `__bgPos`*: Ldtk__bgPos
@@ -224,7 +218,7 @@ type
     `worldGridWidth`*: BiggestInt
     `defaultLevelHeight`*: BiggestInt
     `identifier`*: string
-    `worldLayout`*: LdtkWorldLayout
+    `worldLayout`*: Option[LdtkWorldLayout]
     `iid`*: string
     `defaultLevelWidth`*: BiggestInt
     `worldGridHeight`*: BiggestInt
@@ -257,7 +251,7 @@ type
       key1: pointer
   LdtkTextLanguageMode* = enum
     LangMarkdown, LangPython, LangLog, LangC, LangLua, LangHaxe, LangJS,
-    LangRuby, , LangJson, LangXml
+    LangRuby, LangJson, LangXml
   LdtkEditorDisplayPos* = enum
     Beneath, Above, Center
   LdtkEditorDisplayMode* = enum
@@ -333,7 +327,7 @@ type
     `editorDisplayScale`*: BiggestFloat
     `__type`*: string
     `allowedRefsEntityUid`*: LdtkAllowedRefsEntityUid
-    `textLanguageMode`*: LdtkTextLanguageMode
+    `textLanguageMode`*: Option[LdtkTextLanguageMode]
     `editorAlwaysShow`*: bool
     `defaultOverride`*: JsonNode
     `autoChainRef`*: bool
@@ -371,7 +365,7 @@ type
     of 1:
       key1: pointer
   LdtkEmbedAtlas* = enum
-    LdtkIcons, 
+    LdtkIcons
   LdtkCachedPixelData* = object
     case kind: range[0 .. 1]
     of 0:
@@ -396,7 +390,7 @@ type
     `padding`*: BiggestInt
     `spacing`*: BiggestInt
     `tagsSourceEnumUid`*: LdtkTagsSourceEnumUid
-    `embedAtlas`*: LdtkEmbedAtlas
+    `embedAtlas`*: Option[LdtkEmbedAtlas]
     `identifier`*: string
     `cachedPixelData`*: LdtkCachedPixelData
     `enumTags`*: seq[LdtkEnumTagValue]
@@ -763,7 +757,7 @@ type
     of 1:
       key1: pointer
   LdtkWorldLayout* = enum
-    LinearHorizontal, LinearVertical, , GridVania, Free
+    LinearHorizontal, LinearVertical, GridVania, Free
   LdtkDefaultLevelWidth* = object
     case kind: range[0 .. 1]
     of 0:
@@ -809,7 +803,7 @@ type
     `defs`*: LdtkDefinitions
     `defaultPivotX`*: BiggestFloat
     `tutorialDesc`*: LdtkTutorialDesc
-    `worldLayout`*: LdtkWorldLayout
+    `worldLayout`*: Option[LdtkWorldLayout]
     `defaultEntityWidth`*: BiggestInt
     `iid`*: string
     `defaultGridSize`*: BiggestInt

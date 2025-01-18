@@ -62,9 +62,17 @@ proc parseUnion(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
 
 proc parseEnum(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JObject)
-    result = TypeDef(kind: EnumType, values: initHashSet[string]())
+    var values = initHashSet[string]()
+    var isOptional = false
     for value in node{"enum"}:
-        result.values.incl(value.getStr)
+        case value.kind:
+        of JString: values.incl(value.getStr)
+        of JNull: isOptional = true
+        else: return TypeDef(kind: JsonType)
+
+    result = TypeDef(kind: EnumType, values: values)
+    if isOptional:
+        result = TypeDef(kind: OptionalType, subtype: result)
 
 proc parseStr(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     return if "enum" in node: parseEnum(node, ctx, history) else: parseTypeStr("string", history)
