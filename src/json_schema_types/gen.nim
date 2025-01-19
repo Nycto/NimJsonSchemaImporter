@@ -89,7 +89,7 @@ proc genUnion(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     elif typ.subtypes.len == 1:
         return typ.subtypes[0].genType(name, ctx)
 
-    result = ctx.genName(name, typ)
+    result = ctx.genName(name & "Union", typ)
 
     var cases = nnkRecCase.newTree(
         nnkIdentDefs.newTree(

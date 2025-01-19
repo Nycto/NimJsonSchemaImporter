@@ -1,9 +1,9 @@
 import std/[json, tables, options]
 type
   `UnionUnion`* = object
-    `key1`*: Option[`UnionKey1`]
+    `key1`*: Option[`UnionKey1Union`]
     `key2`*: Option[string]
-  `UnionKey1`* = object
+  `UnionKey1Union`* = object
     case kind: range[0 .. 1]
     of 0:
       key0: string
