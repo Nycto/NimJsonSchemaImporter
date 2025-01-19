@@ -1,13 +1,20 @@
-import types, schemaRef, std/[macros, tables, sets, strformat, json, strutils, options]
+import types, schemaRef, std/[macros, tables, sets, strformat, json, strutils, options, hashes]
 
 type GenContext = ref object
-    accum: NimNode
+    types: HashSet[NimNode]
     nextId: uint
     prefix: string
     cache: Table[SchemaRef, NimNode]
 
+proc hash(node: NimNode): Hash =
+    result = hash(node.kind)
+    if node.kind in { nnkSym, nnkIdent }:
+        result = result !& node.strVal.hash
+    for child in node:
+        result = result !& hash(child)
+
 proc add(ctx: GenContext, name, typ: NimNode) =
-    ctx.accum.add(nnkTypeDef.newTree(postfix(name, "*"), newEmptyNode(), typ))
+    ctx.types.incl(nnkTypeDef.newTree(postfix(name, "*"), newEmptyNode(), typ))
 
 proc cleanupIdent(name: string): string =
     result = name.strip(leading = true, trailing = true, chars = {'_'})
@@ -138,6 +145,15 @@ proc genType(typ: TypeDef, name: string, ctx: GenContext): NimNode =
         ctx.cache[typ.sref] = result
 
 proc genDeclarations*(schema: JsonSchema, name, namePrefix: string): NimNode =
-    result = nnkTypeSection.newTree()
-    let ctx = GenContext(accum: result, prefix: namePRefix, cache: initTable[SchemaRef, NimNode]())
+    let ctx = GenContext(
+        types: initHashSet[NimNode](),
+        prefix: namePrefix,
+        cache: initTable[SchemaRef, NimNode](),
+    )
+
     discard schema.rootType.genType(name, ctx)
+
+    result = nnkTypeSection.newTree()
+    for typ in ctx.types:
+        result.add(typ)
+
