@@ -68,7 +68,7 @@ proc buildNullableUnion(subtypes: seq[TypeDef]): TypeDef =
     for subtype in subtypes:
         if subtype.kind != NullType:
             return subtype.optional()
-    raise newException(AssertionError, "Failed to generate nullable union")
+    raise newException(AssertionDefect, "Failed to generate nullable union")
 
 proc parseUnion(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JArray)
