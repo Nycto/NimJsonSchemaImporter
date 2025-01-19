@@ -1,4 +1,4 @@
-import std/[sets, tables], schemaRef
+import std/[sets, tables, strformat], schemaRef
 
 type
     TypeDefKind* = enum
@@ -42,4 +42,28 @@ type
         rootType*: TypeDef
         defs*: Table[string, TypeDef]
 
-proc optional*(typ: TypeDef): TypeDef = TypeDef(kind: OptionalType, subtype: typ)
+proc `$`*(typ: TypeDef): string =
+    case typ.kind:
+    of ObjType: result = fmt"(Obj {typ.properties})"
+    of EnumType: result = fmt"(Enum {typ.values})"
+    of RefType: result = fmt"(Ref {typ.schemaRef})"
+    of ArrayType: result = fmt"(Array {typ.items})"
+    of SetType: result = fmt"(Set {typ.items})"
+    of UnionType: result = fmt"(Union {typ.subtypes})"
+    of MapType: result = fmt"(Map {typ.entries})"
+    of OptionalType: result = fmt"(Optional {typ.subtype})"
+    of IntegerType: result = "(Integer)"
+    of StringType: result = "(String)"
+    of NumberType: result = "(Number)"
+    of BoolType: result = "(Bool)"
+    of NullType: result = "(Null)"
+    of JsonType: result = "(Json)"
+
+    if not typ.sref.isNil:
+        result = fmt"({typ.sref} {result})"
+
+proc optional*(typ: TypeDef): TypeDef =
+    if typ.kind == OptionalType:
+        typ
+    else:
+        TypeDef(kind: OptionalType, subtype: typ)

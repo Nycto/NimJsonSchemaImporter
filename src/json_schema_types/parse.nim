@@ -57,16 +57,38 @@ proc parseTypeStr(typ: string, history: History): TypeDef =
     of "object": return TypeDef(kind: MapType, entries: TypeDef(kind: JsonType))
     else: raise newException(ValueError, fmt"Unsupported type {typ} at {history}")
 
+proc isNullableUnion(subtypes: seq[TypeDef]): bool =
+    if subtypes.len == 2:
+        for subtype in subtypes:
+            if subtype.kind == NullType:
+                return true
+
+proc buildNullableUnion(subtypes: seq[TypeDef]): TypeDef =
+    assert(subtypes.len == 2)
+    for subtype in subtypes:
+        if subtype.kind != NullType:
+            return subtype.optional()
+    raise newException(AssertionError, "Failed to generate nullable union")
+
 proc parseUnion(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JArray)
-    result = TypeDef(kind: UnionType, subtypes: newSeq[TypeDef]())
+    var subtypes = newSeq[TypeDef]()
     for subtype in node:
-        result.subtypes.add(
+        subtypes.add(
             if subtype.kind == JString:
                 subtype.getStr.parseTypeStr(history)
             else:
                 subtype.parseType(ctx, history)
         )
+
+    if subtypes.len == 0:
+        raise newException(ValueError, fmt"Empty union at {history}")
+    elif subtypes.len == 1:
+        return subtypes[0]
+    elif subtypes.isNullableUnion():
+        return subtypes.buildNullableUnion()
+    else:
+        return TypeDef(kind: UnionType, subtypes: subtypes)
 
 proc parseEnum(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JObject)

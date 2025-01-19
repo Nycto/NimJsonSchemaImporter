@@ -93,11 +93,7 @@ proc genEnum(typ: TypeDef, name: string, ctx: GenContext): NimNode =
 
 proc genUnion(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     assert(typ.kind == UnionType)
-
-    if typ.subtypes.len == 0:
-        raise newException(AssertionDefect, "Empty union type")
-    elif typ.subtypes.len == 1:
-        return typ.subtypes[0].genType(name, ctx)
+    assert(typ.subtypes.len > 0)
 
     result = ctx.genName(name & "Union", typ)
 
