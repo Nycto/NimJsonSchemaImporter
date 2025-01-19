@@ -8,12 +8,12 @@ suite "Parsing example json schema":
 
     template buildTest(name: static string) =
         test name:
-            const parsed = slurp("examples" / (name & ".json"))
+            const parsed = slurp("examples" / name / "schema.json")
                 .parseJsonSchema(name, name.capitalizeAscii, testResolver)
                 .repr
                 .addHeader
 
-            const expectPath = "examples" / (name & "_expect.nim")
+            const expectPath = "examples" / name / "expect.nim"
 
             when defined(rebuild):
                 writeFile(currentSourcePath.parentDir() / expectPath, parsed)
@@ -32,12 +32,12 @@ suite "Parsing example json schema":
 
     # https://json-schema.org/learn/miscellaneous-examples
     buildTest("basic")
-    buildTest("arrayOfThings")
-    buildTest("enumeratedValues")
-    buildTest("complexObject")
+    buildTest("array_of_things")
+    buildTest("enumerated_values")
+    buildTest("complex_object")
 
     # https://json-schema.org/learn/file-system#full-entry
-    buildTest("fileSystem")
+    buildTest("file_system")
 
     # Specific use cases
     buildTest("union")
