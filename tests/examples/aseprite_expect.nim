@@ -24,17 +24,17 @@ type
     `group`*: Option[string]
     `name`*: string
     `opacity`*: Option[BiggestFloat]
-  `AsepriteDirection`* = enum
-    pingpong, forward, reverse
-  `AsepritePoint`* = object
-    `x`*: BiggestFloat
-    `y`*: BiggestFloat
-  `AsepriteFramesUnion`* = object
+  `AsepriteAsepriteSpriteSheet_FramesUnion`* = object
     case kind: range[0 .. 1]
     of 0:
       key0: Table[string, `AsepriteFrame`]
     of 1:
       key1: seq[`AsepriteArrayFrame`]
+  `AsepriteDirection`* = enum
+    pingpong, forward, reverse
+  `AsepritePoint`* = object
+    `x`*: BiggestFloat
+    `y`*: BiggestFloat
   `AsepriteArrayFrame`* = object
     `sourceSize`*: `AsepriteSize`
     `duration`*: BiggestFloat
@@ -43,6 +43,9 @@ type
     `spriteSourceSize`*: `AsepriteRectangle`
     `filename`*: string
     `frame`*: `AsepriteRectangle`
+  `AsepriteSpriteSheet`* = object
+    `frames`*: `AsepriteAsepriteSpriteSheet_FramesUnion`
+    `meta`*: `AsepriteMeta`
   `AsepriteMeta`* = object
     `scale`*: string
     `frameTags`*: Option[seq[`AsepriteFrameTag`]]
@@ -60,9 +63,6 @@ type
     multiply, overlay, color_burn, exclusion, color_dodge, hsl_saturation,
     hsl_color, subtract, divide, hsl_luminosity, darken, normal, hard_light,
     screen, lighten, soft_light, addition, hsl_hue, difference
-  `AsepriteSpriteSheet`* = object
-    `frames`*: `AsepriteFramesUnion`
-    `meta`*: `AsepriteMeta`
   `AsepriteFrameTag`* = object
     `direction`*: `AsepriteDirection`
     `from`*: BiggestFloat

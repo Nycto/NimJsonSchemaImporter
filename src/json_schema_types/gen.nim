@@ -26,11 +26,20 @@ proc cleanupIdent(name: string): string =
         else:
             result = newOutput
 
+proc cleanupTypeName(name: string): string =
+    name.cleanupIdent.capitalizeAscii
+
 proc genName(ctx: GenContext, name: string, typ: TypeDef): NimNode =
     var basename: string = typ.sref.getName()
     if basename == "":
         basename = name
-    return nnkAccQuoted.newTree((ctx.prefix & basename.cleanupIdent.capitalizeAscii).ident)
+    return nnkAccQuoted.newTree((ctx.prefix & basename.cleanupTypeName).ident)
+
+proc name(node: NimNode): string =
+    case node.kind
+    of nnkAccQuoted: return node[0].name
+    of nnkIdent, nnkSym: return node.strVal
+    else: node.expectKind({ nnkAccQuoted, nnkIdent, nnkSym })
 
 proc genType(typ: TypeDef, name: string, ctx: GenContext): NimNode
     ## Forward declaration for a proc that generates code for an arbitrary type
@@ -43,10 +52,11 @@ proc genObj(typ: TypeDef, name: string, ctx: GenContext): NimNode =
 
     var records = nnkRecList.newTree()
     for key, keyType in typ.properties:
+        let derivedName = fmt"{result.name}_{key.cleanupTypeName}"
         records.add(
             nnkIdentDefs.newTree(
                 postfix(nnkAccQuoted.newTree(key.cleanupIdent.ident), "*"),
-                keyType.genType(key, ctx),
+                keyType.genType(derivedName, ctx),
                 newEmptyNode()
             )
         )

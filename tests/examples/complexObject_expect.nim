@@ -1,12 +1,12 @@
 import std/[json, tables, options]
 type
-  `ComplexObjectAddress`* = object
+  `ComplexObjectComplexObject`* = object
+    `hobbies`*: Option[seq[string]]
+    `address`*: Option[`ComplexObjectComplexObjectComplexObject_Address`]
+    `age`*: BiggestInt
+    `name`*: string
+  `ComplexObjectComplexObjectComplexObject_Address`* = object
     `street`*: string
     `city`*: string
     `postalCode`*: string
     `state`*: string
-  `ComplexObjectComplexObject`* = object
-    `hobbies`*: Option[seq[string]]
-    `address`*: Option[`ComplexObjectAddress`]
-    `age`*: BiggestInt
-    `name`*: string
