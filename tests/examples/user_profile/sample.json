@@ -1,0 +1,11 @@
+{
+  "interests": [
+    "Travel",
+    "Technology"
+  ],
+  "fullName": "John Doe",
+  "age": 30,
+  "username": "user123",
+  "location": "Cityville",
+  "email": "user@example.com"
+}

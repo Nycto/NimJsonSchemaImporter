@@ -4,6 +4,7 @@ import examples/blog/expect
 import examples/location/expect
 import examples/health/expect
 import examples/movie/expect
+import examples/user_profile/expect
 # import examples/array_of_things/expect, examples/aseprite/expect
 # import examples/basic/expect, examples/blog/expect, examples/complex_object/expect
 # import examples/ecommerce/expect, examples/enumerated_values/expect, examples/file_system/expect
@@ -59,7 +60,7 @@ suite "Parsing example json schema":
     buildTest("location", TestLocation)
     buildTest("health", TestHealth)
     buildTest("movie", TestMovie)
-    buildTest("user_profile")
+    buildTest("user_profile", TestUser_profile)
 
     # https://json-schema.org/learn/miscellaneous-examples
     buildTest("basic")
