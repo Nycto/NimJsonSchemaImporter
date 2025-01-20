@@ -5,11 +5,7 @@ import examples/location/expect
 import examples/health/expect
 import examples/movie/expect
 import examples/user_profile/expect
-# import examples/array_of_things/expect, examples/aseprite/expect
-# import examples/basic/expect, examples/blog/expect, examples/complex_object/expect
-# import examples/ecommerce/expect, examples/enumerated_values/expect, examples/file_system/expect
-# import examples/health/expect, examples/ldtk/expect, examples/location/expect
-# import examples/movie/expect, examples/union/expect, examples/user_profile/expect
+import examples/basic/expect
 
 proc testResolver(uri: string): JsonNode =
     if uri == "https://example.com/user-profile.schema.json":
@@ -63,7 +59,7 @@ suite "Parsing example json schema":
     buildTest("user_profile", TestUser_profile)
 
     # https://json-schema.org/learn/miscellaneous-examples
-    buildTest("basic")
+    buildTest("basic", TestBasic)
     buildTest("array_of_things")
     buildTest("enumerated_values")
     buildTest("complex_object")
