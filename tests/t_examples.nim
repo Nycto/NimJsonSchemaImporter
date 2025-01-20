@@ -6,6 +6,7 @@ import examples/health/expect
 import examples/movie/expect
 import examples/user_profile/expect
 import examples/basic/expect
+import examples/array_of_things/expect
 
 proc testResolver(uri: string): JsonNode =
     if uri == "https://example.com/user-profile.schema.json":
@@ -60,7 +61,7 @@ suite "Parsing example json schema":
 
     # https://json-schema.org/learn/miscellaneous-examples
     buildTest("basic", TestBasic)
-    buildTest("array_of_things")
+    buildTest("array_of_things", TestArray_of_things)
     buildTest("enumerated_values")
     buildTest("complex_object")
 
