@@ -15,6 +15,9 @@
       "type": "string",
       "format": "date-time"
     },
+    "author": {
+      "$ref": "https://example.com/user-profile.schema.json"
+    },
     "tags": {
       "type": "array",
       "items": {
@@ -23,3 +26,4 @@
     }
   }
 }
+

@@ -1,12 +1,23 @@
-import std/[unittest, json, os, paths, strutils], json_schema_types
+import std/[unittest, json, os, paths, strutils, strformat], json_schema_types
 import examples/address/expect
+import examples/blog/expect
 # import examples/array_of_things/expect, examples/aseprite/expect
 # import examples/basic/expect, examples/blog/expect, examples/complex_object/expect
 # import examples/ecommerce/expect, examples/enumerated_values/expect, examples/file_system/expect
 # import examples/health/expect, examples/ldtk/expect, examples/location/expect
 # import examples/movie/expect, examples/union/expect, examples/user_profile/expect
 
-proc testResolver(uri: string): JsonNode = parseJson("""{"type":"string"}""")
+proc testResolver(uri: string): JsonNode =
+    if uri == "https://example.com/user-profile.schema.json":
+        return %*{
+            "type": "object",
+            "properties": {
+                "username": { "type": "string" },
+                "email": { "type": "string" },
+            }
+        }
+    else:
+        raiseAssert(fmt"Unsupported test uri: {uri}")
 
 proc addHeader(content: string): string = "import std/[json, tables, options]\n" & content
 
@@ -40,7 +51,7 @@ suite "Parsing example json schema":
 
     # https://json-schema.org/learn/json-schema-examples
     buildTest("address", TestAddress)
-    buildTest("blog")
+    buildTest("blog", TestBlog)
     buildTest("ecommerce")
     buildTest("location")
     buildTest("health")
