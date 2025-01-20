@@ -1,0 +1,21 @@
+{
+  "dateOfBirth": "1985-02-15",
+  "emergencyContact": {
+    "username": "emergencyuser",
+    "email": "emergency@example.com"
+  },
+  "patientName": "Jane Doe",
+  "bloodType": "A+",
+  "medications": [
+    "Lisinopril",
+    "Metformin"
+  ],
+  "conditions": [
+    "Hypertension",
+    "Diabetes"
+  ],
+  "allergies": [
+    "Pollen",
+    "Penicillin"
+  ]
+}

@@ -2,6 +2,7 @@ import std/[unittest, json, os, paths, strutils, strformat], json_schema_types
 import examples/address/expect
 import examples/blog/expect
 import examples/location/expect
+import examples/health/expect
 # import examples/array_of_things/expect, examples/aseprite/expect
 # import examples/basic/expect, examples/blog/expect, examples/complex_object/expect
 # import examples/ecommerce/expect, examples/enumerated_values/expect, examples/file_system/expect
@@ -55,7 +56,7 @@ suite "Parsing example json schema":
     buildTest("blog", TestBlog)
     buildTest("ecommerce")
     buildTest("location", TestLocation)
-    buildTest("health")
+    buildTest("health", TestHealth)
     buildTest("movie")
     buildTest("user_profile")
 
