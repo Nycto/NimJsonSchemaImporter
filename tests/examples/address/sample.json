@@ -1,0 +1,9 @@
+{
+  "streetAddress": "456 Main St",
+  "region": "State",
+  "locality": "Cityville",
+  "countryName": "Country",
+  "postOfficeBox": "123",
+  "extendedAddress": null,
+  "postalCode": "12345"
+}

@@ -1,4 +1,10 @@
 import std/[unittest, json, os, paths, strutils], json_schema_types
+import examples/address/expect
+# import examples/array_of_things/expect, examples/aseprite/expect
+# import examples/basic/expect, examples/blog/expect, examples/complex_object/expect
+# import examples/ecommerce/expect, examples/enumerated_values/expect, examples/file_system/expect
+# import examples/health/expect, examples/ldtk/expect, examples/location/expect
+# import examples/movie/expect, examples/union/expect, examples/user_profile/expect
 
 proc testResolver(uri: string): JsonNode = parseJson("""{"type":"string"}""")
 
@@ -9,7 +15,7 @@ suite "Parsing example json schema":
     template buildTest(name: static string) =
         test name:
             const parsed = slurp("examples" / name / "schema.json")
-                .parseJsonSchema(name, name.capitalizeAscii, testResolver)
+                .parseJsonSchema(name, "Test", testResolver)
                 .repr
                 .addHeader
 
@@ -21,8 +27,19 @@ suite "Parsing example json schema":
                 const expect = slurp(expectPath)
                 check(parsed == expect)
 
+    template buildTest(name: static string, rootType: typedesc) =
+        buildTest(name)
+        test name & " parsing":
+            let samplePath = currentSourcePath.parentDir() / "examples" / name / "sample.json"
+            let parsed: rootType = parseFile(samplePath).to(rootType)
+            let json = pretty(%*(parsed))
+            when defined(rebuild):
+                writeFile(samplePath, json)
+            else:
+                check(json == readFile(samplePath))
+
     # https://json-schema.org/learn/json-schema-examples
-    buildTest("address")
+    buildTest("address", TestAddress)
     buildTest("blog")
     buildTest("ecommerce")
     buildTest("location")

@@ -1,8 +1,8 @@
 import std/[json, tables, options]
 type
-  `EcommerceOrderSchema`* = object
-    `items`*: Option[seq[`EcommerceProductSchema`]]
+  `TestOrderSchema`* = object
+    `items`*: Option[seq[`TestProductSchema`]]
     `orderId`*: Option[string]
-  `EcommerceProductSchema`* = object
+  `TestProductSchema`* = object
     `name`*: Option[string]
     `price`*: Option[BiggestFloat]

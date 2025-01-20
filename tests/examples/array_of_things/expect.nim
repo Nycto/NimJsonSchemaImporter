@@ -1,8 +1,8 @@
 import std/[json, tables, options]
 type
-  `Array_of_thingsVeggie`* = object
+  `TestVeggie`* = object
     `veggieName`*: string
     `veggieLike`*: bool
-  `Array_of_thingsArray_of_things`* = object
-    `vegetables`*: Option[seq[`Array_of_thingsVeggie`]]
+  `TestArray_of_things`* = object
+    `vegetables`*: Option[seq[`TestVeggie`]]
     `fruits`*: Option[seq[string]]

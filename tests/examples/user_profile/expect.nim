@@ -1,6 +1,6 @@
 import std/[json, tables, options]
 type
-  `User_profileUser_profile`* = object
+  `TestUser_profile`* = object
     `interests`*: Option[seq[string]]
     `fullName`*: Option[string]
     `age`*: Option[BiggestInt]
