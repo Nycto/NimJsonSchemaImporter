@@ -1,3 +1,4 @@
+{.push warning[UnusedImport]:off.}
 import std/[json, tables, options]
 type
   `TestOrderSchema`* = object

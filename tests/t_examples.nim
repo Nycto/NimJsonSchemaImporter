@@ -22,7 +22,10 @@ proc testResolver(uri: string): JsonNode =
     else:
         raiseAssert(fmt"Unsupported test uri: {uri}")
 
-proc addHeader(content: string): string = "import std/[json, tables, options]\n" & content
+proc addHeader(content: string): string =
+    "{.push warning[UnusedImport]:off.}\n" &
+    "import std/[json, tables, options]\n" &
+    content
 
 suite "Parsing example json schema":
 
