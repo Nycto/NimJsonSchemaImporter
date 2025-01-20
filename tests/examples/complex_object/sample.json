@@ -1,0 +1,14 @@
+{
+  "hobbies": [
+    "reading",
+    "running"
+  ],
+  "address": {
+    "street": "123 Main St",
+    "city": "New York",
+    "postalCode": "10001",
+    "state": "NY"
+  },
+  "age": 25,
+  "name": "John Doe"
+}
