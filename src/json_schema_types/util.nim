@@ -28,9 +28,6 @@ proc getName*(node: NimNode): string =
     of nnkIdent, nnkSym: return node.strVal
     else: node.expectKind({ nnkAccQuoted, nnkIdent, nnkSym })
 
-proc wrapIdent(name: string): NimNode =
-    return if validIdentifier(name): name.ident else: return nnkAccQuoted.newTree(name.ident)
+proc safeTypeName*(name: string): NimNode = nnkAccQuoted.newTree(name.cleanupIdent.capitalizeAscii.ident)
 
-proc safeTypeName*(name: string): NimNode = name.cleanupIdent.capitalizeAscii.wrapIdent
-
-proc safePropName*(name: string): NimNode = name.cleanupIdent.wrapIdent
+proc safePropName*(name: string): NimNode = nnkAccQuoted.newTree(name.cleanupIdent.ident)
