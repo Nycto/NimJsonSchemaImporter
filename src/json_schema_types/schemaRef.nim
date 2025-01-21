@@ -1,4 +1,4 @@
-import std/[strutils, parseutils, json, strformat, hashes]
+import util, std/[strutils, parseutils, json, strformat, hashes]
 
 type
     RefKind* = enum
@@ -16,11 +16,6 @@ type
         of UrlRef:
             url*: string
         next*: SchemaRef
-
-    UrlResolver* = proc (url: string): JsonNode
-        ## Callback that resolves remote URL references to a schema
-
-proc defaultResolver*(uri: string): JsonNode = nil
 
 proc dump*(sref: SchemaRef): string =
     case sref.kind

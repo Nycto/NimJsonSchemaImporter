@@ -37,7 +37,7 @@ suite "Parsing example json schema":
     template buildTest(name: static string) =
         test name:
             const parsed = slurp("examples" / name / "schema.json")
-                .parseJsonSchema(name, "Test", testResolver)
+                .parseJsonSchema(JsonSchemaConfig(rootTypeName: name, typeNamePrefix: "Test", urlResolver: testResolver))
                 .repr
                 .replace(re2"\`gensym\d+", "")
                 .addHeader

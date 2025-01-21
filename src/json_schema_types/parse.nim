@@ -163,9 +163,9 @@ proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     else:
         return TypeDef(kind: JsonType)
 
-proc parseSchema*(node: JsonNode, resolver: UrlResolver = defaultResolver): JsonSchema =
+proc parseSchema*(node: JsonNode, resolver: UrlResolver): JsonSchema =
     result = JsonSchema()
     result.rootType = parseType(node, ParseContext(doc: node, resolver: resolver), nil)
 
-proc parseSchema*(node: string, resolver: UrlResolver = defaultResolver): JsonSchema =
-    node.parseJson.parseSchema
+proc parseSchema*(node: string, resolver: UrlResolver): JsonSchema =
+    node.parseJson.parseSchema(resolver)
