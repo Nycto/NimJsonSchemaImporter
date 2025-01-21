@@ -13,6 +13,7 @@ import examples/union/expect
 import examples/file_system/expect
 import examples/ecommerce/expect
 import examples/ldtk/expect
+import examples/aseprite/expect
 
 proc testResolver(uri: string): JsonNode =
     if uri == "https://example.com/user-profile.schema.json":
@@ -84,4 +85,4 @@ suite "Parsing example json schema":
 
     # Specific applications
     buildTest("ldtk", TestLdtkJsonRoot)
-    buildTest("aseprite")
+    buildTest("aseprite", TestSpriteSheet)
