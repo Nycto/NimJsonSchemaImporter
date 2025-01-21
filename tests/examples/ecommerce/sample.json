@@ -1,0 +1,13 @@
+{
+  "items": [
+    {
+      "name": "Product A",
+      "price": 50.0
+    },
+    {
+      "name": "Product B",
+      "price": 30.0
+    }
+  ],
+  "orderId": "ORD123"
+}
