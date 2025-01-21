@@ -1,7 +1,8 @@
 {.push warning[UnusedImport]:off.}
-import std/[json, tables, options]
+import std/[json, jsonutils, tables, options]
+
 type
-  `TestUser_profile`* = object
+  `Testuser_profile`* = object
     `interests`*: Option[seq[string]]
     `fullName`*: Option[string]
     `age`*: Option[BiggestInt]

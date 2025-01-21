@@ -1,13 +1,14 @@
 {.push warning[UnusedImport]:off.}
-import std/[json, tables, options]
+import std/[json, jsonutils, tables, options]
+
 type
-  `TestTestComplex_object_Address`* = object
+  `TestTestcomplex_object_address`* = object
     `street`*: string
     `city`*: string
     `postalCode`*: string
     `state`*: string
-  `TestComplex_object`* = object
+  `Testcomplex_object`* = object
     `hobbies`*: Option[seq[string]]
-    `address`*: Option[`TestTestComplex_object_Address`]
+    `address`*: Option[`TestTestcomplex_object_address`]
     `age`*: BiggestInt
     `name`*: string

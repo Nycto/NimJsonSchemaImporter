@@ -1,9 +1,10 @@
 {.push warning[UnusedImport]:off.}
-import std/[json, tables, options]
+import std/[json, jsonutils, tables, options]
+
 type
-  `TestVeggie`* = object
+  `Testarray_of_things`* = object
+    `vegetables`*: Option[seq[`Testveggie`]]
+    `fruits`*: Option[seq[string]]
+  `Testveggie`* = object
     `veggieName`*: string
     `veggieLike`*: bool
-  `TestArray_of_things`* = object
-    `vegetables`*: Option[seq[`TestVeggie`]]
-    `fruits`*: Option[seq[string]]

@@ -126,6 +126,8 @@ proc parseTyped(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     else: raise newException(ValueError, fmt"Unsupported type {typ} at {history}")
 
 proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
+    if node.kind != JObject:
+        raise newException(ValueError, fmt"Unable to parse type {node} at {history}")
     if "$ref" in node:
         return parseRef(node, ctx, history)
     elif "additionalProperties" in node:
@@ -142,10 +144,8 @@ proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
         return parseUnion(node{"anyOf"}, ctx, history.add("anyOf"))
     elif "type" in node:
         return parseTyped(node, ctx, history)
-    elif node.kind == JObject:
-        return TypeDef(kind: JsonType)
     else:
-        raise newException(ValueError, fmt"Unable to parse type {node} at {history}")
+        return TypeDef(kind: JsonType)
 
 proc parseSchema*(node: JsonNode, resolver: UrlResolver = defaultResolver): JsonSchema =
     result = JsonSchema()

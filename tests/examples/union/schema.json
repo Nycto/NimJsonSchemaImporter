@@ -4,10 +4,34 @@
   "type": "object",
   "properties": {
     "key1": {
-      "type": [ "string", "integer" ]
+      "type": [ "string", "integer", "boolean", "null", "number" ]
     },
     "key2": {
       "type": [ "string" ]
+    },
+    "key3": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "foo": { "type": "string" }
+          }
+        },
+        {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        {
+          "enum": [ "a", "b", "c" ]
+        },
+        {
+          "type": [ "string", "null" ]
+        }
+      ]
     }
   }
 }

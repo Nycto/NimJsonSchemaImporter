@@ -1,7 +1,8 @@
 {.push warning[UnusedImport]:off.}
-import std/[json, tables, options]
+import std/[json, jsonutils, tables, options]
+
 type
-  `TestAddress`* = object
+  `Testaddress`* = object
     `streetAddress`*: Option[string]
     `region`*: string
     `locality`*: string

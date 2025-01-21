@@ -1,5 +1,6 @@
 {.push warning[UnusedImport]:off.}
-import std/[json, tables, options]
+import std/[json, jsonutils, tables, options]
+
 type
   `TestOrderSchema`* = object
     `items`*: Option[seq[`TestProductSchema`]]

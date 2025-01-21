@@ -1,5 +1,6 @@
 {.push warning[UnusedImport]:off.}
-import std/[json, tables, options]
+import std/[json, jsonutils, tables, options]
+
 type
-  `TestEnumerated_values`* = object
+  `Testenumerated_values`* = object
     `data`*: Option[JsonNode]

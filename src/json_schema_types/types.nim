@@ -5,7 +5,6 @@ type
         ObjType,
         RefType,
         ArrayType,
-        SetType,
         IntegerType,
         StringType,
         NumberType,
@@ -27,7 +26,7 @@ type
             values*: HashSet[string]
         of RefType:
             schemaRef*: SchemaRef
-        of ArrayType, SetType:
+        of ArrayType:
             items*: TypeDef
         of UnionType:
             subtypes*: seq[TypeDef]
@@ -48,7 +47,6 @@ proc `$`*(typ: TypeDef): string =
     of EnumType: result = fmt"(Enum {typ.values})"
     of RefType: result = fmt"(Ref {typ.schemaRef})"
     of ArrayType: result = fmt"(Array {typ.items})"
-    of SetType: result = fmt"(Set {typ.items})"
     of UnionType: result = fmt"(Union {typ.subtypes})"
     of MapType: result = fmt"(Map {typ.entries})"
     of OptionalType: result = fmt"(Optional {typ.subtype})"

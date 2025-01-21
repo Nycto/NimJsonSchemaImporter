@@ -1,7 +1,9 @@
-import types, schemaRef, std/[macros, tables, sets, strformat, json, strutils, options, hashes]
+import types, schemaRef, marshalling, util
+import std/[macros, tables, sets, strformat, json, options, hashes]
 
 type GenContext = ref object
     types: HashSet[NimNode]
+    procs: NimNode
     nextId: uint
     prefix: string
     cache: Table[SchemaRef, NimNode]
@@ -16,30 +18,11 @@ proc hash(node: NimNode): Hash =
 proc add(ctx: GenContext, name, typ: NimNode) =
     ctx.types.incl(nnkTypeDef.newTree(postfix(name, "*"), newEmptyNode(), typ))
 
-proc cleanupIdent(name: string): string =
-    result = name.strip(leading = true, trailing = true, chars = {'_'})
-    while true:
-        var newOutput = result
-        newOutput = newOutput.replace("__", "_")
-        if newOutput == result:
-            break
-        else:
-            result = newOutput
-
-proc cleanupTypeName(name: string): string =
-    name.cleanupIdent.capitalizeAscii
-
 proc genName(ctx: GenContext, name: string, typ: TypeDef): NimNode =
     var basename: string = typ.sref.getName()
     if basename == "":
         basename = name
-    return nnkAccQuoted.newTree((ctx.prefix & basename.cleanupTypeName).ident)
-
-proc name(node: NimNode): string =
-    case node.kind
-    of nnkAccQuoted: return node[0].name
-    of nnkIdent, nnkSym: return node.strVal
-    else: node.expectKind({ nnkAccQuoted, nnkIdent, nnkSym })
+    return safeTypeName(ctx.prefix & basename)
 
 proc genType(typ: TypeDef, name: string, ctx: GenContext): NimNode
     ## Forward declaration for a proc that generates code for an arbitrary type
@@ -52,7 +35,7 @@ proc genObj(typ: TypeDef, name: string, ctx: GenContext): NimNode =
 
     var records = nnkRecList.newTree()
     for key, keyType in typ.properties:
-        let derivedName = fmt"{result.name}_{key.cleanupTypeName}"
+        let derivedName = fmt"{result.getName}_{key}"
         records.add(
             nnkIdentDefs.newTree(
                 postfix(nnkAccQuoted.newTree(key.cleanupIdent.ident), "*"),
@@ -61,14 +44,7 @@ proc genObj(typ: TypeDef, name: string, ctx: GenContext): NimNode =
             )
         )
 
-    ctx.add(
-        result,
-        nnkObjectTy.newTree(
-            newEmptyNode(),
-            newEmptyNode(),
-            records
-        )
-    )
+    ctx.add(result, nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), records))
 
 proc genArray(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     assert(typ.kind == ArrayType)
@@ -80,18 +56,14 @@ proc genEnum(typ: TypeDef, name: string, ctx: GenContext): NimNode =
 
     var enumTyp = nnkEnumTy.newTree(newEmptyNode())
     for value in typ.values:
-        enumTyp.add(value.ident)
+        enumTyp.add(safeTypeName(value))
 
     ctx.add(result, enumTyp)
 
-# dumpAstGen:
-#     type Foo = object
-#         case kind: range[0..2]
-#         of 0: key0: string
-#         of 1: key1: int
-#         of 2: key2: float
+    ctx.procs.add(typ.buildEnumEncoder(result))
 
 proc genUnion(typ: TypeDef, name: string, ctx: GenContext): NimNode =
+    ## Generates the type required to represent a union type
     assert(typ.kind == UnionType)
     assert(typ.subtypes.len > 0)
 
@@ -99,7 +71,7 @@ proc genUnion(typ: TypeDef, name: string, ctx: GenContext): NimNode =
 
     var cases = nnkRecCase.newTree(
         nnkIdentDefs.newTree(
-            newIdentNode("kind"),
+            postfix(newIdentNode("kind"), "*"),
             nnkBracketExpr.newTree(bindSym("range"), infix(0.newLit, "..", newLit(typ.subtypes.len - 1))),
             newEmptyNode()
         )
@@ -110,7 +82,7 @@ proc genUnion(typ: TypeDef, name: string, ctx: GenContext): NimNode =
             nnkOfBranch.newTree(
                 i.newLit,
                 nnkIdentDefs.newTree(
-                    ident(fmt"key{i}"),
+                    postfix(i.unionKey, "*"),
                     subtype.genType(fmt"{name}{i}", ctx),
                     newEmptyNode()
                 )
@@ -118,6 +90,11 @@ proc genUnion(typ: TypeDef, name: string, ctx: GenContext): NimNode =
         )
 
     ctx.add(result, nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), nnkRecList.newTree(cases)))
+
+    ctx.procs.add(
+        typ.buildUnionDecoder(result),
+        typ.buildUnionEncoder(result),
+    )
 
 proc genMap(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     assert(typ.kind == MapType)
@@ -155,11 +132,14 @@ proc genDeclarations*(schema: JsonSchema, name, namePrefix: string): NimNode =
         types: initHashSet[NimNode](),
         prefix: namePrefix,
         cache: initTable[SchemaRef, NimNode](),
+        procs: newStmtList()
     )
 
     discard schema.rootType.genType(name, ctx)
 
-    result = nnkTypeSection.newTree()
+    var types = nnkTypeSection.newTree()
     for typ in ctx.types:
-        result.add(typ)
+        types.add(typ)
+
+    return newStmtList(types, ctx.procs)
 

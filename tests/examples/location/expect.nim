@@ -1,6 +1,7 @@
 {.push warning[UnusedImport]:off.}
-import std/[json, tables, options]
+import std/[json, jsonutils, tables, options]
+
 type
-  `TestLocation`* = object
+  `Testlocation`* = object
     `latitude`*: BiggestFloat
     `longitude`*: BiggestFloat
