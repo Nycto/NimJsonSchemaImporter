@@ -35,16 +35,17 @@ proc genObj(typ: TypeDef, name: string, ctx: GenContext): NimNode =
 
     var records = nnkRecList.newTree()
     for key, keyType in typ.properties:
-        let derivedName = fmt"{result.getName}_{key}"
         records.add(
             nnkIdentDefs.newTree(
-                postfix(nnkAccQuoted.newTree(key.cleanupIdent.ident), "*"),
-                keyType.genType(derivedName, ctx),
+                postfix(safePropName(key), "*"),
+                keyType.genType(fmt"{result.getName}_{key}", ctx),
                 newEmptyNode()
             )
         )
 
     ctx.add(result, nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), records))
+
+    ctx.procs.add(typ.buildObjectDecoder(result), typ.buildObjectEncoder(result))
 
 proc genArray(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     assert(typ.kind == ArrayType)
@@ -60,7 +61,7 @@ proc genEnum(typ: TypeDef, name: string, ctx: GenContext): NimNode =
 
     ctx.add(result, enumTyp)
 
-    ctx.procs.add(typ.buildEnumEncoder(result))
+    ctx.procs.add(typ.buildEnumEncoder(result), typ.buildEnumDecoder(result))
 
 proc genUnion(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     ## Generates the type required to represent a union type

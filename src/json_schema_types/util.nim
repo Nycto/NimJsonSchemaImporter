@@ -20,3 +20,6 @@ proc getName*(node: NimNode): string =
 
 proc safeTypeName*(name: string): NimNode =
     return nnkAccQuoted.newTree(name.cleanupIdent.capitalizeAscii.ident)
+
+proc safePropName*(name: string): NimNode =
+    return nnkAccQuoted.newTree(name.cleanupIdent.ident)

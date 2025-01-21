@@ -5,11 +5,18 @@ proc isJsonKind(value: NimNode, kind: JsonNodeKind): NimNode =
     return quote:
         `value`.kind == `kind`
 
+proc hasAllProps(base, value: NimNode, typ: TypeDef): NimNode =
+    result = base
+    for key, subtyp in typ.properties:
+        if subtyp.kind != OptionalType:
+            result = infix(base, "and", infix(key.newLit, "in", value))
+
 proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
     case typ.kind
     of StringType, EnumType: return value.isJsonKind(JString)
     of IntegerType: return value.isJsonKind(JInt)
-    of ObjType, MapType: return value.isJsonKind(JObject)
+    of ObjType: return value.isJsonKind(JObject).hasAllProps(value, typ)
+    of MapType: return value.isJsonKind(JObject)
     of ArrayType: return value.isJsonKind(JArray)
     of BoolType: return value.isJsonKind(JBool)
     of NullType: return value.isJsonKind(JNull)
@@ -81,3 +88,55 @@ proc buildEnumEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
     return quote:
         proc toJsonHook*(`source`: `typeName`): JsonNode =
             `cases`
+
+proc buildEnumDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
+    assert(typ.kind == EnumType)
+
+    var cases = nnkCaseStmt.newTree(newCall(bindSym("getStr"), source))
+    for value in typ.values:
+        cases.add(nnkOfBranch.newTree(value.newLit, newDotExpr(typeName, safeTypeName(value))))
+
+    cases.add nnkElse.newTree quote do:
+        raise newException(ValueError, "Unable to decode enum")
+
+    return quote:
+        proc fromJsonHook*(`target`: var `typeName`; `source`: JsonNode) =
+            `target` = `cases`
+
+proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
+    var decodeKeys = newStmtList()
+
+    let typeNameStr = typeName.getName.newLit
+
+    for key, subtype in typ.properties:
+        let safeKey = safePropName(key)
+        if subtype.kind == OptionalType:
+            decodeKeys.add quote do:
+                if `key` in `source`:
+                    `target`.`safeKey` = some(jsonTo(`source`{`key`}, typeof(unsafeGet(`target`.`safeKey`))))
+        else:
+            decodeKeys.add quote do:
+                assert(`key` in `source`, `key` & " is missing while decoding " & `typeNameStr`)
+                `target`.`safeKey` = jsonTo(`source`{`key`}, typeof(`target`.`safeKey`))
+
+    return quote:
+        proc fromJsonHook*(`target`: var `typeName`; `source`: JsonNode) =
+            `decodeKeys`
+
+proc buildObjectEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
+    var encodeKeys = newStmtList()
+
+    for key, subtype in typ.properties:
+        let safeKey = safePropName(key)
+        if subtype.kind == OptionalType:
+            encodeKeys.add quote do:
+                if isSome(`source`.`safeKey`):
+                    result{`key`} = toJson(`source`.`safeKey`)
+        else:
+            encodeKeys.add quote do:
+                result{`key`} = toJson(`source`.`safeKey`)
+
+    return quote:
+        proc toJsonHook*(`source`: `typeName`): JsonNode =
+            result = newJObject()
+            `encodeKeys`

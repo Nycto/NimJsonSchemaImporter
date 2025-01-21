@@ -10,6 +10,7 @@ import examples/array_of_things/expect
 import examples/enumerated_values/expect
 import examples/complex_object/expect
 import examples/union/expect
+import examples/file_system/expect
 
 proc testResolver(uri: string): JsonNode =
     if uri == "https://example.com/user-profile.schema.json":
@@ -74,7 +75,7 @@ suite "Parsing example json schema":
     buildTest("complex_object", TestComplex_object)
 
     # https://json-schema.org/learn/file-system#full-entry
-    buildTest("file_system")
+    buildTest("file_system", TestFile_system)
 
     # Specific use cases
     buildTest("union", TestUnion)

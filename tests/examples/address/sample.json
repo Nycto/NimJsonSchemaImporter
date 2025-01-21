@@ -4,6 +4,6 @@
   "locality": "Cityville",
   "countryName": "Country",
   "postOfficeBox": "123",
-  "extendedAddress": null,
+  "extendedAddress": "",
   "postalCode": "12345"
 }

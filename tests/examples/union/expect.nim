@@ -66,6 +66,15 @@ proc toJsonHook*(source: `TestTestunion_key1Union`): JsonNode =
   of 4:
     return toJson(source.key4)
   
+proc fromJsonHook*(target: var `TestTestunion_key30`; source: JsonNode) =
+  if "foo" in source:
+    target.`foo` = some(jsonTo(source{"foo"}, typeof(unsafeGet(target.`foo`))))
+
+proc toJsonHook*(source: `TestTestunion_key30`): JsonNode =
+  result = newJObject()
+  if isSome(source.`foo`):
+    result{"foo"} = toJson(source.`foo`)
+
 proc toJsonHook*(source: `TestTestunion_key33`): JsonNode =
   case source
   of `TestTestunion_key33`.`B`:
@@ -74,6 +83,17 @@ proc toJsonHook*(source: `TestTestunion_key33`): JsonNode =
     return newJString("c")
   of `TestTestunion_key33`.`A`:
     return newJString("a")
+  
+proc fromJsonHook*(target: var `TestTestunion_key33`; source: JsonNode) =
+  target = case getStr(source)
+  of "b":
+    `TestTestunion_key33`.`B`
+  of "c":
+    `TestTestunion_key33`.`C`
+  of "a":
+    `TestTestunion_key33`.`A`
+  else:
+    raise newException(ValueError, "Unable to decode enum")
   
 proc fromJsonHook*(target: var `TestTestunion_key3Union`; source: JsonNode) =
   if source.kind == JObject:
@@ -107,3 +127,19 @@ proc toJsonHook*(source: `TestTestunion_key3Union`): JsonNode =
   of 4:
     return toJson(source.key4)
   
+proc fromJsonHook*(target: var `Testunion`; source: JsonNode) =
+  if "key1" in source:
+    target.`key1` = some(jsonTo(source{"key1"}, typeof(unsafeGet(target.`key1`))))
+  if "key2" in source:
+    target.`key2` = some(jsonTo(source{"key2"}, typeof(unsafeGet(target.`key2`))))
+  if "key3" in source:
+    target.`key3` = some(jsonTo(source{"key3"}, typeof(unsafeGet(target.`key3`))))
+
+proc toJsonHook*(source: `Testunion`): JsonNode =
+  result = newJObject()
+  if isSome(source.`key1`):
+    result{"key1"} = toJson(source.`key1`)
+  if isSome(source.`key2`):
+    result{"key2"} = toJson(source.`key2`)
+  if isSome(source.`key3`):
+    result{"key3"} = toJson(source.`key3`)
