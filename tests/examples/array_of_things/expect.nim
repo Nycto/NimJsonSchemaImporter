@@ -22,10 +22,10 @@ proc toJsonHook*(source: `Testveggie`): JsonNode =
   result{"veggieLike"} = toJson(source.`veggieLike`)
 
 proc fromJsonHook*(target: var `Testarray_of_things`; source: JsonNode) =
-  if "vegetables" in source:
+  if "vegetables" in source and source{"vegetables"}.kind != JNull:
     target.`vegetables` = some(jsonTo(source{"vegetables"},
                                       typeof(unsafeGet(target.`vegetables`))))
-  if "fruits" in source:
+  if "fruits" in source and source{"fruits"}.kind != JNull:
     target.`fruits` = some(jsonTo(source{"fruits"},
                                   typeof(unsafeGet(target.`fruits`))))
 

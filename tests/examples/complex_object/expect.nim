@@ -35,10 +35,10 @@ proc toJsonHook*(source: `TestTestcomplex_object_address`): JsonNode =
   result{"state"} = toJson(source.`state`)
 
 proc fromJsonHook*(target: var `Testcomplex_object`; source: JsonNode) =
-  if "hobbies" in source:
+  if "hobbies" in source and source{"hobbies"}.kind != JNull:
     target.`hobbies` = some(jsonTo(source{"hobbies"},
                                    typeof(unsafeGet(target.`hobbies`))))
-  if "address" in source:
+  if "address" in source and source{"address"}.kind != JNull:
     target.`address` = some(jsonTo(source{"address"},
                                    typeof(unsafeGet(target.`address`))))
   assert("age" in source,

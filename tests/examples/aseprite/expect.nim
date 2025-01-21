@@ -256,10 +256,10 @@ proc toJsonHook*(source: `TestPoint`): JsonNode =
   result{"y"} = toJson(source.`y`)
 
 proc fromJsonHook*(target: var `TestSliceKey`; source: JsonNode) =
-  if "pivot" in source:
+  if "pivot" in source and source{"pivot"}.kind != JNull:
     target.`pivot` = some(jsonTo(source{"pivot"},
                                  typeof(unsafeGet(target.`pivot`))))
-  if "center" in source:
+  if "center" in source and source{"center"}.kind != JNull:
     target.`center` = some(jsonTo(source{"center"},
                                   typeof(unsafeGet(target.`center`))))
   assert("bounds" in source,
@@ -279,9 +279,9 @@ proc toJsonHook*(source: `TestSliceKey`): JsonNode =
   result{"frame"} = toJson(source.`frame`)
 
 proc fromJsonHook*(target: var `TestSlice`; source: JsonNode) =
-  if "data" in source:
+  if "data" in source and source{"data"}.kind != JNull:
     target.`data` = some(jsonTo(source{"data"}, typeof(unsafeGet(target.`data`))))
-  if "color" in source:
+  if "color" in source and source{"color"}.kind != JNull:
     target.`color` = some(jsonTo(source{"color"},
                                  typeof(unsafeGet(target.`color`))))
   assert("name" in source, "name" & " is missing while decoding " & "TestSlice")
@@ -383,20 +383,20 @@ proc fromJsonHook*(target: var `TestBlendMode`; source: JsonNode) =
     raise newException(ValueError, "Unable to decode enum")
   
 proc fromJsonHook*(target: var `TestLayer`; source: JsonNode) =
-  if "blendMode" in source:
+  if "blendMode" in source and source{"blendMode"}.kind != JNull:
     target.`blendMode` = some(jsonTo(source{"blendMode"},
                                      typeof(unsafeGet(target.`blendMode`))))
-  if "data" in source:
+  if "data" in source and source{"data"}.kind != JNull:
     target.`data` = some(jsonTo(source{"data"}, typeof(unsafeGet(target.`data`))))
-  if "color" in source:
+  if "color" in source and source{"color"}.kind != JNull:
     target.`color` = some(jsonTo(source{"color"},
                                  typeof(unsafeGet(target.`color`))))
-  if "group" in source:
+  if "group" in source and source{"group"}.kind != JNull:
     target.`group` = some(jsonTo(source{"group"},
                                  typeof(unsafeGet(target.`group`))))
   assert("name" in source, "name" & " is missing while decoding " & "TestLayer")
   target.`name` = jsonTo(source{"name"}, typeof(target.`name`))
-  if "opacity" in source:
+  if "opacity" in source and source{"opacity"}.kind != JNull:
     target.`opacity` = some(jsonTo(source{"opacity"},
                                    typeof(unsafeGet(target.`opacity`))))
 
@@ -417,7 +417,7 @@ proc toJsonHook*(source: `TestLayer`): JsonNode =
 proc fromJsonHook*(target: var `TestMeta`; source: JsonNode) =
   assert("scale" in source, "scale" & " is missing while decoding " & "TestMeta")
   target.`scale` = jsonTo(source{"scale"}, typeof(target.`scale`))
-  if "frameTags" in source:
+  if "frameTags" in source and source{"frameTags"}.kind != JNull:
     target.`frameTags` = some(jsonTo(source{"frameTags"},
                                      typeof(unsafeGet(target.`frameTags`))))
   assert("format" in source,
@@ -425,13 +425,13 @@ proc fromJsonHook*(target: var `TestMeta`; source: JsonNode) =
   target.`format` = jsonTo(source{"format"}, typeof(target.`format`))
   assert("size" in source, "size" & " is missing while decoding " & "TestMeta")
   target.`size` = jsonTo(source{"size"}, typeof(target.`size`))
-  if "slices" in source:
+  if "slices" in source and source{"slices"}.kind != JNull:
     target.`slices` = some(jsonTo(source{"slices"},
                                   typeof(unsafeGet(target.`slices`))))
   assert("version" in source,
          "version" & " is missing while decoding " & "TestMeta")
   target.`version` = jsonTo(source{"version"}, typeof(target.`version`))
-  if "layers" in source:
+  if "layers" in source and source{"layers"}.kind != JNull:
     target.`layers` = some(jsonTo(source{"layers"},
                                   typeof(unsafeGet(target.`layers`))))
   assert("app" in source, "app" & " is missing while decoding " & "TestMeta")

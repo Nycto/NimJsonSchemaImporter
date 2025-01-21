@@ -10,18 +10,18 @@ type
     `location`*: Option[string]
     `email`*: string
 proc fromJsonHook*(target: var `Testuser_profile`; source: JsonNode) =
-  if "interests" in source:
+  if "interests" in source and source{"interests"}.kind != JNull:
     target.`interests` = some(jsonTo(source{"interests"},
                                      typeof(unsafeGet(target.`interests`))))
-  if "fullName" in source:
+  if "fullName" in source and source{"fullName"}.kind != JNull:
     target.`fullName` = some(jsonTo(source{"fullName"},
                                     typeof(unsafeGet(target.`fullName`))))
-  if "age" in source:
+  if "age" in source and source{"age"}.kind != JNull:
     target.`age` = some(jsonTo(source{"age"}, typeof(unsafeGet(target.`age`))))
   assert("username" in source,
          "username" & " is missing while decoding " & "Testuser_profile")
   target.`username` = jsonTo(source{"username"}, typeof(target.`username`))
-  if "location" in source:
+  if "location" in source and source{"location"}.kind != JNull:
     target.`location` = some(jsonTo(source{"location"},
                                     typeof(unsafeGet(target.`location`))))
   assert("email" in source,

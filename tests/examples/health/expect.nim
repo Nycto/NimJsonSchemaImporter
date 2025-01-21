@@ -15,10 +15,10 @@ type
     `email`*: Option[string]
 proc fromJsonHook*(target: var `TestTesthealth_emergencyContact`;
                    source: JsonNode) =
-  if "username" in source:
+  if "username" in source and source{"username"}.kind != JNull:
     target.`username` = some(jsonTo(source{"username"},
                                     typeof(unsafeGet(target.`username`))))
-  if "email" in source:
+  if "email" in source and source{"email"}.kind != JNull:
     target.`email` = some(jsonTo(source{"email"},
                                  typeof(unsafeGet(target.`email`))))
 
@@ -34,7 +34,8 @@ proc fromJsonHook*(target: var `Testhealth`; source: JsonNode) =
          "dateOfBirth" & " is missing while decoding " & "Testhealth")
   target.`dateOfBirth` = jsonTo(source{"dateOfBirth"},
                                 typeof(target.`dateOfBirth`))
-  if "emergencyContact" in source:
+  if "emergencyContact" in source and
+      source{"emergencyContact"}.kind != JNull:
     target.`emergencyContact` = some(jsonTo(source{"emergencyContact"},
         typeof(unsafeGet(target.`emergencyContact`))))
   assert("patientName" in source,
@@ -44,13 +45,13 @@ proc fromJsonHook*(target: var `Testhealth`; source: JsonNode) =
   assert("bloodType" in source,
          "bloodType" & " is missing while decoding " & "Testhealth")
   target.`bloodType` = jsonTo(source{"bloodType"}, typeof(target.`bloodType`))
-  if "medications" in source:
+  if "medications" in source and source{"medications"}.kind != JNull:
     target.`medications` = some(jsonTo(source{"medications"},
                                        typeof(unsafeGet(target.`medications`))))
-  if "conditions" in source:
+  if "conditions" in source and source{"conditions"}.kind != JNull:
     target.`conditions` = some(jsonTo(source{"conditions"},
                                       typeof(unsafeGet(target.`conditions`))))
-  if "allergies" in source:
+  if "allergies" in source and source{"allergies"}.kind != JNull:
     target.`allergies` = some(jsonTo(source{"allergies"},
                                      typeof(unsafeGet(target.`allergies`))))
 

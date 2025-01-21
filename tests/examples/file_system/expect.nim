@@ -221,16 +221,16 @@ proc fromJsonHook*(target: var `TestTestfile_system_fstype`; source: JsonNode) =
     raise newException(ValueError, "Unable to decode enum")
   
 proc fromJsonHook*(target: var `Testfile_system`; source: JsonNode) =
-  if "options" in source:
+  if "options" in source and source{"options"}.kind != JNull:
     target.`options` = some(jsonTo(source{"options"},
                                    typeof(unsafeGet(target.`options`))))
-  if "readonly" in source:
+  if "readonly" in source and source{"readonly"}.kind != JNull:
     target.`readonly` = some(jsonTo(source{"readonly"},
                                     typeof(unsafeGet(target.`readonly`))))
   assert("storage" in source,
          "storage" & " is missing while decoding " & "Testfile_system")
   target.`storage` = jsonTo(source{"storage"}, typeof(target.`storage`))
-  if "fstype" in source:
+  if "fstype" in source and source{"fstype"}.kind != JNull:
     target.`fstype` = some(jsonTo(source{"fstype"},
                                   typeof(unsafeGet(target.`fstype`))))
 

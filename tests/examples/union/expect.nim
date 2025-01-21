@@ -67,7 +67,7 @@ proc toJsonHook*(source: `TestTestunion_key1Union`): JsonNode =
     return toJson(source.key4)
   
 proc fromJsonHook*(target: var `TestTestunion_key30`; source: JsonNode) =
-  if "foo" in source:
+  if "foo" in source and source{"foo"}.kind != JNull:
     target.`foo` = some(jsonTo(source{"foo"}, typeof(unsafeGet(target.`foo`))))
 
 proc toJsonHook*(source: `TestTestunion_key30`): JsonNode =
@@ -128,11 +128,11 @@ proc toJsonHook*(source: `TestTestunion_key3Union`): JsonNode =
     return toJson(source.key4)
   
 proc fromJsonHook*(target: var `Testunion`; source: JsonNode) =
-  if "key1" in source:
+  if "key1" in source and source{"key1"}.kind != JNull:
     target.`key1` = some(jsonTo(source{"key1"}, typeof(unsafeGet(target.`key1`))))
-  if "key2" in source:
+  if "key2" in source and source{"key2"}.kind != JNull:
     target.`key2` = some(jsonTo(source{"key2"}, typeof(unsafeGet(target.`key2`))))
-  if "key3" in source:
+  if "key3" in source and source{"key3"}.kind != JNull:
     target.`key3` = some(jsonTo(source{"key3"}, typeof(unsafeGet(target.`key3`))))
 
 proc toJsonHook*(source: `Testunion`): JsonNode =

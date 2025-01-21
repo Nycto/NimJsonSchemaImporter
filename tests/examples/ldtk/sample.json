@@ -1,0 +1,1759 @@
+{
+  "backupLimit": 10,
+  "simplifiedExport": false,
+  "externalLevels": true,
+  "jsonVersion": "1.5.3",
+  "bgColor": "#18131B",
+  "appBuildId": 473702.0,
+  "defaultEntityHeight": 16,
+  "customCommands": [],
+  "exportTiled": false,
+  "toc": [
+    {
+      "instancesData": [
+        {
+          "worldY": 232,
+          "fields": {},
+          "widPx": 8,
+          "iids": {
+            "layerIid": "60018d45-66b0-11ec-a36b-2fc9526ec805",
+            "levelIid": "60018d40-66b0-11ec-a36b-3b0761cf900c",
+            "entityIid": "60018d46-66b0-11ec-a36b-a9ab7da03bee",
+            "worldIid": "6d9adae0-c640-11ed-b633-01b6d7e2af59"
+          },
+          "heiPx": 10,
+          "worldX": 84
+        }
+      ],
+      "identifier": "Player",
+      "instances": [
+        {
+          "layerIid": "60018d45-66b0-11ec-a36b-2fc9526ec805",
+          "levelIid": "60018d40-66b0-11ec-a36b-3b0761cf900c",
+          "entityIid": "60018d46-66b0-11ec-a36b-a9ab7da03bee",
+          "worldIid": "6d9adae0-c640-11ed-b633-01b6d7e2af59"
+        }
+      ]
+    }
+  ],
+  "worlds": [
+    {
+      "worldGridWidth": 256,
+      "defaultLevelHeight": 256,
+      "identifier": "SampleWorld",
+      "worldLayout": "Free",
+      "iid": "6d9adae0-c640-11ed-b633-01b6d7e2af59",
+      "defaultLevelWidth": 256,
+      "worldGridHeight": 256,
+      "levels": [
+        {
+          "pxHei": 280,
+          "useAutoIdentifier": false,
+          "__bgColor": "#121331",
+          "externalRelPath": "sample/0000-West.ldtkl",
+          "worldY": 40,
+          "bgRelPath": "N2D - SpaceWallpaper1280x448.png",
+          "identifier": "West",
+          "pxWid": 272,
+          "worldDepth": 0,
+          "bgPivotX": 1.0,
+          "__neighbours": [
+            {
+              "levelIid": "60038910-66b0-11ec-a36b-1ff7a8a0ffd4",
+              "dir": "e"
+            },
+            {
+              "levelIid": "60047370-66b0-11ec-a36b-2b89739d30ed",
+              "dir": "e"
+            }
+          ],
+          "uid": 0,
+          "bgPos": "Cover",
+          "fieldInstances": [],
+          "__bgPos": {
+            "scale": [
+              1.25,
+              1.25
+            ],
+            "cropRect": [
+              422.4,
+              0.0,
+              217.6,
+              224.0
+            ],
+            "topLeftPx": [
+              0,
+              0
+            ]
+          },
+          "worldX": 0,
+          "iid": "60018d40-66b0-11ec-a36b-3b0761cf900c",
+          "bgPivotY": 1.0,
+          "__smartColor": "#7D7D8E"
+        },
+        {
+          "pxHei": 160,
+          "useAutoIdentifier": false,
+          "__bgColor": "#121331",
+          "externalRelPath": "sample/0001-East.ldtkl",
+          "worldY": 128,
+          "bgRelPath": "N2D - SpaceWallpaper1280x448.png",
+          "identifier": "East",
+          "pxWid": 272,
+          "worldDepth": 0,
+          "bgPivotX": 0.5,
+          "__neighbours": [
+            {
+              "levelIid": "60018d40-66b0-11ec-a36b-3b0761cf900c",
+              "dir": "w"
+            },
+            {
+              "levelIid": "60047370-66b0-11ec-a36b-2b89739d30ed",
+              "dir": "n"
+            },
+            {
+              "levelIid": "6004c190-66b0-11ec-a36b-37ad7b095a6c",
+              "dir": "e"
+            }
+          ],
+          "uid": 39,
+          "bgPos": "Cover",
+          "fieldInstances": [],
+          "__bgPos": {
+            "scale": [
+              0.7142857142857143,
+              0.7142857142857143
+            ],
+            "cropRect": [
+              129.6,
+              0.0,
+              380.8,
+              224.0
+            ],
+            "topLeftPx": [
+              0,
+              0
+            ]
+          },
+          "worldX": 272,
+          "iid": "60038910-66b0-11ec-a36b-1ff7a8a0ffd4",
+          "bgPivotY": 0.5,
+          "__smartColor": "#7D7D8E"
+        },
+        {
+          "pxHei": 128,
+          "useAutoIdentifier": false,
+          "__bgColor": "#121331",
+          "externalRelPath": "sample/0002-Pit.ldtkl",
+          "worldY": 0,
+          "bgRelPath": "N2D - SpaceWallpaper1280x448.png",
+          "identifier": "Pit",
+          "pxWid": 224,
+          "worldDepth": 0,
+          "bgPivotX": 0.5,
+          "__neighbours": [
+            {
+              "levelIid": "60018d40-66b0-11ec-a36b-3b0761cf900c",
+              "dir": "w"
+            },
+            {
+              "levelIid": "60038910-66b0-11ec-a36b-1ff7a8a0ffd4",
+              "dir": "s"
+            }
+          ],
+          "uid": 40,
+          "bgPos": "Cover",
+          "fieldInstances": [],
+          "__bgPos": {
+            "scale": [
+              0.5714285714285714,
+              0.5714285714285714
+            ],
+            "cropRect": [
+              124.0,
+              0.0,
+              392.0,
+              224.0
+            ],
+            "topLeftPx": [
+              0,
+              0
+            ]
+          },
+          "worldX": 272,
+          "iid": "60047370-66b0-11ec-a36b-2b89739d30ed",
+          "bgPivotY": 0.5,
+          "__smartColor": "#7D7D8E"
+        },
+        {
+          "pxHei": 128,
+          "useAutoIdentifier": false,
+          "__bgColor": "#121331",
+          "externalRelPath": "sample/0003-Treasure_room.ldtkl",
+          "worldY": 224,
+          "bgRelPath": "N2D - SpaceWallpaper1280x448.png",
+          "identifier": "Treasure_room",
+          "pxWid": 160,
+          "worldDepth": 0,
+          "bgPivotX": 0.5,
+          "__neighbours": [
+            {
+              "levelIid": "60038910-66b0-11ec-a36b-1ff7a8a0ffd4",
+              "dir": "w"
+            }
+          ],
+          "uid": 41,
+          "bgPos": "Cover",
+          "fieldInstances": [],
+          "__bgPos": {
+            "scale": [
+              0.5714285714285714,
+              0.5714285714285714
+            ],
+            "cropRect": [
+              180.0,
+              0.0,
+              280.0,
+              224.0
+            ],
+            "topLeftPx": [
+              0,
+              0
+            ]
+          },
+          "worldX": 544,
+          "iid": "6004c190-66b0-11ec-a36b-37ad7b095a6c",
+          "bgPivotY": 0.5,
+          "__smartColor": "#7D7D8E"
+        }
+      ]
+    }
+  ],
+  "imageExportMode": "OneImagePerLevel",
+  "dummyWorldIid": "6d9adae0-c640-11ed-b633-01b6d7e2af59",
+  "defaultPivotY": 1.0,
+  "exportLevelBg": true,
+  "nextUid": 59,
+  "levelNamePattern": "%world_Level_%idx",
+  "defs": {
+    "levelFields": [],
+    "tilesets": [
+      {
+        "pxHei": 256,
+        "savedSelections": [
+          {
+            "ids": [
+              20,
+              21,
+              22
+            ],
+            "mode": "Random"
+          },
+          {
+            "ids": [
+              9,
+              10
+            ],
+            "mode": "Random"
+          },
+          {
+            "ids": [
+              32,
+              44,
+              33,
+              45,
+              34,
+              46,
+              35,
+              47
+            ],
+            "mode": "Random"
+          },
+          {
+            "ids": [
+              140,
+              141
+            ],
+            "mode": "Random"
+          },
+          {
+            "ids": [
+              142,
+              143
+            ],
+            "mode": "Random"
+          },
+          {
+            "ids": [
+              154,
+              155
+            ],
+            "mode": "Random"
+          },
+          {
+            "ids": [
+              152,
+              153
+            ],
+            "mode": "Random"
+          },
+          {
+            "ids": [
+              168,
+              180
+            ],
+            "mode": "Stamp"
+          },
+          {
+            "ids": [
+              65,
+              77
+            ],
+            "mode": "Stamp"
+          },
+          {
+            "ids": [
+              265,
+              277,
+              289
+            ],
+            "mode": "Random"
+          },
+          {
+            "ids": [
+              252,
+              264,
+              276,
+              288
+            ],
+            "mode": "Random"
+          },
+          {
+            "ids": [
+              266,
+              278,
+              290
+            ],
+            "mode": "Random"
+          },
+          {
+            "ids": [
+              170,
+              182
+            ],
+            "mode": "Stamp"
+          },
+          {
+            "ids": [
+              169,
+              181
+            ],
+            "mode": "Stamp"
+          },
+          {
+            "ids": [
+              102,
+              114,
+              103,
+              115
+            ],
+            "mode": "Stamp"
+          },
+          {
+            "ids": [
+              56,
+              57,
+              58,
+              59
+            ],
+            "mode": "Random"
+          }
+        ],
+        "padding": 0,
+        "spacing": 0,
+        "identifier": "Cavernas_by_Adam_Saltsman_Extended",
+        "cachedPixelData": {
+          "averageColors": "f123f224f224f224f224f224f224f224f333f324f323f434f573f453f343f666f666f334f544f544f334f334f3340000f343f223f233f334f445f555f644f2344336323563464346f343f233f233f334f223f778f223f5337335523553366346f224f666f667f974f654f654f533f5332564256435642454f334f236f445f6444a85f634f434f3344235000000000000f235f236f334f644f433f223f764f6660000000000000000f447f233f224f223fa54f224f335f4462564256430003000f236f34af236f623fe41f555f999f888f644f54400000000f888f78bf888f679fea8fdccfaaaf556f434f12300000000f66af67bf67bf349fe97667446744564f654f54400000000f226f224f338f236f423f224f224f224f623f623f267f26771127123711236744674f224f224f123f852f852f326f325f112f112f11200000000f224f224f224f777f77700000000f744f459f112000000000000000000000000000000000000f743f338f111000000000000000000000000000000000000f223f223f223000000000000000000000000000000000000f223f223f123000000000000000000000000000000000000f223f223f123f22400000000000000000000000000000000f243f233f343f235f123f235000000000000000000000000f233f343f343f224f235f235000000000000000000000000f233f644f333f123f224f224000000000000000000000000f233f754f444f123f224f224000000000000000000000000f233f754f434f123f224f224000000000000000000000000f233f754f444f123f224f224000000000000000000000000f123f864f434f123f235f224000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "opaqueTiles": "111111111111111111111110111111110000111111110000111111110000111101110000111111110000111111110000111111111100111111111100111110001100111111111111000001111111111001111100111000000000111000000000111000000000111000000000111100000000111111000000111111000000111111000000111111000000111111000000111111000000111111000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "enumTags": [],
+        "pxWid": 96,
+        "tileGridSize": 8,
+        "customData": [],
+        "uid": 1,
+        "__cHei": 32,
+        "__cWid": 12,
+        "relPath": "Cavernas_by_Adam_Saltsman-Extended.png",
+        "tags": []
+      },
+      {
+        "pxHei": 128,
+        "savedSelections": [],
+        "padding": 0,
+        "spacing": 0,
+        "identifier": "Items",
+        "cachedPixelData": {
+          "averageColors": "566745674678935885676855666775836556684400006974845687448973756786328645853385338533000084459447467966539633a5569754a63296329543000086326754964386549655455657665963364335450000564457524655574436549753853288536632864400007743964283467632654699757d9297436789575600008565795486837a64766979889975896378436572000000000000000000000000000000000000000000000000",
+          "opaqueTiles": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "enumTags": [],
+        "pxWid": 176,
+        "tileGridSize": 16,
+        "customData": [],
+        "uid": 31,
+        "__cHei": 8,
+        "__cWid": 11,
+        "relPath": "RPG_Assets_by_ssugmi.png",
+        "tags": []
+      },
+      {
+        "pxHei": 256,
+        "savedSelections": [],
+        "padding": 0,
+        "spacing": 0,
+        "identifier": "Cavernas_by_Adam_Saltsman_Extended_hued",
+        "cachedPixelData": {
+          "averageColors": "f145f146f146f146f146f146f146f146f435f446f445f545f884f665f565f668f668f346f645f645f446f446f4570000f455f145f245f246f456f666f745f1574268315762694269f465f255f355f246f145f79af335f6367258525752686269f246f768f778fb45f845f745f646f5462784278438842675f246f267f456f7454d55f746f545f3464257000000000000f257f257f346f835f535f245f945f6680000000000000000f479f354f146f145fb47f246f357f4672884278431013101f268f29cf169f736ff15f567f9aaf889f845f74500000000f899f7bdf889f69bff99fdddfbbbf567f445f14500000000f5adf6adf5adf28cff89698449944785f745f64500000000f158f146f17bf168f536f156f146f146f736f736f198f19871347134712439844994f156f146f145f934f934f138f138f124f123f12400000000f146f146f146f778f77800000000f924f38cf123000000000000000000000000000000000000fa24f17bf123000000000000000000000000000000000000f145f145f145000000000000000000000000000000000000f145f145f145000000000000000000000000000000000000f245f345f145f24600000000000000000000000000000000f363f253f463f157f145f157000000000000000000000000f355f363f373f146f157f157000000000000000000000000f354f745f435f145f146f146000000000000000000000000f355f845f545f145f157f146000000000000000000000000f355f845f545f145f157f146000000000000000000000000f355f845f545f145f157f146000000000000000000000000f145fa45f635f145f157f146000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "opaqueTiles": "111111111111111111111110111111110000111111110000111111110000111101110000111111110000111111110000111111111100111111111100111110001100111111111111000001111111111001111100111000000000111000000000111000000000111000000000111100000000111111000000111111000000111111000000111111000000111111000000111111000000111111000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "enumTags": [],
+        "pxWid": 96,
+        "tileGridSize": 8,
+        "customData": [],
+        "uid": 58,
+        "__cHei": 32,
+        "__cWid": 12,
+        "relPath": "Cavernas_by_Adam_Saltsman-Extended_hued.png",
+        "tags": []
+      }
+    ],
+    "entities": [
+      {
+        "allowOutOfBounds": false,
+        "pivotY": 1.0,
+        "tileOpacity": 1.0,
+        "color": "#00BFFF",
+        "limitScope": "PerLevel",
+        "limitBehavior": "MoveLastOne",
+        "hollow": false,
+        "height": 10,
+        "renderMode": "Rectangle",
+        "keepAspectRatio": false,
+        "showName": true,
+        "resizableX": false,
+        "identifier": "Player",
+        "maxCount": 1,
+        "pivotX": 0.5,
+        "fieldDefs": [],
+        "uid": 27,
+        "tileRenderMode": "Stretch",
+        "resizableY": false,
+        "lineOpacity": 1.0,
+        "nineSliceBorders": [],
+        "width": 8,
+        "tags": [],
+        "exportToToc": true,
+        "fillOpacity": 1.0
+      },
+      {
+        "allowOutOfBounds": false,
+        "pivotY": 1.0,
+        "tileOpacity": 1.0,
+        "color": "#FFDD00",
+        "limitScope": "PerLevel",
+        "limitBehavior": "DiscardOldOnes",
+        "hollow": false,
+        "height": 10,
+        "renderMode": "Rectangle",
+        "keepAspectRatio": false,
+        "showName": true,
+        "resizableX": false,
+        "identifier": "Item",
+        "maxCount": 0,
+        "pivotX": 0.5,
+        "fieldDefs": [
+          {
+            "type": "F_Enum(30)",
+            "editorDisplayScale": 1.0,
+            "__type": "LocalEnum.Items",
+            "editorAlwaysShow": false,
+            "autoChainRef": true,
+            "editorDisplayPos": "Above",
+            "editorDisplayMode": "EntityTile",
+            "identifier": "type",
+            "isArray": false,
+            "editorLinkStyle": "StraightArrow",
+            "allowedRefs": "OnlySame",
+            "useForSmartColor": false,
+            "editorCutLongValues": true,
+            "canBeNull": false,
+            "allowedRefTags": [],
+            "uid": 32,
+            "symmetricalRef": false,
+            "allowOutOfLevelRef": true,
+            "editorShowInWorld": true,
+            "searchable": false,
+            "exportToToc": false
+          }
+        ],
+        "uid": 29,
+        "tileRenderMode": "Stretch",
+        "resizableY": false,
+        "lineOpacity": 1.0,
+        "nineSliceBorders": [],
+        "width": 10,
+        "tags": [],
+        "exportToToc": false,
+        "fillOpacity": 1.0
+      }
+    ],
+    "enums": [
+      {
+        "values": [
+          {
+            "color": 6710903,
+            "id": "Pickaxe",
+            "tileRect": {
+              "x": 0,
+              "w": 16,
+              "y": 0,
+              "h": 16,
+              "tilesetUid": 31
+            }
+          },
+          {
+            "color": 6710903,
+            "id": "Potion",
+            "tileRect": {
+              "x": 96,
+              "w": 16,
+              "y": 0,
+              "h": 16,
+              "tilesetUid": 31
+            }
+          },
+          {
+            "color": 10048836,
+            "id": "Food",
+            "tileRect": {
+              "x": 16,
+              "w": 16,
+              "y": 96,
+              "h": 16,
+              "tilesetUid": 31
+            }
+          }
+        ],
+        "identifier": "Items",
+        "iconTilesetUid": 31,
+        "uid": 30,
+        "tags": []
+      }
+    ],
+    "layers": [
+      {
+        "type": "Entities",
+        "parallaxScaling": true,
+        "inactiveOpacity": 0.6,
+        "__type": "Entities",
+        "autoRuleGroups": [],
+        "gridSize": 8,
+        "hideInList": false,
+        "requiredTags": [],
+        "tilePivotX": 0.0,
+        "uiFilterTags": [],
+        "guideGridWid": 0,
+        "parallaxFactorX": 0.0,
+        "identifier": "Entities",
+        "canSelectWhenInactive": true,
+        "pxOffsetX": 0,
+        "tilePivotY": 0.0,
+        "excludedTags": [],
+        "uid": 28,
+        "guideGridHei": 0,
+        "displayOpacity": 1.0,
+        "intGridValuesGroups": [],
+        "hideFieldsWhenInactive": true,
+        "useAsyncRender": false,
+        "pxOffsetY": 0,
+        "parallaxFactorY": 0.0,
+        "intGridValues": [],
+        "renderInWorldView": true
+      },
+      {
+        "type": "Tiles",
+        "parallaxScaling": true,
+        "inactiveOpacity": 1.0,
+        "__type": "Tiles",
+        "autoRuleGroups": [],
+        "gridSize": 8,
+        "hideInList": false,
+        "tilesetDefUid": 1,
+        "requiredTags": [],
+        "tilePivotX": 0.0,
+        "uiFilterTags": [],
+        "guideGridWid": 0,
+        "parallaxFactorX": 0.0,
+        "identifier": "Custom_tiles",
+        "canSelectWhenInactive": true,
+        "pxOffsetX": 0,
+        "tilePivotY": 0.0,
+        "excludedTags": [],
+        "uid": 34,
+        "guideGridHei": 0,
+        "displayOpacity": 1.0,
+        "intGridValuesGroups": [],
+        "hideFieldsWhenInactive": true,
+        "useAsyncRender": false,
+        "pxOffsetY": 0,
+        "parallaxFactorY": 0.0,
+        "intGridValues": [],
+        "renderInWorldView": true
+      },
+      {
+        "type": "IntGrid",
+        "parallaxScaling": true,
+        "inactiveOpacity": 1.0,
+        "__type": "IntGrid",
+        "autoRuleGroups": [
+          {
+            "isOptional": false,
+            "usesWizard": false,
+            "biomeRequirementMode": 0,
+            "rules": [
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 3,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 44,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  -1000001,
+                  0,
+                  0,
+                  3,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    124
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 2357148.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 1,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 43,
+                "invalidated": false,
+                "pattern": [
+                  3
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    100
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 6024002.0
+              }
+            ],
+            "active": true,
+            "uid": 42,
+            "name": "Lava",
+            "requiredBiomeValues": []
+          },
+          {
+            "isOptional": false,
+            "usesWizard": false,
+            "biomeRequirementMode": 0,
+            "rules": [
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": false,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 3,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 19,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  -2,
+                  0,
+                  0,
+                  2,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    66
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 2975287.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 1,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 18,
+                "invalidated": false,
+                "pattern": [
+                  2
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    78
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 847472.0
+              }
+            ],
+            "active": true,
+            "uid": 16,
+            "name": "Ladders",
+            "requiredBiomeValues": []
+          },
+          {
+            "isOptional": false,
+            "usesWizard": false,
+            "biomeRequirementMode": 0,
+            "rules": [
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": false,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 5,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 0.25,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 14,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  -1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    126
+                  ],
+                  [
+                    127
+                  ],
+                  [
+                    147
+                  ],
+                  [
+                    148
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 3920188.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": false,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 3,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 11,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  -1,
+                  0,
+                  0,
+                  1,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    56
+                  ],
+                  [
+                    57
+                  ],
+                  [
+                    58
+                  ],
+                  [
+                    59
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 4007511.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": false,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 3,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 0.6,
+                "tileRandomYMax": 0,
+                "perlinActive": true,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 12,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  -1,
+                  0,
+                  0,
+                  1,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    32
+                  ],
+                  [
+                    44
+                  ],
+                  [
+                    33
+                  ],
+                  [
+                    45
+                  ],
+                  [
+                    34
+                  ],
+                  [
+                    46
+                  ],
+                  [
+                    35
+                  ],
+                  [
+                    47
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 2530931.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 3,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 2,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 0.18,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 38,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  -1,
+                  0,
+                  0,
+                  1,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    64
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 4359617.0
+              }
+            ],
+            "active": true,
+            "uid": 10,
+            "name": "Props",
+            "requiredBiomeValues": []
+          },
+          {
+            "isOptional": false,
+            "usesWizard": false,
+            "biomeRequirementMode": 0,
+            "rules": [
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": false,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 5,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 15,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  0,
+                  -1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  -1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    92
+                  ],
+                  [
+                    93
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 8199321.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": false,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 3,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 47,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  1,
+                  0,
+                  0,
+                  -1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    94
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 9065732.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 3,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": true,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": true,
+                "active": true,
+                "uid": 5,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  -1,
+                  0,
+                  -1,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    12
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 4760070.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 3,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": true,
+                "active": true,
+                "uid": 7,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  -1,
+                  0,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    13
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 4633502.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 3,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": true,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 6,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  0,
+                  0,
+                  -1,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    24
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 6132148.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 1,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 0.76,
+                "tileRandomYMax": 0,
+                "perlinActive": true,
+                "perlinScale": 0.38,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 57,
+                "invalidated": false,
+                "pattern": [
+                  1
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    25
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 44676336.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 1,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 36,
+                "invalidated": false,
+                "pattern": [
+                  1
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    0
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 259529.0
+              }
+            ],
+            "active": true,
+            "uid": 3,
+            "name": "Walls",
+            "requiredBiomeValues": []
+          }
+        ],
+        "gridSize": 8,
+        "hideInList": false,
+        "tilesetDefUid": 1,
+        "requiredTags": [],
+        "tilePivotX": 0.0,
+        "uiFilterTags": [],
+        "guideGridWid": 0,
+        "parallaxFactorX": 0.0,
+        "identifier": "Collisions",
+        "canSelectWhenInactive": true,
+        "pxOffsetX": 0,
+        "tilePivotY": 0.0,
+        "excludedTags": [],
+        "uid": 2,
+        "guideGridHei": 0,
+        "displayOpacity": 1.0,
+        "intGridValuesGroups": [],
+        "hideFieldsWhenInactive": true,
+        "useAsyncRender": false,
+        "pxOffsetY": 0,
+        "parallaxFactorY": 0.0,
+        "intGridValues": [
+          {
+            "color": "#2A2B61",
+            "identifier": "walls",
+            "groupUid": 0,
+            "value": 1
+          },
+          {
+            "color": "#A36433",
+            "identifier": "ladders",
+            "groupUid": 0,
+            "value": 2
+          },
+          {
+            "color": "#FF0000",
+            "identifier": "lava",
+            "groupUid": 0,
+            "value": 3
+          }
+        ],
+        "renderInWorldView": true
+      },
+      {
+        "type": "IntGrid",
+        "parallaxScaling": true,
+        "inactiveOpacity": 1.0,
+        "__type": "IntGrid",
+        "autoRuleGroups": [
+          {
+            "isOptional": false,
+            "usesWizard": false,
+            "biomeRequirementMode": 0,
+            "rules": [
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 3,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": true,
+                "active": true,
+                "uid": 56,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  1,
+                  0,
+                  0,
+                  -1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    94
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 5253545.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 3,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": true,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 55,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  -1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    95
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 2597597.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 3,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": true,
+                "active": true,
+                "uid": 54,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  -1,
+                  0,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    149
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 5096226.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 3,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": true,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 52,
+                "invalidated": false,
+                "pattern": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  -1,
+                  0,
+                  0,
+                  0
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    137
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 5534570.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 1,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 0.74,
+                "tileRandomYMax": 0,
+                "perlinActive": true,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 51,
+                "invalidated": false,
+                "pattern": [
+                  1
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    1
+                  ],
+                  [
+                    2
+                  ],
+                  [
+                    3
+                  ],
+                  [
+                    4
+                  ],
+                  [
+                    5
+                  ],
+                  [
+                    6
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 3539893.0
+              },
+              {
+                "checker": "None",
+                "pivotY": 0.0,
+                "breakOnMatch": true,
+                "perlinOctaves": 2.0,
+                "yModulo": 1,
+                "size": 1,
+                "tileMode": "Single",
+                "tileRandomXMax": 0,
+                "tileRandomXMin": 0,
+                "xModulo": 1,
+                "yOffset": 0,
+                "flipX": false,
+                "tileYOffset": 0,
+                "chance": 1.0,
+                "tileRandomYMax": 0,
+                "perlinActive": false,
+                "perlinScale": 0.2,
+                "pivotX": 0.0,
+                "flipY": false,
+                "active": true,
+                "uid": 50,
+                "invalidated": false,
+                "pattern": [
+                  1
+                ],
+                "alpha": 1.0,
+                "tileRectsIds": [
+                  [
+                    0
+                  ]
+                ],
+                "tileXOffset": 0,
+                "xOffset": 0,
+                "tileRandomYMin": 0,
+                "perlinSeed": 4280659.0
+              }
+            ],
+            "active": true,
+            "uid": 49,
+            "name": "walls",
+            "requiredBiomeValues": []
+          }
+        ],
+        "gridSize": 8,
+        "hideInList": false,
+        "tilesetDefUid": 1,
+        "requiredTags": [],
+        "tilePivotX": 0.0,
+        "uiFilterTags": [],
+        "guideGridWid": 0,
+        "parallaxFactorX": 0.0,
+        "identifier": "Cavern_background",
+        "canSelectWhenInactive": true,
+        "pxOffsetX": 0,
+        "tilePivotY": 0.0,
+        "excludedTags": [],
+        "uid": 48,
+        "guideGridHei": 0,
+        "displayOpacity": 1.0,
+        "intGridValuesGroups": [],
+        "hideFieldsWhenInactive": true,
+        "useAsyncRender": false,
+        "pxOffsetY": 0,
+        "parallaxFactorY": 0.0,
+        "intGridValues": [
+          {
+            "color": "#6A6A6A",
+            "identifier": "bg_walls",
+            "groupUid": 0,
+            "value": 1
+          }
+        ],
+        "renderInWorldView": true
+      }
+    ],
+    "externalEnums": []
+  },
+  "defaultPivotX": 0.5,
+  "defaultEntityWidth": 16,
+  "iid": "a8ea85a0-7820-11ed-b6fd-4507f1bd5fbf",
+  "defaultGridSize": 8,
+  "minifyJson": false,
+  "backupOnSave": false,
+  "flags": [
+    "ExportOldTableOfContentData",
+    "PrependIndexToLevelFileNames",
+    "MultiWorlds"
+  ],
+  "defaultLevelBgColor": "#121331",
+  "identifierStyle": "Capitalize",
+  "levels": []
+}

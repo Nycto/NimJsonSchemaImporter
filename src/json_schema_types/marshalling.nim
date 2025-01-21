@@ -112,7 +112,7 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
         let safeKey = safePropName(propName)
         if subtype.kind == OptionalType:
             decodeKeys.add quote do:
-                if `key` in `source`:
+                if `key` in `source` and `source`{`key`}.kind != JNull:
                     `target`.`safeKey` = some(jsonTo(`source`{`key`}, typeof(unsafeGet(`target`.`safeKey`))))
         else:
             decodeKeys.add quote do:

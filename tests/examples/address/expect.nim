@@ -11,7 +11,7 @@ type
     `extendedAddress`*: Option[string]
     `postalCode`*: Option[string]
 proc fromJsonHook*(target: var `Testaddress`; source: JsonNode) =
-  if "streetAddress" in source:
+  if "streetAddress" in source and source{"streetAddress"}.kind != JNull:
     target.`streetAddress` = some(jsonTo(source{"streetAddress"},
         typeof(unsafeGet(target.`streetAddress`))))
   assert("region" in source,
@@ -24,13 +24,13 @@ proc fromJsonHook*(target: var `Testaddress`; source: JsonNode) =
          "countryName" & " is missing while decoding " & "Testaddress")
   target.`countryName` = jsonTo(source{"countryName"},
                                 typeof(target.`countryName`))
-  if "postOfficeBox" in source:
+  if "postOfficeBox" in source and source{"postOfficeBox"}.kind != JNull:
     target.`postOfficeBox` = some(jsonTo(source{"postOfficeBox"},
         typeof(unsafeGet(target.`postOfficeBox`))))
-  if "extendedAddress" in source:
+  if "extendedAddress" in source and source{"extendedAddress"}.kind != JNull:
     target.`extendedAddress` = some(jsonTo(source{"extendedAddress"},
         typeof(unsafeGet(target.`extendedAddress`))))
-  if "postalCode" in source:
+  if "postalCode" in source and source{"postalCode"}.kind != JNull:
     target.`postalCode` = some(jsonTo(source{"postalCode"},
                                       typeof(unsafeGet(target.`postalCode`))))
 

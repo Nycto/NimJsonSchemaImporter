@@ -542,7 +542,7 @@ proc fromJsonHook*(target: var `TestTableOfContentEntry`; source: JsonNode) =
   assert("identifier" in source, "identifier" & " is missing while decoding " &
       "TestTableOfContentEntry")
   target.`identifier` = jsonTo(source{"identifier"}, typeof(target.`identifier`))
-  if "instances" in source:
+  if "instances" in source and source{"instances"}.kind != JNull:
     target.`instances` = some(jsonTo(source{"instances"},
                                      typeof(unsafeGet(target.`instances`))))
 
@@ -578,7 +578,7 @@ proc fromJsonHook*(target: var `TestTestWorld_worldLayout`; source: JsonNode) =
     raise newException(ValueError, "Unable to decode enum")
   
 proc fromJsonHook*(target: var `TestNeighbourLevel`; source: JsonNode) =
-  if "levelUid" in source:
+  if "levelUid" in source and source{"levelUid"}.kind != JNull:
     target.`levelUid` = some(jsonTo(source{"levelUid"},
                                     typeof(unsafeGet(target.`levelUid`))))
   assert("levelIid" in source,
@@ -689,7 +689,7 @@ proc fromJsonHook*(target: var `TestFieldInstance`; source: JsonNode) =
   assert("__value" in source,
          "__value" & " is missing while decoding " & "TestFieldInstance")
   target.`value` = jsonTo(source{"__value"}, typeof(target.`value`))
-  if "__tile" in source:
+  if "__tile" in source and source{"__tile"}.kind != JNull:
     target.`tile` = some(jsonTo(source{"__tile"},
                                 typeof(unsafeGet(target.`tile`))))
   assert("__type" in source,
@@ -714,10 +714,10 @@ proc toJsonHook*(source: `TestFieldInstance`): JsonNode =
   result{"defUid"} = toJson(source.`defUid`)
 
 proc fromJsonHook*(target: var `TestEntityInstance`; source: JsonNode) =
-  if "__worldY" in source:
+  if "__worldY" in source and source{"__worldY"}.kind != JNull:
     target.`worldY` = some(jsonTo(source{"__worldY"},
                                   typeof(unsafeGet(target.`worldY`))))
-  if "__tile" in source:
+  if "__tile" in source and source{"__tile"}.kind != JNull:
     target.`tile` = some(jsonTo(source{"__tile"},
                                 typeof(unsafeGet(target.`tile`))))
   assert("__identifier" in source,
@@ -750,7 +750,7 @@ proc fromJsonHook*(target: var `TestEntityInstance`; source: JsonNode) =
   assert("width" in source,
          "width" & " is missing while decoding " & "TestEntityInstance")
   target.`width` = jsonTo(source{"width"}, typeof(target.`width`))
-  if "__worldX" in source:
+  if "__worldX" in source and source{"__worldX"}.kind != JNull:
     target.`worldX` = some(jsonTo(source{"__worldX"},
                                   typeof(unsafeGet(target.`worldX`))))
   assert("__grid" in source,
@@ -807,13 +807,14 @@ proc fromJsonHook*(target: var `TestLayerInstance`; source: JsonNode) =
          "__identifier" & " is missing while decoding " & "TestLayerInstance")
   target.`identifier` = jsonTo(source{"__identifier"},
                                typeof(target.`identifier`))
-  if "overrideTilesetUid" in source:
+  if "overrideTilesetUid" in source and
+      source{"overrideTilesetUid"}.kind != JNull:
     target.`overrideTilesetUid` = some(jsonTo(source{"overrideTilesetUid"},
         typeof(unsafeGet(target.`overrideTilesetUid`))))
   assert("levelId" in source,
          "levelId" & " is missing while decoding " & "TestLayerInstance")
   target.`levelId` = jsonTo(source{"levelId"}, typeof(target.`levelId`))
-  if "intGrid" in source:
+  if "intGrid" in source and source{"intGrid"}.kind != JNull:
     target.`intGrid` = some(jsonTo(source{"intGrid"},
                                    typeof(unsafeGet(target.`intGrid`))))
   assert("autoLayerTiles" in source,
@@ -835,10 +836,11 @@ proc fromJsonHook*(target: var `TestLayerInstance`; source: JsonNode) =
   assert("pxOffsetX" in source,
          "pxOffsetX" & " is missing while decoding " & "TestLayerInstance")
   target.`pxOffsetX` = jsonTo(source{"pxOffsetX"}, typeof(target.`pxOffsetX`))
-  if "__tilesetRelPath" in source:
+  if "__tilesetRelPath" in source and
+      source{"__tilesetRelPath"}.kind != JNull:
     target.`tilesetRelPath` = some(jsonTo(source{"__tilesetRelPath"},
         typeof(unsafeGet(target.`tilesetRelPath`))))
-  if "__tilesetDefUid" in source:
+  if "__tilesetDefUid" in source and source{"__tilesetDefUid"}.kind != JNull:
     target.`tilesetDefUid` = some(jsonTo(source{"__tilesetDefUid"},
         typeof(unsafeGet(target.`tilesetDefUid`))))
   assert("__cHei" in source,
@@ -924,16 +926,16 @@ proc fromJsonHook*(target: var `TestLevel`; source: JsonNode) =
   assert("__bgColor" in source,
          "__bgColor" & " is missing while decoding " & "TestLevel")
   target.`bgColor` = jsonTo(source{"__bgColor"}, typeof(target.`bgColor`))
-  if "bgColor" in source:
+  if "bgColor" in source and source{"bgColor"}.kind != JNull:
     target.`bgColor1` = some(jsonTo(source{"bgColor"},
                                     typeof(unsafeGet(target.`bgColor1`))))
-  if "externalRelPath" in source:
+  if "externalRelPath" in source and source{"externalRelPath"}.kind != JNull:
     target.`externalRelPath` = some(jsonTo(source{"externalRelPath"},
         typeof(unsafeGet(target.`externalRelPath`))))
   assert("worldY" in source,
          "worldY" & " is missing while decoding " & "TestLevel")
   target.`worldY` = jsonTo(source{"worldY"}, typeof(target.`worldY`))
-  if "bgRelPath" in source:
+  if "bgRelPath" in source and source{"bgRelPath"}.kind != JNull:
     target.`bgRelPath` = some(jsonTo(source{"bgRelPath"},
                                      typeof(unsafeGet(target.`bgRelPath`))))
   assert("identifier" in source,
@@ -954,17 +956,17 @@ proc fromJsonHook*(target: var `TestLevel`; source: JsonNode) =
                                typeof(target.`neighbours`))
   assert("uid" in source, "uid" & " is missing while decoding " & "TestLevel")
   target.`uid` = jsonTo(source{"uid"}, typeof(target.`uid`))
-  if "bgPos" in source:
+  if "bgPos" in source and source{"bgPos"}.kind != JNull:
     target.`bgPos` = some(jsonTo(source{"bgPos"},
                                  typeof(unsafeGet(target.`bgPos`))))
-  if "layerInstances" in source:
+  if "layerInstances" in source and source{"layerInstances"}.kind != JNull:
     target.`layerInstances` = some(jsonTo(source{"layerInstances"},
         typeof(unsafeGet(target.`layerInstances`))))
   assert("fieldInstances" in source,
          "fieldInstances" & " is missing while decoding " & "TestLevel")
   target.`fieldInstances` = jsonTo(source{"fieldInstances"},
                                    typeof(target.`fieldInstances`))
-  if "__bgPos" in source:
+  if "__bgPos" in source and source{"__bgPos"}.kind != JNull:
     target.`bgPos1` = some(jsonTo(source{"__bgPos"},
                                   typeof(unsafeGet(target.`bgPos1`))))
   assert("worldX" in source,
@@ -1022,7 +1024,7 @@ proc fromJsonHook*(target: var `TestWorld`; source: JsonNode) =
   assert("identifier" in source,
          "identifier" & " is missing while decoding " & "TestWorld")
   target.`identifier` = jsonTo(source{"identifier"}, typeof(target.`identifier`))
-  if "worldLayout" in source:
+  if "worldLayout" in source and source{"worldLayout"}.kind != JNull:
     target.`worldLayout` = some(jsonTo(source{"worldLayout"},
                                        typeof(unsafeGet(target.`worldLayout`))))
   assert("iid" in source, "iid" & " is missing while decoding " & "TestWorld")
@@ -1077,12 +1079,12 @@ proc fromJsonHook*(target: var `TestTestLdtkJsonRoot_imageExportMode`;
     raise newException(ValueError, "Unable to decode enum")
   
 proc fromJsonHook*(target: var `TestIntGridValueDef`; source: JsonNode) =
-  if "tile" in source:
+  if "tile" in source and source{"tile"}.kind != JNull:
     target.`tile` = some(jsonTo(source{"tile"}, typeof(unsafeGet(target.`tile`))))
   assert("color" in source,
          "color" & " is missing while decoding " & "TestIntGridValueDef")
   target.`color` = jsonTo(source{"color"}, typeof(target.`color`))
-  if "identifier" in source:
+  if "identifier" in source and source{"identifier"}.kind != JNull:
     target.`identifier` = some(jsonTo(source{"identifier"},
                                       typeof(unsafeGet(target.`identifier`))))
   assert("groupUid" in source,
@@ -1305,18 +1307,20 @@ proc fromJsonHook*(target: var `TestFieldDef`; source: JsonNode) =
   assert("__type" in source,
          "__type" & " is missing while decoding " & "TestFieldDef")
   target.`type` = jsonTo(source{"__type"}, typeof(target.`type`))
-  if "allowedRefsEntityUid" in source:
+  if "allowedRefsEntityUid" in source and
+      source{"allowedRefsEntityUid"}.kind != JNull:
     target.`allowedRefsEntityUid` = some(jsonTo(
         source{"allowedRefsEntityUid"},
         typeof(unsafeGet(target.`allowedRefsEntityUid`))))
-  if "textLanguageMode" in source:
+  if "textLanguageMode" in source and
+      source{"textLanguageMode"}.kind != JNull:
     target.`textLanguageMode` = some(jsonTo(source{"textLanguageMode"},
         typeof(unsafeGet(target.`textLanguageMode`))))
   assert("editorAlwaysShow" in source,
          "editorAlwaysShow" & " is missing while decoding " & "TestFieldDef")
   target.`editorAlwaysShow` = jsonTo(source{"editorAlwaysShow"},
                                      typeof(target.`editorAlwaysShow`))
-  if "defaultOverride" in source:
+  if "defaultOverride" in source and source{"defaultOverride"}.kind != JNull:
     target.`defaultOverride` = some(jsonTo(source{"defaultOverride"},
         typeof(unsafeGet(target.`defaultOverride`))))
   assert("autoChainRef" in source,
@@ -1334,7 +1338,7 @@ proc fromJsonHook*(target: var `TestFieldDef`; source: JsonNode) =
   assert("identifier" in source,
          "identifier" & " is missing while decoding " & "TestFieldDef")
   target.`identifier` = jsonTo(source{"identifier"}, typeof(target.`identifier`))
-  if "regex" in source:
+  if "regex" in source and source{"regex"}.kind != JNull:
     target.`regex` = some(jsonTo(source{"regex"},
                                  typeof(unsafeGet(target.`regex`))))
   assert("isArray" in source,
@@ -1352,12 +1356,14 @@ proc fromJsonHook*(target: var `TestFieldDef`; source: JsonNode) =
          "useForSmartColor" & " is missing while decoding " & "TestFieldDef")
   target.`useForSmartColor` = jsonTo(source{"useForSmartColor"},
                                      typeof(target.`useForSmartColor`))
-  if "editorTextSuffix" in source:
+  if "editorTextSuffix" in source and
+      source{"editorTextSuffix"}.kind != JNull:
     target.`editorTextSuffix` = some(jsonTo(source{"editorTextSuffix"},
         typeof(unsafeGet(target.`editorTextSuffix`))))
-  if "doc" in source:
+  if "doc" in source and source{"doc"}.kind != JNull:
     target.`doc` = some(jsonTo(source{"doc"}, typeof(unsafeGet(target.`doc`))))
-  if "editorTextPrefix" in source:
+  if "editorTextPrefix" in source and
+      source{"editorTextPrefix"}.kind != JNull:
     target.`editorTextPrefix` = some(jsonTo(source{"editorTextPrefix"},
         typeof(unsafeGet(target.`editorTextPrefix`))))
   assert("editorCutLongValues" in source,
@@ -1377,39 +1383,40 @@ proc fromJsonHook*(target: var `TestFieldDef`; source: JsonNode) =
          "symmetricalRef" & " is missing while decoding " & "TestFieldDef")
   target.`symmetricalRef` = jsonTo(source{"symmetricalRef"},
                                    typeof(target.`symmetricalRef`))
-  if "editorDisplayColor" in source:
+  if "editorDisplayColor" in source and
+      source{"editorDisplayColor"}.kind != JNull:
     target.`editorDisplayColor` = some(jsonTo(source{"editorDisplayColor"},
         typeof(unsafeGet(target.`editorDisplayColor`))))
   assert("allowOutOfLevelRef" in source,
          "allowOutOfLevelRef" & " is missing while decoding " & "TestFieldDef")
   target.`allowOutOfLevelRef` = jsonTo(source{"allowOutOfLevelRef"},
                                        typeof(target.`allowOutOfLevelRef`))
-  if "acceptFileTypes" in source:
+  if "acceptFileTypes" in source and source{"acceptFileTypes"}.kind != JNull:
     target.`acceptFileTypes` = some(jsonTo(source{"acceptFileTypes"},
         typeof(unsafeGet(target.`acceptFileTypes`))))
   assert("editorShowInWorld" in source,
          "editorShowInWorld" & " is missing while decoding " & "TestFieldDef")
   target.`editorShowInWorld` = jsonTo(source{"editorShowInWorld"},
                                       typeof(target.`editorShowInWorld`))
-  if "tilesetUid" in source:
+  if "tilesetUid" in source and source{"tilesetUid"}.kind != JNull:
     target.`tilesetUid` = some(jsonTo(source{"tilesetUid"},
                                       typeof(unsafeGet(target.`tilesetUid`))))
-  if "arrayMaxLength" in source:
+  if "arrayMaxLength" in source and source{"arrayMaxLength"}.kind != JNull:
     target.`arrayMaxLength` = some(jsonTo(source{"arrayMaxLength"},
         typeof(unsafeGet(target.`arrayMaxLength`))))
-  if "arrayMinLength" in source:
+  if "arrayMinLength" in source and source{"arrayMinLength"}.kind != JNull:
     target.`arrayMinLength` = some(jsonTo(source{"arrayMinLength"},
         typeof(unsafeGet(target.`arrayMinLength`))))
   assert("searchable" in source,
          "searchable" & " is missing while decoding " & "TestFieldDef")
   target.`searchable` = jsonTo(source{"searchable"}, typeof(target.`searchable`))
-  if "min" in source:
+  if "min" in source and source{"min"}.kind != JNull:
     target.`min` = some(jsonTo(source{"min"}, typeof(unsafeGet(target.`min`))))
   assert("exportToToc" in source,
          "exportToToc" & " is missing while decoding " & "TestFieldDef")
   target.`exportToToc` = jsonTo(source{"exportToToc"},
                                 typeof(target.`exportToToc`))
-  if "max" in source:
+  if "max" in source and source{"max"}.kind != JNull:
     target.`max` = some(jsonTo(source{"max"}, typeof(unsafeGet(target.`max`))))
 
 proc toJsonHook*(source: `TestFieldDef`): JsonNode =
@@ -1517,16 +1524,17 @@ proc fromJsonHook*(target: var `TestTilesetDef`; source: JsonNode) =
   assert("spacing" in source,
          "spacing" & " is missing while decoding " & "TestTilesetDef")
   target.`spacing` = jsonTo(source{"spacing"}, typeof(target.`spacing`))
-  if "tagsSourceEnumUid" in source:
+  if "tagsSourceEnumUid" in source and
+      source{"tagsSourceEnumUid"}.kind != JNull:
     target.`tagsSourceEnumUid` = some(jsonTo(source{"tagsSourceEnumUid"},
         typeof(unsafeGet(target.`tagsSourceEnumUid`))))
-  if "embedAtlas" in source:
+  if "embedAtlas" in source and source{"embedAtlas"}.kind != JNull:
     target.`embedAtlas` = some(jsonTo(source{"embedAtlas"},
                                       typeof(unsafeGet(target.`embedAtlas`))))
   assert("identifier" in source,
          "identifier" & " is missing while decoding " & "TestTilesetDef")
   target.`identifier` = jsonTo(source{"identifier"}, typeof(target.`identifier`))
-  if "cachedPixelData" in source:
+  if "cachedPixelData" in source and source{"cachedPixelData"}.kind != JNull:
     target.`cachedPixelData` = some(jsonTo(source{"cachedPixelData"},
         typeof(unsafeGet(target.`cachedPixelData`))))
   assert("enumTags" in source,
@@ -1551,7 +1559,7 @@ proc fromJsonHook*(target: var `TestTilesetDef`; source: JsonNode) =
   assert("__cWid" in source,
          "__cWid" & " is missing while decoding " & "TestTilesetDef")
   target.`cWid` = jsonTo(source{"__cWid"}, typeof(target.`cWid`))
-  if "relPath" in source:
+  if "relPath" in source and source{"relPath"}.kind != JNull:
     target.`relPath` = some(jsonTo(source{"relPath"},
                                    typeof(unsafeGet(target.`relPath`))))
   assert("tags" in source,
@@ -1715,14 +1723,14 @@ proc fromJsonHook*(target: var `TestEntityDef`; source: JsonNode) =
   assert("renderMode" in source,
          "renderMode" & " is missing while decoding " & "TestEntityDef")
   target.`renderMode` = jsonTo(source{"renderMode"}, typeof(target.`renderMode`))
-  if "tilesetId" in source:
+  if "tilesetId" in source and source{"tilesetId"}.kind != JNull:
     target.`tilesetId` = some(jsonTo(source{"tilesetId"},
                                      typeof(unsafeGet(target.`tilesetId`))))
   assert("keepAspectRatio" in source,
          "keepAspectRatio" & " is missing while decoding " & "TestEntityDef")
   target.`keepAspectRatio` = jsonTo(source{"keepAspectRatio"},
                                     typeof(target.`keepAspectRatio`))
-  if "minWidth" in source:
+  if "minWidth" in source and source{"minWidth"}.kind != JNull:
     target.`minWidth` = some(jsonTo(source{"minWidth"},
                                     typeof(unsafeGet(target.`minWidth`))))
   assert("showName" in source,
@@ -1737,13 +1745,13 @@ proc fromJsonHook*(target: var `TestEntityDef`; source: JsonNode) =
   assert("maxCount" in source,
          "maxCount" & " is missing while decoding " & "TestEntityDef")
   target.`maxCount` = jsonTo(source{"maxCount"}, typeof(target.`maxCount`))
-  if "tileId" in source:
+  if "tileId" in source and source{"tileId"}.kind != JNull:
     target.`tileId` = some(jsonTo(source{"tileId"},
                                   typeof(unsafeGet(target.`tileId`))))
   assert("pivotX" in source,
          "pivotX" & " is missing while decoding " & "TestEntityDef")
   target.`pivotX` = jsonTo(source{"pivotX"}, typeof(target.`pivotX`))
-  if "doc" in source:
+  if "doc" in source and source{"doc"}.kind != JNull:
     target.`doc` = some(jsonTo(source{"doc"}, typeof(unsafeGet(target.`doc`))))
   assert("fieldDefs" in source,
          "fieldDefs" & " is missing while decoding " & "TestEntityDef")
@@ -1755,7 +1763,7 @@ proc fromJsonHook*(target: var `TestEntityDef`; source: JsonNode) =
          "tileRenderMode" & " is missing while decoding " & "TestEntityDef")
   target.`tileRenderMode` = jsonTo(source{"tileRenderMode"},
                                    typeof(target.`tileRenderMode`))
-  if "uiTileRect" in source:
+  if "uiTileRect" in source and source{"uiTileRect"}.kind != JNull:
     target.`uiTileRect` = some(jsonTo(source{"uiTileRect"},
                                       typeof(unsafeGet(target.`uiTileRect`))))
   assert("resizableY" in source,
@@ -1765,17 +1773,17 @@ proc fromJsonHook*(target: var `TestEntityDef`; source: JsonNode) =
          "lineOpacity" & " is missing while decoding " & "TestEntityDef")
   target.`lineOpacity` = jsonTo(source{"lineOpacity"},
                                 typeof(target.`lineOpacity`))
-  if "minHeight" in source:
+  if "minHeight" in source and source{"minHeight"}.kind != JNull:
     target.`minHeight` = some(jsonTo(source{"minHeight"},
                                      typeof(unsafeGet(target.`minHeight`))))
-  if "tileRect" in source:
+  if "tileRect" in source and source{"tileRect"}.kind != JNull:
     target.`tileRect` = some(jsonTo(source{"tileRect"},
                                     typeof(unsafeGet(target.`tileRect`))))
   assert("nineSliceBorders" in source,
          "nineSliceBorders" & " is missing while decoding " & "TestEntityDef")
   target.`nineSliceBorders` = jsonTo(source{"nineSliceBorders"},
                                      typeof(target.`nineSliceBorders`))
-  if "maxWidth" in source:
+  if "maxWidth" in source and source{"maxWidth"}.kind != JNull:
     target.`maxWidth` = some(jsonTo(source{"maxWidth"},
                                     typeof(unsafeGet(target.`maxWidth`))))
   assert("width" in source,
@@ -1784,7 +1792,7 @@ proc fromJsonHook*(target: var `TestEntityDef`; source: JsonNode) =
   assert("tags" in source,
          "tags" & " is missing while decoding " & "TestEntityDef")
   target.`tags` = jsonTo(source{"tags"}, typeof(target.`tags`))
-  if "maxHeight" in source:
+  if "maxHeight" in source and source{"maxHeight"}.kind != JNull:
     target.`maxHeight` = some(jsonTo(source{"maxHeight"},
                                      typeof(unsafeGet(target.`maxHeight`))))
   assert("exportToToc" in source,
@@ -1843,7 +1851,7 @@ proc toJsonHook*(source: `TestEntityDef`): JsonNode =
   result{"fillOpacity"} = toJson(source.`fillOpacity`)
 
 proc fromJsonHook*(target: var `TestEnumDefValues`; source: JsonNode) =
-  if "__tileSrcRect" in source:
+  if "__tileSrcRect" in source and source{"__tileSrcRect"}.kind != JNull:
     target.`tileSrcRect` = some(jsonTo(source{"__tileSrcRect"},
                                        typeof(unsafeGet(target.`tileSrcRect`))))
   assert("color" in source,
@@ -1852,10 +1860,10 @@ proc fromJsonHook*(target: var `TestEnumDefValues`; source: JsonNode) =
   assert("id" in source,
          "id" & " is missing while decoding " & "TestEnumDefValues")
   target.`id` = jsonTo(source{"id"}, typeof(target.`id`))
-  if "tileId" in source:
+  if "tileId" in source and source{"tileId"}.kind != JNull:
     target.`tileId` = some(jsonTo(source{"tileId"},
                                   typeof(unsafeGet(target.`tileId`))))
-  if "tileRect" in source:
+  if "tileRect" in source and source{"tileRect"}.kind != JNull:
     target.`tileRect` = some(jsonTo(source{"tileRect"},
                                     typeof(unsafeGet(target.`tileRect`))))
 
@@ -1874,17 +1882,18 @@ proc fromJsonHook*(target: var `TestEnumDef`; source: JsonNode) =
   assert("values" in source,
          "values" & " is missing while decoding " & "TestEnumDef")
   target.`values` = jsonTo(source{"values"}, typeof(target.`values`))
-  if "externalRelPath" in source:
+  if "externalRelPath" in source and source{"externalRelPath"}.kind != JNull:
     target.`externalRelPath` = some(jsonTo(source{"externalRelPath"},
         typeof(unsafeGet(target.`externalRelPath`))))
   assert("identifier" in source,
          "identifier" & " is missing while decoding " & "TestEnumDef")
   target.`identifier` = jsonTo(source{"identifier"}, typeof(target.`identifier`))
-  if "externalFileChecksum" in source:
+  if "externalFileChecksum" in source and
+      source{"externalFileChecksum"}.kind != JNull:
     target.`externalFileChecksum` = some(jsonTo(
         source{"externalFileChecksum"},
         typeof(unsafeGet(target.`externalFileChecksum`))))
-  if "iconTilesetUid" in source:
+  if "iconTilesetUid" in source and source{"iconTilesetUid"}.kind != JNull:
     target.`iconTilesetUid` = some(jsonTo(source{"iconTilesetUid"},
         typeof(unsafeGet(target.`iconTilesetUid`))))
   assert("uid" in source, "uid" & " is missing while decoding " & "TestEnumDef")
@@ -2026,7 +2035,8 @@ proc fromJsonHook*(target: var `TestAutoRuleDef`; source: JsonNode) =
          "perlinScale" & " is missing while decoding " & "TestAutoRuleDef")
   target.`perlinScale` = jsonTo(source{"perlinScale"},
                                 typeof(target.`perlinScale`))
-  if "outOfBoundsValue" in source:
+  if "outOfBoundsValue" in source and
+      source{"outOfBoundsValue"}.kind != JNull:
     target.`outOfBoundsValue` = some(jsonTo(source{"outOfBoundsValue"},
         typeof(unsafeGet(target.`outOfBoundsValue`))))
   assert("pivotX" in source,
@@ -2041,7 +2051,7 @@ proc fromJsonHook*(target: var `TestAutoRuleDef`; source: JsonNode) =
   assert("uid" in source,
          "uid" & " is missing while decoding " & "TestAutoRuleDef")
   target.`uid` = jsonTo(source{"uid"}, typeof(target.`uid`))
-  if "tileIds" in source:
+  if "tileIds" in source and source{"tileIds"}.kind != JNull:
     target.`tileIds` = some(jsonTo(source{"tileIds"},
                                    typeof(unsafeGet(target.`tileIds`))))
   assert("invalidated" in source,
@@ -2113,10 +2123,10 @@ proc fromJsonHook*(target: var `TestAutoLayerRuleGroup`; source: JsonNode) =
   assert("isOptional" in source, "isOptional" & " is missing while decoding " &
       "TestAutoLayerRuleGroup")
   target.`isOptional` = jsonTo(source{"isOptional"}, typeof(target.`isOptional`))
-  if "color" in source:
+  if "color" in source and source{"color"}.kind != JNull:
     target.`color` = some(jsonTo(source{"color"},
                                  typeof(unsafeGet(target.`color`))))
-  if "collapsed" in source:
+  if "collapsed" in source and source{"collapsed"}.kind != JNull:
     target.`collapsed` = some(jsonTo(source{"collapsed"},
                                      typeof(unsafeGet(target.`collapsed`))))
   assert("usesWizard" in source, "usesWizard" & " is missing while decoding " &
@@ -2130,7 +2140,7 @@ proc fromJsonHook*(target: var `TestAutoLayerRuleGroup`; source: JsonNode) =
   assert("rules" in source,
          "rules" & " is missing while decoding " & "TestAutoLayerRuleGroup")
   target.`rules` = jsonTo(source{"rules"}, typeof(target.`rules`))
-  if "icon" in source:
+  if "icon" in source and source{"icon"}.kind != JNull:
     target.`icon` = some(jsonTo(source{"icon"}, typeof(unsafeGet(target.`icon`))))
   assert("active" in source,
          "active" & " is missing while decoding " & "TestAutoLayerRuleGroup")
@@ -2165,10 +2175,10 @@ proc toJsonHook*(source: `TestAutoLayerRuleGroup`): JsonNode =
   result{"requiredBiomeValues"} = toJson(source.`requiredBiomeValues`)
 
 proc fromJsonHook*(target: var `TestIntGridValueGroupDef`; source: JsonNode) =
-  if "color" in source:
+  if "color" in source and source{"color"}.kind != JNull:
     target.`color` = some(jsonTo(source{"color"},
                                  typeof(unsafeGet(target.`color`))))
-  if "identifier" in source:
+  if "identifier" in source and source{"identifier"}.kind != JNull:
     target.`identifier` = some(jsonTo(source{"identifier"},
                                       typeof(unsafeGet(target.`identifier`))))
   assert("uid" in source,
@@ -2187,17 +2197,19 @@ proc fromJsonHook*(target: var `TestLayerDef`; source: JsonNode) =
   assert("type" in source,
          "type" & " is missing while decoding " & "TestLayerDef")
   target.`type1` = jsonTo(source{"type"}, typeof(target.`type1`))
-  if "autoTilesetDefUid" in source:
+  if "autoTilesetDefUid" in source and
+      source{"autoTilesetDefUid"}.kind != JNull:
     target.`autoTilesetDefUid` = some(jsonTo(source{"autoTilesetDefUid"},
         typeof(unsafeGet(target.`autoTilesetDefUid`))))
   assert("parallaxScaling" in source,
          "parallaxScaling" & " is missing while decoding " & "TestLayerDef")
   target.`parallaxScaling` = jsonTo(source{"parallaxScaling"},
                                     typeof(target.`parallaxScaling`))
-  if "biomeFieldUid" in source:
+  if "biomeFieldUid" in source and source{"biomeFieldUid"}.kind != JNull:
     target.`biomeFieldUid` = some(jsonTo(source{"biomeFieldUid"},
         typeof(unsafeGet(target.`biomeFieldUid`))))
-  if "autoTilesKilledByOtherLayerUid" in source:
+  if "autoTilesKilledByOtherLayerUid" in source and
+      source{"autoTilesKilledByOtherLayerUid"}.kind != JNull:
     target.`autoTilesKilledByOtherLayerUid` = some(jsonTo(
         source{"autoTilesKilledByOtherLayerUid"},
         typeof(unsafeGet(target.`autoTilesKilledByOtherLayerUid`))))
@@ -2218,10 +2230,10 @@ proc fromJsonHook*(target: var `TestLayerDef`; source: JsonNode) =
   assert("hideInList" in source,
          "hideInList" & " is missing while decoding " & "TestLayerDef")
   target.`hideInList` = jsonTo(source{"hideInList"}, typeof(target.`hideInList`))
-  if "tilesetDefUid" in source:
+  if "tilesetDefUid" in source and source{"tilesetDefUid"}.kind != JNull:
     target.`tilesetDefUid` = some(jsonTo(source{"tilesetDefUid"},
         typeof(unsafeGet(target.`tilesetDefUid`))))
-  if "uiColor" in source:
+  if "uiColor" in source and source{"uiColor"}.kind != JNull:
     target.`uiColor` = some(jsonTo(source{"uiColor"},
                                    typeof(unsafeGet(target.`uiColor`))))
   assert("requiredTags" in source,
@@ -2261,7 +2273,7 @@ proc fromJsonHook*(target: var `TestLayerDef`; source: JsonNode) =
          "excludedTags" & " is missing while decoding " & "TestLayerDef")
   target.`excludedTags` = jsonTo(source{"excludedTags"},
                                  typeof(target.`excludedTags`))
-  if "doc" in source:
+  if "doc" in source and source{"doc"}.kind != JNull:
     target.`doc` = some(jsonTo(source{"doc"}, typeof(unsafeGet(target.`doc`))))
   assert("uid" in source, "uid" & " is missing while decoding " & "TestLayerDef")
   target.`uid` = jsonTo(source{"uid"}, typeof(target.`uid`))
@@ -2269,7 +2281,8 @@ proc fromJsonHook*(target: var `TestLayerDef`; source: JsonNode) =
          "guideGridHei" & " is missing while decoding " & "TestLayerDef")
   target.`guideGridHei` = jsonTo(source{"guideGridHei"},
                                  typeof(target.`guideGridHei`))
-  if "autoSourceLayerDefUid" in source:
+  if "autoSourceLayerDefUid" in source and
+      source{"autoSourceLayerDefUid"}.kind != JNull:
     target.`autoSourceLayerDefUid` = some(jsonTo(
         source{"autoSourceLayerDefUid"},
         typeof(unsafeGet(target.`autoSourceLayerDefUid`))))
@@ -2395,91 +2408,97 @@ proc toJsonHook*(source: `TestGridPoint`): JsonNode =
 
 proc fromJsonHook*(target: var `TestTestLdtkJsonRoot_FORCED_REFS`;
                    source: JsonNode) =
-  if "CustomCommand" in source:
+  if "CustomCommand" in source and source{"CustomCommand"}.kind != JNull:
     target.`CustomCommand` = some(jsonTo(source{"CustomCommand"},
         typeof(unsafeGet(target.`CustomCommand`))))
-  if "IntGridValueDef" in source:
+  if "IntGridValueDef" in source and source{"IntGridValueDef"}.kind != JNull:
     target.`IntGridValueDef` = some(jsonTo(source{"IntGridValueDef"},
         typeof(unsafeGet(target.`IntGridValueDef`))))
-  if "Level" in source:
+  if "Level" in source and source{"Level"}.kind != JNull:
     target.`Level` = some(jsonTo(source{"Level"},
                                  typeof(unsafeGet(target.`Level`))))
-  if "Definitions" in source:
+  if "Definitions" in source and source{"Definitions"}.kind != JNull:
     target.`Definitions` = some(jsonTo(source{"Definitions"},
                                        typeof(unsafeGet(target.`Definitions`))))
-  if "EnumDef" in source:
+  if "EnumDef" in source and source{"EnumDef"}.kind != JNull:
     target.`EnumDef` = some(jsonTo(source{"EnumDef"},
                                    typeof(unsafeGet(target.`EnumDef`))))
-  if "FieldDef" in source:
+  if "FieldDef" in source and source{"FieldDef"}.kind != JNull:
     target.`FieldDef` = some(jsonTo(source{"FieldDef"},
                                     typeof(unsafeGet(target.`FieldDef`))))
-  if "AutoLayerRuleGroup" in source:
+  if "AutoLayerRuleGroup" in source and
+      source{"AutoLayerRuleGroup"}.kind != JNull:
     target.`AutoLayerRuleGroup` = some(jsonTo(source{"AutoLayerRuleGroup"},
         typeof(unsafeGet(target.`AutoLayerRuleGroup`))))
-  if "TilesetDef" in source:
+  if "TilesetDef" in source and source{"TilesetDef"}.kind != JNull:
     target.`TilesetDef` = some(jsonTo(source{"TilesetDef"},
                                       typeof(unsafeGet(target.`TilesetDef`))))
-  if "TableOfContentEntry" in source:
+  if "TableOfContentEntry" in source and
+      source{"TableOfContentEntry"}.kind != JNull:
     target.`TableOfContentEntry` = some(jsonTo(
         source{"TableOfContentEntry"},
         typeof(unsafeGet(target.`TableOfContentEntry`))))
-  if "EntityDef" in source:
+  if "EntityDef" in source and source{"EntityDef"}.kind != JNull:
     target.`EntityDef` = some(jsonTo(source{"EntityDef"},
                                      typeof(unsafeGet(target.`EntityDef`))))
-  if "FieldInstance" in source:
+  if "FieldInstance" in source and source{"FieldInstance"}.kind != JNull:
     target.`FieldInstance` = some(jsonTo(source{"FieldInstance"},
         typeof(unsafeGet(target.`FieldInstance`))))
-  if "EntityReferenceInfos" in source:
+  if "EntityReferenceInfos" in source and
+      source{"EntityReferenceInfos"}.kind != JNull:
     target.`EntityReferenceInfos` = some(jsonTo(
         source{"EntityReferenceInfos"},
         typeof(unsafeGet(target.`EntityReferenceInfos`))))
-  if "LevelBgPosInfos" in source:
+  if "LevelBgPosInfos" in source and source{"LevelBgPosInfos"}.kind != JNull:
     target.`LevelBgPosInfos` = some(jsonTo(source{"LevelBgPosInfos"},
         typeof(unsafeGet(target.`LevelBgPosInfos`))))
-  if "TileCustomMetadata" in source:
+  if "TileCustomMetadata" in source and
+      source{"TileCustomMetadata"}.kind != JNull:
     target.`TileCustomMetadata` = some(jsonTo(source{"TileCustomMetadata"},
         typeof(unsafeGet(target.`TileCustomMetadata`))))
-  if "Tile" in source:
+  if "Tile" in source and source{"Tile"}.kind != JNull:
     target.`Tile` = some(jsonTo(source{"Tile"}, typeof(unsafeGet(target.`Tile`))))
-  if "AutoRuleDef" in source:
+  if "AutoRuleDef" in source and source{"AutoRuleDef"}.kind != JNull:
     target.`AutoRuleDef` = some(jsonTo(source{"AutoRuleDef"},
                                        typeof(unsafeGet(target.`AutoRuleDef`))))
-  if "NeighbourLevel" in source:
+  if "NeighbourLevel" in source and source{"NeighbourLevel"}.kind != JNull:
     target.`NeighbourLevel` = some(jsonTo(source{"NeighbourLevel"},
         typeof(unsafeGet(target.`NeighbourLevel`))))
-  if "GridPoint" in source:
+  if "GridPoint" in source and source{"GridPoint"}.kind != JNull:
     target.`GridPoint` = some(jsonTo(source{"GridPoint"},
                                      typeof(unsafeGet(target.`GridPoint`))))
-  if "EntityInstance" in source:
+  if "EntityInstance" in source and source{"EntityInstance"}.kind != JNull:
     target.`EntityInstance` = some(jsonTo(source{"EntityInstance"},
         typeof(unsafeGet(target.`EntityInstance`))))
-  if "TilesetRect" in source:
+  if "TilesetRect" in source and source{"TilesetRect"}.kind != JNull:
     target.`TilesetRect` = some(jsonTo(source{"TilesetRect"},
                                        typeof(unsafeGet(target.`TilesetRect`))))
-  if "EnumTagValue" in source:
+  if "EnumTagValue" in source and source{"EnumTagValue"}.kind != JNull:
     target.`EnumTagValue` = some(jsonTo(source{"EnumTagValue"}, typeof(
         unsafeGet(target.`EnumTagValue`))))
-  if "LayerInstance" in source:
+  if "LayerInstance" in source and source{"LayerInstance"}.kind != JNull:
     target.`LayerInstance` = some(jsonTo(source{"LayerInstance"},
         typeof(unsafeGet(target.`LayerInstance`))))
-  if "IntGridValueInstance" in source:
+  if "IntGridValueInstance" in source and
+      source{"IntGridValueInstance"}.kind != JNull:
     target.`IntGridValueInstance` = some(jsonTo(
         source{"IntGridValueInstance"},
         typeof(unsafeGet(target.`IntGridValueInstance`))))
-  if "World" in source:
+  if "World" in source and source{"World"}.kind != JNull:
     target.`World` = some(jsonTo(source{"World"},
                                  typeof(unsafeGet(target.`World`))))
-  if "LayerDef" in source:
+  if "LayerDef" in source and source{"LayerDef"}.kind != JNull:
     target.`LayerDef` = some(jsonTo(source{"LayerDef"},
                                     typeof(unsafeGet(target.`LayerDef`))))
-  if "IntGridValueGroupDef" in source:
+  if "IntGridValueGroupDef" in source and
+      source{"IntGridValueGroupDef"}.kind != JNull:
     target.`IntGridValueGroupDef` = some(jsonTo(
         source{"IntGridValueGroupDef"},
         typeof(unsafeGet(target.`IntGridValueGroupDef`))))
-  if "TocInstanceData" in source:
+  if "TocInstanceData" in source and source{"TocInstanceData"}.kind != JNull:
     target.`TocInstanceData` = some(jsonTo(source{"TocInstanceData"},
         typeof(unsafeGet(target.`TocInstanceData`))))
-  if "EnumDefValues" in source:
+  if "EnumDefValues" in source and source{"EnumDefValues"}.kind != JNull:
     target.`EnumDefValues` = some(jsonTo(source{"EnumDefValues"},
         typeof(unsafeGet(target.`EnumDefValues`))))
 
@@ -2642,7 +2661,7 @@ proc fromJsonHook*(target: var `TestLdtkJsonRoot`; source: JsonNode) =
          "externalLevels" & " is missing while decoding " & "TestLdtkJsonRoot")
   target.`externalLevels` = jsonTo(source{"externalLevels"},
                                    typeof(target.`externalLevels`))
-  if "backupRelPath" in source:
+  if "backupRelPath" in source and source{"backupRelPath"}.kind != JNull:
     target.`backupRelPath` = some(jsonTo(source{"backupRelPath"},
         typeof(unsafeGet(target.`backupRelPath`))))
   assert("jsonVersion" in source,
@@ -2660,7 +2679,7 @@ proc fromJsonHook*(target: var `TestLdtkJsonRoot`; source: JsonNode) =
       "TestLdtkJsonRoot")
   target.`defaultEntityHeight` = jsonTo(source{"defaultEntityHeight"},
                                         typeof(target.`defaultEntityHeight`))
-  if "pngFilePattern" in source:
+  if "pngFilePattern" in source and source{"pngFilePattern"}.kind != JNull:
     target.`pngFilePattern` = some(jsonTo(source{"pngFilePattern"},
         typeof(unsafeGet(target.`pngFilePattern`))))
   assert("customCommands" in source,
@@ -2671,13 +2690,14 @@ proc fromJsonHook*(target: var `TestLdtkJsonRoot`; source: JsonNode) =
          "exportTiled" & " is missing while decoding " & "TestLdtkJsonRoot")
   target.`exportTiled` = jsonTo(source{"exportTiled"},
                                 typeof(target.`exportTiled`))
-  if "exportPng" in source:
+  if "exportPng" in source and source{"exportPng"}.kind != JNull:
     target.`exportPng` = some(jsonTo(source{"exportPng"},
                                      typeof(unsafeGet(target.`exportPng`))))
-  if "worldGridWidth" in source:
+  if "worldGridWidth" in source and source{"worldGridWidth"}.kind != JNull:
     target.`worldGridWidth` = some(jsonTo(source{"worldGridWidth"},
         typeof(unsafeGet(target.`worldGridWidth`))))
-  if "defaultLevelHeight" in source:
+  if "defaultLevelHeight" in source and
+      source{"defaultLevelHeight"}.kind != JNull:
     target.`defaultLevelHeight` = some(jsonTo(source{"defaultLevelHeight"},
         typeof(unsafeGet(target.`defaultLevelHeight`))))
   assert("toc" in source,
@@ -2694,7 +2714,7 @@ proc fromJsonHook*(target: var `TestLdtkJsonRoot`; source: JsonNode) =
          "dummyWorldIid" & " is missing while decoding " & "TestLdtkJsonRoot")
   target.`dummyWorldIid` = jsonTo(source{"dummyWorldIid"},
                                   typeof(target.`dummyWorldIid`))
-  if "__FORCED_REFS" in source:
+  if "__FORCED_REFS" in source and source{"__FORCED_REFS"}.kind != JNull:
     target.`FORCED_REFS` = some(jsonTo(source{"__FORCED_REFS"},
                                        typeof(unsafeGet(target.`FORCED_REFS`))))
   assert("defaultPivotY" in source,
@@ -2720,10 +2740,10 @@ proc fromJsonHook*(target: var `TestLdtkJsonRoot`; source: JsonNode) =
          "defaultPivotX" & " is missing while decoding " & "TestLdtkJsonRoot")
   target.`defaultPivotX` = jsonTo(source{"defaultPivotX"},
                                   typeof(target.`defaultPivotX`))
-  if "tutorialDesc" in source:
+  if "tutorialDesc" in source and source{"tutorialDesc"}.kind != JNull:
     target.`tutorialDesc` = some(jsonTo(source{"tutorialDesc"}, typeof(
         unsafeGet(target.`tutorialDesc`))))
-  if "worldLayout" in source:
+  if "worldLayout" in source and source{"worldLayout"}.kind != JNull:
     target.`worldLayout` = some(jsonTo(source{"worldLayout"},
                                        typeof(unsafeGet(target.`worldLayout`))))
   assert("defaultEntityWidth" in source, "defaultEntityWidth" &
@@ -2738,7 +2758,8 @@ proc fromJsonHook*(target: var `TestLdtkJsonRoot`; source: JsonNode) =
          "defaultGridSize" & " is missing while decoding " & "TestLdtkJsonRoot")
   target.`defaultGridSize` = jsonTo(source{"defaultGridSize"},
                                     typeof(target.`defaultGridSize`))
-  if "defaultLevelWidth" in source:
+  if "defaultLevelWidth" in source and
+      source{"defaultLevelWidth"}.kind != JNull:
     target.`defaultLevelWidth` = some(jsonTo(source{"defaultLevelWidth"},
         typeof(unsafeGet(target.`defaultLevelWidth`))))
   assert("minifyJson" in source,
@@ -2760,7 +2781,7 @@ proc fromJsonHook*(target: var `TestLdtkJsonRoot`; source: JsonNode) =
          "identifierStyle" & " is missing while decoding " & "TestLdtkJsonRoot")
   target.`identifierStyle` = jsonTo(source{"identifierStyle"},
                                     typeof(target.`identifierStyle`))
-  if "worldGridHeight" in source:
+  if "worldGridHeight" in source and source{"worldGridHeight"}.kind != JNull:
     target.`worldGridHeight` = some(jsonTo(source{"worldGridHeight"},
         typeof(unsafeGet(target.`worldGridHeight`))))
   assert("levels" in source,
