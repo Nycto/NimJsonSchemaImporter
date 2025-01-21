@@ -41,17 +41,11 @@ proc buildUnionDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
             `target` = `typeName`(kind: `i`, `key`: jsonTo(`source`, typeof(`target`.`key`)))
         branches.add(nnkElifBranch.newTree(buildIsType(subtype, source), builder))
 
-    branches.add(
-        nnkElse.newTree(
-            nnkRaiseStmt.newTree(
-                nnkCall.newTree(
-                    bindSym("newException"),
-                    bindSym("ValueError"),
-                    newLit("Unable to deserialize json node to " & typeName.getName)
-                )
-            )
-        )
-    )
+    let errorMessage = newLit("Unable to deserialize json node to " & typeName.getName)
+    let throw = quote:
+        raise newException(ValueError, `errorMessage`)
+
+    branches.add(nnkElse.newTree(throw))
 
     return quote:
         proc fromJsonHook*(`target`: var `typeName`; `source`: JsonNode) =

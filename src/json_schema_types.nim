@@ -14,3 +14,7 @@ proc parseJsonSchema*(schema: JsonNode, conf: JsonSchemaConfig): NimNode {.compi
 
 proc parseJsonSchema*(schema: string, conf: JsonSchemaConfig): NimNode {.compileTime.} =
     parseJsonSchema(schema.parseJson, conf)
+
+macro importJsonSchema*(path: static string, conf: static JsonSchemaConfig) =
+    ## Imports a json schema file as if it were a nim file
+    parseJsonSchema(slurp(path), conf)
