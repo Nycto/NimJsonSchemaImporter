@@ -1,4 +1,4 @@
-import std/[macros, json, strutils]
+import std/[macros, json, strutils, sets]
 
 type
     JsonSchemaConfig* = object
@@ -28,6 +28,36 @@ proc getName*(node: NimNode): string =
     of nnkIdent, nnkSym: return node.strVal
     else: node.expectKind({ nnkAccQuoted, nnkIdent, nnkSym })
 
-proc safeTypeName*(name: string): NimNode = nnkAccQuoted.newTree(name.cleanupIdent.capitalizeAscii.ident)
+# https://nim-lang.org/docs/manual.html#lexical-analysis-identifiers-amp-keywords
+let nimKeywords {.compileTime.} = toHashSet[string]([
+    "addr", "and", "as", "asm",
+    "bind", "block", "break",
+    "case", "cast", "concept", "const", "continue", "converter",
+    "defer", "discard", "distinct", "div", "do",
+    "elif", "else", "end", "enum", "except", "export",
+    "finally", "for", "from", "func",
+    "if", "import", "in", "include", "interface", "is", "isnot", "iterator",
+    "let",
+    "macro", "method", "mixin", "mod",
+    "nil", "not", "notin",
+    "object", "of", "or", "out",
+    "proc", "ptr",
+    "raise", "ref", "return",
+    "shl", "shr", "static",
+    "template", "try", "tuple", "type",
+    "using",
+    "var",
+    "when", "while",
+    "xor",
+    "yield",
+])
 
-proc safePropName*(name: string): NimNode = nnkAccQuoted.newTree(name.cleanupIdent.ident)
+proc wrapIdent(name: string): NimNode =
+    return if validIdentifier(name) and name notin nimKeywords:
+        name.ident
+    else:
+        return nnkAccQuoted.newTree(name.ident)
+
+proc safeTypeName*(name: string): NimNode = name.cleanupIdent.capitalizeAscii.wrapIdent
+
+proc safePropName*(name: string): NimNode = name.cleanupIdent.wrapIdent
