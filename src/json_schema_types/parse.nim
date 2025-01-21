@@ -1,4 +1,4 @@
-import std/[json, sets, tables, strformat], types, schemaRef, history
+import std/[json, sets, tables, strformat], types, schemaRef, history, util
 
 type
     ParseContext = ref object
@@ -15,6 +15,17 @@ proc parseSubnodeType(parent: JsonNode, prop: string, ctx: ParseContext, history
 proc expectKind(node: JsonNode, kind: JsonNodeKind) =
     assert(node.kind == kind, fmt"Expecting a(n) {kind}: {node}")
 
+proc choosePropName(initialName: string, seen: var HashSet[string], increment: int = 0): string =
+    ## Chooses a unique name for an object property
+    let name = if increment == 0: initialName else: fmt"{initialName}{increment}"
+
+    if name notin seen:
+        seen.incl name
+        return name
+    else:
+        return choosePropName(initialName, seen, increment + 1)
+
+
 proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JObject)
 
@@ -23,11 +34,16 @@ proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
         for key in node{"required"}:
             required.incl(key.getStr)
 
-    result = TypeDef(kind: ObjType, properties: initTable[string, TypeDef]())
+    result = TypeDef(kind: ObjType, properties: initTable[string, PropDef]())
+
+    var seen = initHashSet[string]()
 
     for key, typeDef in node{"properties"}:
         let subtype = typeDef.parseType(ctx, history.add("properties").add(key))
-        result.properties[key] = if key in required: subtype else: subtype.optional()
+        result.properties[key] = (
+            propName: key.cleanupIdent.choosePropName(seen),
+            typ: if key in required: subtype else: subtype.optional()
+        )
 
 proc parseMap(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JObject)

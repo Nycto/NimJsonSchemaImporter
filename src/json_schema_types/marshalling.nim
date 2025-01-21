@@ -7,7 +7,7 @@ proc isJsonKind(value: NimNode, kind: JsonNodeKind): NimNode =
 
 proc hasAllProps(base, value: NimNode, typ: TypeDef): NimNode =
     result = base
-    for key, subtyp in typ.properties:
+    for key, (_, subtyp) in typ.properties:
         if subtyp.kind != OptionalType:
             result = infix(base, "and", infix(key.newLit, "in", value))
 
@@ -108,8 +108,8 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
 
     let typeNameStr = typeName.getName.newLit
 
-    for key, subtype in typ.properties:
-        let safeKey = safePropName(key)
+    for key, (propName, subtype) in typ.properties:
+        let safeKey = safePropName(propName)
         if subtype.kind == OptionalType:
             decodeKeys.add quote do:
                 if `key` in `source`:
@@ -126,8 +126,8 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
 proc buildObjectEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
     var encodeKeys = newStmtList()
 
-    for key, subtype in typ.properties:
-        let safeKey = safePropName(key)
+    for key, (propName, subtype) in typ.properties:
+        let safeKey = safePropName(propName)
         if subtype.kind == OptionalType:
             encodeKeys.add quote do:
                 if isSome(`source`.`safeKey`):

@@ -15,11 +15,19 @@ type
     `color`*: Option[string]
     `identifier`*: Option[string]
     `uid`*: BiggestInt
+  `TestTestCustomCommand_when`* = enum
+    `AfterLoad`, `BeforeSave`, `AfterSave`, `Manual`
+  `TestTestLdtkJsonRoot_imageExportMode`* = enum
+    `LayersAndLevels`, `OneImagePerLayer`, `None`, `OneImagePerLevel`
+  `TestTestLayerDef_type`* = enum
+    `Tiles`, `Entities`, `AutoLayer`, `IntGrid`
+  `TestTestTilesetDef_embedAtlas`* = enum
+    `LdtkIcons`
   `TestLevel`* = object
     `pxHei`*: BiggestInt
     `useAutoIdentifier`*: bool
     `bgColor`*: string
-    `bgColor`*: Option[string]
+    `bgColor1`*: Option[string]
     `externalRelPath`*: Option[string]
     `worldY`*: BiggestInt
     `bgRelPath`*: Option[string]
@@ -32,54 +40,11 @@ type
     `bgPos`*: Option[`TestTestLevel_bgPos`]
     `layerInstances`*: Option[seq[`TestLayerInstance`]]
     `fieldInstances`*: seq[`TestFieldInstance`]
-    `bgPos`*: Option[`TestLevelBgPosInfos`]
+    `bgPos1`*: Option[`TestLevelBgPosInfos`]
     `worldX`*: BiggestInt
     `iid`*: string
     `bgPivotY`*: BiggestFloat
     `smartColor`*: string
-  `TestTestCustomCommand_when`* = enum
-    `AfterLoad`, `BeforeSave`, `AfterSave`, `Manual`
-  `TestTestLdtkJsonRoot_imageExportMode`* = enum
-    `LayersAndLevels`, `OneImagePerLayer`, `None`, `OneImagePerLevel`
-  `TestTestLayerDef_type`* = enum
-    `Tiles`, `Entities`, `AutoLayer`, `IntGrid`
-  `TestTestTilesetDef_embedAtlas`* = enum
-    `LdtkIcons`
-  `TestLayerDef`* = object
-    `type`*: `TestTestLayerDef_type`
-    `autoTilesetDefUid`*: Option[BiggestInt]
-    `parallaxScaling`*: bool
-    `biomeFieldUid`*: Option[BiggestInt]
-    `autoTilesKilledByOtherLayerUid`*: Option[BiggestInt]
-    `inactiveOpacity`*: BiggestFloat
-    `type`*: string
-    `autoRuleGroups`*: seq[`TestAutoLayerRuleGroup`]
-    `gridSize`*: BiggestInt
-    `hideInList`*: bool
-    `tilesetDefUid`*: Option[BiggestInt]
-    `uiColor`*: Option[string]
-    `requiredTags`*: seq[string]
-    `tilePivotX`*: BiggestFloat
-    `uiFilterTags`*: seq[string]
-    `guideGridWid`*: BiggestInt
-    `parallaxFactorX`*: BiggestFloat
-    `identifier`*: string
-    `canSelectWhenInactive`*: bool
-    `pxOffsetX`*: BiggestInt
-    `tilePivotY`*: BiggestFloat
-    `excludedTags`*: seq[string]
-    `doc`*: Option[string]
-    `uid`*: BiggestInt
-    `guideGridHei`*: BiggestInt
-    `autoSourceLayerDefUid`*: Option[BiggestInt]
-    `displayOpacity`*: BiggestFloat
-    `intGridValuesGroups`*: seq[`TestIntGridValueGroupDef`]
-    `hideFieldsWhenInactive`*: bool
-    `useAsyncRender`*: bool
-    `pxOffsetY`*: BiggestInt
-    `parallaxFactorY`*: BiggestFloat
-    `intGridValues`*: seq[`TestIntGridValueDef`]
-    `renderInWorldView`*: bool
   `TestTileCustomMetadata`* = object
     `data`*: string
     `tileId`*: BiggestInt
@@ -198,6 +163,41 @@ type
     `defUid`*: BiggestInt
   `TestTestEntityDef_renderMode`* = enum
     `Tile`, `Cross`, `Ellipse`, `Rectangle`
+  `TestLayerDef`* = object
+    `type1`*: `TestTestLayerDef_type`
+    `autoTilesetDefUid`*: Option[BiggestInt]
+    `parallaxScaling`*: bool
+    `biomeFieldUid`*: Option[BiggestInt]
+    `autoTilesKilledByOtherLayerUid`*: Option[BiggestInt]
+    `inactiveOpacity`*: BiggestFloat
+    `type`*: string
+    `autoRuleGroups`*: seq[`TestAutoLayerRuleGroup`]
+    `gridSize`*: BiggestInt
+    `hideInList`*: bool
+    `tilesetDefUid`*: Option[BiggestInt]
+    `uiColor`*: Option[string]
+    `requiredTags`*: seq[string]
+    `tilePivotX`*: BiggestFloat
+    `uiFilterTags`*: seq[string]
+    `guideGridWid`*: BiggestInt
+    `parallaxFactorX`*: BiggestFloat
+    `identifier`*: string
+    `canSelectWhenInactive`*: bool
+    `pxOffsetX`*: BiggestInt
+    `tilePivotY`*: BiggestFloat
+    `excludedTags`*: seq[string]
+    `doc`*: Option[string]
+    `uid`*: BiggestInt
+    `guideGridHei`*: BiggestInt
+    `autoSourceLayerDefUid`*: Option[BiggestInt]
+    `displayOpacity`*: BiggestFloat
+    `intGridValuesGroups`*: seq[`TestIntGridValueGroupDef`]
+    `hideFieldsWhenInactive`*: bool
+    `useAsyncRender`*: bool
+    `pxOffsetY`*: BiggestInt
+    `parallaxFactorY`*: BiggestFloat
+    `intGridValues`*: seq[`TestIntGridValueDef`]
+    `renderInWorldView`*: bool
   `TestTestAutoRuleDef_tileMode`* = enum
     `Single`, `Stamp`
   `TestTestFieldDef_editorLinkStyle`* = enum
@@ -210,6 +210,51 @@ type
   `TestIntGridValueInstance`* = object
     `coordId`*: BiggestInt
     `v`*: BiggestInt
+  `TestFieldDef`* = object
+    `type1`*: string
+    `editorDisplayScale`*: BiggestFloat
+    `type`*: string
+    `allowedRefsEntityUid`*: Option[BiggestInt]
+    `textLanguageMode`*: Option[`TestTestFieldDef_textLanguageMode`]
+    `editorAlwaysShow`*: bool
+    `defaultOverride`*: Option[JsonNode]
+    `autoChainRef`*: bool
+    `editorDisplayPos`*: `TestTestFieldDef_editorDisplayPos`
+    `editorDisplayMode`*: `TestTestFieldDef_editorDisplayMode`
+    `identifier`*: string
+    `regex`*: Option[string]
+    `isArray`*: bool
+    `editorLinkStyle`*: `TestTestFieldDef_editorLinkStyle`
+    `allowedRefs`*: `TestTestFieldDef_allowedRefs`
+    `useForSmartColor`*: bool
+    `editorTextSuffix`*: Option[string]
+    `doc`*: Option[string]
+    `editorTextPrefix`*: Option[string]
+    `editorCutLongValues`*: bool
+    `canBeNull`*: bool
+    `allowedRefTags`*: seq[string]
+    `uid`*: BiggestInt
+    `symmetricalRef`*: bool
+    `editorDisplayColor`*: Option[string]
+    `allowOutOfLevelRef`*: bool
+    `acceptFileTypes`*: Option[seq[string]]
+    `editorShowInWorld`*: bool
+    `tilesetUid`*: Option[BiggestInt]
+    `arrayMaxLength`*: Option[BiggestInt]
+    `arrayMinLength`*: Option[BiggestInt]
+    `searchable`*: bool
+    `min`*: Option[BiggestFloat]
+    `exportToToc`*: bool
+    `max`*: Option[BiggestFloat]
+  `TestWorld`* = object
+    `worldGridWidth`*: BiggestInt
+    `defaultLevelHeight`*: BiggestInt
+    `identifier`*: string
+    `worldLayout`*: Option[`TestTestWorld_worldLayout`]
+    `iid`*: string
+    `defaultLevelWidth`*: BiggestInt
+    `worldGridHeight`*: BiggestInt
+    `levels`*: seq[`TestLevel`]
   `TestEntityDef`* = object
     `allowOutOfBounds`*: bool
     `pivotY`*: BiggestFloat
@@ -245,15 +290,6 @@ type
     `maxHeight`*: Option[BiggestInt]
     `exportToToc`*: bool
     `fillOpacity`*: BiggestFloat
-  `TestWorld`* = object
-    `worldGridWidth`*: BiggestInt
-    `defaultLevelHeight`*: BiggestInt
-    `identifier`*: string
-    `worldLayout`*: Option[`TestTestWorld_worldLayout`]
-    `iid`*: string
-    `defaultLevelWidth`*: BiggestInt
-    `worldGridHeight`*: BiggestInt
-    `levels`*: seq[`TestLevel`]
   `TestTestLdtkJsonRoot_FORCED_REFS`* = object
     `CustomCommand`*: Option[`TestCustomCommand`]
     `IntGridValueDef`*: Option[`TestIntGridValueDef`]
@@ -338,42 +374,6 @@ type
     `iconTilesetUid`*: Option[BiggestInt]
     `uid`*: BiggestInt
     `tags`*: seq[string]
-  `TestFieldDef`* = object
-    `type`*: string
-    `editorDisplayScale`*: BiggestFloat
-    `type`*: string
-    `allowedRefsEntityUid`*: Option[BiggestInt]
-    `textLanguageMode`*: Option[`TestTestFieldDef_textLanguageMode`]
-    `editorAlwaysShow`*: bool
-    `defaultOverride`*: Option[JsonNode]
-    `autoChainRef`*: bool
-    `editorDisplayPos`*: `TestTestFieldDef_editorDisplayPos`
-    `editorDisplayMode`*: `TestTestFieldDef_editorDisplayMode`
-    `identifier`*: string
-    `regex`*: Option[string]
-    `isArray`*: bool
-    `editorLinkStyle`*: `TestTestFieldDef_editorLinkStyle`
-    `allowedRefs`*: `TestTestFieldDef_allowedRefs`
-    `useForSmartColor`*: bool
-    `editorTextSuffix`*: Option[string]
-    `doc`*: Option[string]
-    `editorTextPrefix`*: Option[string]
-    `editorCutLongValues`*: bool
-    `canBeNull`*: bool
-    `allowedRefTags`*: seq[string]
-    `uid`*: BiggestInt
-    `symmetricalRef`*: bool
-    `editorDisplayColor`*: Option[string]
-    `allowOutOfLevelRef`*: bool
-    `acceptFileTypes`*: Option[seq[string]]
-    `editorShowInWorld`*: bool
-    `tilesetUid`*: Option[BiggestInt]
-    `arrayMaxLength`*: Option[BiggestInt]
-    `arrayMinLength`*: Option[BiggestInt]
-    `searchable`*: bool
-    `min`*: Option[BiggestFloat]
-    `exportToToc`*: bool
-    `max`*: Option[BiggestFloat]
   `TestDefinitions`* = object
     `levelFields`*: seq[`TestFieldDef`]
     `tilesets`*: seq[`TestTilesetDef`]
@@ -925,8 +925,8 @@ proc fromJsonHook*(target: var `TestLevel`; source: JsonNode) =
          "__bgColor" & " is missing while decoding " & "TestLevel")
   target.`bgColor` = jsonTo(source{"__bgColor"}, typeof(target.`bgColor`))
   if "bgColor" in source:
-    target.`bgColor` = some(jsonTo(source{"bgColor"},
-                                   typeof(unsafeGet(target.`bgColor`))))
+    target.`bgColor1` = some(jsonTo(source{"bgColor"},
+                                    typeof(unsafeGet(target.`bgColor1`))))
   if "externalRelPath" in source:
     target.`externalRelPath` = some(jsonTo(source{"externalRelPath"},
         typeof(unsafeGet(target.`externalRelPath`))))
@@ -965,8 +965,8 @@ proc fromJsonHook*(target: var `TestLevel`; source: JsonNode) =
   target.`fieldInstances` = jsonTo(source{"fieldInstances"},
                                    typeof(target.`fieldInstances`))
   if "__bgPos" in source:
-    target.`bgPos` = some(jsonTo(source{"__bgPos"},
-                                 typeof(unsafeGet(target.`bgPos`))))
+    target.`bgPos1` = some(jsonTo(source{"__bgPos"},
+                                  typeof(unsafeGet(target.`bgPos1`))))
   assert("worldX" in source,
          "worldX" & " is missing while decoding " & "TestLevel")
   target.`worldX` = jsonTo(source{"worldX"}, typeof(target.`worldX`))
@@ -985,8 +985,8 @@ proc toJsonHook*(source: `TestLevel`): JsonNode =
   result{"pxHei"} = toJson(source.`pxHei`)
   result{"useAutoIdentifier"} = toJson(source.`useAutoIdentifier`)
   result{"__bgColor"} = toJson(source.`bgColor`)
-  if isSome(source.`bgColor`):
-    result{"bgColor"} = toJson(source.`bgColor`)
+  if isSome(source.`bgColor1`):
+    result{"bgColor"} = toJson(source.`bgColor1`)
   if isSome(source.`externalRelPath`):
     result{"externalRelPath"} = toJson(source.`externalRelPath`)
   result{"worldY"} = toJson(source.`worldY`)
@@ -1003,8 +1003,8 @@ proc toJsonHook*(source: `TestLevel`): JsonNode =
   if isSome(source.`layerInstances`):
     result{"layerInstances"} = toJson(source.`layerInstances`)
   result{"fieldInstances"} = toJson(source.`fieldInstances`)
-  if isSome(source.`bgPos`):
-    result{"__bgPos"} = toJson(source.`bgPos`)
+  if isSome(source.`bgPos1`):
+    result{"__bgPos"} = toJson(source.`bgPos1`)
   result{"worldX"} = toJson(source.`worldX`)
   result{"iid"} = toJson(source.`iid`)
   result{"bgPivotY"} = toJson(source.`bgPivotY`)
@@ -1297,7 +1297,7 @@ proc fromJsonHook*(target: var `TestTestFieldDef_allowedRefs`; source: JsonNode)
 proc fromJsonHook*(target: var `TestFieldDef`; source: JsonNode) =
   assert("type" in source,
          "type" & " is missing while decoding " & "TestFieldDef")
-  target.`type` = jsonTo(source{"type"}, typeof(target.`type`))
+  target.`type1` = jsonTo(source{"type"}, typeof(target.`type1`))
   assert("editorDisplayScale" in source,
          "editorDisplayScale" & " is missing while decoding " & "TestFieldDef")
   target.`editorDisplayScale` = jsonTo(source{"editorDisplayScale"},
@@ -1414,7 +1414,7 @@ proc fromJsonHook*(target: var `TestFieldDef`; source: JsonNode) =
 
 proc toJsonHook*(source: `TestFieldDef`): JsonNode =
   result = newJObject()
-  result{"type"} = toJson(source.`type`)
+  result{"type"} = toJson(source.`type1`)
   result{"editorDisplayScale"} = toJson(source.`editorDisplayScale`)
   result{"__type"} = toJson(source.`type`)
   if isSome(source.`allowedRefsEntityUid`):
@@ -2186,7 +2186,7 @@ proc toJsonHook*(source: `TestIntGridValueGroupDef`): JsonNode =
 proc fromJsonHook*(target: var `TestLayerDef`; source: JsonNode) =
   assert("type" in source,
          "type" & " is missing while decoding " & "TestLayerDef")
-  target.`type` = jsonTo(source{"type"}, typeof(target.`type`))
+  target.`type1` = jsonTo(source{"type"}, typeof(target.`type1`))
   if "autoTilesetDefUid" in source:
     target.`autoTilesetDefUid` = some(jsonTo(source{"autoTilesetDefUid"},
         typeof(unsafeGet(target.`autoTilesetDefUid`))))
@@ -2308,7 +2308,7 @@ proc fromJsonHook*(target: var `TestLayerDef`; source: JsonNode) =
 
 proc toJsonHook*(source: `TestLayerDef`): JsonNode =
   result = newJObject()
-  result{"type"} = toJson(source.`type`)
+  result{"type"} = toJson(source.`type1`)
   if isSome(source.`autoTilesetDefUid`):
     result{"autoTilesetDefUid"} = toJson(source.`autoTilesetDefUid`)
   result{"parallaxScaling"} = toJson(source.`parallaxScaling`)

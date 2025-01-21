@@ -16,12 +16,15 @@ type
         MapType,
         OptionalType,
 
+    PropDef* = tuple[propName: string, typ: TypeDef]
+        ## The details of an object property
+
     TypeDef* = ref object
         id*, title*, description*, comment*: string
         sref*: SchemaRef
         case kind*: TypeDefKind
         of ObjType:
-            properties*: Table[string, TypeDef]
+            properties*: Table[string, tuple[propName: string, typ: TypeDef]]
         of EnumType:
             values*: HashSet[string]
         of RefType:
