@@ -2,15 +2,15 @@
 import std/[json, jsonutils, tables, options]
 
 type
+  TestTestblog_author* = object
+    username*: Option[string]
+    email*: Option[string]
   Testblog* = object
     author*: TestTestblog_author
     title*: string
     tags*: Option[seq[string]]
     content*: string
     publishedDate*: Option[string]
-  TestTestblog_author* = object
-    username*: Option[string]
-    email*: Option[string]
 proc fromJsonHook*(target: var TestTestblog_author; source: JsonNode) =
   if "username" in source and source{"username"}.kind != JNull:
     target.username = some(jsonTo(source{"username"},

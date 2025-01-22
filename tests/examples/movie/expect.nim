@@ -2,6 +2,8 @@
 import std/[json, jsonutils, tables, options]
 
 type
+  TestTestmovie_genre* = enum
+    Comedy, `Science Fiction`, Action, Drama
   Testmovie* = object
     duration*: Option[string]
     releaseDate*: string
@@ -9,8 +11,6 @@ type
     title*: string
     `cast`*: Option[seq[string]]
     director*: string
-  TestTestmovie_genre* = enum
-    Comedy, `Science Fiction`, Action, Drama
 proc toJsonHook*(source: TestTestmovie_genre): JsonNode =
   case source
   of TestTestmovie_genre.Comedy:

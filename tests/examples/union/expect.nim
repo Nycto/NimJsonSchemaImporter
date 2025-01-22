@@ -2,6 +2,18 @@
 import std/[json, jsonutils, tables, options]
 
 type
+  TestTestunion_key1Union* = object
+    case kind*: range[0 .. 4]
+    of 0:
+      key0*: string
+    of 1:
+      key1*: BiggestInt
+    of 2:
+      key2*: bool
+    of 3:
+      key3*: pointer
+    of 4:
+      key4*: BiggestFloat
   TestTestunion_key30* = object
     foo*: Option[string]
   TestTestunion_key33* = enum
@@ -18,18 +30,6 @@ type
       key3*: TestTestunion_key33
     of 4:
       key4*: Option[string]
-  TestTestunion_key1Union* = object
-    case kind*: range[0 .. 4]
-    of 0:
-      key0*: string
-    of 1:
-      key1*: BiggestInt
-    of 2:
-      key2*: bool
-    of 3:
-      key3*: pointer
-    of 4:
-      key4*: BiggestFloat
   Testunion* = object
     key1*: Option[TestTestunion_key1Union]
     key2*: Option[string]

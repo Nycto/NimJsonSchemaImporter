@@ -2,61 +2,11 @@
 import std/[json, jsonutils, tables, options]
 
 type
-  TestNeighbourLevel* = object
-    levelUid*: Option[BiggestInt]
-    levelIid*: string
-    dir*: string
-  TestLayerDef* = object
-    type1*: TestTestLayerDef_type
-    autoTilesetDefUid*: Option[BiggestInt]
-    parallaxScaling*: bool
-    biomeFieldUid*: Option[BiggestInt]
-    autoTilesKilledByOtherLayerUid*: Option[BiggestInt]
-    inactiveOpacity*: BiggestFloat
-    `type`*: string
-    autoRuleGroups*: seq[TestAutoLayerRuleGroup]
-    gridSize*: BiggestInt
-    hideInList*: bool
-    tilesetDefUid*: Option[BiggestInt]
-    uiColor*: Option[string]
-    requiredTags*: seq[string]
-    tilePivotX*: BiggestFloat
-    uiFilterTags*: seq[string]
-    guideGridWid*: BiggestInt
-    parallaxFactorX*: BiggestFloat
-    identifier*: string
-    canSelectWhenInactive*: bool
-    pxOffsetX*: BiggestInt
-    tilePivotY*: BiggestFloat
-    excludedTags*: seq[string]
-    doc*: Option[string]
-    uid*: BiggestInt
-    guideGridHei*: BiggestInt
-    autoSourceLayerDefUid*: Option[BiggestInt]
-    displayOpacity*: BiggestFloat
-    intGridValuesGroups*: seq[TestIntGridValueGroupDef]
-    hideFieldsWhenInactive*: bool
-    useAsyncRender*: bool
-    pxOffsetY*: BiggestInt
-    parallaxFactorY*: BiggestFloat
-    intGridValues*: seq[TestIntGridValueDef]
-    renderInWorldView*: bool
+  TestTestCustomCommand_when* = enum
+    AfterLoad, BeforeSave, AfterSave, Manual
   TestCustomCommand* = object
     command*: string
     `when`*: TestTestCustomCommand_when
-  TestEnumDefValues* = object
-    tileSrcRect*: Option[seq[BiggestInt]]
-    color*: BiggestInt
-    id*: string
-    tileId*: Option[BiggestInt]
-    tileRect*: Option[TestTilesetRect]
-  TestIntGridValueInstance* = object
-    coordId*: BiggestInt
-    v*: BiggestInt
-  TestTestFieldDef_editorDisplayPos* = enum
-    Beneath, Above, Center
-  TestTestEntityDef_limitScope* = enum
-    PerLayer, PerWorld, PerLevel
   TestEntityReferenceInfos* = object
     layerIid*: string
     levelIid*: string
@@ -69,10 +19,85 @@ type
     iids*: TestEntityReferenceInfos
     heiPx*: BiggestInt
     worldX*: BiggestInt
-  TestTestEntityDef_limitBehavior* = enum
-    PreventAdding, MoveLastOne, DiscardOldOnes
-  TestTestLdtkJsonRoot_identifierStyle* = enum
-    Lowercase, Free, Capitalize, Uppercase
+  TestTableOfContentEntry* = object
+    instancesData*: seq[TestTocInstanceData]
+    identifier*: string
+    instances*: Option[seq[TestEntityReferenceInfos]]
+  TestTestWorld_worldLayout* = enum
+    LinearHorizontal, LinearVertical, GridVania, Free
+  TestNeighbourLevel* = object
+    levelUid*: Option[BiggestInt]
+    levelIid*: string
+    dir*: string
+  TestTestLevel_bgPos* = enum
+    CoverDirty, Repeat, Contain, Cover, Unscaled
+  TestTile* = object
+    px*: seq[BiggestInt]
+    t*: BiggestInt
+    d*: seq[BiggestInt]
+    a*: BiggestFloat
+    src*: seq[BiggestInt]
+    f*: BiggestInt
+  TestIntGridValueInstance* = object
+    coordId*: BiggestInt
+    v*: BiggestInt
+  TestTilesetRect* = object
+    x*: BiggestInt
+    w*: BiggestInt
+    y*: BiggestInt
+    h*: BiggestInt
+    tilesetUid*: BiggestInt
+  TestFieldInstance* = object
+    realEditorValues*: seq[JsonNode]
+    value*: JsonNode
+    tile*: Option[TestTilesetRect]
+    `type`*: string
+    identifier*: string
+    defUid*: BiggestInt
+  TestEntityInstance* = object
+    worldY*: Option[BiggestInt]
+    tile*: Option[TestTilesetRect]
+    identifier*: string
+    tags*: seq[string]
+    height*: BiggestInt
+    px*: seq[BiggestInt]
+    defUid*: BiggestInt
+    pivot*: seq[BiggestFloat]
+    fieldInstances*: seq[TestFieldInstance]
+    iid*: string
+    width*: BiggestInt
+    worldX*: Option[BiggestInt]
+    grid*: seq[BiggestInt]
+    smartColor*: string
+  TestLayerInstance* = object
+    opacity*: BiggestFloat
+    optionalRules*: seq[BiggestInt]
+    gridSize*: BiggestInt
+    pxTotalOffsetX*: BiggestInt
+    gridTiles*: seq[TestTile]
+    `type`*: string
+    identifier*: string
+    overrideTilesetUid*: Option[BiggestInt]
+    levelId*: BiggestInt
+    intGrid*: Option[seq[TestIntGridValueInstance]]
+    autoLayerTiles*: seq[TestTile]
+    layerDefUid*: BiggestInt
+    entityInstances*: seq[TestEntityInstance]
+    intGridCsv*: seq[BiggestInt]
+    pxOffsetX*: BiggestInt
+    tilesetRelPath*: Option[string]
+    tilesetDefUid*: Option[BiggestInt]
+    cHei*: BiggestInt
+    seed*: BiggestInt
+    visible*: bool
+    pxOffsetY*: BiggestInt
+    iid*: string
+    pxTotalOffsetY*: BiggestInt
+    cWid*: BiggestInt
+  TestLevelBgPosInfos* = object
+    scale*: seq[BiggestFloat]
+    cropRect*: seq[BiggestFloat]
+    topLeftPx*: seq[BiggestInt]
   TestLevel* = object
     pxHei*: BiggestInt
     useAutoIdentifier*: bool
@@ -95,53 +120,36 @@ type
     iid*: string
     bgPivotY*: BiggestFloat
     smartColor*: string
-  TestTestAutoRuleDef_tileMode* = enum
-    Single, Stamp
+  TestWorld* = object
+    worldGridWidth*: BiggestInt
+    defaultLevelHeight*: BiggestInt
+    identifier*: string
+    worldLayout*: Option[TestTestWorld_worldLayout]
+    iid*: string
+    defaultLevelWidth*: BiggestInt
+    worldGridHeight*: BiggestInt
+    levels*: seq[TestLevel]
   TestTestLdtkJsonRoot_imageExportMode* = enum
     LayersAndLevels, OneImagePerLayer, None, OneImagePerLevel
-  TestAutoRuleDef* = object
-    checker*: TestTestAutoRuleDef_checker
-    pivotY*: BiggestFloat
-    breakOnMatch*: bool
-    perlinOctaves*: BiggestFloat
-    yModulo*: BiggestInt
-    size*: BiggestInt
-    tileMode*: TestTestAutoRuleDef_tileMode
-    tileRandomXMax*: BiggestInt
-    tileRandomXMin*: BiggestInt
-    xModulo*: BiggestInt
-    yOffset*: BiggestInt
-    flipX*: bool
-    tileYOffset*: BiggestInt
-    chance*: BiggestFloat
-    tileRandomYMax*: BiggestInt
-    perlinActive*: bool
-    perlinScale*: BiggestFloat
-    outOfBoundsValue*: Option[BiggestInt]
-    pivotX*: BiggestFloat
-    flipY*: bool
-    active*: bool
-    uid*: BiggestInt
-    tileIds*: Option[seq[BiggestInt]]
-    invalidated*: bool
-    pattern*: seq[BiggestInt]
-    alpha*: BiggestFloat
-    tileRectsIds*: seq[seq[BiggestInt]]
-    tileXOffset*: BiggestInt
-    xOffset*: BiggestInt
-    tileRandomYMin*: BiggestInt
-    perlinSeed*: BiggestFloat
-  TestIntGridValueGroupDef* = object
-    color*: Option[string]
+  TestIntGridValueDef* = object
+    tile*: Option[TestTilesetRect]
+    color*: string
     identifier*: Option[string]
-    uid*: BiggestInt
-  TestGridPoint* = object
-    cx*: BiggestInt
-    cy*: BiggestInt
-  TestTestLdtkJsonRoot_flags* = enum
-    ExportPreCsvIntGridFormat, DiscardPreCsvIntGrid,
-    ExportOldTableOfContentData, PrependIndexToLevelFileNames, MultiWorlds,
-    UseMultilinesType, IgnoreBackupSuggest
+    groupUid*: BiggestInt
+    value*: BiggestInt
+  TestTestFieldDef_textLanguageMode* = enum
+    LangMarkdown, LangPython, LangLog, LangC, LangLua, LangHaxe, LangJS,
+    LangRuby, LangJson, LangXml
+  TestTestFieldDef_editorDisplayPos* = enum
+    Beneath, Above, Center
+  TestTestFieldDef_editorDisplayMode* = enum
+    PointPath, PointStar, ValueOnly, Hidden, Points, NameAndValue,
+    ArrayCountNoLabel, EntityTile, PointPathLoop, RadiusPx, LevelTile,
+    RadiusGrid, RefLinkBetweenCenters, RefLinkBetweenPivots, ArrayCountWithLabel
+  TestTestFieldDef_editorLinkStyle* = enum
+    DashedLine, CurvedArrow, ArrowsLine, ZigZag, StraightArrow
+  TestTestFieldDef_allowedRefs* = enum
+    Any, OnlyTags, OnlySame, OnlySpecificEntity
   TestFieldDef* = object
     type1*: string
     editorDisplayScale*: BiggestFloat
@@ -178,69 +186,14 @@ type
     min*: Option[BiggestFloat]
     exportToToc*: bool
     max*: Option[BiggestFloat]
-  TestTableOfContentEntry* = object
-    instancesData*: seq[TestTocInstanceData]
-    identifier*: string
-    instances*: Option[seq[TestEntityReferenceInfos]]
-  TestEntityInstance* = object
-    worldY*: Option[BiggestInt]
-    tile*: Option[TestTilesetRect]
-    identifier*: string
-    tags*: seq[string]
-    height*: BiggestInt
-    px*: seq[BiggestInt]
-    defUid*: BiggestInt
-    pivot*: seq[BiggestFloat]
-    fieldInstances*: seq[TestFieldInstance]
-    iid*: string
-    width*: BiggestInt
-    worldX*: Option[BiggestInt]
-    grid*: seq[BiggestInt]
-    smartColor*: string
-  TestEnumDef* = object
-    values*: seq[TestEnumDefValues]
-    externalRelPath*: Option[string]
-    identifier*: string
-    externalFileChecksum*: Option[string]
-    iconTilesetUid*: Option[BiggestInt]
-    uid*: BiggestInt
-    tags*: seq[string]
-  TestTestEntityDef_renderMode* = enum
-    Tile, Cross, Ellipse, Rectangle
-  TestTestLdtkJsonRoot_worldLayout* = enum
-    LinearHorizontal, LinearVertical, GridVania, Free
-  TestIntGridValueDef* = object
-    tile*: Option[TestTilesetRect]
-    color*: string
-    identifier*: Option[string]
-    groupUid*: BiggestInt
-    value*: BiggestInt
-  TestTileCustomMetadata* = object
-    data*: string
-    tileId*: BiggestInt
-  TestTestFieldDef_editorDisplayMode* = enum
-    PointPath, PointStar, ValueOnly, Hidden, Points, NameAndValue,
-    ArrayCountNoLabel, EntityTile, PointPathLoop, RadiusPx, LevelTile,
-    RadiusGrid, RefLinkBetweenCenters, RefLinkBetweenPivots, ArrayCountWithLabel
-  TestTestLayerDef_type* = enum
-    Tiles, Entities, AutoLayer, IntGrid
-  TestTestFieldDef_editorLinkStyle* = enum
-    DashedLine, CurvedArrow, ArrowsLine, ZigZag, StraightArrow
+  TestTestTilesetDef_embedAtlas* = enum
+    LdtkIcons
   TestEnumTagValue* = object
     tileIds*: seq[BiggestInt]
     enumValueId*: string
-  TestFieldInstance* = object
-    realEditorValues*: seq[JsonNode]
-    value*: JsonNode
-    tile*: Option[TestTilesetRect]
-    `type`*: string
-    identifier*: string
-    defUid*: BiggestInt
-  TestTestEntityDef_tileRenderMode* = enum
-    FullSizeCropped, FullSizeUncropped, Repeat, FitInside, NineSlice, Cover,
-    Stretch
-  TestTestFieldDef_allowedRefs* = enum
-    Any, OnlyTags, OnlySame, OnlySpecificEntity
+  TestTileCustomMetadata* = object
+    data*: string
+    tileId*: BiggestInt
   TestTilesetDef* = object
     pxHei*: BiggestInt
     savedSelections*: seq[Table[string, JsonNode]]
@@ -259,11 +212,102 @@ type
     cWid*: BiggestInt
     relPath*: Option[string]
     tags*: seq[string]
-  TestTestFieldDef_textLanguageMode* = enum
-    LangMarkdown, LangPython, LangLog, LangC, LangLua, LangHaxe, LangJS,
-    LangRuby, LangJson, LangXml
-  TestTestWorld_worldLayout* = enum
-    LinearHorizontal, LinearVertical, GridVania, Free
+  TestTestEntityDef_limitScope* = enum
+    PerLayer, PerWorld, PerLevel
+  TestTestEntityDef_limitBehavior* = enum
+    PreventAdding, MoveLastOne, DiscardOldOnes
+  TestTestEntityDef_renderMode* = enum
+    Tile, Cross, Ellipse, Rectangle
+  TestTestEntityDef_tileRenderMode* = enum
+    FullSizeCropped, FullSizeUncropped, Repeat, FitInside, NineSlice, Cover,
+    Stretch
+  TestEntityDef* = object
+    allowOutOfBounds*: bool
+    pivotY*: BiggestFloat
+    tileOpacity*: BiggestFloat
+    color*: string
+    limitScope*: TestTestEntityDef_limitScope
+    limitBehavior*: TestTestEntityDef_limitBehavior
+    hollow*: bool
+    height*: BiggestInt
+    renderMode*: TestTestEntityDef_renderMode
+    tilesetId*: Option[BiggestInt]
+    keepAspectRatio*: bool
+    minWidth*: Option[BiggestInt]
+    showName*: bool
+    resizableX*: bool
+    identifier*: string
+    maxCount*: BiggestInt
+    tileId*: Option[BiggestInt]
+    pivotX*: BiggestFloat
+    doc*: Option[string]
+    fieldDefs*: seq[TestFieldDef]
+    uid*: BiggestInt
+    tileRenderMode*: TestTestEntityDef_tileRenderMode
+    uiTileRect*: Option[TestTilesetRect]
+    resizableY*: bool
+    lineOpacity*: BiggestFloat
+    minHeight*: Option[BiggestInt]
+    tileRect*: Option[TestTilesetRect]
+    nineSliceBorders*: seq[BiggestInt]
+    maxWidth*: Option[BiggestInt]
+    width*: BiggestInt
+    tags*: seq[string]
+    maxHeight*: Option[BiggestInt]
+    exportToToc*: bool
+    fillOpacity*: BiggestFloat
+  TestEnumDefValues* = object
+    tileSrcRect*: Option[seq[BiggestInt]]
+    color*: BiggestInt
+    id*: string
+    tileId*: Option[BiggestInt]
+    tileRect*: Option[TestTilesetRect]
+  TestEnumDef* = object
+    values*: seq[TestEnumDefValues]
+    externalRelPath*: Option[string]
+    identifier*: string
+    externalFileChecksum*: Option[string]
+    iconTilesetUid*: Option[BiggestInt]
+    uid*: BiggestInt
+    tags*: seq[string]
+  TestTestLayerDef_type* = enum
+    Tiles, Entities, AutoLayer, IntGrid
+  TestTestAutoRuleDef_checker* = enum
+    Horizontal, Vertical, None
+  TestTestAutoRuleDef_tileMode* = enum
+    Single, Stamp
+  TestAutoRuleDef* = object
+    checker*: TestTestAutoRuleDef_checker
+    pivotY*: BiggestFloat
+    breakOnMatch*: bool
+    perlinOctaves*: BiggestFloat
+    yModulo*: BiggestInt
+    size*: BiggestInt
+    tileMode*: TestTestAutoRuleDef_tileMode
+    tileRandomXMax*: BiggestInt
+    tileRandomXMin*: BiggestInt
+    xModulo*: BiggestInt
+    yOffset*: BiggestInt
+    flipX*: bool
+    tileYOffset*: BiggestInt
+    chance*: BiggestFloat
+    tileRandomYMax*: BiggestInt
+    perlinActive*: bool
+    perlinScale*: BiggestFloat
+    outOfBoundsValue*: Option[BiggestInt]
+    pivotX*: BiggestFloat
+    flipY*: bool
+    active*: bool
+    uid*: BiggestInt
+    tileIds*: Option[seq[BiggestInt]]
+    invalidated*: bool
+    pattern*: seq[BiggestInt]
+    alpha*: BiggestFloat
+    tileRectsIds*: seq[seq[BiggestInt]]
+    tileXOffset*: BiggestInt
+    xOffset*: BiggestInt
+    tileRandomYMin*: BiggestInt
+    perlinSeed*: BiggestFloat
   TestAutoLayerRuleGroup* = object
     isOptional*: bool
     color*: Option[string]
@@ -276,8 +320,45 @@ type
     uid*: BiggestInt
     name*: string
     requiredBiomeValues*: seq[string]
-  TestTestAutoRuleDef_checker* = enum
-    Horizontal, Vertical, None
+  TestIntGridValueGroupDef* = object
+    color*: Option[string]
+    identifier*: Option[string]
+    uid*: BiggestInt
+  TestLayerDef* = object
+    type1*: TestTestLayerDef_type
+    autoTilesetDefUid*: Option[BiggestInt]
+    parallaxScaling*: bool
+    biomeFieldUid*: Option[BiggestInt]
+    autoTilesKilledByOtherLayerUid*: Option[BiggestInt]
+    inactiveOpacity*: BiggestFloat
+    `type`*: string
+    autoRuleGroups*: seq[TestAutoLayerRuleGroup]
+    gridSize*: BiggestInt
+    hideInList*: bool
+    tilesetDefUid*: Option[BiggestInt]
+    uiColor*: Option[string]
+    requiredTags*: seq[string]
+    tilePivotX*: BiggestFloat
+    uiFilterTags*: seq[string]
+    guideGridWid*: BiggestInt
+    parallaxFactorX*: BiggestFloat
+    identifier*: string
+    canSelectWhenInactive*: bool
+    pxOffsetX*: BiggestInt
+    tilePivotY*: BiggestFloat
+    excludedTags*: seq[string]
+    doc*: Option[string]
+    uid*: BiggestInt
+    guideGridHei*: BiggestInt
+    autoSourceLayerDefUid*: Option[BiggestInt]
+    displayOpacity*: BiggestFloat
+    intGridValuesGroups*: seq[TestIntGridValueGroupDef]
+    hideFieldsWhenInactive*: bool
+    useAsyncRender*: bool
+    pxOffsetY*: BiggestInt
+    parallaxFactorY*: BiggestFloat
+    intGridValues*: seq[TestIntGridValueDef]
+    renderInWorldView*: bool
   TestDefinitions* = object
     levelFields*: seq[TestFieldDef]
     tilesets*: seq[TestTilesetDef]
@@ -285,15 +366,9 @@ type
     enums*: seq[TestEnumDef]
     layers*: seq[TestLayerDef]
     externalEnums*: seq[TestEnumDef]
-  TestTestCustomCommand_when* = enum
-    AfterLoad, BeforeSave, AfterSave, Manual
-  TestTile* = object
-    px*: seq[BiggestInt]
-    t*: BiggestInt
-    d*: seq[BiggestInt]
-    a*: BiggestFloat
-    src*: seq[BiggestInt]
-    f*: BiggestInt
+  TestGridPoint* = object
+    cx*: BiggestInt
+    cy*: BiggestInt
   TestTestLdtkJsonRoot_FORCED_REFS* = object
     CustomCommand*: Option[TestCustomCommand]
     IntGridValueDef*: Option[TestIntGridValueDef]
@@ -323,23 +398,14 @@ type
     IntGridValueGroupDef*: Option[TestIntGridValueGroupDef]
     TocInstanceData*: Option[TestTocInstanceData]
     EnumDefValues*: Option[TestEnumDefValues]
-  TestTilesetRect* = object
-    x*: BiggestInt
-    w*: BiggestInt
-    y*: BiggestInt
-    h*: BiggestInt
-    tilesetUid*: BiggestInt
-  TestTestTilesetDef_embedAtlas* = enum
-    LdtkIcons
-  TestWorld* = object
-    worldGridWidth*: BiggestInt
-    defaultLevelHeight*: BiggestInt
-    identifier*: string
-    worldLayout*: Option[TestTestWorld_worldLayout]
-    iid*: string
-    defaultLevelWidth*: BiggestInt
-    worldGridHeight*: BiggestInt
-    levels*: seq[TestLevel]
+  TestTestLdtkJsonRoot_worldLayout* = enum
+    LinearHorizontal, LinearVertical, GridVania, Free
+  TestTestLdtkJsonRoot_flags* = enum
+    ExportPreCsvIntGridFormat, DiscardPreCsvIntGrid,
+    ExportOldTableOfContentData, PrependIndexToLevelFileNames, MultiWorlds,
+    UseMultilinesType, IgnoreBackupSuggest
+  TestTestLdtkJsonRoot_identifierStyle* = enum
+    Lowercase, Free, Capitalize, Uppercase
   TestLdtkJsonRoot* = object
     backupLimit*: BiggestInt
     simplifiedExport*: bool
@@ -379,72 +445,6 @@ type
     identifierStyle*: TestTestLdtkJsonRoot_identifierStyle
     worldGridHeight*: Option[BiggestInt]
     levels*: seq[TestLevel]
-  TestEntityDef* = object
-    allowOutOfBounds*: bool
-    pivotY*: BiggestFloat
-    tileOpacity*: BiggestFloat
-    color*: string
-    limitScope*: TestTestEntityDef_limitScope
-    limitBehavior*: TestTestEntityDef_limitBehavior
-    hollow*: bool
-    height*: BiggestInt
-    renderMode*: TestTestEntityDef_renderMode
-    tilesetId*: Option[BiggestInt]
-    keepAspectRatio*: bool
-    minWidth*: Option[BiggestInt]
-    showName*: bool
-    resizableX*: bool
-    identifier*: string
-    maxCount*: BiggestInt
-    tileId*: Option[BiggestInt]
-    pivotX*: BiggestFloat
-    doc*: Option[string]
-    fieldDefs*: seq[TestFieldDef]
-    uid*: BiggestInt
-    tileRenderMode*: TestTestEntityDef_tileRenderMode
-    uiTileRect*: Option[TestTilesetRect]
-    resizableY*: bool
-    lineOpacity*: BiggestFloat
-    minHeight*: Option[BiggestInt]
-    tileRect*: Option[TestTilesetRect]
-    nineSliceBorders*: seq[BiggestInt]
-    maxWidth*: Option[BiggestInt]
-    width*: BiggestInt
-    tags*: seq[string]
-    maxHeight*: Option[BiggestInt]
-    exportToToc*: bool
-    fillOpacity*: BiggestFloat
-  TestLayerInstance* = object
-    opacity*: BiggestFloat
-    optionalRules*: seq[BiggestInt]
-    gridSize*: BiggestInt
-    pxTotalOffsetX*: BiggestInt
-    gridTiles*: seq[TestTile]
-    `type`*: string
-    identifier*: string
-    overrideTilesetUid*: Option[BiggestInt]
-    levelId*: BiggestInt
-    intGrid*: Option[seq[TestIntGridValueInstance]]
-    autoLayerTiles*: seq[TestTile]
-    layerDefUid*: BiggestInt
-    entityInstances*: seq[TestEntityInstance]
-    intGridCsv*: seq[BiggestInt]
-    pxOffsetX*: BiggestInt
-    tilesetRelPath*: Option[string]
-    tilesetDefUid*: Option[BiggestInt]
-    cHei*: BiggestInt
-    seed*: BiggestInt
-    visible*: bool
-    pxOffsetY*: BiggestInt
-    iid*: string
-    pxTotalOffsetY*: BiggestInt
-    cWid*: BiggestInt
-  TestTestLevel_bgPos* = enum
-    CoverDirty, Repeat, Contain, Cover, Unscaled
-  TestLevelBgPosInfos* = object
-    scale*: seq[BiggestFloat]
-    cropRect*: seq[BiggestFloat]
-    topLeftPx*: seq[BiggestInt]
 proc toJsonHook*(source: TestTestCustomCommand_when): JsonNode =
   case source
   of TestTestCustomCommand_when.AfterLoad:

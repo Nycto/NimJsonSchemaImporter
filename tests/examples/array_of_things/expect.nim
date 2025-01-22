@@ -2,12 +2,12 @@
 import std/[json, jsonutils, tables, options]
 
 type
-  Testarray_of_things* = object
-    vegetables*: Option[seq[Testveggie]]
-    fruits*: Option[seq[string]]
   Testveggie* = object
     veggieName*: string
     veggieLike*: bool
+  Testarray_of_things* = object
+    vegetables*: Option[seq[Testveggie]]
+    fruits*: Option[seq[string]]
 proc fromJsonHook*(target: var Testveggie; source: JsonNode) =
   assert("veggieName" in source,
          "veggieName" & " is missing while decoding " & "Testveggie")

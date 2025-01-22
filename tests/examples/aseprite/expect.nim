@@ -2,20 +2,14 @@
 import std/[json, jsonutils, tables, options]
 
 type
-  TestFrameTag* = object
-    direction*: TestDirection
-    `from`*: BiggestFloat
-    to*: BiggestFloat
-    name*: string
-  TestSpriteSheet* = object
-    frames*: TestTestSpriteSheet_framesUnion
-    meta*: TestMeta
-  TestTestSpriteSheet_framesUnion* = object
-    case kind*: range[0 .. 1]
-    of 0:
-      key0*: Table[string, TestFrame]
-    of 1:
-      key1*: seq[TestArrayFrame]
+  TestSize* = object
+    w*: BiggestFloat
+    h*: BiggestFloat
+  TestRectangle* = object
+    x*: BiggestFloat
+    w*: BiggestFloat
+    y*: BiggestFloat
+    h*: BiggestFloat
   TestFrame* = object
     sourceSize*: TestSize
     duration*: BiggestFloat
@@ -23,8 +17,37 @@ type
     trimmed*: bool
     spriteSourceSize*: TestRectangle
     frame*: TestRectangle
+  TestArrayFrame* = object
+    sourceSize*: TestSize
+    duration*: BiggestFloat
+    rotated*: bool
+    trimmed*: bool
+    spriteSourceSize*: TestRectangle
+    filename*: string
+    frame*: TestRectangle
+  TestTestSpriteSheet_framesUnion* = object
+    case kind*: range[0 .. 1]
+    of 0:
+      key0*: Table[string, TestFrame]
+    of 1:
+      key1*: seq[TestArrayFrame]
+  TestDirection* = enum
+    Pingpong, Forward, Reverse
+  TestFrameTag* = object
+    direction*: TestDirection
+    `from`*: BiggestFloat
+    to*: BiggestFloat
+    name*: string
   TestFormat* = enum
     I8, RGBA8888
+  TestPoint* = object
+    x*: BiggestFloat
+    y*: BiggestFloat
+  TestSliceKey* = object
+    pivot*: Option[TestPoint]
+    center*: Option[TestRectangle]
+    bounds*: TestRectangle
+    frame*: BiggestFloat
   TestSlice* = object
     data*: Option[string]
     color*: Option[string]
@@ -34,16 +57,13 @@ type
     Multiply, Overlay, Color_burn, Exclusion, Color_dodge, Hsl_saturation,
     Hsl_color, Subtract, Divide, Hsl_luminosity, Darken, Normal, Hard_light,
     Screen, Lighten, Soft_light, Addition, Hsl_hue, Difference
-  TestRectangle* = object
-    x*: BiggestFloat
-    w*: BiggestFloat
-    y*: BiggestFloat
-    h*: BiggestFloat
-  TestSliceKey* = object
-    pivot*: Option[TestPoint]
-    center*: Option[TestRectangle]
-    bounds*: TestRectangle
-    frame*: BiggestFloat
+  TestLayer* = object
+    blendMode*: Option[TestBlendMode]
+    data*: Option[string]
+    color*: Option[string]
+    group*: Option[string]
+    name*: string
+    opacity*: Option[BiggestFloat]
   TestMeta* = object
     scale*: string
     frameTags*: Option[seq[TestFrameTag]]
@@ -54,29 +74,9 @@ type
     layers*: Option[seq[TestLayer]]
     app*: string
     image*: string
-  TestDirection* = enum
-    Pingpong, Forward, Reverse
-  TestArrayFrame* = object
-    sourceSize*: TestSize
-    duration*: BiggestFloat
-    rotated*: bool
-    trimmed*: bool
-    spriteSourceSize*: TestRectangle
-    filename*: string
-    frame*: TestRectangle
-  TestLayer* = object
-    blendMode*: Option[TestBlendMode]
-    data*: Option[string]
-    color*: Option[string]
-    group*: Option[string]
-    name*: string
-    opacity*: Option[BiggestFloat]
-  TestSize* = object
-    w*: BiggestFloat
-    h*: BiggestFloat
-  TestPoint* = object
-    x*: BiggestFloat
-    y*: BiggestFloat
+  TestSpriteSheet* = object
+    frames*: TestTestSpriteSheet_framesUnion
+    meta*: TestMeta
 proc fromJsonHook*(target: var TestSize; source: JsonNode) =
   assert("w" in source, "w" & " is missing while decoding " & "TestSize")
   target.w = jsonTo(source{"w"}, typeof(target.w))

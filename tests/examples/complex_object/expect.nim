@@ -2,16 +2,16 @@
 import std/[json, jsonutils, tables, options]
 
 type
-  Testcomplex_object* = object
-    hobbies*: Option[seq[string]]
-    address*: Option[TestTestcomplex_object_address]
-    age*: BiggestInt
-    name*: string
   TestTestcomplex_object_address* = object
     street*: string
     city*: string
     postalCode*: string
     state*: string
+  Testcomplex_object* = object
+    hobbies*: Option[seq[string]]
+    address*: Option[TestTestcomplex_object_address]
+    age*: BiggestInt
+    name*: string
 proc fromJsonHook*(target: var TestTestcomplex_object_address; source: JsonNode) =
   assert("street" in source, "street" & " is missing while decoding " &
       "TestTestcomplex_object_address")

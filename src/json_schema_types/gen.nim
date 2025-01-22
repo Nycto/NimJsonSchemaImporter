@@ -2,7 +2,7 @@ import types, schemaRef, marshalling, util, unpack
 import std/[macros, tables, sets, strformat, json, options, hashes]
 
 type GenContext = ref object
-    types: HashSet[NimNode]
+    types: OrderedSet[NimNode]
     procs: NimNode
     nextId: uint
     prefix: string
@@ -131,7 +131,7 @@ proc genType(typ: TypeDef, name: string, ctx: GenContext): NimNode =
 
 proc genDeclarations*(schema: JsonSchema, name, namePrefix: string): NimNode =
     let ctx = GenContext(
-        types: initHashSet[NimNode](),
+        types: initOrderedSet[NimNode](),
         prefix: namePrefix,
         cache: initTable[SchemaRef, NimNode](),
         procs: newStmtList()

@@ -2,6 +2,27 @@
 import std/[json, jsonutils, tables, options]
 
 type
+  TestTestdiskDevice_type* = enum
+    Disk
+  TestdiskDevice* = object
+    `type`*: TestTestdiskDevice_type
+    device*: string
+  TestTestdiskUUID_type* = enum
+    Disk
+  TestdiskUUID* = object
+    `type`*: TestTestdiskUUID_type
+    label*: string
+  TestTestnfs_type* = enum
+    Nfs
+  Testnfs* = object
+    `type`*: TestTestnfs_type
+    server*: string
+    remotePath*: string
+  TestTesttmpfs_type* = enum
+    Tmpfs
+  Testtmpfs* = object
+    `type`*: TestTesttmpfs_type
+    sizeInMB*: BiggestInt
   TestTestfile_system_storageUnion* = object
     case kind*: range[0 .. 3]
     of 0:
@@ -12,34 +33,13 @@ type
       key2*: Testnfs
     of 3:
       key3*: Testtmpfs
+  TestTestfile_system_fstype* = enum
+    Ext4, Btrfs, Ext3
   Testfile_system* = object
     options*: Option[seq[string]]
     readonly*: Option[bool]
     storage*: TestTestfile_system_storageUnion
     fstype*: Option[TestTestfile_system_fstype]
-  TestTestnfs_type* = enum
-    Nfs
-  TestTestfile_system_fstype* = enum
-    Ext4, Btrfs, Ext3
-  Testnfs* = object
-    `type`*: TestTestnfs_type
-    server*: string
-    remotePath*: string
-  TestdiskUUID* = object
-    `type`*: TestTestdiskUUID_type
-    label*: string
-  TestTestdiskUUID_type* = enum
-    Disk
-  TestdiskDevice* = object
-    `type`*: TestTestdiskDevice_type
-    device*: string
-  TestTestdiskDevice_type* = enum
-    Disk
-  Testtmpfs* = object
-    `type`*: TestTesttmpfs_type
-    sizeInMB*: BiggestInt
-  TestTesttmpfs_type* = enum
-    Tmpfs
 proc toJsonHook*(source: TestTestdiskDevice_type): JsonNode =
   case source
   of TestTestdiskDevice_type.Disk:
