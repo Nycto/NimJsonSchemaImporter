@@ -19,13 +19,15 @@ importJsonSchema("examples/aseprite/schema.json", conf("Aseprite"))
 suite "Parsing example json schema":
 
     template buildTest(name: static string, rootType: typedesc) =
-        test name & " parsing":
-            let samplePath = currentSourcePath.parentDir() / "examples" / name / "sample.json"
-            let parsed = jsonTo(parseFile(samplePath), rootType)
-            let json = toJson(parsed).pretty
-            when defined(rebuild):
-                writeFile(samplePath, json)
-            else:
-                check(json == readFile(samplePath))
+
+        let sampleDir = currentSourcePath.parentDir() / "examples" / name / "samples"
+        for (_, path) in walkDir(sampleDir):
+            test name & " parsing: " & path:
+                let parsed = jsonTo(parseFile(path), rootType)
+                let json = toJson(parsed).pretty
+                when defined(rebuild):
+                    writeFile(path, json)
+                else:
+                    check(json == readFile(path))
 
     include defs
