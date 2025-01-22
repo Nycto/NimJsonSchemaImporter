@@ -2,131 +2,135 @@
 import std/[json, jsonutils, tables, options]
 
 type
-  TestSize* = object
+  AsepriteSize* = object
     w*: BiggestFloat
     h*: BiggestFloat
-  TestRectangle* = object
+  AsepriteRectangle* = object
     x*: BiggestFloat
     w*: BiggestFloat
     y*: BiggestFloat
     h*: BiggestFloat
-  TestFrame* = object
-    sourceSize*: TestSize
+  AsepriteFrame* = object
+    sourceSize*: AsepriteSize
     duration*: BiggestFloat
     rotated*: bool
     trimmed*: bool
-    spriteSourceSize*: TestRectangle
-    frame*: TestRectangle
-  TestArrayFrame* = object
-    sourceSize*: TestSize
+    spriteSourceSize*: AsepriteRectangle
+    frame*: AsepriteRectangle
+  AsepriteArrayFrame* = object
+    sourceSize*: AsepriteSize
     duration*: BiggestFloat
     rotated*: bool
     trimmed*: bool
-    spriteSourceSize*: TestRectangle
+    spriteSourceSize*: AsepriteRectangle
     filename*: string
-    frame*: TestRectangle
-  TestTestSpriteSheet_framesUnion* = object
+    frame*: AsepriteRectangle
+  AsepriteUnion* = object
     case kind*: range[0 .. 1]
     of 0:
-      key0*: Table[string, TestFrame]
+      key0*: Table[string, AsepriteFrame]
     of 1:
-      key1*: seq[TestArrayFrame]
-  TestDirection* = enum
+      key1*: seq[AsepriteArrayFrame]
+  AsepriteDirection* = enum
     Pingpong, Forward, Reverse
-  TestFrameTag* = object
-    direction*: TestDirection
+  AsepriteFrameTag* = object
+    direction*: AsepriteDirection
     `from`*: BiggestFloat
     to*: BiggestFloat
     name*: string
-  TestFormat* = enum
+  AsepriteFormat* = enum
     I8, RGBA8888
-  TestPoint* = object
+  AsepritePoint* = object
     x*: BiggestFloat
     y*: BiggestFloat
-  TestSliceKey* = object
-    pivot*: Option[TestPoint]
-    center*: Option[TestRectangle]
-    bounds*: TestRectangle
+  AsepriteSliceKey* = object
+    pivot*: Option[AsepritePoint]
+    center*: Option[AsepriteRectangle]
+    bounds*: AsepriteRectangle
     frame*: BiggestFloat
-  TestSlice* = object
+  AsepriteSlice* = object
     data*: Option[string]
     color*: Option[string]
     name*: string
-    keys*: seq[TestSliceKey]
-  TestBlendMode* = enum
+    keys*: seq[AsepriteSliceKey]
+  AsepriteBlendMode* = enum
     Multiply, Overlay, Color_burn, Exclusion, Color_dodge, Hsl_saturation,
     Hsl_color, Subtract, Divide, Hsl_luminosity, Darken, Normal, Hard_light,
     Screen, Lighten, Soft_light, Addition, Hsl_hue, Difference
-  TestLayer* = object
-    blendMode*: Option[TestBlendMode]
+  AsepriteLayer* = object
+    blendMode*: Option[AsepriteBlendMode]
     data*: Option[string]
     color*: Option[string]
     group*: Option[string]
     name*: string
     opacity*: Option[BiggestFloat]
-  TestMeta* = object
+  AsepriteMeta* = object
     scale*: string
-    frameTags*: Option[seq[TestFrameTag]]
-    format*: TestFormat
-    size*: TestSize
-    slices*: Option[seq[TestSlice]]
+    frameTags*: Option[seq[AsepriteFrameTag]]
+    format*: AsepriteFormat
+    size*: AsepriteSize
+    slices*: Option[seq[AsepriteSlice]]
     version*: string
-    layers*: Option[seq[TestLayer]]
+    layers*: Option[seq[AsepriteLayer]]
     app*: string
     image*: string
-  TestSpriteSheet* = object
-    frames*: TestTestSpriteSheet_framesUnion
-    meta*: TestMeta
-proc fromJsonHook*(target: var TestSize; source: JsonNode) =
-  assert("w" in source, "w" & " is missing while decoding " & "TestSize")
+  AsepriteSpriteSheet* = object
+    frames*: AsepriteUnion
+    meta*: AsepriteMeta
+proc fromJsonHook*(target: var AsepriteSize; source: JsonNode) =
+  assert("w" in source, "w" & " is missing while decoding " & "AsepriteSize")
   target.w = jsonTo(source{"w"}, typeof(target.w))
-  assert("h" in source, "h" & " is missing while decoding " & "TestSize")
+  assert("h" in source, "h" & " is missing while decoding " & "AsepriteSize")
   target.h = jsonTo(source{"h"}, typeof(target.h))
 
-proc toJsonHook*(source: TestSize): JsonNode =
+proc toJsonHook*(source: AsepriteSize): JsonNode =
   result = newJObject()
   result{"w"} = toJson(source.w)
   result{"h"} = toJson(source.h)
 
-proc fromJsonHook*(target: var TestRectangle; source: JsonNode) =
-  assert("x" in source, "x" & " is missing while decoding " & "TestRectangle")
+proc fromJsonHook*(target: var AsepriteRectangle; source: JsonNode) =
+  assert("x" in source,
+         "x" & " is missing while decoding " & "AsepriteRectangle")
   target.x = jsonTo(source{"x"}, typeof(target.x))
-  assert("w" in source, "w" & " is missing while decoding " & "TestRectangle")
+  assert("w" in source,
+         "w" & " is missing while decoding " & "AsepriteRectangle")
   target.w = jsonTo(source{"w"}, typeof(target.w))
-  assert("y" in source, "y" & " is missing while decoding " & "TestRectangle")
+  assert("y" in source,
+         "y" & " is missing while decoding " & "AsepriteRectangle")
   target.y = jsonTo(source{"y"}, typeof(target.y))
-  assert("h" in source, "h" & " is missing while decoding " & "TestRectangle")
+  assert("h" in source,
+         "h" & " is missing while decoding " & "AsepriteRectangle")
   target.h = jsonTo(source{"h"}, typeof(target.h))
 
-proc toJsonHook*(source: TestRectangle): JsonNode =
+proc toJsonHook*(source: AsepriteRectangle): JsonNode =
   result = newJObject()
   result{"x"} = toJson(source.x)
   result{"w"} = toJson(source.w)
   result{"y"} = toJson(source.y)
   result{"h"} = toJson(source.h)
 
-proc fromJsonHook*(target: var TestFrame; source: JsonNode) =
+proc fromJsonHook*(target: var AsepriteFrame; source: JsonNode) =
   assert("sourceSize" in source,
-         "sourceSize" & " is missing while decoding " & "TestFrame")
+         "sourceSize" & " is missing while decoding " & "AsepriteFrame")
   target.sourceSize = jsonTo(source{"sourceSize"}, typeof(target.sourceSize))
   assert("duration" in source,
-         "duration" & " is missing while decoding " & "TestFrame")
+         "duration" & " is missing while decoding " & "AsepriteFrame")
   target.duration = jsonTo(source{"duration"}, typeof(target.duration))
   assert("rotated" in source,
-         "rotated" & " is missing while decoding " & "TestFrame")
+         "rotated" & " is missing while decoding " & "AsepriteFrame")
   target.rotated = jsonTo(source{"rotated"}, typeof(target.rotated))
   assert("trimmed" in source,
-         "trimmed" & " is missing while decoding " & "TestFrame")
+         "trimmed" & " is missing while decoding " & "AsepriteFrame")
   target.trimmed = jsonTo(source{"trimmed"}, typeof(target.trimmed))
   assert("spriteSourceSize" in source,
-         "spriteSourceSize" & " is missing while decoding " & "TestFrame")
+         "spriteSourceSize" & " is missing while decoding " & "AsepriteFrame")
   target.spriteSourceSize = jsonTo(source{"spriteSourceSize"},
                                    typeof(target.spriteSourceSize))
   assert("frame" in source,
-         "frame" & " is missing while decoding " & "TestFrame")
+         "frame" & " is missing while decoding " & "AsepriteFrame")
   target.frame = jsonTo(source{"frame"}, typeof(target.frame))
 
-proc toJsonHook*(source: TestFrame): JsonNode =
+proc toJsonHook*(source: AsepriteFrame): JsonNode =
   result = newJObject()
   result{"sourceSize"} = toJson(source.sourceSize)
   result{"duration"} = toJson(source.duration)
@@ -135,31 +139,32 @@ proc toJsonHook*(source: TestFrame): JsonNode =
   result{"spriteSourceSize"} = toJson(source.spriteSourceSize)
   result{"frame"} = toJson(source.frame)
 
-proc fromJsonHook*(target: var TestArrayFrame; source: JsonNode) =
+proc fromJsonHook*(target: var AsepriteArrayFrame; source: JsonNode) =
   assert("sourceSize" in source,
-         "sourceSize" & " is missing while decoding " & "TestArrayFrame")
+         "sourceSize" & " is missing while decoding " & "AsepriteArrayFrame")
   target.sourceSize = jsonTo(source{"sourceSize"}, typeof(target.sourceSize))
   assert("duration" in source,
-         "duration" & " is missing while decoding " & "TestArrayFrame")
+         "duration" & " is missing while decoding " & "AsepriteArrayFrame")
   target.duration = jsonTo(source{"duration"}, typeof(target.duration))
   assert("rotated" in source,
-         "rotated" & " is missing while decoding " & "TestArrayFrame")
+         "rotated" & " is missing while decoding " & "AsepriteArrayFrame")
   target.rotated = jsonTo(source{"rotated"}, typeof(target.rotated))
   assert("trimmed" in source,
-         "trimmed" & " is missing while decoding " & "TestArrayFrame")
+         "trimmed" & " is missing while decoding " & "AsepriteArrayFrame")
   target.trimmed = jsonTo(source{"trimmed"}, typeof(target.trimmed))
-  assert("spriteSourceSize" in source,
-         "spriteSourceSize" & " is missing while decoding " & "TestArrayFrame")
+  assert("spriteSourceSize" in source, "spriteSourceSize" &
+      " is missing while decoding " &
+      "AsepriteArrayFrame")
   target.spriteSourceSize = jsonTo(source{"spriteSourceSize"},
                                    typeof(target.spriteSourceSize))
   assert("filename" in source,
-         "filename" & " is missing while decoding " & "TestArrayFrame")
+         "filename" & " is missing while decoding " & "AsepriteArrayFrame")
   target.filename = jsonTo(source{"filename"}, typeof(target.filename))
   assert("frame" in source,
-         "frame" & " is missing while decoding " & "TestArrayFrame")
+         "frame" & " is missing while decoding " & "AsepriteArrayFrame")
   target.frame = jsonTo(source{"frame"}, typeof(target.frame))
 
-proc toJsonHook*(source: TestArrayFrame): JsonNode =
+proc toJsonHook*(source: AsepriteArrayFrame): JsonNode =
   result = newJObject()
   result{"sourceSize"} = toJson(source.sourceSize)
   result{"duration"} = toJson(source.duration)
@@ -169,118 +174,118 @@ proc toJsonHook*(source: TestArrayFrame): JsonNode =
   result{"filename"} = toJson(source.filename)
   result{"frame"} = toJson(source.frame)
 
-proc fromJsonHook*(target: var TestTestSpriteSheet_framesUnion; source: JsonNode) =
+proc fromJsonHook*(target: var AsepriteUnion; source: JsonNode) =
   if source.kind == JObject:
-    target = TestTestSpriteSheet_framesUnion(kind: 0,
-        key0: jsonTo(source, typeof(target.key0)))
+    target = AsepriteUnion(kind: 0, key0: jsonTo(source, typeof(target.key0)))
   elif source.kind == JArray:
-    target = TestTestSpriteSheet_framesUnion(kind: 1,
-        key1: jsonTo(source, typeof(target.key1)))
+    target = AsepriteUnion(kind: 1, key1: jsonTo(source, typeof(target.key1)))
   else:
-    raise newException(ValueError, "Unable to deserialize json node to TestTestSpriteSheet_framesUnion")
+    raise newException(ValueError,
+                       "Unable to deserialize json node to AsepriteUnion")
   
-proc toJsonHook*(source: TestTestSpriteSheet_framesUnion): JsonNode =
+proc toJsonHook*(source: AsepriteUnion): JsonNode =
   case source.kind
   of 0:
     return toJson(source.key0)
   of 1:
     return toJson(source.key1)
   
-proc isMapOfFrame(value: TestTestSpriteSheet_framesUnion): bool =
+proc isMapOfFrame(value: AsepriteUnion): bool =
   value.kind == 0
 
-proc asMapOfFrame(value: TestTestSpriteSheet_framesUnion): auto =
+proc asMapOfFrame(value: AsepriteUnion): auto =
   assert(value.kind == 0)
   return value.key0
 
-proc isSeqOfArrayFrame(value: TestTestSpriteSheet_framesUnion): bool =
+proc isSeqOfArrayFrame(value: AsepriteUnion): bool =
   value.kind == 1
 
-proc asSeqOfArrayFrame(value: TestTestSpriteSheet_framesUnion): auto =
+proc asSeqOfArrayFrame(value: AsepriteUnion): auto =
   assert(value.kind == 1)
   return value.key1
 
-proc toJsonHook*(source: TestDirection): JsonNode =
+proc toJsonHook*(source: AsepriteDirection): JsonNode =
   case source
-  of TestDirection.Pingpong:
+  of AsepriteDirection.Pingpong:
     return newJString("pingpong")
-  of TestDirection.Forward:
+  of AsepriteDirection.Forward:
     return newJString("forward")
-  of TestDirection.Reverse:
+  of AsepriteDirection.Reverse:
     return newJString("reverse")
   
-proc fromJsonHook*(target: var TestDirection; source: JsonNode) =
+proc fromJsonHook*(target: var AsepriteDirection; source: JsonNode) =
   target = case getStr(source)
   of "pingpong":
-    TestDirection.Pingpong
+    AsepriteDirection.Pingpong
   of "forward":
-    TestDirection.Forward
+    AsepriteDirection.Forward
   of "reverse":
-    TestDirection.Reverse
+    AsepriteDirection.Reverse
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc fromJsonHook*(target: var TestFrameTag; source: JsonNode) =
+proc fromJsonHook*(target: var AsepriteFrameTag; source: JsonNode) =
   assert("direction" in source,
-         "direction" & " is missing while decoding " & "TestFrameTag")
+         "direction" & " is missing while decoding " & "AsepriteFrameTag")
   target.direction = jsonTo(source{"direction"}, typeof(target.direction))
   assert("from" in source,
-         "from" & " is missing while decoding " & "TestFrameTag")
+         "from" & " is missing while decoding " & "AsepriteFrameTag")
   target.`from` = jsonTo(source{"from"}, typeof(target.`from`))
-  assert("to" in source, "to" & " is missing while decoding " & "TestFrameTag")
+  assert("to" in source,
+         "to" & " is missing while decoding " & "AsepriteFrameTag")
   target.to = jsonTo(source{"to"}, typeof(target.to))
   assert("name" in source,
-         "name" & " is missing while decoding " & "TestFrameTag")
+         "name" & " is missing while decoding " & "AsepriteFrameTag")
   target.name = jsonTo(source{"name"}, typeof(target.name))
 
-proc toJsonHook*(source: TestFrameTag): JsonNode =
+proc toJsonHook*(source: AsepriteFrameTag): JsonNode =
   result = newJObject()
   result{"direction"} = toJson(source.direction)
   result{"from"} = toJson(source.`from`)
   result{"to"} = toJson(source.to)
   result{"name"} = toJson(source.name)
 
-proc toJsonHook*(source: TestFormat): JsonNode =
+proc toJsonHook*(source: AsepriteFormat): JsonNode =
   case source
-  of TestFormat.I8:
+  of AsepriteFormat.I8:
     return newJString("I8")
-  of TestFormat.RGBA8888:
+  of AsepriteFormat.RGBA8888:
     return newJString("RGBA8888")
   
-proc fromJsonHook*(target: var TestFormat; source: JsonNode) =
+proc fromJsonHook*(target: var AsepriteFormat; source: JsonNode) =
   target = case getStr(source)
   of "I8":
-    TestFormat.I8
+    AsepriteFormat.I8
   of "RGBA8888":
-    TestFormat.RGBA8888
+    AsepriteFormat.RGBA8888
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc fromJsonHook*(target: var TestPoint; source: JsonNode) =
-  assert("x" in source, "x" & " is missing while decoding " & "TestPoint")
+proc fromJsonHook*(target: var AsepritePoint; source: JsonNode) =
+  assert("x" in source, "x" & " is missing while decoding " & "AsepritePoint")
   target.x = jsonTo(source{"x"}, typeof(target.x))
-  assert("y" in source, "y" & " is missing while decoding " & "TestPoint")
+  assert("y" in source, "y" & " is missing while decoding " & "AsepritePoint")
   target.y = jsonTo(source{"y"}, typeof(target.y))
 
-proc toJsonHook*(source: TestPoint): JsonNode =
+proc toJsonHook*(source: AsepritePoint): JsonNode =
   result = newJObject()
   result{"x"} = toJson(source.x)
   result{"y"} = toJson(source.y)
 
-proc fromJsonHook*(target: var TestSliceKey; source: JsonNode) =
+proc fromJsonHook*(target: var AsepriteSliceKey; source: JsonNode) =
   if "pivot" in source and source{"pivot"}.kind != JNull:
     target.pivot = some(jsonTo(source{"pivot"}, typeof(unsafeGet(target.pivot))))
   if "center" in source and source{"center"}.kind != JNull:
     target.center = some(jsonTo(source{"center"},
                                 typeof(unsafeGet(target.center))))
   assert("bounds" in source,
-         "bounds" & " is missing while decoding " & "TestSliceKey")
+         "bounds" & " is missing while decoding " & "AsepriteSliceKey")
   target.bounds = jsonTo(source{"bounds"}, typeof(target.bounds))
   assert("frame" in source,
-         "frame" & " is missing while decoding " & "TestSliceKey")
+         "frame" & " is missing while decoding " & "AsepriteSliceKey")
   target.frame = jsonTo(source{"frame"}, typeof(target.frame))
 
-proc toJsonHook*(source: TestSliceKey): JsonNode =
+proc toJsonHook*(source: AsepriteSliceKey): JsonNode =
   result = newJObject()
   if isSome(source.pivot):
     result{"pivot"} = toJson(source.pivot)
@@ -289,17 +294,19 @@ proc toJsonHook*(source: TestSliceKey): JsonNode =
   result{"bounds"} = toJson(source.bounds)
   result{"frame"} = toJson(source.frame)
 
-proc fromJsonHook*(target: var TestSlice; source: JsonNode) =
+proc fromJsonHook*(target: var AsepriteSlice; source: JsonNode) =
   if "data" in source and source{"data"}.kind != JNull:
     target.data = some(jsonTo(source{"data"}, typeof(unsafeGet(target.data))))
   if "color" in source and source{"color"}.kind != JNull:
     target.color = some(jsonTo(source{"color"}, typeof(unsafeGet(target.color))))
-  assert("name" in source, "name" & " is missing while decoding " & "TestSlice")
+  assert("name" in source,
+         "name" & " is missing while decoding " & "AsepriteSlice")
   target.name = jsonTo(source{"name"}, typeof(target.name))
-  assert("keys" in source, "keys" & " is missing while decoding " & "TestSlice")
+  assert("keys" in source,
+         "keys" & " is missing while decoding " & "AsepriteSlice")
   target.keys = jsonTo(source{"keys"}, typeof(target.keys))
 
-proc toJsonHook*(source: TestSlice): JsonNode =
+proc toJsonHook*(source: AsepriteSlice): JsonNode =
   result = newJObject()
   if isSome(source.data):
     result{"data"} = toJson(source.data)
@@ -308,91 +315,91 @@ proc toJsonHook*(source: TestSlice): JsonNode =
   result{"name"} = toJson(source.name)
   result{"keys"} = toJson(source.keys)
 
-proc toJsonHook*(source: TestBlendMode): JsonNode =
+proc toJsonHook*(source: AsepriteBlendMode): JsonNode =
   case source
-  of TestBlendMode.Multiply:
+  of AsepriteBlendMode.Multiply:
     return newJString("multiply")
-  of TestBlendMode.Overlay:
+  of AsepriteBlendMode.Overlay:
     return newJString("overlay")
-  of TestBlendMode.Color_burn:
+  of AsepriteBlendMode.Color_burn:
     return newJString("color_burn")
-  of TestBlendMode.Exclusion:
+  of AsepriteBlendMode.Exclusion:
     return newJString("exclusion")
-  of TestBlendMode.Color_dodge:
+  of AsepriteBlendMode.Color_dodge:
     return newJString("color_dodge")
-  of TestBlendMode.Hsl_saturation:
+  of AsepriteBlendMode.Hsl_saturation:
     return newJString("hsl_saturation")
-  of TestBlendMode.Hsl_color:
+  of AsepriteBlendMode.Hsl_color:
     return newJString("hsl_color")
-  of TestBlendMode.Subtract:
+  of AsepriteBlendMode.Subtract:
     return newJString("subtract")
-  of TestBlendMode.Divide:
+  of AsepriteBlendMode.Divide:
     return newJString("divide")
-  of TestBlendMode.Hsl_luminosity:
+  of AsepriteBlendMode.Hsl_luminosity:
     return newJString("hsl_luminosity")
-  of TestBlendMode.Darken:
+  of AsepriteBlendMode.Darken:
     return newJString("darken")
-  of TestBlendMode.Normal:
+  of AsepriteBlendMode.Normal:
     return newJString("normal")
-  of TestBlendMode.Hard_light:
+  of AsepriteBlendMode.Hard_light:
     return newJString("hard_light")
-  of TestBlendMode.Screen:
+  of AsepriteBlendMode.Screen:
     return newJString("screen")
-  of TestBlendMode.Lighten:
+  of AsepriteBlendMode.Lighten:
     return newJString("lighten")
-  of TestBlendMode.Soft_light:
+  of AsepriteBlendMode.Soft_light:
     return newJString("soft_light")
-  of TestBlendMode.Addition:
+  of AsepriteBlendMode.Addition:
     return newJString("addition")
-  of TestBlendMode.Hsl_hue:
+  of AsepriteBlendMode.Hsl_hue:
     return newJString("hsl_hue")
-  of TestBlendMode.Difference:
+  of AsepriteBlendMode.Difference:
     return newJString("difference")
   
-proc fromJsonHook*(target: var TestBlendMode; source: JsonNode) =
+proc fromJsonHook*(target: var AsepriteBlendMode; source: JsonNode) =
   target = case getStr(source)
   of "multiply":
-    TestBlendMode.Multiply
+    AsepriteBlendMode.Multiply
   of "overlay":
-    TestBlendMode.Overlay
+    AsepriteBlendMode.Overlay
   of "color_burn":
-    TestBlendMode.Color_burn
+    AsepriteBlendMode.Color_burn
   of "exclusion":
-    TestBlendMode.Exclusion
+    AsepriteBlendMode.Exclusion
   of "color_dodge":
-    TestBlendMode.Color_dodge
+    AsepriteBlendMode.Color_dodge
   of "hsl_saturation":
-    TestBlendMode.Hsl_saturation
+    AsepriteBlendMode.Hsl_saturation
   of "hsl_color":
-    TestBlendMode.Hsl_color
+    AsepriteBlendMode.Hsl_color
   of "subtract":
-    TestBlendMode.Subtract
+    AsepriteBlendMode.Subtract
   of "divide":
-    TestBlendMode.Divide
+    AsepriteBlendMode.Divide
   of "hsl_luminosity":
-    TestBlendMode.Hsl_luminosity
+    AsepriteBlendMode.Hsl_luminosity
   of "darken":
-    TestBlendMode.Darken
+    AsepriteBlendMode.Darken
   of "normal":
-    TestBlendMode.Normal
+    AsepriteBlendMode.Normal
   of "hard_light":
-    TestBlendMode.Hard_light
+    AsepriteBlendMode.Hard_light
   of "screen":
-    TestBlendMode.Screen
+    AsepriteBlendMode.Screen
   of "lighten":
-    TestBlendMode.Lighten
+    AsepriteBlendMode.Lighten
   of "soft_light":
-    TestBlendMode.Soft_light
+    AsepriteBlendMode.Soft_light
   of "addition":
-    TestBlendMode.Addition
+    AsepriteBlendMode.Addition
   of "hsl_hue":
-    TestBlendMode.Hsl_hue
+    AsepriteBlendMode.Hsl_hue
   of "difference":
-    TestBlendMode.Difference
+    AsepriteBlendMode.Difference
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc fromJsonHook*(target: var TestLayer; source: JsonNode) =
+proc fromJsonHook*(target: var AsepriteLayer; source: JsonNode) =
   if "blendMode" in source and source{"blendMode"}.kind != JNull:
     target.blendMode = some(jsonTo(source{"blendMode"},
                                    typeof(unsafeGet(target.blendMode))))
@@ -402,13 +409,14 @@ proc fromJsonHook*(target: var TestLayer; source: JsonNode) =
     target.color = some(jsonTo(source{"color"}, typeof(unsafeGet(target.color))))
   if "group" in source and source{"group"}.kind != JNull:
     target.group = some(jsonTo(source{"group"}, typeof(unsafeGet(target.group))))
-  assert("name" in source, "name" & " is missing while decoding " & "TestLayer")
+  assert("name" in source,
+         "name" & " is missing while decoding " & "AsepriteLayer")
   target.name = jsonTo(source{"name"}, typeof(target.name))
   if "opacity" in source and source{"opacity"}.kind != JNull:
     target.opacity = some(jsonTo(source{"opacity"},
                                  typeof(unsafeGet(target.opacity))))
 
-proc toJsonHook*(source: TestLayer): JsonNode =
+proc toJsonHook*(source: AsepriteLayer): JsonNode =
   result = newJObject()
   if isSome(source.blendMode):
     result{"blendMode"} = toJson(source.blendMode)
@@ -422,32 +430,35 @@ proc toJsonHook*(source: TestLayer): JsonNode =
   if isSome(source.opacity):
     result{"opacity"} = toJson(source.opacity)
 
-proc fromJsonHook*(target: var TestMeta; source: JsonNode) =
-  assert("scale" in source, "scale" & " is missing while decoding " & "TestMeta")
+proc fromJsonHook*(target: var AsepriteMeta; source: JsonNode) =
+  assert("scale" in source,
+         "scale" & " is missing while decoding " & "AsepriteMeta")
   target.scale = jsonTo(source{"scale"}, typeof(target.scale))
   if "frameTags" in source and source{"frameTags"}.kind != JNull:
     target.frameTags = some(jsonTo(source{"frameTags"},
                                    typeof(unsafeGet(target.frameTags))))
   assert("format" in source,
-         "format" & " is missing while decoding " & "TestMeta")
+         "format" & " is missing while decoding " & "AsepriteMeta")
   target.format = jsonTo(source{"format"}, typeof(target.format))
-  assert("size" in source, "size" & " is missing while decoding " & "TestMeta")
+  assert("size" in source,
+         "size" & " is missing while decoding " & "AsepriteMeta")
   target.size = jsonTo(source{"size"}, typeof(target.size))
   if "slices" in source and source{"slices"}.kind != JNull:
     target.slices = some(jsonTo(source{"slices"},
                                 typeof(unsafeGet(target.slices))))
   assert("version" in source,
-         "version" & " is missing while decoding " & "TestMeta")
+         "version" & " is missing while decoding " & "AsepriteMeta")
   target.version = jsonTo(source{"version"}, typeof(target.version))
   if "layers" in source and source{"layers"}.kind != JNull:
     target.layers = some(jsonTo(source{"layers"},
                                 typeof(unsafeGet(target.layers))))
-  assert("app" in source, "app" & " is missing while decoding " & "TestMeta")
+  assert("app" in source, "app" & " is missing while decoding " & "AsepriteMeta")
   target.app = jsonTo(source{"app"}, typeof(target.app))
-  assert("image" in source, "image" & " is missing while decoding " & "TestMeta")
+  assert("image" in source,
+         "image" & " is missing while decoding " & "AsepriteMeta")
   target.image = jsonTo(source{"image"}, typeof(target.image))
 
-proc toJsonHook*(source: TestMeta): JsonNode =
+proc toJsonHook*(source: AsepriteMeta): JsonNode =
   result = newJObject()
   result{"scale"} = toJson(source.scale)
   if isSome(source.frameTags):
@@ -462,15 +473,15 @@ proc toJsonHook*(source: TestMeta): JsonNode =
   result{"app"} = toJson(source.app)
   result{"image"} = toJson(source.image)
 
-proc fromJsonHook*(target: var TestSpriteSheet; source: JsonNode) =
+proc fromJsonHook*(target: var AsepriteSpriteSheet; source: JsonNode) =
   assert("frames" in source,
-         "frames" & " is missing while decoding " & "TestSpriteSheet")
+         "frames" & " is missing while decoding " & "AsepriteSpriteSheet")
   target.frames = jsonTo(source{"frames"}, typeof(target.frames))
   assert("meta" in source,
-         "meta" & " is missing while decoding " & "TestSpriteSheet")
+         "meta" & " is missing while decoding " & "AsepriteSpriteSheet")
   target.meta = jsonTo(source{"meta"}, typeof(target.meta))
 
-proc toJsonHook*(source: TestSpriteSheet): JsonNode =
+proc toJsonHook*(source: AsepriteSpriteSheet): JsonNode =
   result = newJObject()
   result{"frames"} = toJson(source.frames)
   result{"meta"} = toJson(source.meta)

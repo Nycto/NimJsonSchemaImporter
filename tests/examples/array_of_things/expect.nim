@@ -2,26 +2,26 @@
 import std/[json, jsonutils, tables, options]
 
 type
-  Testveggie* = object
+  Array_of_thingsVeggie* = object
     veggieName*: string
     veggieLike*: bool
-  Testarray_of_things* = object
-    vegetables*: Option[seq[Testveggie]]
+  Array_of_thingsarray_of_things* = object
+    vegetables*: Option[seq[Array_of_thingsVeggie]]
     fruits*: Option[seq[string]]
-proc fromJsonHook*(target: var Testveggie; source: JsonNode) =
+proc fromJsonHook*(target: var Array_of_thingsVeggie; source: JsonNode) =
   assert("veggieName" in source,
-         "veggieName" & " is missing while decoding " & "Testveggie")
+         "veggieName" & " is missing while decoding " & "Array_of_thingsVeggie")
   target.veggieName = jsonTo(source{"veggieName"}, typeof(target.veggieName))
   assert("veggieLike" in source,
-         "veggieLike" & " is missing while decoding " & "Testveggie")
+         "veggieLike" & " is missing while decoding " & "Array_of_thingsVeggie")
   target.veggieLike = jsonTo(source{"veggieLike"}, typeof(target.veggieLike))
 
-proc toJsonHook*(source: Testveggie): JsonNode =
+proc toJsonHook*(source: Array_of_thingsVeggie): JsonNode =
   result = newJObject()
   result{"veggieName"} = toJson(source.veggieName)
   result{"veggieLike"} = toJson(source.veggieLike)
 
-proc fromJsonHook*(target: var Testarray_of_things; source: JsonNode) =
+proc fromJsonHook*(target: var Array_of_thingsarray_of_things; source: JsonNode) =
   if "vegetables" in source and source{"vegetables"}.kind != JNull:
     target.vegetables = some(jsonTo(source{"vegetables"},
                                     typeof(unsafeGet(target.vegetables))))
@@ -29,7 +29,7 @@ proc fromJsonHook*(target: var Testarray_of_things; source: JsonNode) =
     target.fruits = some(jsonTo(source{"fruits"},
                                 typeof(unsafeGet(target.fruits))))
 
-proc toJsonHook*(source: Testarray_of_things): JsonNode =
+proc toJsonHook*(source: Array_of_thingsarray_of_things): JsonNode =
   result = newJObject()
   if isSome(source.vegetables):
     result{"vegetables"} = toJson(source.vegetables)

@@ -2,7 +2,7 @@
 import std/[json, jsonutils, tables, options]
 
 type
-  TestTestunion_key1Union* = object
+  UnionKey1Union* = object
     case kind*: range[0 .. 4]
     of 0:
       key0*: string
@@ -14,46 +14,42 @@ type
       key3*: pointer
     of 4:
       key4*: BiggestFloat
-  TestTestunion_key30* = object
+  UnionKey3* = object
     foo*: Option[string]
-  TestTestunion_key33* = enum
+  UnionunionKey3* = enum
     B, C, A
-  TestTestunion_key3Union* = object
+  UnionKey3Union* = object
     case kind*: range[0 .. 4]
     of 0:
-      key0*: TestTestunion_key30
+      key0*: UnionKey3
     of 1:
       key1*: seq[string]
     of 2:
       key2*: Table[string, string]
     of 3:
-      key3*: TestTestunion_key33
+      key3*: UnionunionKey3
     of 4:
       key4*: Option[string]
-  Testunion* = object
-    key1*: Option[TestTestunion_key1Union]
+  Unionunion* = object
+    key1*: Option[UnionKey1Union]
     key2*: Option[string]
-    key3*: Option[TestTestunion_key3Union]
-proc fromJsonHook*(target: var TestTestunion_key1Union; source: JsonNode) =
+    key3*: Option[UnionKey3Union]
+proc fromJsonHook*(target: var UnionKey1Union; source: JsonNode) =
   if source.kind == JString:
-    target = TestTestunion_key1Union(kind: 0,
-                                     key0: jsonTo(source, typeof(target.key0)))
+    target = UnionKey1Union(kind: 0, key0: jsonTo(source, typeof(target.key0)))
   elif source.kind == JInt:
-    target = TestTestunion_key1Union(kind: 1,
-                                     key1: jsonTo(source, typeof(target.key1)))
+    target = UnionKey1Union(kind: 1, key1: jsonTo(source, typeof(target.key1)))
   elif source.kind == JBool:
-    target = TestTestunion_key1Union(kind: 2,
-                                     key2: jsonTo(source, typeof(target.key2)))
+    target = UnionKey1Union(kind: 2, key2: jsonTo(source, typeof(target.key2)))
   elif source.kind == JNull:
-    target = TestTestunion_key1Union(kind: 3,
-                                     key3: jsonTo(source, typeof(target.key3)))
+    target = UnionKey1Union(kind: 3, key3: jsonTo(source, typeof(target.key3)))
   elif source.kind == JFloat or source.kind == JInt:
-    target = TestTestunion_key1Union(kind: 4,
-                                     key4: jsonTo(source, typeof(target.key4)))
+    target = UnionKey1Union(kind: 4, key4: jsonTo(source, typeof(target.key4)))
   else:
-    raise newException(ValueError, "Unable to deserialize json node to TestTestunion_key1Union")
+    raise newException(ValueError,
+                       "Unable to deserialize json node to UnionKey1Union")
   
-proc toJsonHook*(source: TestTestunion_key1Union): JsonNode =
+proc toJsonHook*(source: UnionKey1Union): JsonNode =
   case source.kind
   of 0:
     return toJson(source.key0)
@@ -66,90 +62,86 @@ proc toJsonHook*(source: TestTestunion_key1Union): JsonNode =
   of 4:
     return toJson(source.key4)
   
-proc isStr(value: TestTestunion_key1Union): bool =
+proc isStr(value: UnionKey1Union): bool =
   value.kind == 0
 
-proc asStr(value: TestTestunion_key1Union): auto =
+proc asStr(value: UnionKey1Union): auto =
   assert(value.kind == 0)
   return value.key0
 
-proc isInt(value: TestTestunion_key1Union): bool =
+proc isInt(value: UnionKey1Union): bool =
   value.kind == 1
 
-proc asInt(value: TestTestunion_key1Union): auto =
+proc asInt(value: UnionKey1Union): auto =
   assert(value.kind == 1)
   return value.key1
 
-proc isBool(value: TestTestunion_key1Union): bool =
+proc isBool(value: UnionKey1Union): bool =
   value.kind == 2
 
-proc asBool(value: TestTestunion_key1Union): auto =
+proc asBool(value: UnionKey1Union): auto =
   assert(value.kind == 2)
   return value.key2
 
-proc isNull(value: TestTestunion_key1Union): bool =
+proc isNull(value: UnionKey1Union): bool =
   value.kind == 3
 
-proc asNull(value: TestTestunion_key1Union): auto =
+proc asNull(value: UnionKey1Union): auto =
   assert(value.kind == 3)
   return value.key3
 
-proc isFloat(value: TestTestunion_key1Union): bool =
+proc isFloat(value: UnionKey1Union): bool =
   value.kind == 4
 
-proc asFloat(value: TestTestunion_key1Union): auto =
+proc asFloat(value: UnionKey1Union): auto =
   assert(value.kind == 4)
   return value.key4
 
-proc fromJsonHook*(target: var TestTestunion_key30; source: JsonNode) =
+proc fromJsonHook*(target: var UnionKey3; source: JsonNode) =
   if "foo" in source and source{"foo"}.kind != JNull:
     target.foo = some(jsonTo(source{"foo"}, typeof(unsafeGet(target.foo))))
 
-proc toJsonHook*(source: TestTestunion_key30): JsonNode =
+proc toJsonHook*(source: UnionKey3): JsonNode =
   result = newJObject()
   if isSome(source.foo):
     result{"foo"} = toJson(source.foo)
 
-proc toJsonHook*(source: TestTestunion_key33): JsonNode =
+proc toJsonHook*(source: UnionunionKey3): JsonNode =
   case source
-  of TestTestunion_key33.B:
+  of UnionunionKey3.B:
     return newJString("b")
-  of TestTestunion_key33.C:
+  of UnionunionKey3.C:
     return newJString("c")
-  of TestTestunion_key33.A:
+  of UnionunionKey3.A:
     return newJString("a")
   
-proc fromJsonHook*(target: var TestTestunion_key33; source: JsonNode) =
+proc fromJsonHook*(target: var UnionunionKey3; source: JsonNode) =
   target = case getStr(source)
   of "b":
-    TestTestunion_key33.B
+    UnionunionKey3.B
   of "c":
-    TestTestunion_key33.C
+    UnionunionKey3.C
   of "a":
-    TestTestunion_key33.A
+    UnionunionKey3.A
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc fromJsonHook*(target: var TestTestunion_key3Union; source: JsonNode) =
+proc fromJsonHook*(target: var UnionKey3Union; source: JsonNode) =
   if source.kind == JObject:
-    target = TestTestunion_key3Union(kind: 0,
-                                     key0: jsonTo(source, typeof(target.key0)))
+    target = UnionKey3Union(kind: 0, key0: jsonTo(source, typeof(target.key0)))
   elif source.kind == JArray:
-    target = TestTestunion_key3Union(kind: 1,
-                                     key1: jsonTo(source, typeof(target.key1)))
+    target = UnionKey3Union(kind: 1, key1: jsonTo(source, typeof(target.key1)))
   elif source.kind == JObject:
-    target = TestTestunion_key3Union(kind: 2,
-                                     key2: jsonTo(source, typeof(target.key2)))
+    target = UnionKey3Union(kind: 2, key2: jsonTo(source, typeof(target.key2)))
   elif source.kind == JString:
-    target = TestTestunion_key3Union(kind: 3,
-                                     key3: jsonTo(source, typeof(target.key3)))
+    target = UnionKey3Union(kind: 3, key3: jsonTo(source, typeof(target.key3)))
   elif source.kind == JString:
-    target = TestTestunion_key3Union(kind: 4,
-                                     key4: jsonTo(source, typeof(target.key4)))
+    target = UnionKey3Union(kind: 4, key4: jsonTo(source, typeof(target.key4)))
   else:
-    raise newException(ValueError, "Unable to deserialize json node to TestTestunion_key3Union")
+    raise newException(ValueError,
+                       "Unable to deserialize json node to UnionKey3Union")
   
-proc toJsonHook*(source: TestTestunion_key3Union): JsonNode =
+proc toJsonHook*(source: UnionKey3Union): JsonNode =
   case source.kind
   of 0:
     return toJson(source.key0)
@@ -162,42 +154,42 @@ proc toJsonHook*(source: TestTestunion_key3Union): JsonNode =
   of 4:
     return toJson(source.key4)
   
-proc isObject(value: TestTestunion_key3Union): bool =
+proc isObject(value: UnionKey3Union): bool =
   value.kind == 0
 
-proc asObject(value: TestTestunion_key3Union): auto =
+proc asObject(value: UnionKey3Union): auto =
   assert(value.kind == 0)
   return value.key0
 
-proc isSeqOfStr(value: TestTestunion_key3Union): bool =
+proc isSeqOfStr(value: UnionKey3Union): bool =
   value.kind == 1
 
-proc asSeqOfStr(value: TestTestunion_key3Union): auto =
+proc asSeqOfStr(value: UnionKey3Union): auto =
   assert(value.kind == 1)
   return value.key1
 
-proc isMapOfStr(value: TestTestunion_key3Union): bool =
+proc isMapOfStr(value: UnionKey3Union): bool =
   value.kind == 2
 
-proc asMapOfStr(value: TestTestunion_key3Union): auto =
+proc asMapOfStr(value: UnionKey3Union): auto =
   assert(value.kind == 2)
   return value.key2
 
-proc isEnum(value: TestTestunion_key3Union): bool =
+proc isEnum(value: UnionKey3Union): bool =
   value.kind == 3
 
-proc asEnum(value: TestTestunion_key3Union): auto =
+proc asEnum(value: UnionKey3Union): auto =
   assert(value.kind == 3)
   return value.key3
 
-proc isOptOfStr(value: TestTestunion_key3Union): bool =
+proc isOptOfStr(value: UnionKey3Union): bool =
   value.kind == 4
 
-proc asOptOfStr(value: TestTestunion_key3Union): auto =
+proc asOptOfStr(value: UnionKey3Union): auto =
   assert(value.kind == 4)
   return value.key4
 
-proc fromJsonHook*(target: var Testunion; source: JsonNode) =
+proc fromJsonHook*(target: var Unionunion; source: JsonNode) =
   if "key1" in source and source{"key1"}.kind != JNull:
     target.key1 = some(jsonTo(source{"key1"}, typeof(unsafeGet(target.key1))))
   if "key2" in source and source{"key2"}.kind != JNull:
@@ -205,7 +197,7 @@ proc fromJsonHook*(target: var Testunion; source: JsonNode) =
   if "key3" in source and source{"key3"}.kind != JNull:
     target.key3 = some(jsonTo(source{"key3"}, typeof(unsafeGet(target.key3))))
 
-proc toJsonHook*(source: Testunion): JsonNode =
+proc toJsonHook*(source: Unionunion): JsonNode =
   result = newJObject()
   if isSome(source.key1):
     result{"key1"} = toJson(source.key1)

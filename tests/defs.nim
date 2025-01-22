@@ -1,25 +1,25 @@
 
 # https://json-schema.org/learn/json-schema-examples
-buildTest("address", TestAddress)
-buildTest("blog", TestBlog)
-buildTest("ecommerce", TestOrderSchema)
-buildTest("location", TestLocation)
-buildTest("health", TestHealth)
-buildTest("movie", TestMovie)
-buildTest("user_profile", TestUser_profile)
+buildTest("address", AddressAddress)
+buildTest("blog", BlogBlog)
+buildTest("ecommerce", EcommerceOrderSchema)
+buildTest("location", LocationLocation)
+buildTest("health", HealthHealth)
+buildTest("movie", MovieMovie)
+buildTest("user_profile", User_profileUser_profile)
 
 # https://json-schema.org/learn/miscellaneous-examples
-buildTest("basic", TestBasic)
-buildTest("array_of_things", TestArray_of_things)
-buildTest("enumerated_values", TestEnumeratedValues)
-buildTest("complex_object", TestComplex_object)
+buildTest("basic", BasicBasic)
+buildTest("array_of_things", Array_of_thingsArray_of_things)
+buildTest("enumerated_values", Enumerated_values_EnumeratedValues)
+buildTest("complex_object", Complex_objectComplex_object)
 
 # https://json-schema.org/learn/file-system#full-entry
-buildTest("file_system", TestFile_system)
+buildTest("file_system", File_systemFile_system)
 
 # Specific use cases
-buildTest("union", TestUnion)
+buildTest("union", UnionUnion)
 
 # Specific applications
-buildTest("ldtk", TestLdtkJsonRoot)
-buildTest("aseprite", TestSpriteSheet)
+buildTest("ldtk", LdtkLdtkJsonRoot)
+buildTest("aseprite", AsepriteSpriteSheet)

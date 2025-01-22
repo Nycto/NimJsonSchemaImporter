@@ -2,7 +2,7 @@
 import std/[json, jsonutils, tables, options]
 
 type
-  Testaddress* = object
+  Addressaddress* = object
     streetAddress*: Option[string]
     region*: string
     locality*: string
@@ -10,18 +10,18 @@ type
     postOfficeBox*: Option[string]
     extendedAddress*: Option[string]
     postalCode*: Option[string]
-proc fromJsonHook*(target: var Testaddress; source: JsonNode) =
+proc fromJsonHook*(target: var Addressaddress; source: JsonNode) =
   if "streetAddress" in source and source{"streetAddress"}.kind != JNull:
     target.streetAddress = some(jsonTo(source{"streetAddress"},
                                        typeof(unsafeGet(target.streetAddress))))
   assert("region" in source,
-         "region" & " is missing while decoding " & "Testaddress")
+         "region" & " is missing while decoding " & "Addressaddress")
   target.region = jsonTo(source{"region"}, typeof(target.region))
   assert("locality" in source,
-         "locality" & " is missing while decoding " & "Testaddress")
+         "locality" & " is missing while decoding " & "Addressaddress")
   target.locality = jsonTo(source{"locality"}, typeof(target.locality))
   assert("countryName" in source,
-         "countryName" & " is missing while decoding " & "Testaddress")
+         "countryName" & " is missing while decoding " & "Addressaddress")
   target.countryName = jsonTo(source{"countryName"}, typeof(target.countryName))
   if "postOfficeBox" in source and source{"postOfficeBox"}.kind != JNull:
     target.postOfficeBox = some(jsonTo(source{"postOfficeBox"},
@@ -33,7 +33,7 @@ proc fromJsonHook*(target: var Testaddress; source: JsonNode) =
     target.postalCode = some(jsonTo(source{"postalCode"},
                                     typeof(unsafeGet(target.postalCode))))
 
-proc toJsonHook*(source: Testaddress): JsonNode =
+proc toJsonHook*(source: Addressaddress): JsonNode =
   result = newJObject()
   if isSome(source.streetAddress):
     result{"streetAddress"} = toJson(source.streetAddress)

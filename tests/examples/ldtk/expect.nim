@@ -2,87 +2,87 @@
 import std/[json, jsonutils, tables, options]
 
 type
-  TestTestCustomCommand_when* = enum
+  LdtkWhen* = enum
     AfterLoad, BeforeSave, AfterSave, Manual
-  TestCustomCommand* = object
+  LdtkCustomCommand* = object
     command*: string
-    `when`*: TestTestCustomCommand_when
-  TestEntityReferenceInfos* = object
+    `when`*: LdtkWhen
+  LdtkEntityReferenceInfos* = object
     layerIid*: string
     levelIid*: string
     entityIid*: string
     worldIid*: string
-  TestTocInstanceData* = object
+  LdtkTocInstanceData* = object
     worldY*: BiggestInt
     fields*: JsonNode
     widPx*: BiggestInt
-    iids*: TestEntityReferenceInfos
+    iids*: LdtkEntityReferenceInfos
     heiPx*: BiggestInt
     worldX*: BiggestInt
-  TestTableOfContentEntry* = object
-    instancesData*: seq[TestTocInstanceData]
+  LdtkTableOfContentEntry* = object
+    instancesData*: seq[LdtkTocInstanceData]
     identifier*: string
-    instances*: Option[seq[TestEntityReferenceInfos]]
-  TestTestWorld_worldLayout* = enum
+    instances*: Option[seq[LdtkEntityReferenceInfos]]
+  LdtkWorldLayout* = enum
     LinearHorizontal, LinearVertical, GridVania, Free
-  TestNeighbourLevel* = object
+  LdtkNeighbourLevel* = object
     levelUid*: Option[BiggestInt]
     levelIid*: string
     dir*: string
-  TestTestLevel_bgPos* = enum
+  LdtkBgPos* = enum
     CoverDirty, Repeat, Contain, Cover, Unscaled
-  TestTile* = object
+  LdtkTile* = object
     px*: seq[BiggestInt]
     t*: BiggestInt
     d*: seq[BiggestInt]
     a*: BiggestFloat
     src*: seq[BiggestInt]
     f*: BiggestInt
-  TestIntGridValueInstance* = object
+  LdtkIntGridValueInstance* = object
     coordId*: BiggestInt
     v*: BiggestInt
-  TestTilesetRect* = object
+  LdtkTilesetRect* = object
     x*: BiggestInt
     w*: BiggestInt
     y*: BiggestInt
     h*: BiggestInt
     tilesetUid*: BiggestInt
-  TestFieldInstance* = object
+  LdtkFieldInstance* = object
     realEditorValues*: seq[JsonNode]
     value*: JsonNode
-    tile*: Option[TestTilesetRect]
+    tile*: Option[LdtkTilesetRect]
     `type`*: string
     identifier*: string
     defUid*: BiggestInt
-  TestEntityInstance* = object
+  LdtkEntityInstance* = object
     worldY*: Option[BiggestInt]
-    tile*: Option[TestTilesetRect]
+    tile*: Option[LdtkTilesetRect]
     identifier*: string
     tags*: seq[string]
     height*: BiggestInt
     px*: seq[BiggestInt]
     defUid*: BiggestInt
     pivot*: seq[BiggestFloat]
-    fieldInstances*: seq[TestFieldInstance]
+    fieldInstances*: seq[LdtkFieldInstance]
     iid*: string
     width*: BiggestInt
     worldX*: Option[BiggestInt]
     grid*: seq[BiggestInt]
     smartColor*: string
-  TestLayerInstance* = object
+  LdtkLayerInstance* = object
     opacity*: BiggestFloat
     optionalRules*: seq[BiggestInt]
     gridSize*: BiggestInt
     pxTotalOffsetX*: BiggestInt
-    gridTiles*: seq[TestTile]
+    gridTiles*: seq[LdtkTile]
     `type`*: string
     identifier*: string
     overrideTilesetUid*: Option[BiggestInt]
     levelId*: BiggestInt
-    intGrid*: Option[seq[TestIntGridValueInstance]]
-    autoLayerTiles*: seq[TestTile]
+    intGrid*: Option[seq[LdtkIntGridValueInstance]]
+    autoLayerTiles*: seq[LdtkTile]
     layerDefUid*: BiggestInt
-    entityInstances*: seq[TestEntityInstance]
+    entityInstances*: seq[LdtkEntityInstance]
     intGridCsv*: seq[BiggestInt]
     pxOffsetX*: BiggestInt
     tilesetRelPath*: Option[string]
@@ -94,11 +94,11 @@ type
     iid*: string
     pxTotalOffsetY*: BiggestInt
     cWid*: BiggestInt
-  TestLevelBgPosInfos* = object
+  LdtkLevelBgPosInfos* = object
     scale*: seq[BiggestFloat]
     cropRect*: seq[BiggestFloat]
     topLeftPx*: seq[BiggestInt]
-  TestLevel* = object
+  LdtkLevel* = object
     pxHei*: BiggestInt
     useAutoIdentifier*: bool
     bgColor*: string
@@ -110,62 +110,62 @@ type
     pxWid*: BiggestInt
     worldDepth*: BiggestInt
     bgPivotX*: BiggestFloat
-    neighbours*: seq[TestNeighbourLevel]
+    neighbours*: seq[LdtkNeighbourLevel]
     uid*: BiggestInt
-    bgPos*: Option[TestTestLevel_bgPos]
-    layerInstances*: Option[seq[TestLayerInstance]]
-    fieldInstances*: seq[TestFieldInstance]
-    bgPos1*: Option[TestLevelBgPosInfos]
+    bgPos*: Option[LdtkBgPos]
+    layerInstances*: Option[seq[LdtkLayerInstance]]
+    fieldInstances*: seq[LdtkFieldInstance]
+    bgPos1*: Option[LdtkLevelBgPosInfos]
     worldX*: BiggestInt
     iid*: string
     bgPivotY*: BiggestFloat
     smartColor*: string
-  TestWorld* = object
+  LdtkWorld* = object
     worldGridWidth*: BiggestInt
     defaultLevelHeight*: BiggestInt
     identifier*: string
-    worldLayout*: Option[TestTestWorld_worldLayout]
+    worldLayout*: Option[LdtkWorldLayout]
     iid*: string
     defaultLevelWidth*: BiggestInt
     worldGridHeight*: BiggestInt
-    levels*: seq[TestLevel]
-  TestTestLdtkJsonRoot_imageExportMode* = enum
+    levels*: seq[LdtkLevel]
+  LdtkImageExportMode* = enum
     LayersAndLevels, OneImagePerLayer, None, OneImagePerLevel
-  TestIntGridValueDef* = object
-    tile*: Option[TestTilesetRect]
+  LdtkIntGridValueDef* = object
+    tile*: Option[LdtkTilesetRect]
     color*: string
     identifier*: Option[string]
     groupUid*: BiggestInt
     value*: BiggestInt
-  TestTestFieldDef_textLanguageMode* = enum
+  LdtkTextLanguageMode* = enum
     LangMarkdown, LangPython, LangLog, LangC, LangLua, LangHaxe, LangJS,
     LangRuby, LangJson, LangXml
-  TestTestFieldDef_editorDisplayPos* = enum
+  LdtkEditorDisplayPos* = enum
     Beneath, Above, Center
-  TestTestFieldDef_editorDisplayMode* = enum
+  LdtkEditorDisplayMode* = enum
     PointPath, PointStar, ValueOnly, Hidden, Points, NameAndValue,
     ArrayCountNoLabel, EntityTile, PointPathLoop, RadiusPx, LevelTile,
     RadiusGrid, RefLinkBetweenCenters, RefLinkBetweenPivots, ArrayCountWithLabel
-  TestTestFieldDef_editorLinkStyle* = enum
+  LdtkEditorLinkStyle* = enum
     DashedLine, CurvedArrow, ArrowsLine, ZigZag, StraightArrow
-  TestTestFieldDef_allowedRefs* = enum
+  LdtkAllowedRefs* = enum
     Any, OnlyTags, OnlySame, OnlySpecificEntity
-  TestFieldDef* = object
+  LdtkFieldDef* = object
     type1*: string
     editorDisplayScale*: BiggestFloat
     `type`*: string
     allowedRefsEntityUid*: Option[BiggestInt]
-    textLanguageMode*: Option[TestTestFieldDef_textLanguageMode]
+    textLanguageMode*: Option[LdtkTextLanguageMode]
     editorAlwaysShow*: bool
     defaultOverride*: Option[JsonNode]
     autoChainRef*: bool
-    editorDisplayPos*: TestTestFieldDef_editorDisplayPos
-    editorDisplayMode*: TestTestFieldDef_editorDisplayMode
+    editorDisplayPos*: LdtkEditorDisplayPos
+    editorDisplayMode*: LdtkEditorDisplayMode
     identifier*: string
     regex*: Option[string]
     isArray*: bool
-    editorLinkStyle*: TestTestFieldDef_editorLinkStyle
-    allowedRefs*: TestTestFieldDef_allowedRefs
+    editorLinkStyle*: LdtkEditorLinkStyle
+    allowedRefs*: LdtkAllowedRefs
     useForSmartColor*: bool
     editorTextSuffix*: Option[string]
     doc*: Option[string]
@@ -186,51 +186,51 @@ type
     min*: Option[BiggestFloat]
     exportToToc*: bool
     max*: Option[BiggestFloat]
-  TestTestTilesetDef_embedAtlas* = enum
+  LdtkEmbedAtlas* = enum
     LdtkIcons
-  TestEnumTagValue* = object
+  LdtkEnumTagValue* = object
     tileIds*: seq[BiggestInt]
     enumValueId*: string
-  TestTileCustomMetadata* = object
+  LdtkTileCustomMetadata* = object
     data*: string
     tileId*: BiggestInt
-  TestTilesetDef* = object
+  LdtkTilesetDef* = object
     pxHei*: BiggestInt
     savedSelections*: seq[Table[string, JsonNode]]
     padding*: BiggestInt
     spacing*: BiggestInt
     tagsSourceEnumUid*: Option[BiggestInt]
-    embedAtlas*: Option[TestTestTilesetDef_embedAtlas]
+    embedAtlas*: Option[LdtkEmbedAtlas]
     identifier*: string
     cachedPixelData*: Option[Table[string, JsonNode]]
-    enumTags*: seq[TestEnumTagValue]
+    enumTags*: seq[LdtkEnumTagValue]
     pxWid*: BiggestInt
     tileGridSize*: BiggestInt
-    customData*: seq[TestTileCustomMetadata]
+    customData*: seq[LdtkTileCustomMetadata]
     uid*: BiggestInt
     cHei*: BiggestInt
     cWid*: BiggestInt
     relPath*: Option[string]
     tags*: seq[string]
-  TestTestEntityDef_limitScope* = enum
+  LdtkLimitScope* = enum
     PerLayer, PerWorld, PerLevel
-  TestTestEntityDef_limitBehavior* = enum
+  LdtkLimitBehavior* = enum
     PreventAdding, MoveLastOne, DiscardOldOnes
-  TestTestEntityDef_renderMode* = enum
+  LdtkRenderMode* = enum
     Tile, Cross, Ellipse, Rectangle
-  TestTestEntityDef_tileRenderMode* = enum
+  LdtkTileRenderMode* = enum
     FullSizeCropped, FullSizeUncropped, Repeat, FitInside, NineSlice, Cover,
     Stretch
-  TestEntityDef* = object
+  LdtkEntityDef* = object
     allowOutOfBounds*: bool
     pivotY*: BiggestFloat
     tileOpacity*: BiggestFloat
     color*: string
-    limitScope*: TestTestEntityDef_limitScope
-    limitBehavior*: TestTestEntityDef_limitBehavior
+    limitScope*: LdtkLimitScope
+    limitBehavior*: LdtkLimitBehavior
     hollow*: bool
     height*: BiggestInt
-    renderMode*: TestTestEntityDef_renderMode
+    renderMode*: LdtkRenderMode
     tilesetId*: Option[BiggestInt]
     keepAspectRatio*: bool
     minWidth*: Option[BiggestInt]
@@ -241,14 +241,14 @@ type
     tileId*: Option[BiggestInt]
     pivotX*: BiggestFloat
     doc*: Option[string]
-    fieldDefs*: seq[TestFieldDef]
+    fieldDefs*: seq[LdtkFieldDef]
     uid*: BiggestInt
-    tileRenderMode*: TestTestEntityDef_tileRenderMode
-    uiTileRect*: Option[TestTilesetRect]
+    tileRenderMode*: LdtkTileRenderMode
+    uiTileRect*: Option[LdtkTilesetRect]
     resizableY*: bool
     lineOpacity*: BiggestFloat
     minHeight*: Option[BiggestInt]
-    tileRect*: Option[TestTilesetRect]
+    tileRect*: Option[LdtkTilesetRect]
     nineSliceBorders*: seq[BiggestInt]
     maxWidth*: Option[BiggestInt]
     width*: BiggestInt
@@ -256,34 +256,34 @@ type
     maxHeight*: Option[BiggestInt]
     exportToToc*: bool
     fillOpacity*: BiggestFloat
-  TestEnumDefValues* = object
+  LdtkEnumDefValues* = object
     tileSrcRect*: Option[seq[BiggestInt]]
     color*: BiggestInt
     id*: string
     tileId*: Option[BiggestInt]
-    tileRect*: Option[TestTilesetRect]
-  TestEnumDef* = object
-    values*: seq[TestEnumDefValues]
+    tileRect*: Option[LdtkTilesetRect]
+  LdtkEnumDef* = object
+    values*: seq[LdtkEnumDefValues]
     externalRelPath*: Option[string]
     identifier*: string
     externalFileChecksum*: Option[string]
     iconTilesetUid*: Option[BiggestInt]
     uid*: BiggestInt
     tags*: seq[string]
-  TestTestLayerDef_type* = enum
+  LdtkType* = enum
     Tiles, Entities, AutoLayer, IntGrid
-  TestTestAutoRuleDef_checker* = enum
+  LdtkChecker* = enum
     Horizontal, Vertical, None
-  TestTestAutoRuleDef_tileMode* = enum
+  LdtkTileMode* = enum
     Single, Stamp
-  TestAutoRuleDef* = object
-    checker*: TestTestAutoRuleDef_checker
+  LdtkAutoRuleDef* = object
+    checker*: LdtkChecker
     pivotY*: BiggestFloat
     breakOnMatch*: bool
     perlinOctaves*: BiggestFloat
     yModulo*: BiggestInt
     size*: BiggestInt
-    tileMode*: TestTestAutoRuleDef_tileMode
+    tileMode*: LdtkTileMode
     tileRandomXMax*: BiggestInt
     tileRandomXMin*: BiggestInt
     xModulo*: BiggestInt
@@ -308,31 +308,31 @@ type
     xOffset*: BiggestInt
     tileRandomYMin*: BiggestInt
     perlinSeed*: BiggestFloat
-  TestAutoLayerRuleGroup* = object
+  LdtkAutoLayerRuleGroup* = object
     isOptional*: bool
     color*: Option[string]
     collapsed*: Option[bool]
     usesWizard*: bool
     biomeRequirementMode*: BiggestInt
-    rules*: seq[TestAutoRuleDef]
-    icon*: Option[TestTilesetRect]
+    rules*: seq[LdtkAutoRuleDef]
+    icon*: Option[LdtkTilesetRect]
     active*: bool
     uid*: BiggestInt
     name*: string
     requiredBiomeValues*: seq[string]
-  TestIntGridValueGroupDef* = object
+  LdtkIntGridValueGroupDef* = object
     color*: Option[string]
     identifier*: Option[string]
     uid*: BiggestInt
-  TestLayerDef* = object
-    type1*: TestTestLayerDef_type
+  LdtkLayerDef* = object
+    type1*: LdtkType
     autoTilesetDefUid*: Option[BiggestInt]
     parallaxScaling*: bool
     biomeFieldUid*: Option[BiggestInt]
     autoTilesKilledByOtherLayerUid*: Option[BiggestInt]
     inactiveOpacity*: BiggestFloat
     `type`*: string
-    autoRuleGroups*: seq[TestAutoLayerRuleGroup]
+    autoRuleGroups*: seq[LdtkAutoLayerRuleGroup]
     gridSize*: BiggestInt
     hideInList*: bool
     tilesetDefUid*: Option[BiggestInt]
@@ -352,61 +352,61 @@ type
     guideGridHei*: BiggestInt
     autoSourceLayerDefUid*: Option[BiggestInt]
     displayOpacity*: BiggestFloat
-    intGridValuesGroups*: seq[TestIntGridValueGroupDef]
+    intGridValuesGroups*: seq[LdtkIntGridValueGroupDef]
     hideFieldsWhenInactive*: bool
     useAsyncRender*: bool
     pxOffsetY*: BiggestInt
     parallaxFactorY*: BiggestFloat
-    intGridValues*: seq[TestIntGridValueDef]
+    intGridValues*: seq[LdtkIntGridValueDef]
     renderInWorldView*: bool
-  TestDefinitions* = object
-    levelFields*: seq[TestFieldDef]
-    tilesets*: seq[TestTilesetDef]
-    entities*: seq[TestEntityDef]
-    enums*: seq[TestEnumDef]
-    layers*: seq[TestLayerDef]
-    externalEnums*: seq[TestEnumDef]
-  TestGridPoint* = object
+  LdtkDefinitions* = object
+    levelFields*: seq[LdtkFieldDef]
+    tilesets*: seq[LdtkTilesetDef]
+    entities*: seq[LdtkEntityDef]
+    enums*: seq[LdtkEnumDef]
+    layers*: seq[LdtkLayerDef]
+    externalEnums*: seq[LdtkEnumDef]
+  LdtkGridPoint* = object
     cx*: BiggestInt
     cy*: BiggestInt
-  TestTestLdtkJsonRoot_FORCED_REFS* = object
-    CustomCommand*: Option[TestCustomCommand]
-    IntGridValueDef*: Option[TestIntGridValueDef]
-    Level*: Option[TestLevel]
-    Definitions*: Option[TestDefinitions]
-    EnumDef*: Option[TestEnumDef]
-    FieldDef*: Option[TestFieldDef]
-    AutoLayerRuleGroup*: Option[TestAutoLayerRuleGroup]
-    TilesetDef*: Option[TestTilesetDef]
-    TableOfContentEntry*: Option[TestTableOfContentEntry]
-    EntityDef*: Option[TestEntityDef]
-    FieldInstance*: Option[TestFieldInstance]
-    EntityReferenceInfos*: Option[TestEntityReferenceInfos]
-    LevelBgPosInfos*: Option[TestLevelBgPosInfos]
-    TileCustomMetadata*: Option[TestTileCustomMetadata]
-    Tile*: Option[TestTile]
-    AutoRuleDef*: Option[TestAutoRuleDef]
-    NeighbourLevel*: Option[TestNeighbourLevel]
-    GridPoint*: Option[TestGridPoint]
-    EntityInstance*: Option[TestEntityInstance]
-    TilesetRect*: Option[TestTilesetRect]
-    EnumTagValue*: Option[TestEnumTagValue]
-    LayerInstance*: Option[TestLayerInstance]
-    IntGridValueInstance*: Option[TestIntGridValueInstance]
-    World*: Option[TestWorld]
-    LayerDef*: Option[TestLayerDef]
-    IntGridValueGroupDef*: Option[TestIntGridValueGroupDef]
-    TocInstanceData*: Option[TestTocInstanceData]
-    EnumDefValues*: Option[TestEnumDefValues]
-  TestTestLdtkJsonRoot_worldLayout* = enum
+  Ldtk_FORCED_REFS* = object
+    CustomCommand*: Option[LdtkCustomCommand]
+    IntGridValueDef*: Option[LdtkIntGridValueDef]
+    Level*: Option[LdtkLevel]
+    Definitions*: Option[LdtkDefinitions]
+    EnumDef*: Option[LdtkEnumDef]
+    FieldDef*: Option[LdtkFieldDef]
+    AutoLayerRuleGroup*: Option[LdtkAutoLayerRuleGroup]
+    TilesetDef*: Option[LdtkTilesetDef]
+    TableOfContentEntry*: Option[LdtkTableOfContentEntry]
+    EntityDef*: Option[LdtkEntityDef]
+    FieldInstance*: Option[LdtkFieldInstance]
+    EntityReferenceInfos*: Option[LdtkEntityReferenceInfos]
+    LevelBgPosInfos*: Option[LdtkLevelBgPosInfos]
+    TileCustomMetadata*: Option[LdtkTileCustomMetadata]
+    Tile*: Option[LdtkTile]
+    AutoRuleDef*: Option[LdtkAutoRuleDef]
+    NeighbourLevel*: Option[LdtkNeighbourLevel]
+    GridPoint*: Option[LdtkGridPoint]
+    EntityInstance*: Option[LdtkEntityInstance]
+    TilesetRect*: Option[LdtkTilesetRect]
+    EnumTagValue*: Option[LdtkEnumTagValue]
+    LayerInstance*: Option[LdtkLayerInstance]
+    IntGridValueInstance*: Option[LdtkIntGridValueInstance]
+    World*: Option[LdtkWorld]
+    LayerDef*: Option[LdtkLayerDef]
+    IntGridValueGroupDef*: Option[LdtkIntGridValueGroupDef]
+    TocInstanceData*: Option[LdtkTocInstanceData]
+    EnumDefValues*: Option[LdtkEnumDefValues]
+  LdtkldtkWorldLayout* = enum
     LinearHorizontal, LinearVertical, GridVania, Free
-  TestTestLdtkJsonRoot_flags* = enum
+  LdtkFlags* = enum
     ExportPreCsvIntGridFormat, DiscardPreCsvIntGrid,
     ExportOldTableOfContentData, PrependIndexToLevelFileNames, MultiWorlds,
     UseMultilinesType, IgnoreBackupSuggest
-  TestTestLdtkJsonRoot_identifierStyle* = enum
+  LdtkIdentifierStyle* = enum
     Lowercase, Free, Capitalize, Uppercase
-  TestLdtkJsonRoot* = object
+  LdtkLdtkJsonRoot* = object
     backupLimit*: BiggestInt
     simplifiedExport*: bool
     externalLevels*: bool
@@ -416,114 +416,114 @@ type
     appBuildId*: BiggestFloat
     defaultEntityHeight*: BiggestInt
     pngFilePattern*: Option[string]
-    customCommands*: seq[TestCustomCommand]
+    customCommands*: seq[LdtkCustomCommand]
     exportTiled*: bool
     exportPng*: Option[bool]
     worldGridWidth*: Option[BiggestInt]
     defaultLevelHeight*: Option[BiggestInt]
-    toc*: seq[TestTableOfContentEntry]
-    worlds*: seq[TestWorld]
-    imageExportMode*: TestTestLdtkJsonRoot_imageExportMode
+    toc*: seq[LdtkTableOfContentEntry]
+    worlds*: seq[LdtkWorld]
+    imageExportMode*: LdtkImageExportMode
     dummyWorldIid*: string
-    FORCED_REFS*: Option[TestTestLdtkJsonRoot_FORCED_REFS]
+    FORCED_REFS*: Option[Ldtk_FORCED_REFS]
     defaultPivotY*: BiggestFloat
     exportLevelBg*: bool
     nextUid*: BiggestInt
     levelNamePattern*: string
-    defs*: TestDefinitions
+    defs*: LdtkDefinitions
     defaultPivotX*: BiggestFloat
     tutorialDesc*: Option[string]
-    worldLayout*: Option[TestTestLdtkJsonRoot_worldLayout]
+    worldLayout*: Option[LdtkldtkWorldLayout]
     defaultEntityWidth*: BiggestInt
     iid*: string
     defaultGridSize*: BiggestInt
     defaultLevelWidth*: Option[BiggestInt]
     minifyJson*: bool
     backupOnSave*: bool
-    flags*: seq[TestTestLdtkJsonRoot_flags]
+    flags*: seq[LdtkFlags]
     defaultLevelBgColor*: string
-    identifierStyle*: TestTestLdtkJsonRoot_identifierStyle
+    identifierStyle*: LdtkIdentifierStyle
     worldGridHeight*: Option[BiggestInt]
-    levels*: seq[TestLevel]
-proc toJsonHook*(source: TestTestCustomCommand_when): JsonNode =
+    levels*: seq[LdtkLevel]
+proc toJsonHook*(source: LdtkWhen): JsonNode =
   case source
-  of TestTestCustomCommand_when.AfterLoad:
+  of LdtkWhen.AfterLoad:
     return newJString("AfterLoad")
-  of TestTestCustomCommand_when.BeforeSave:
+  of LdtkWhen.BeforeSave:
     return newJString("BeforeSave")
-  of TestTestCustomCommand_when.AfterSave:
+  of LdtkWhen.AfterSave:
     return newJString("AfterSave")
-  of TestTestCustomCommand_when.Manual:
+  of LdtkWhen.Manual:
     return newJString("Manual")
   
-proc fromJsonHook*(target: var TestTestCustomCommand_when; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkWhen; source: JsonNode) =
   target = case getStr(source)
   of "AfterLoad":
-    TestTestCustomCommand_when.AfterLoad
+    LdtkWhen.AfterLoad
   of "BeforeSave":
-    TestTestCustomCommand_when.BeforeSave
+    LdtkWhen.BeforeSave
   of "AfterSave":
-    TestTestCustomCommand_when.AfterSave
+    LdtkWhen.AfterSave
   of "Manual":
-    TestTestCustomCommand_when.Manual
+    LdtkWhen.Manual
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc fromJsonHook*(target: var TestCustomCommand; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkCustomCommand; source: JsonNode) =
   assert("command" in source,
-         "command" & " is missing while decoding " & "TestCustomCommand")
+         "command" & " is missing while decoding " & "LdtkCustomCommand")
   target.command = jsonTo(source{"command"}, typeof(target.command))
   assert("when" in source,
-         "when" & " is missing while decoding " & "TestCustomCommand")
+         "when" & " is missing while decoding " & "LdtkCustomCommand")
   target.`when` = jsonTo(source{"when"}, typeof(target.`when`))
 
-proc toJsonHook*(source: TestCustomCommand): JsonNode =
+proc toJsonHook*(source: LdtkCustomCommand): JsonNode =
   result = newJObject()
   result{"command"} = toJson(source.command)
   result{"when"} = toJson(source.`when`)
 
-proc fromJsonHook*(target: var TestEntityReferenceInfos; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkEntityReferenceInfos; source: JsonNode) =
   assert("layerIid" in source, "layerIid" & " is missing while decoding " &
-      "TestEntityReferenceInfos")
+      "LdtkEntityReferenceInfos")
   target.layerIid = jsonTo(source{"layerIid"}, typeof(target.layerIid))
   assert("levelIid" in source, "levelIid" & " is missing while decoding " &
-      "TestEntityReferenceInfos")
+      "LdtkEntityReferenceInfos")
   target.levelIid = jsonTo(source{"levelIid"}, typeof(target.levelIid))
   assert("entityIid" in source, "entityIid" & " is missing while decoding " &
-      "TestEntityReferenceInfos")
+      "LdtkEntityReferenceInfos")
   target.entityIid = jsonTo(source{"entityIid"}, typeof(target.entityIid))
   assert("worldIid" in source, "worldIid" & " is missing while decoding " &
-      "TestEntityReferenceInfos")
+      "LdtkEntityReferenceInfos")
   target.worldIid = jsonTo(source{"worldIid"}, typeof(target.worldIid))
 
-proc toJsonHook*(source: TestEntityReferenceInfos): JsonNode =
+proc toJsonHook*(source: LdtkEntityReferenceInfos): JsonNode =
   result = newJObject()
   result{"layerIid"} = toJson(source.layerIid)
   result{"levelIid"} = toJson(source.levelIid)
   result{"entityIid"} = toJson(source.entityIid)
   result{"worldIid"} = toJson(source.worldIid)
 
-proc fromJsonHook*(target: var TestTocInstanceData; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkTocInstanceData; source: JsonNode) =
   assert("worldY" in source,
-         "worldY" & " is missing while decoding " & "TestTocInstanceData")
+         "worldY" & " is missing while decoding " & "LdtkTocInstanceData")
   target.worldY = jsonTo(source{"worldY"}, typeof(target.worldY))
   assert("fields" in source,
-         "fields" & " is missing while decoding " & "TestTocInstanceData")
+         "fields" & " is missing while decoding " & "LdtkTocInstanceData")
   target.fields = jsonTo(source{"fields"}, typeof(target.fields))
   assert("widPx" in source,
-         "widPx" & " is missing while decoding " & "TestTocInstanceData")
+         "widPx" & " is missing while decoding " & "LdtkTocInstanceData")
   target.widPx = jsonTo(source{"widPx"}, typeof(target.widPx))
   assert("iids" in source,
-         "iids" & " is missing while decoding " & "TestTocInstanceData")
+         "iids" & " is missing while decoding " & "LdtkTocInstanceData")
   target.iids = jsonTo(source{"iids"}, typeof(target.iids))
   assert("heiPx" in source,
-         "heiPx" & " is missing while decoding " & "TestTocInstanceData")
+         "heiPx" & " is missing while decoding " & "LdtkTocInstanceData")
   target.heiPx = jsonTo(source{"heiPx"}, typeof(target.heiPx))
   assert("worldX" in source,
-         "worldX" & " is missing while decoding " & "TestTocInstanceData")
+         "worldX" & " is missing while decoding " & "LdtkTocInstanceData")
   target.worldX = jsonTo(source{"worldX"}, typeof(target.worldX))
 
-proc toJsonHook*(source: TestTocInstanceData): JsonNode =
+proc toJsonHook*(source: LdtkTocInstanceData): JsonNode =
   result = newJObject()
   result{"worldY"} = toJson(source.worldY)
   result{"fields"} = toJson(source.fields)
@@ -532,111 +532,111 @@ proc toJsonHook*(source: TestTocInstanceData): JsonNode =
   result{"heiPx"} = toJson(source.heiPx)
   result{"worldX"} = toJson(source.worldX)
 
-proc fromJsonHook*(target: var TestTableOfContentEntry; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkTableOfContentEntry; source: JsonNode) =
   assert("instancesData" in source, "instancesData" &
       " is missing while decoding " &
-      "TestTableOfContentEntry")
+      "LdtkTableOfContentEntry")
   target.instancesData = jsonTo(source{"instancesData"},
                                 typeof(target.instancesData))
   assert("identifier" in source, "identifier" & " is missing while decoding " &
-      "TestTableOfContentEntry")
+      "LdtkTableOfContentEntry")
   target.identifier = jsonTo(source{"identifier"}, typeof(target.identifier))
   if "instances" in source and source{"instances"}.kind != JNull:
     target.instances = some(jsonTo(source{"instances"},
                                    typeof(unsafeGet(target.instances))))
 
-proc toJsonHook*(source: TestTableOfContentEntry): JsonNode =
+proc toJsonHook*(source: LdtkTableOfContentEntry): JsonNode =
   result = newJObject()
   result{"instancesData"} = toJson(source.instancesData)
   result{"identifier"} = toJson(source.identifier)
   if isSome(source.instances):
     result{"instances"} = toJson(source.instances)
 
-proc toJsonHook*(source: TestTestWorld_worldLayout): JsonNode =
+proc toJsonHook*(source: LdtkWorldLayout): JsonNode =
   case source
-  of TestTestWorld_worldLayout.LinearHorizontal:
+  of LdtkWorldLayout.LinearHorizontal:
     return newJString("LinearHorizontal")
-  of TestTestWorld_worldLayout.LinearVertical:
+  of LdtkWorldLayout.LinearVertical:
     return newJString("LinearVertical")
-  of TestTestWorld_worldLayout.GridVania:
+  of LdtkWorldLayout.GridVania:
     return newJString("GridVania")
-  of TestTestWorld_worldLayout.Free:
+  of LdtkWorldLayout.Free:
     return newJString("Free")
   
-proc fromJsonHook*(target: var TestTestWorld_worldLayout; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkWorldLayout; source: JsonNode) =
   target = case getStr(source)
   of "LinearHorizontal":
-    TestTestWorld_worldLayout.LinearHorizontal
+    LdtkWorldLayout.LinearHorizontal
   of "LinearVertical":
-    TestTestWorld_worldLayout.LinearVertical
+    LdtkWorldLayout.LinearVertical
   of "GridVania":
-    TestTestWorld_worldLayout.GridVania
+    LdtkWorldLayout.GridVania
   of "Free":
-    TestTestWorld_worldLayout.Free
+    LdtkWorldLayout.Free
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc fromJsonHook*(target: var TestNeighbourLevel; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkNeighbourLevel; source: JsonNode) =
   if "levelUid" in source and source{"levelUid"}.kind != JNull:
     target.levelUid = some(jsonTo(source{"levelUid"},
                                   typeof(unsafeGet(target.levelUid))))
   assert("levelIid" in source,
-         "levelIid" & " is missing while decoding " & "TestNeighbourLevel")
+         "levelIid" & " is missing while decoding " & "LdtkNeighbourLevel")
   target.levelIid = jsonTo(source{"levelIid"}, typeof(target.levelIid))
   assert("dir" in source,
-         "dir" & " is missing while decoding " & "TestNeighbourLevel")
+         "dir" & " is missing while decoding " & "LdtkNeighbourLevel")
   target.dir = jsonTo(source{"dir"}, typeof(target.dir))
 
-proc toJsonHook*(source: TestNeighbourLevel): JsonNode =
+proc toJsonHook*(source: LdtkNeighbourLevel): JsonNode =
   result = newJObject()
   if isSome(source.levelUid):
     result{"levelUid"} = toJson(source.levelUid)
   result{"levelIid"} = toJson(source.levelIid)
   result{"dir"} = toJson(source.dir)
 
-proc toJsonHook*(source: TestTestLevel_bgPos): JsonNode =
+proc toJsonHook*(source: LdtkBgPos): JsonNode =
   case source
-  of TestTestLevel_bgPos.CoverDirty:
+  of LdtkBgPos.CoverDirty:
     return newJString("CoverDirty")
-  of TestTestLevel_bgPos.Repeat:
+  of LdtkBgPos.Repeat:
     return newJString("Repeat")
-  of TestTestLevel_bgPos.Contain:
+  of LdtkBgPos.Contain:
     return newJString("Contain")
-  of TestTestLevel_bgPos.Cover:
+  of LdtkBgPos.Cover:
     return newJString("Cover")
-  of TestTestLevel_bgPos.Unscaled:
+  of LdtkBgPos.Unscaled:
     return newJString("Unscaled")
   
-proc fromJsonHook*(target: var TestTestLevel_bgPos; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkBgPos; source: JsonNode) =
   target = case getStr(source)
   of "CoverDirty":
-    TestTestLevel_bgPos.CoverDirty
+    LdtkBgPos.CoverDirty
   of "Repeat":
-    TestTestLevel_bgPos.Repeat
+    LdtkBgPos.Repeat
   of "Contain":
-    TestTestLevel_bgPos.Contain
+    LdtkBgPos.Contain
   of "Cover":
-    TestTestLevel_bgPos.Cover
+    LdtkBgPos.Cover
   of "Unscaled":
-    TestTestLevel_bgPos.Unscaled
+    LdtkBgPos.Unscaled
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc fromJsonHook*(target: var TestTile; source: JsonNode) =
-  assert("px" in source, "px" & " is missing while decoding " & "TestTile")
+proc fromJsonHook*(target: var LdtkTile; source: JsonNode) =
+  assert("px" in source, "px" & " is missing while decoding " & "LdtkTile")
   target.px = jsonTo(source{"px"}, typeof(target.px))
-  assert("t" in source, "t" & " is missing while decoding " & "TestTile")
+  assert("t" in source, "t" & " is missing while decoding " & "LdtkTile")
   target.t = jsonTo(source{"t"}, typeof(target.t))
-  assert("d" in source, "d" & " is missing while decoding " & "TestTile")
+  assert("d" in source, "d" & " is missing while decoding " & "LdtkTile")
   target.d = jsonTo(source{"d"}, typeof(target.d))
-  assert("a" in source, "a" & " is missing while decoding " & "TestTile")
+  assert("a" in source, "a" & " is missing while decoding " & "LdtkTile")
   target.a = jsonTo(source{"a"}, typeof(target.a))
-  assert("src" in source, "src" & " is missing while decoding " & "TestTile")
+  assert("src" in source, "src" & " is missing while decoding " & "LdtkTile")
   target.src = jsonTo(source{"src"}, typeof(target.src))
-  assert("f" in source, "f" & " is missing while decoding " & "TestTile")
+  assert("f" in source, "f" & " is missing while decoding " & "LdtkTile")
   target.f = jsonTo(source{"f"}, typeof(target.f))
 
-proc toJsonHook*(source: TestTile): JsonNode =
+proc toJsonHook*(source: LdtkTile): JsonNode =
   result = newJObject()
   result{"px"} = toJson(source.px)
   result{"t"} = toJson(source.t)
@@ -645,33 +645,33 @@ proc toJsonHook*(source: TestTile): JsonNode =
   result{"src"} = toJson(source.src)
   result{"f"} = toJson(source.f)
 
-proc fromJsonHook*(target: var TestIntGridValueInstance; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkIntGridValueInstance; source: JsonNode) =
   assert("coordId" in source,
-         "coordId" & " is missing while decoding " & "TestIntGridValueInstance")
+         "coordId" & " is missing while decoding " & "LdtkIntGridValueInstance")
   target.coordId = jsonTo(source{"coordId"}, typeof(target.coordId))
   assert("v" in source,
-         "v" & " is missing while decoding " & "TestIntGridValueInstance")
+         "v" & " is missing while decoding " & "LdtkIntGridValueInstance")
   target.v = jsonTo(source{"v"}, typeof(target.v))
 
-proc toJsonHook*(source: TestIntGridValueInstance): JsonNode =
+proc toJsonHook*(source: LdtkIntGridValueInstance): JsonNode =
   result = newJObject()
   result{"coordId"} = toJson(source.coordId)
   result{"v"} = toJson(source.v)
 
-proc fromJsonHook*(target: var TestTilesetRect; source: JsonNode) =
-  assert("x" in source, "x" & " is missing while decoding " & "TestTilesetRect")
+proc fromJsonHook*(target: var LdtkTilesetRect; source: JsonNode) =
+  assert("x" in source, "x" & " is missing while decoding " & "LdtkTilesetRect")
   target.x = jsonTo(source{"x"}, typeof(target.x))
-  assert("w" in source, "w" & " is missing while decoding " & "TestTilesetRect")
+  assert("w" in source, "w" & " is missing while decoding " & "LdtkTilesetRect")
   target.w = jsonTo(source{"w"}, typeof(target.w))
-  assert("y" in source, "y" & " is missing while decoding " & "TestTilesetRect")
+  assert("y" in source, "y" & " is missing while decoding " & "LdtkTilesetRect")
   target.y = jsonTo(source{"y"}, typeof(target.y))
-  assert("h" in source, "h" & " is missing while decoding " & "TestTilesetRect")
+  assert("h" in source, "h" & " is missing while decoding " & "LdtkTilesetRect")
   target.h = jsonTo(source{"h"}, typeof(target.h))
   assert("tilesetUid" in source,
-         "tilesetUid" & " is missing while decoding " & "TestTilesetRect")
+         "tilesetUid" & " is missing while decoding " & "LdtkTilesetRect")
   target.tilesetUid = jsonTo(source{"tilesetUid"}, typeof(target.tilesetUid))
 
-proc toJsonHook*(source: TestTilesetRect): JsonNode =
+proc toJsonHook*(source: LdtkTilesetRect): JsonNode =
   result = newJObject()
   result{"x"} = toJson(source.x)
   result{"w"} = toJson(source.w)
@@ -679,28 +679,28 @@ proc toJsonHook*(source: TestTilesetRect): JsonNode =
   result{"h"} = toJson(source.h)
   result{"tilesetUid"} = toJson(source.tilesetUid)
 
-proc fromJsonHook*(target: var TestFieldInstance; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkFieldInstance; source: JsonNode) =
   assert("realEditorValues" in source, "realEditorValues" &
       " is missing while decoding " &
-      "TestFieldInstance")
+      "LdtkFieldInstance")
   target.realEditorValues = jsonTo(source{"realEditorValues"},
                                    typeof(target.realEditorValues))
   assert("__value" in source,
-         "__value" & " is missing while decoding " & "TestFieldInstance")
+         "__value" & " is missing while decoding " & "LdtkFieldInstance")
   target.value = jsonTo(source{"__value"}, typeof(target.value))
   if "__tile" in source and source{"__tile"}.kind != JNull:
     target.tile = some(jsonTo(source{"__tile"}, typeof(unsafeGet(target.tile))))
   assert("__type" in source,
-         "__type" & " is missing while decoding " & "TestFieldInstance")
+         "__type" & " is missing while decoding " & "LdtkFieldInstance")
   target.`type` = jsonTo(source{"__type"}, typeof(target.`type`))
   assert("__identifier" in source,
-         "__identifier" & " is missing while decoding " & "TestFieldInstance")
+         "__identifier" & " is missing while decoding " & "LdtkFieldInstance")
   target.identifier = jsonTo(source{"__identifier"}, typeof(target.identifier))
   assert("defUid" in source,
-         "defUid" & " is missing while decoding " & "TestFieldInstance")
+         "defUid" & " is missing while decoding " & "LdtkFieldInstance")
   target.defUid = jsonTo(source{"defUid"}, typeof(target.defUid))
 
-proc toJsonHook*(source: TestFieldInstance): JsonNode =
+proc toJsonHook*(source: LdtkFieldInstance): JsonNode =
   result = newJObject()
   result{"realEditorValues"} = toJson(source.realEditorValues)
   result{"__value"} = toJson(source.value)
@@ -710,52 +710,52 @@ proc toJsonHook*(source: TestFieldInstance): JsonNode =
   result{"__identifier"} = toJson(source.identifier)
   result{"defUid"} = toJson(source.defUid)
 
-proc fromJsonHook*(target: var TestEntityInstance; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkEntityInstance; source: JsonNode) =
   if "__worldY" in source and source{"__worldY"}.kind != JNull:
     target.worldY = some(jsonTo(source{"__worldY"},
                                 typeof(unsafeGet(target.worldY))))
   if "__tile" in source and source{"__tile"}.kind != JNull:
     target.tile = some(jsonTo(source{"__tile"}, typeof(unsafeGet(target.tile))))
   assert("__identifier" in source,
-         "__identifier" & " is missing while decoding " & "TestEntityInstance")
+         "__identifier" & " is missing while decoding " & "LdtkEntityInstance")
   target.identifier = jsonTo(source{"__identifier"}, typeof(target.identifier))
   assert("__tags" in source,
-         "__tags" & " is missing while decoding " & "TestEntityInstance")
+         "__tags" & " is missing while decoding " & "LdtkEntityInstance")
   target.tags = jsonTo(source{"__tags"}, typeof(target.tags))
   assert("height" in source,
-         "height" & " is missing while decoding " & "TestEntityInstance")
+         "height" & " is missing while decoding " & "LdtkEntityInstance")
   target.height = jsonTo(source{"height"}, typeof(target.height))
   assert("px" in source,
-         "px" & " is missing while decoding " & "TestEntityInstance")
+         "px" & " is missing while decoding " & "LdtkEntityInstance")
   target.px = jsonTo(source{"px"}, typeof(target.px))
   assert("defUid" in source,
-         "defUid" & " is missing while decoding " & "TestEntityInstance")
+         "defUid" & " is missing while decoding " & "LdtkEntityInstance")
   target.defUid = jsonTo(source{"defUid"}, typeof(target.defUid))
   assert("__pivot" in source,
-         "__pivot" & " is missing while decoding " & "TestEntityInstance")
+         "__pivot" & " is missing while decoding " & "LdtkEntityInstance")
   target.pivot = jsonTo(source{"__pivot"}, typeof(target.pivot))
   assert("fieldInstances" in source, "fieldInstances" &
       " is missing while decoding " &
-      "TestEntityInstance")
+      "LdtkEntityInstance")
   target.fieldInstances = jsonTo(source{"fieldInstances"},
                                  typeof(target.fieldInstances))
   assert("iid" in source,
-         "iid" & " is missing while decoding " & "TestEntityInstance")
+         "iid" & " is missing while decoding " & "LdtkEntityInstance")
   target.iid = jsonTo(source{"iid"}, typeof(target.iid))
   assert("width" in source,
-         "width" & " is missing while decoding " & "TestEntityInstance")
+         "width" & " is missing while decoding " & "LdtkEntityInstance")
   target.width = jsonTo(source{"width"}, typeof(target.width))
   if "__worldX" in source and source{"__worldX"}.kind != JNull:
     target.worldX = some(jsonTo(source{"__worldX"},
                                 typeof(unsafeGet(target.worldX))))
   assert("__grid" in source,
-         "__grid" & " is missing while decoding " & "TestEntityInstance")
+         "__grid" & " is missing while decoding " & "LdtkEntityInstance")
   target.grid = jsonTo(source{"__grid"}, typeof(target.grid))
   assert("__smartColor" in source,
-         "__smartColor" & " is missing while decoding " & "TestEntityInstance")
+         "__smartColor" & " is missing while decoding " & "LdtkEntityInstance")
   target.smartColor = jsonTo(source{"__smartColor"}, typeof(target.smartColor))
 
-proc toJsonHook*(source: TestEntityInstance): JsonNode =
+proc toJsonHook*(source: LdtkEntityInstance): JsonNode =
   result = newJObject()
   if isSome(source.worldY):
     result{"__worldY"} = toJson(source.worldY)
@@ -775,58 +775,58 @@ proc toJsonHook*(source: TestEntityInstance): JsonNode =
   result{"__grid"} = toJson(source.grid)
   result{"__smartColor"} = toJson(source.smartColor)
 
-proc fromJsonHook*(target: var TestLayerInstance; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkLayerInstance; source: JsonNode) =
   assert("__opacity" in source,
-         "__opacity" & " is missing while decoding " & "TestLayerInstance")
+         "__opacity" & " is missing while decoding " & "LdtkLayerInstance")
   target.opacity = jsonTo(source{"__opacity"}, typeof(target.opacity))
   assert("optionalRules" in source,
-         "optionalRules" & " is missing while decoding " & "TestLayerInstance")
+         "optionalRules" & " is missing while decoding " & "LdtkLayerInstance")
   target.optionalRules = jsonTo(source{"optionalRules"},
                                 typeof(target.optionalRules))
   assert("__gridSize" in source,
-         "__gridSize" & " is missing while decoding " & "TestLayerInstance")
+         "__gridSize" & " is missing while decoding " & "LdtkLayerInstance")
   target.gridSize = jsonTo(source{"__gridSize"}, typeof(target.gridSize))
   assert("__pxTotalOffsetX" in source, "__pxTotalOffsetX" &
       " is missing while decoding " &
-      "TestLayerInstance")
+      "LdtkLayerInstance")
   target.pxTotalOffsetX = jsonTo(source{"__pxTotalOffsetX"},
                                  typeof(target.pxTotalOffsetX))
   assert("gridTiles" in source,
-         "gridTiles" & " is missing while decoding " & "TestLayerInstance")
+         "gridTiles" & " is missing while decoding " & "LdtkLayerInstance")
   target.gridTiles = jsonTo(source{"gridTiles"}, typeof(target.gridTiles))
   assert("__type" in source,
-         "__type" & " is missing while decoding " & "TestLayerInstance")
+         "__type" & " is missing while decoding " & "LdtkLayerInstance")
   target.`type` = jsonTo(source{"__type"}, typeof(target.`type`))
   assert("__identifier" in source,
-         "__identifier" & " is missing while decoding " & "TestLayerInstance")
+         "__identifier" & " is missing while decoding " & "LdtkLayerInstance")
   target.identifier = jsonTo(source{"__identifier"}, typeof(target.identifier))
   if "overrideTilesetUid" in source and
       source{"overrideTilesetUid"}.kind != JNull:
     target.overrideTilesetUid = some(jsonTo(source{"overrideTilesetUid"},
         typeof(unsafeGet(target.overrideTilesetUid))))
   assert("levelId" in source,
-         "levelId" & " is missing while decoding " & "TestLayerInstance")
+         "levelId" & " is missing while decoding " & "LdtkLayerInstance")
   target.levelId = jsonTo(source{"levelId"}, typeof(target.levelId))
   if "intGrid" in source and source{"intGrid"}.kind != JNull:
     target.intGrid = some(jsonTo(source{"intGrid"},
                                  typeof(unsafeGet(target.intGrid))))
   assert("autoLayerTiles" in source,
-         "autoLayerTiles" & " is missing while decoding " & "TestLayerInstance")
+         "autoLayerTiles" & " is missing while decoding " & "LdtkLayerInstance")
   target.autoLayerTiles = jsonTo(source{"autoLayerTiles"},
                                  typeof(target.autoLayerTiles))
   assert("layerDefUid" in source,
-         "layerDefUid" & " is missing while decoding " & "TestLayerInstance")
+         "layerDefUid" & " is missing while decoding " & "LdtkLayerInstance")
   target.layerDefUid = jsonTo(source{"layerDefUid"}, typeof(target.layerDefUid))
   assert("entityInstances" in source, "entityInstances" &
       " is missing while decoding " &
-      "TestLayerInstance")
+      "LdtkLayerInstance")
   target.entityInstances = jsonTo(source{"entityInstances"},
                                   typeof(target.entityInstances))
   assert("intGridCsv" in source,
-         "intGridCsv" & " is missing while decoding " & "TestLayerInstance")
+         "intGridCsv" & " is missing while decoding " & "LdtkLayerInstance")
   target.intGridCsv = jsonTo(source{"intGridCsv"}, typeof(target.intGridCsv))
   assert("pxOffsetX" in source,
-         "pxOffsetX" & " is missing while decoding " & "TestLayerInstance")
+         "pxOffsetX" & " is missing while decoding " & "LdtkLayerInstance")
   target.pxOffsetX = jsonTo(source{"pxOffsetX"}, typeof(target.pxOffsetX))
   if "__tilesetRelPath" in source and
       source{"__tilesetRelPath"}.kind != JNull:
@@ -836,30 +836,30 @@ proc fromJsonHook*(target: var TestLayerInstance; source: JsonNode) =
     target.tilesetDefUid = some(jsonTo(source{"__tilesetDefUid"},
                                        typeof(unsafeGet(target.tilesetDefUid))))
   assert("__cHei" in source,
-         "__cHei" & " is missing while decoding " & "TestLayerInstance")
+         "__cHei" & " is missing while decoding " & "LdtkLayerInstance")
   target.cHei = jsonTo(source{"__cHei"}, typeof(target.cHei))
   assert("seed" in source,
-         "seed" & " is missing while decoding " & "TestLayerInstance")
+         "seed" & " is missing while decoding " & "LdtkLayerInstance")
   target.seed = jsonTo(source{"seed"}, typeof(target.seed))
   assert("visible" in source,
-         "visible" & " is missing while decoding " & "TestLayerInstance")
+         "visible" & " is missing while decoding " & "LdtkLayerInstance")
   target.visible = jsonTo(source{"visible"}, typeof(target.visible))
   assert("pxOffsetY" in source,
-         "pxOffsetY" & " is missing while decoding " & "TestLayerInstance")
+         "pxOffsetY" & " is missing while decoding " & "LdtkLayerInstance")
   target.pxOffsetY = jsonTo(source{"pxOffsetY"}, typeof(target.pxOffsetY))
   assert("iid" in source,
-         "iid" & " is missing while decoding " & "TestLayerInstance")
+         "iid" & " is missing while decoding " & "LdtkLayerInstance")
   target.iid = jsonTo(source{"iid"}, typeof(target.iid))
   assert("__pxTotalOffsetY" in source, "__pxTotalOffsetY" &
       " is missing while decoding " &
-      "TestLayerInstance")
+      "LdtkLayerInstance")
   target.pxTotalOffsetY = jsonTo(source{"__pxTotalOffsetY"},
                                  typeof(target.pxTotalOffsetY))
   assert("__cWid" in source,
-         "__cWid" & " is missing while decoding " & "TestLayerInstance")
+         "__cWid" & " is missing while decoding " & "LdtkLayerInstance")
   target.cWid = jsonTo(source{"__cWid"}, typeof(target.cWid))
 
-proc toJsonHook*(source: TestLayerInstance): JsonNode =
+proc toJsonHook*(source: LdtkLayerInstance): JsonNode =
   result = newJObject()
   result{"__opacity"} = toJson(source.opacity)
   result{"optionalRules"} = toJson(source.optionalRules)
@@ -890,33 +890,33 @@ proc toJsonHook*(source: TestLayerInstance): JsonNode =
   result{"__pxTotalOffsetY"} = toJson(source.pxTotalOffsetY)
   result{"__cWid"} = toJson(source.cWid)
 
-proc fromJsonHook*(target: var TestLevelBgPosInfos; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkLevelBgPosInfos; source: JsonNode) =
   assert("scale" in source,
-         "scale" & " is missing while decoding " & "TestLevelBgPosInfos")
+         "scale" & " is missing while decoding " & "LdtkLevelBgPosInfos")
   target.scale = jsonTo(source{"scale"}, typeof(target.scale))
   assert("cropRect" in source,
-         "cropRect" & " is missing while decoding " & "TestLevelBgPosInfos")
+         "cropRect" & " is missing while decoding " & "LdtkLevelBgPosInfos")
   target.cropRect = jsonTo(source{"cropRect"}, typeof(target.cropRect))
   assert("topLeftPx" in source,
-         "topLeftPx" & " is missing while decoding " & "TestLevelBgPosInfos")
+         "topLeftPx" & " is missing while decoding " & "LdtkLevelBgPosInfos")
   target.topLeftPx = jsonTo(source{"topLeftPx"}, typeof(target.topLeftPx))
 
-proc toJsonHook*(source: TestLevelBgPosInfos): JsonNode =
+proc toJsonHook*(source: LdtkLevelBgPosInfos): JsonNode =
   result = newJObject()
   result{"scale"} = toJson(source.scale)
   result{"cropRect"} = toJson(source.cropRect)
   result{"topLeftPx"} = toJson(source.topLeftPx)
 
-proc fromJsonHook*(target: var TestLevel; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkLevel; source: JsonNode) =
   assert("pxHei" in source,
-         "pxHei" & " is missing while decoding " & "TestLevel")
+         "pxHei" & " is missing while decoding " & "LdtkLevel")
   target.pxHei = jsonTo(source{"pxHei"}, typeof(target.pxHei))
   assert("useAutoIdentifier" in source,
-         "useAutoIdentifier" & " is missing while decoding " & "TestLevel")
+         "useAutoIdentifier" & " is missing while decoding " & "LdtkLevel")
   target.useAutoIdentifier = jsonTo(source{"useAutoIdentifier"},
                                     typeof(target.useAutoIdentifier))
   assert("__bgColor" in source,
-         "__bgColor" & " is missing while decoding " & "TestLevel")
+         "__bgColor" & " is missing while decoding " & "LdtkLevel")
   target.bgColor = jsonTo(source{"__bgColor"}, typeof(target.bgColor))
   if "bgColor" in source and source{"bgColor"}.kind != JNull:
     target.bgColor1 = some(jsonTo(source{"bgColor"},
@@ -925,27 +925,27 @@ proc fromJsonHook*(target: var TestLevel; source: JsonNode) =
     target.externalRelPath = some(jsonTo(source{"externalRelPath"},
         typeof(unsafeGet(target.externalRelPath))))
   assert("worldY" in source,
-         "worldY" & " is missing while decoding " & "TestLevel")
+         "worldY" & " is missing while decoding " & "LdtkLevel")
   target.worldY = jsonTo(source{"worldY"}, typeof(target.worldY))
   if "bgRelPath" in source and source{"bgRelPath"}.kind != JNull:
     target.bgRelPath = some(jsonTo(source{"bgRelPath"},
                                    typeof(unsafeGet(target.bgRelPath))))
   assert("identifier" in source,
-         "identifier" & " is missing while decoding " & "TestLevel")
+         "identifier" & " is missing while decoding " & "LdtkLevel")
   target.identifier = jsonTo(source{"identifier"}, typeof(target.identifier))
   assert("pxWid" in source,
-         "pxWid" & " is missing while decoding " & "TestLevel")
+         "pxWid" & " is missing while decoding " & "LdtkLevel")
   target.pxWid = jsonTo(source{"pxWid"}, typeof(target.pxWid))
   assert("worldDepth" in source,
-         "worldDepth" & " is missing while decoding " & "TestLevel")
+         "worldDepth" & " is missing while decoding " & "LdtkLevel")
   target.worldDepth = jsonTo(source{"worldDepth"}, typeof(target.worldDepth))
   assert("bgPivotX" in source,
-         "bgPivotX" & " is missing while decoding " & "TestLevel")
+         "bgPivotX" & " is missing while decoding " & "LdtkLevel")
   target.bgPivotX = jsonTo(source{"bgPivotX"}, typeof(target.bgPivotX))
   assert("__neighbours" in source,
-         "__neighbours" & " is missing while decoding " & "TestLevel")
+         "__neighbours" & " is missing while decoding " & "LdtkLevel")
   target.neighbours = jsonTo(source{"__neighbours"}, typeof(target.neighbours))
-  assert("uid" in source, "uid" & " is missing while decoding " & "TestLevel")
+  assert("uid" in source, "uid" & " is missing while decoding " & "LdtkLevel")
   target.uid = jsonTo(source{"uid"}, typeof(target.uid))
   if "bgPos" in source and source{"bgPos"}.kind != JNull:
     target.bgPos = some(jsonTo(source{"bgPos"}, typeof(unsafeGet(target.bgPos))))
@@ -953,25 +953,25 @@ proc fromJsonHook*(target: var TestLevel; source: JsonNode) =
     target.layerInstances = some(jsonTo(source{"layerInstances"}, typeof(
         unsafeGet(target.layerInstances))))
   assert("fieldInstances" in source,
-         "fieldInstances" & " is missing while decoding " & "TestLevel")
+         "fieldInstances" & " is missing while decoding " & "LdtkLevel")
   target.fieldInstances = jsonTo(source{"fieldInstances"},
                                  typeof(target.fieldInstances))
   if "__bgPos" in source and source{"__bgPos"}.kind != JNull:
     target.bgPos1 = some(jsonTo(source{"__bgPos"},
                                 typeof(unsafeGet(target.bgPos1))))
   assert("worldX" in source,
-         "worldX" & " is missing while decoding " & "TestLevel")
+         "worldX" & " is missing while decoding " & "LdtkLevel")
   target.worldX = jsonTo(source{"worldX"}, typeof(target.worldX))
-  assert("iid" in source, "iid" & " is missing while decoding " & "TestLevel")
+  assert("iid" in source, "iid" & " is missing while decoding " & "LdtkLevel")
   target.iid = jsonTo(source{"iid"}, typeof(target.iid))
   assert("bgPivotY" in source,
-         "bgPivotY" & " is missing while decoding " & "TestLevel")
+         "bgPivotY" & " is missing while decoding " & "LdtkLevel")
   target.bgPivotY = jsonTo(source{"bgPivotY"}, typeof(target.bgPivotY))
   assert("__smartColor" in source,
-         "__smartColor" & " is missing while decoding " & "TestLevel")
+         "__smartColor" & " is missing while decoding " & "LdtkLevel")
   target.smartColor = jsonTo(source{"__smartColor"}, typeof(target.smartColor))
 
-proc toJsonHook*(source: TestLevel): JsonNode =
+proc toJsonHook*(source: LdtkLevel): JsonNode =
   result = newJObject()
   result{"pxHei"} = toJson(source.pxHei)
   result{"useAutoIdentifier"} = toJson(source.useAutoIdentifier)
@@ -1001,36 +1001,36 @@ proc toJsonHook*(source: TestLevel): JsonNode =
   result{"bgPivotY"} = toJson(source.bgPivotY)
   result{"__smartColor"} = toJson(source.smartColor)
 
-proc fromJsonHook*(target: var TestWorld; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkWorld; source: JsonNode) =
   assert("worldGridWidth" in source,
-         "worldGridWidth" & " is missing while decoding " & "TestWorld")
+         "worldGridWidth" & " is missing while decoding " & "LdtkWorld")
   target.worldGridWidth = jsonTo(source{"worldGridWidth"},
                                  typeof(target.worldGridWidth))
   assert("defaultLevelHeight" in source,
-         "defaultLevelHeight" & " is missing while decoding " & "TestWorld")
+         "defaultLevelHeight" & " is missing while decoding " & "LdtkWorld")
   target.defaultLevelHeight = jsonTo(source{"defaultLevelHeight"},
                                      typeof(target.defaultLevelHeight))
   assert("identifier" in source,
-         "identifier" & " is missing while decoding " & "TestWorld")
+         "identifier" & " is missing while decoding " & "LdtkWorld")
   target.identifier = jsonTo(source{"identifier"}, typeof(target.identifier))
   if "worldLayout" in source and source{"worldLayout"}.kind != JNull:
     target.worldLayout = some(jsonTo(source{"worldLayout"},
                                      typeof(unsafeGet(target.worldLayout))))
-  assert("iid" in source, "iid" & " is missing while decoding " & "TestWorld")
+  assert("iid" in source, "iid" & " is missing while decoding " & "LdtkWorld")
   target.iid = jsonTo(source{"iid"}, typeof(target.iid))
   assert("defaultLevelWidth" in source,
-         "defaultLevelWidth" & " is missing while decoding " & "TestWorld")
+         "defaultLevelWidth" & " is missing while decoding " & "LdtkWorld")
   target.defaultLevelWidth = jsonTo(source{"defaultLevelWidth"},
                                     typeof(target.defaultLevelWidth))
   assert("worldGridHeight" in source,
-         "worldGridHeight" & " is missing while decoding " & "TestWorld")
+         "worldGridHeight" & " is missing while decoding " & "LdtkWorld")
   target.worldGridHeight = jsonTo(source{"worldGridHeight"},
                                   typeof(target.worldGridHeight))
   assert("levels" in source,
-         "levels" & " is missing while decoding " & "TestWorld")
+         "levels" & " is missing while decoding " & "LdtkWorld")
   target.levels = jsonTo(source{"levels"}, typeof(target.levels))
 
-proc toJsonHook*(source: TestWorld): JsonNode =
+proc toJsonHook*(source: LdtkWorld): JsonNode =
   result = newJObject()
   result{"worldGridWidth"} = toJson(source.worldGridWidth)
   result{"defaultLevelHeight"} = toJson(source.defaultLevelHeight)
@@ -1042,48 +1042,47 @@ proc toJsonHook*(source: TestWorld): JsonNode =
   result{"worldGridHeight"} = toJson(source.worldGridHeight)
   result{"levels"} = toJson(source.levels)
 
-proc toJsonHook*(source: TestTestLdtkJsonRoot_imageExportMode): JsonNode =
+proc toJsonHook*(source: LdtkImageExportMode): JsonNode =
   case source
-  of TestTestLdtkJsonRoot_imageExportMode.LayersAndLevels:
+  of LdtkImageExportMode.LayersAndLevels:
     return newJString("LayersAndLevels")
-  of TestTestLdtkJsonRoot_imageExportMode.OneImagePerLayer:
+  of LdtkImageExportMode.OneImagePerLayer:
     return newJString("OneImagePerLayer")
-  of TestTestLdtkJsonRoot_imageExportMode.None:
+  of LdtkImageExportMode.None:
     return newJString("None")
-  of TestTestLdtkJsonRoot_imageExportMode.OneImagePerLevel:
+  of LdtkImageExportMode.OneImagePerLevel:
     return newJString("OneImagePerLevel")
   
-proc fromJsonHook*(target: var TestTestLdtkJsonRoot_imageExportMode;
-                   source: JsonNode) =
+proc fromJsonHook*(target: var LdtkImageExportMode; source: JsonNode) =
   target = case getStr(source)
   of "LayersAndLevels":
-    TestTestLdtkJsonRoot_imageExportMode.LayersAndLevels
+    LdtkImageExportMode.LayersAndLevels
   of "OneImagePerLayer":
-    TestTestLdtkJsonRoot_imageExportMode.OneImagePerLayer
+    LdtkImageExportMode.OneImagePerLayer
   of "None":
-    TestTestLdtkJsonRoot_imageExportMode.None
+    LdtkImageExportMode.None
   of "OneImagePerLevel":
-    TestTestLdtkJsonRoot_imageExportMode.OneImagePerLevel
+    LdtkImageExportMode.OneImagePerLevel
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc fromJsonHook*(target: var TestIntGridValueDef; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkIntGridValueDef; source: JsonNode) =
   if "tile" in source and source{"tile"}.kind != JNull:
     target.tile = some(jsonTo(source{"tile"}, typeof(unsafeGet(target.tile))))
   assert("color" in source,
-         "color" & " is missing while decoding " & "TestIntGridValueDef")
+         "color" & " is missing while decoding " & "LdtkIntGridValueDef")
   target.color = jsonTo(source{"color"}, typeof(target.color))
   if "identifier" in source and source{"identifier"}.kind != JNull:
     target.identifier = some(jsonTo(source{"identifier"},
                                     typeof(unsafeGet(target.identifier))))
   assert("groupUid" in source,
-         "groupUid" & " is missing while decoding " & "TestIntGridValueDef")
+         "groupUid" & " is missing while decoding " & "LdtkIntGridValueDef")
   target.groupUid = jsonTo(source{"groupUid"}, typeof(target.groupUid))
   assert("value" in source,
-         "value" & " is missing while decoding " & "TestIntGridValueDef")
+         "value" & " is missing while decoding " & "LdtkIntGridValueDef")
   target.value = jsonTo(source{"value"}, typeof(target.value))
 
-proc toJsonHook*(source: TestIntGridValueDef): JsonNode =
+proc toJsonHook*(source: LdtkIntGridValueDef): JsonNode =
   result = newJObject()
   if isSome(source.tile):
     result{"tile"} = toJson(source.tile)
@@ -1093,208 +1092,204 @@ proc toJsonHook*(source: TestIntGridValueDef): JsonNode =
   result{"groupUid"} = toJson(source.groupUid)
   result{"value"} = toJson(source.value)
 
-proc toJsonHook*(source: TestTestFieldDef_textLanguageMode): JsonNode =
+proc toJsonHook*(source: LdtkTextLanguageMode): JsonNode =
   case source
-  of TestTestFieldDef_textLanguageMode.LangMarkdown:
+  of LdtkTextLanguageMode.LangMarkdown:
     return newJString("LangMarkdown")
-  of TestTestFieldDef_textLanguageMode.LangPython:
+  of LdtkTextLanguageMode.LangPython:
     return newJString("LangPython")
-  of TestTestFieldDef_textLanguageMode.LangLog:
+  of LdtkTextLanguageMode.LangLog:
     return newJString("LangLog")
-  of TestTestFieldDef_textLanguageMode.LangC:
+  of LdtkTextLanguageMode.LangC:
     return newJString("LangC")
-  of TestTestFieldDef_textLanguageMode.LangLua:
+  of LdtkTextLanguageMode.LangLua:
     return newJString("LangLua")
-  of TestTestFieldDef_textLanguageMode.LangHaxe:
+  of LdtkTextLanguageMode.LangHaxe:
     return newJString("LangHaxe")
-  of TestTestFieldDef_textLanguageMode.LangJS:
+  of LdtkTextLanguageMode.LangJS:
     return newJString("LangJS")
-  of TestTestFieldDef_textLanguageMode.LangRuby:
+  of LdtkTextLanguageMode.LangRuby:
     return newJString("LangRuby")
-  of TestTestFieldDef_textLanguageMode.LangJson:
+  of LdtkTextLanguageMode.LangJson:
     return newJString("LangJson")
-  of TestTestFieldDef_textLanguageMode.LangXml:
+  of LdtkTextLanguageMode.LangXml:
     return newJString("LangXml")
   
-proc fromJsonHook*(target: var TestTestFieldDef_textLanguageMode;
-                   source: JsonNode) =
+proc fromJsonHook*(target: var LdtkTextLanguageMode; source: JsonNode) =
   target = case getStr(source)
   of "LangMarkdown":
-    TestTestFieldDef_textLanguageMode.LangMarkdown
+    LdtkTextLanguageMode.LangMarkdown
   of "LangPython":
-    TestTestFieldDef_textLanguageMode.LangPython
+    LdtkTextLanguageMode.LangPython
   of "LangLog":
-    TestTestFieldDef_textLanguageMode.LangLog
+    LdtkTextLanguageMode.LangLog
   of "LangC":
-    TestTestFieldDef_textLanguageMode.LangC
+    LdtkTextLanguageMode.LangC
   of "LangLua":
-    TestTestFieldDef_textLanguageMode.LangLua
+    LdtkTextLanguageMode.LangLua
   of "LangHaxe":
-    TestTestFieldDef_textLanguageMode.LangHaxe
+    LdtkTextLanguageMode.LangHaxe
   of "LangJS":
-    TestTestFieldDef_textLanguageMode.LangJS
+    LdtkTextLanguageMode.LangJS
   of "LangRuby":
-    TestTestFieldDef_textLanguageMode.LangRuby
+    LdtkTextLanguageMode.LangRuby
   of "LangJson":
-    TestTestFieldDef_textLanguageMode.LangJson
+    LdtkTextLanguageMode.LangJson
   of "LangXml":
-    TestTestFieldDef_textLanguageMode.LangXml
+    LdtkTextLanguageMode.LangXml
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc toJsonHook*(source: TestTestFieldDef_editorDisplayPos): JsonNode =
+proc toJsonHook*(source: LdtkEditorDisplayPos): JsonNode =
   case source
-  of TestTestFieldDef_editorDisplayPos.Beneath:
+  of LdtkEditorDisplayPos.Beneath:
     return newJString("Beneath")
-  of TestTestFieldDef_editorDisplayPos.Above:
+  of LdtkEditorDisplayPos.Above:
     return newJString("Above")
-  of TestTestFieldDef_editorDisplayPos.Center:
+  of LdtkEditorDisplayPos.Center:
     return newJString("Center")
   
-proc fromJsonHook*(target: var TestTestFieldDef_editorDisplayPos;
-                   source: JsonNode) =
+proc fromJsonHook*(target: var LdtkEditorDisplayPos; source: JsonNode) =
   target = case getStr(source)
   of "Beneath":
-    TestTestFieldDef_editorDisplayPos.Beneath
+    LdtkEditorDisplayPos.Beneath
   of "Above":
-    TestTestFieldDef_editorDisplayPos.Above
+    LdtkEditorDisplayPos.Above
   of "Center":
-    TestTestFieldDef_editorDisplayPos.Center
+    LdtkEditorDisplayPos.Center
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc toJsonHook*(source: TestTestFieldDef_editorDisplayMode): JsonNode =
+proc toJsonHook*(source: LdtkEditorDisplayMode): JsonNode =
   case source
-  of TestTestFieldDef_editorDisplayMode.PointPath:
+  of LdtkEditorDisplayMode.PointPath:
     return newJString("PointPath")
-  of TestTestFieldDef_editorDisplayMode.PointStar:
+  of LdtkEditorDisplayMode.PointStar:
     return newJString("PointStar")
-  of TestTestFieldDef_editorDisplayMode.ValueOnly:
+  of LdtkEditorDisplayMode.ValueOnly:
     return newJString("ValueOnly")
-  of TestTestFieldDef_editorDisplayMode.Hidden:
+  of LdtkEditorDisplayMode.Hidden:
     return newJString("Hidden")
-  of TestTestFieldDef_editorDisplayMode.Points:
+  of LdtkEditorDisplayMode.Points:
     return newJString("Points")
-  of TestTestFieldDef_editorDisplayMode.NameAndValue:
+  of LdtkEditorDisplayMode.NameAndValue:
     return newJString("NameAndValue")
-  of TestTestFieldDef_editorDisplayMode.ArrayCountNoLabel:
+  of LdtkEditorDisplayMode.ArrayCountNoLabel:
     return newJString("ArrayCountNoLabel")
-  of TestTestFieldDef_editorDisplayMode.EntityTile:
+  of LdtkEditorDisplayMode.EntityTile:
     return newJString("EntityTile")
-  of TestTestFieldDef_editorDisplayMode.PointPathLoop:
+  of LdtkEditorDisplayMode.PointPathLoop:
     return newJString("PointPathLoop")
-  of TestTestFieldDef_editorDisplayMode.RadiusPx:
+  of LdtkEditorDisplayMode.RadiusPx:
     return newJString("RadiusPx")
-  of TestTestFieldDef_editorDisplayMode.LevelTile:
+  of LdtkEditorDisplayMode.LevelTile:
     return newJString("LevelTile")
-  of TestTestFieldDef_editorDisplayMode.RadiusGrid:
+  of LdtkEditorDisplayMode.RadiusGrid:
     return newJString("RadiusGrid")
-  of TestTestFieldDef_editorDisplayMode.RefLinkBetweenCenters:
+  of LdtkEditorDisplayMode.RefLinkBetweenCenters:
     return newJString("RefLinkBetweenCenters")
-  of TestTestFieldDef_editorDisplayMode.RefLinkBetweenPivots:
+  of LdtkEditorDisplayMode.RefLinkBetweenPivots:
     return newJString("RefLinkBetweenPivots")
-  of TestTestFieldDef_editorDisplayMode.ArrayCountWithLabel:
+  of LdtkEditorDisplayMode.ArrayCountWithLabel:
     return newJString("ArrayCountWithLabel")
   
-proc fromJsonHook*(target: var TestTestFieldDef_editorDisplayMode;
-                   source: JsonNode) =
+proc fromJsonHook*(target: var LdtkEditorDisplayMode; source: JsonNode) =
   target = case getStr(source)
   of "PointPath":
-    TestTestFieldDef_editorDisplayMode.PointPath
+    LdtkEditorDisplayMode.PointPath
   of "PointStar":
-    TestTestFieldDef_editorDisplayMode.PointStar
+    LdtkEditorDisplayMode.PointStar
   of "ValueOnly":
-    TestTestFieldDef_editorDisplayMode.ValueOnly
+    LdtkEditorDisplayMode.ValueOnly
   of "Hidden":
-    TestTestFieldDef_editorDisplayMode.Hidden
+    LdtkEditorDisplayMode.Hidden
   of "Points":
-    TestTestFieldDef_editorDisplayMode.Points
+    LdtkEditorDisplayMode.Points
   of "NameAndValue":
-    TestTestFieldDef_editorDisplayMode.NameAndValue
+    LdtkEditorDisplayMode.NameAndValue
   of "ArrayCountNoLabel":
-    TestTestFieldDef_editorDisplayMode.ArrayCountNoLabel
+    LdtkEditorDisplayMode.ArrayCountNoLabel
   of "EntityTile":
-    TestTestFieldDef_editorDisplayMode.EntityTile
+    LdtkEditorDisplayMode.EntityTile
   of "PointPathLoop":
-    TestTestFieldDef_editorDisplayMode.PointPathLoop
+    LdtkEditorDisplayMode.PointPathLoop
   of "RadiusPx":
-    TestTestFieldDef_editorDisplayMode.RadiusPx
+    LdtkEditorDisplayMode.RadiusPx
   of "LevelTile":
-    TestTestFieldDef_editorDisplayMode.LevelTile
+    LdtkEditorDisplayMode.LevelTile
   of "RadiusGrid":
-    TestTestFieldDef_editorDisplayMode.RadiusGrid
+    LdtkEditorDisplayMode.RadiusGrid
   of "RefLinkBetweenCenters":
-    TestTestFieldDef_editorDisplayMode.RefLinkBetweenCenters
+    LdtkEditorDisplayMode.RefLinkBetweenCenters
   of "RefLinkBetweenPivots":
-    TestTestFieldDef_editorDisplayMode.RefLinkBetweenPivots
+    LdtkEditorDisplayMode.RefLinkBetweenPivots
   of "ArrayCountWithLabel":
-    TestTestFieldDef_editorDisplayMode.ArrayCountWithLabel
+    LdtkEditorDisplayMode.ArrayCountWithLabel
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc toJsonHook*(source: TestTestFieldDef_editorLinkStyle): JsonNode =
+proc toJsonHook*(source: LdtkEditorLinkStyle): JsonNode =
   case source
-  of TestTestFieldDef_editorLinkStyle.DashedLine:
+  of LdtkEditorLinkStyle.DashedLine:
     return newJString("DashedLine")
-  of TestTestFieldDef_editorLinkStyle.CurvedArrow:
+  of LdtkEditorLinkStyle.CurvedArrow:
     return newJString("CurvedArrow")
-  of TestTestFieldDef_editorLinkStyle.ArrowsLine:
+  of LdtkEditorLinkStyle.ArrowsLine:
     return newJString("ArrowsLine")
-  of TestTestFieldDef_editorLinkStyle.ZigZag:
+  of LdtkEditorLinkStyle.ZigZag:
     return newJString("ZigZag")
-  of TestTestFieldDef_editorLinkStyle.StraightArrow:
+  of LdtkEditorLinkStyle.StraightArrow:
     return newJString("StraightArrow")
   
-proc fromJsonHook*(target: var TestTestFieldDef_editorLinkStyle;
-                   source: JsonNode) =
+proc fromJsonHook*(target: var LdtkEditorLinkStyle; source: JsonNode) =
   target = case getStr(source)
   of "DashedLine":
-    TestTestFieldDef_editorLinkStyle.DashedLine
+    LdtkEditorLinkStyle.DashedLine
   of "CurvedArrow":
-    TestTestFieldDef_editorLinkStyle.CurvedArrow
+    LdtkEditorLinkStyle.CurvedArrow
   of "ArrowsLine":
-    TestTestFieldDef_editorLinkStyle.ArrowsLine
+    LdtkEditorLinkStyle.ArrowsLine
   of "ZigZag":
-    TestTestFieldDef_editorLinkStyle.ZigZag
+    LdtkEditorLinkStyle.ZigZag
   of "StraightArrow":
-    TestTestFieldDef_editorLinkStyle.StraightArrow
+    LdtkEditorLinkStyle.StraightArrow
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc toJsonHook*(source: TestTestFieldDef_allowedRefs): JsonNode =
+proc toJsonHook*(source: LdtkAllowedRefs): JsonNode =
   case source
-  of TestTestFieldDef_allowedRefs.Any:
+  of LdtkAllowedRefs.Any:
     return newJString("Any")
-  of TestTestFieldDef_allowedRefs.OnlyTags:
+  of LdtkAllowedRefs.OnlyTags:
     return newJString("OnlyTags")
-  of TestTestFieldDef_allowedRefs.OnlySame:
+  of LdtkAllowedRefs.OnlySame:
     return newJString("OnlySame")
-  of TestTestFieldDef_allowedRefs.OnlySpecificEntity:
+  of LdtkAllowedRefs.OnlySpecificEntity:
     return newJString("OnlySpecificEntity")
   
-proc fromJsonHook*(target: var TestTestFieldDef_allowedRefs; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkAllowedRefs; source: JsonNode) =
   target = case getStr(source)
   of "Any":
-    TestTestFieldDef_allowedRefs.Any
+    LdtkAllowedRefs.Any
   of "OnlyTags":
-    TestTestFieldDef_allowedRefs.OnlyTags
+    LdtkAllowedRefs.OnlyTags
   of "OnlySame":
-    TestTestFieldDef_allowedRefs.OnlySame
+    LdtkAllowedRefs.OnlySame
   of "OnlySpecificEntity":
-    TestTestFieldDef_allowedRefs.OnlySpecificEntity
+    LdtkAllowedRefs.OnlySpecificEntity
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc fromJsonHook*(target: var TestFieldDef; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkFieldDef; source: JsonNode) =
   assert("type" in source,
-         "type" & " is missing while decoding " & "TestFieldDef")
+         "type" & " is missing while decoding " & "LdtkFieldDef")
   target.type1 = jsonTo(source{"type"}, typeof(target.type1))
   assert("editorDisplayScale" in source,
-         "editorDisplayScale" & " is missing while decoding " & "TestFieldDef")
+         "editorDisplayScale" & " is missing while decoding " & "LdtkFieldDef")
   target.editorDisplayScale = jsonTo(source{"editorDisplayScale"},
                                      typeof(target.editorDisplayScale))
   assert("__type" in source,
-         "__type" & " is missing while decoding " & "TestFieldDef")
+         "__type" & " is missing while decoding " & "LdtkFieldDef")
   target.`type` = jsonTo(source{"__type"}, typeof(target.`type`))
   if "allowedRefsEntityUid" in source and
       source{"allowedRefsEntityUid"}.kind != JNull:
@@ -1306,41 +1301,41 @@ proc fromJsonHook*(target: var TestFieldDef; source: JsonNode) =
     target.textLanguageMode = some(jsonTo(source{"textLanguageMode"},
         typeof(unsafeGet(target.textLanguageMode))))
   assert("editorAlwaysShow" in source,
-         "editorAlwaysShow" & " is missing while decoding " & "TestFieldDef")
+         "editorAlwaysShow" & " is missing while decoding " & "LdtkFieldDef")
   target.editorAlwaysShow = jsonTo(source{"editorAlwaysShow"},
                                    typeof(target.editorAlwaysShow))
   if "defaultOverride" in source and source{"defaultOverride"}.kind != JNull:
     target.defaultOverride = some(jsonTo(source{"defaultOverride"},
         typeof(unsafeGet(target.defaultOverride))))
   assert("autoChainRef" in source,
-         "autoChainRef" & " is missing while decoding " & "TestFieldDef")
+         "autoChainRef" & " is missing while decoding " & "LdtkFieldDef")
   target.autoChainRef = jsonTo(source{"autoChainRef"},
                                typeof(target.autoChainRef))
   assert("editorDisplayPos" in source,
-         "editorDisplayPos" & " is missing while decoding " & "TestFieldDef")
+         "editorDisplayPos" & " is missing while decoding " & "LdtkFieldDef")
   target.editorDisplayPos = jsonTo(source{"editorDisplayPos"},
                                    typeof(target.editorDisplayPos))
   assert("editorDisplayMode" in source,
-         "editorDisplayMode" & " is missing while decoding " & "TestFieldDef")
+         "editorDisplayMode" & " is missing while decoding " & "LdtkFieldDef")
   target.editorDisplayMode = jsonTo(source{"editorDisplayMode"},
                                     typeof(target.editorDisplayMode))
   assert("identifier" in source,
-         "identifier" & " is missing while decoding " & "TestFieldDef")
+         "identifier" & " is missing while decoding " & "LdtkFieldDef")
   target.identifier = jsonTo(source{"identifier"}, typeof(target.identifier))
   if "regex" in source and source{"regex"}.kind != JNull:
     target.regex = some(jsonTo(source{"regex"}, typeof(unsafeGet(target.regex))))
   assert("isArray" in source,
-         "isArray" & " is missing while decoding " & "TestFieldDef")
+         "isArray" & " is missing while decoding " & "LdtkFieldDef")
   target.isArray = jsonTo(source{"isArray"}, typeof(target.isArray))
   assert("editorLinkStyle" in source,
-         "editorLinkStyle" & " is missing while decoding " & "TestFieldDef")
+         "editorLinkStyle" & " is missing while decoding " & "LdtkFieldDef")
   target.editorLinkStyle = jsonTo(source{"editorLinkStyle"},
                                   typeof(target.editorLinkStyle))
   assert("allowedRefs" in source,
-         "allowedRefs" & " is missing while decoding " & "TestFieldDef")
+         "allowedRefs" & " is missing while decoding " & "LdtkFieldDef")
   target.allowedRefs = jsonTo(source{"allowedRefs"}, typeof(target.allowedRefs))
   assert("useForSmartColor" in source,
-         "useForSmartColor" & " is missing while decoding " & "TestFieldDef")
+         "useForSmartColor" & " is missing while decoding " & "LdtkFieldDef")
   target.useForSmartColor = jsonTo(source{"useForSmartColor"},
                                    typeof(target.useForSmartColor))
   if "editorTextSuffix" in source and
@@ -1354,20 +1349,20 @@ proc fromJsonHook*(target: var TestFieldDef; source: JsonNode) =
     target.editorTextPrefix = some(jsonTo(source{"editorTextPrefix"},
         typeof(unsafeGet(target.editorTextPrefix))))
   assert("editorCutLongValues" in source,
-         "editorCutLongValues" & " is missing while decoding " & "TestFieldDef")
+         "editorCutLongValues" & " is missing while decoding " & "LdtkFieldDef")
   target.editorCutLongValues = jsonTo(source{"editorCutLongValues"},
                                       typeof(target.editorCutLongValues))
   assert("canBeNull" in source,
-         "canBeNull" & " is missing while decoding " & "TestFieldDef")
+         "canBeNull" & " is missing while decoding " & "LdtkFieldDef")
   target.canBeNull = jsonTo(source{"canBeNull"}, typeof(target.canBeNull))
   assert("allowedRefTags" in source,
-         "allowedRefTags" & " is missing while decoding " & "TestFieldDef")
+         "allowedRefTags" & " is missing while decoding " & "LdtkFieldDef")
   target.allowedRefTags = jsonTo(source{"allowedRefTags"},
                                  typeof(target.allowedRefTags))
-  assert("uid" in source, "uid" & " is missing while decoding " & "TestFieldDef")
+  assert("uid" in source, "uid" & " is missing while decoding " & "LdtkFieldDef")
   target.uid = jsonTo(source{"uid"}, typeof(target.uid))
   assert("symmetricalRef" in source,
-         "symmetricalRef" & " is missing while decoding " & "TestFieldDef")
+         "symmetricalRef" & " is missing while decoding " & "LdtkFieldDef")
   target.symmetricalRef = jsonTo(source{"symmetricalRef"},
                                  typeof(target.symmetricalRef))
   if "editorDisplayColor" in source and
@@ -1375,14 +1370,14 @@ proc fromJsonHook*(target: var TestFieldDef; source: JsonNode) =
     target.editorDisplayColor = some(jsonTo(source{"editorDisplayColor"},
         typeof(unsafeGet(target.editorDisplayColor))))
   assert("allowOutOfLevelRef" in source,
-         "allowOutOfLevelRef" & " is missing while decoding " & "TestFieldDef")
+         "allowOutOfLevelRef" & " is missing while decoding " & "LdtkFieldDef")
   target.allowOutOfLevelRef = jsonTo(source{"allowOutOfLevelRef"},
                                      typeof(target.allowOutOfLevelRef))
   if "acceptFileTypes" in source and source{"acceptFileTypes"}.kind != JNull:
     target.acceptFileTypes = some(jsonTo(source{"acceptFileTypes"},
         typeof(unsafeGet(target.acceptFileTypes))))
   assert("editorShowInWorld" in source,
-         "editorShowInWorld" & " is missing while decoding " & "TestFieldDef")
+         "editorShowInWorld" & " is missing while decoding " & "LdtkFieldDef")
   target.editorShowInWorld = jsonTo(source{"editorShowInWorld"},
                                     typeof(target.editorShowInWorld))
   if "tilesetUid" in source and source{"tilesetUid"}.kind != JNull:
@@ -1395,17 +1390,17 @@ proc fromJsonHook*(target: var TestFieldDef; source: JsonNode) =
     target.arrayMinLength = some(jsonTo(source{"arrayMinLength"}, typeof(
         unsafeGet(target.arrayMinLength))))
   assert("searchable" in source,
-         "searchable" & " is missing while decoding " & "TestFieldDef")
+         "searchable" & " is missing while decoding " & "LdtkFieldDef")
   target.searchable = jsonTo(source{"searchable"}, typeof(target.searchable))
   if "min" in source and source{"min"}.kind != JNull:
     target.min = some(jsonTo(source{"min"}, typeof(unsafeGet(target.min))))
   assert("exportToToc" in source,
-         "exportToToc" & " is missing while decoding " & "TestFieldDef")
+         "exportToToc" & " is missing while decoding " & "LdtkFieldDef")
   target.exportToToc = jsonTo(source{"exportToToc"}, typeof(target.exportToToc))
   if "max" in source and source{"max"}.kind != JNull:
     target.max = some(jsonTo(source{"max"}, typeof(unsafeGet(target.max))))
 
-proc toJsonHook*(source: TestFieldDef): JsonNode =
+proc toJsonHook*(source: LdtkFieldDef): JsonNode =
   result = newJObject()
   result{"type"} = toJson(source.type1)
   result{"editorDisplayScale"} = toJson(source.editorDisplayScale)
@@ -1457,57 +1452,57 @@ proc toJsonHook*(source: TestFieldDef): JsonNode =
   if isSome(source.max):
     result{"max"} = toJson(source.max)
 
-proc toJsonHook*(source: TestTestTilesetDef_embedAtlas): JsonNode =
+proc toJsonHook*(source: LdtkEmbedAtlas): JsonNode =
   case source
-  of TestTestTilesetDef_embedAtlas.LdtkIcons:
+  of LdtkEmbedAtlas.LdtkIcons:
     return newJString("LdtkIcons")
   
-proc fromJsonHook*(target: var TestTestTilesetDef_embedAtlas; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkEmbedAtlas; source: JsonNode) =
   target = case getStr(source)
   of "LdtkIcons":
-    TestTestTilesetDef_embedAtlas.LdtkIcons
+    LdtkEmbedAtlas.LdtkIcons
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc fromJsonHook*(target: var TestEnumTagValue; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkEnumTagValue; source: JsonNode) =
   assert("tileIds" in source,
-         "tileIds" & " is missing while decoding " & "TestEnumTagValue")
+         "tileIds" & " is missing while decoding " & "LdtkEnumTagValue")
   target.tileIds = jsonTo(source{"tileIds"}, typeof(target.tileIds))
   assert("enumValueId" in source,
-         "enumValueId" & " is missing while decoding " & "TestEnumTagValue")
+         "enumValueId" & " is missing while decoding " & "LdtkEnumTagValue")
   target.enumValueId = jsonTo(source{"enumValueId"}, typeof(target.enumValueId))
 
-proc toJsonHook*(source: TestEnumTagValue): JsonNode =
+proc toJsonHook*(source: LdtkEnumTagValue): JsonNode =
   result = newJObject()
   result{"tileIds"} = toJson(source.tileIds)
   result{"enumValueId"} = toJson(source.enumValueId)
 
-proc fromJsonHook*(target: var TestTileCustomMetadata; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkTileCustomMetadata; source: JsonNode) =
   assert("data" in source,
-         "data" & " is missing while decoding " & "TestTileCustomMetadata")
+         "data" & " is missing while decoding " & "LdtkTileCustomMetadata")
   target.data = jsonTo(source{"data"}, typeof(target.data))
   assert("tileId" in source,
-         "tileId" & " is missing while decoding " & "TestTileCustomMetadata")
+         "tileId" & " is missing while decoding " & "LdtkTileCustomMetadata")
   target.tileId = jsonTo(source{"tileId"}, typeof(target.tileId))
 
-proc toJsonHook*(source: TestTileCustomMetadata): JsonNode =
+proc toJsonHook*(source: LdtkTileCustomMetadata): JsonNode =
   result = newJObject()
   result{"data"} = toJson(source.data)
   result{"tileId"} = toJson(source.tileId)
 
-proc fromJsonHook*(target: var TestTilesetDef; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkTilesetDef; source: JsonNode) =
   assert("pxHei" in source,
-         "pxHei" & " is missing while decoding " & "TestTilesetDef")
+         "pxHei" & " is missing while decoding " & "LdtkTilesetDef")
   target.pxHei = jsonTo(source{"pxHei"}, typeof(target.pxHei))
   assert("savedSelections" in source,
-         "savedSelections" & " is missing while decoding " & "TestTilesetDef")
+         "savedSelections" & " is missing while decoding " & "LdtkTilesetDef")
   target.savedSelections = jsonTo(source{"savedSelections"},
                                   typeof(target.savedSelections))
   assert("padding" in source,
-         "padding" & " is missing while decoding " & "TestTilesetDef")
+         "padding" & " is missing while decoding " & "LdtkTilesetDef")
   target.padding = jsonTo(source{"padding"}, typeof(target.padding))
   assert("spacing" in source,
-         "spacing" & " is missing while decoding " & "TestTilesetDef")
+         "spacing" & " is missing while decoding " & "LdtkTilesetDef")
   target.spacing = jsonTo(source{"spacing"}, typeof(target.spacing))
   if "tagsSourceEnumUid" in source and
       source{"tagsSourceEnumUid"}.kind != JNull:
@@ -1517,41 +1512,41 @@ proc fromJsonHook*(target: var TestTilesetDef; source: JsonNode) =
     target.embedAtlas = some(jsonTo(source{"embedAtlas"},
                                     typeof(unsafeGet(target.embedAtlas))))
   assert("identifier" in source,
-         "identifier" & " is missing while decoding " & "TestTilesetDef")
+         "identifier" & " is missing while decoding " & "LdtkTilesetDef")
   target.identifier = jsonTo(source{"identifier"}, typeof(target.identifier))
   if "cachedPixelData" in source and source{"cachedPixelData"}.kind != JNull:
     target.cachedPixelData = some(jsonTo(source{"cachedPixelData"},
         typeof(unsafeGet(target.cachedPixelData))))
   assert("enumTags" in source,
-         "enumTags" & " is missing while decoding " & "TestTilesetDef")
+         "enumTags" & " is missing while decoding " & "LdtkTilesetDef")
   target.enumTags = jsonTo(source{"enumTags"}, typeof(target.enumTags))
   assert("pxWid" in source,
-         "pxWid" & " is missing while decoding " & "TestTilesetDef")
+         "pxWid" & " is missing while decoding " & "LdtkTilesetDef")
   target.pxWid = jsonTo(source{"pxWid"}, typeof(target.pxWid))
   assert("tileGridSize" in source,
-         "tileGridSize" & " is missing while decoding " & "TestTilesetDef")
+         "tileGridSize" & " is missing while decoding " & "LdtkTilesetDef")
   target.tileGridSize = jsonTo(source{"tileGridSize"},
                                typeof(target.tileGridSize))
   assert("customData" in source,
-         "customData" & " is missing while decoding " & "TestTilesetDef")
+         "customData" & " is missing while decoding " & "LdtkTilesetDef")
   target.customData = jsonTo(source{"customData"}, typeof(target.customData))
   assert("uid" in source,
-         "uid" & " is missing while decoding " & "TestTilesetDef")
+         "uid" & " is missing while decoding " & "LdtkTilesetDef")
   target.uid = jsonTo(source{"uid"}, typeof(target.uid))
   assert("__cHei" in source,
-         "__cHei" & " is missing while decoding " & "TestTilesetDef")
+         "__cHei" & " is missing while decoding " & "LdtkTilesetDef")
   target.cHei = jsonTo(source{"__cHei"}, typeof(target.cHei))
   assert("__cWid" in source,
-         "__cWid" & " is missing while decoding " & "TestTilesetDef")
+         "__cWid" & " is missing while decoding " & "LdtkTilesetDef")
   target.cWid = jsonTo(source{"__cWid"}, typeof(target.cWid))
   if "relPath" in source and source{"relPath"}.kind != JNull:
     target.relPath = some(jsonTo(source{"relPath"},
                                  typeof(unsafeGet(target.relPath))))
   assert("tags" in source,
-         "tags" & " is missing while decoding " & "TestTilesetDef")
+         "tags" & " is missing while decoding " & "LdtkTilesetDef")
   target.tags = jsonTo(source{"tags"}, typeof(target.tags))
 
-proc toJsonHook*(source: TestTilesetDef): JsonNode =
+proc toJsonHook*(source: LdtkTilesetDef): JsonNode =
   result = newJObject()
   result{"pxHei"} = toJson(source.pxHei)
   result{"savedSelections"} = toJson(source.savedSelections)
@@ -1575,185 +1570,184 @@ proc toJsonHook*(source: TestTilesetDef): JsonNode =
     result{"relPath"} = toJson(source.relPath)
   result{"tags"} = toJson(source.tags)
 
-proc toJsonHook*(source: TestTestEntityDef_limitScope): JsonNode =
+proc toJsonHook*(source: LdtkLimitScope): JsonNode =
   case source
-  of TestTestEntityDef_limitScope.PerLayer:
+  of LdtkLimitScope.PerLayer:
     return newJString("PerLayer")
-  of TestTestEntityDef_limitScope.PerWorld:
+  of LdtkLimitScope.PerWorld:
     return newJString("PerWorld")
-  of TestTestEntityDef_limitScope.PerLevel:
+  of LdtkLimitScope.PerLevel:
     return newJString("PerLevel")
   
-proc fromJsonHook*(target: var TestTestEntityDef_limitScope; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkLimitScope; source: JsonNode) =
   target = case getStr(source)
   of "PerLayer":
-    TestTestEntityDef_limitScope.PerLayer
+    LdtkLimitScope.PerLayer
   of "PerWorld":
-    TestTestEntityDef_limitScope.PerWorld
+    LdtkLimitScope.PerWorld
   of "PerLevel":
-    TestTestEntityDef_limitScope.PerLevel
+    LdtkLimitScope.PerLevel
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc toJsonHook*(source: TestTestEntityDef_limitBehavior): JsonNode =
+proc toJsonHook*(source: LdtkLimitBehavior): JsonNode =
   case source
-  of TestTestEntityDef_limitBehavior.PreventAdding:
+  of LdtkLimitBehavior.PreventAdding:
     return newJString("PreventAdding")
-  of TestTestEntityDef_limitBehavior.MoveLastOne:
+  of LdtkLimitBehavior.MoveLastOne:
     return newJString("MoveLastOne")
-  of TestTestEntityDef_limitBehavior.DiscardOldOnes:
+  of LdtkLimitBehavior.DiscardOldOnes:
     return newJString("DiscardOldOnes")
   
-proc fromJsonHook*(target: var TestTestEntityDef_limitBehavior; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkLimitBehavior; source: JsonNode) =
   target = case getStr(source)
   of "PreventAdding":
-    TestTestEntityDef_limitBehavior.PreventAdding
+    LdtkLimitBehavior.PreventAdding
   of "MoveLastOne":
-    TestTestEntityDef_limitBehavior.MoveLastOne
+    LdtkLimitBehavior.MoveLastOne
   of "DiscardOldOnes":
-    TestTestEntityDef_limitBehavior.DiscardOldOnes
+    LdtkLimitBehavior.DiscardOldOnes
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc toJsonHook*(source: TestTestEntityDef_renderMode): JsonNode =
+proc toJsonHook*(source: LdtkRenderMode): JsonNode =
   case source
-  of TestTestEntityDef_renderMode.Tile:
+  of LdtkRenderMode.Tile:
     return newJString("Tile")
-  of TestTestEntityDef_renderMode.Cross:
+  of LdtkRenderMode.Cross:
     return newJString("Cross")
-  of TestTestEntityDef_renderMode.Ellipse:
+  of LdtkRenderMode.Ellipse:
     return newJString("Ellipse")
-  of TestTestEntityDef_renderMode.Rectangle:
+  of LdtkRenderMode.Rectangle:
     return newJString("Rectangle")
   
-proc fromJsonHook*(target: var TestTestEntityDef_renderMode; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkRenderMode; source: JsonNode) =
   target = case getStr(source)
   of "Tile":
-    TestTestEntityDef_renderMode.Tile
+    LdtkRenderMode.Tile
   of "Cross":
-    TestTestEntityDef_renderMode.Cross
+    LdtkRenderMode.Cross
   of "Ellipse":
-    TestTestEntityDef_renderMode.Ellipse
+    LdtkRenderMode.Ellipse
   of "Rectangle":
-    TestTestEntityDef_renderMode.Rectangle
+    LdtkRenderMode.Rectangle
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc toJsonHook*(source: TestTestEntityDef_tileRenderMode): JsonNode =
+proc toJsonHook*(source: LdtkTileRenderMode): JsonNode =
   case source
-  of TestTestEntityDef_tileRenderMode.FullSizeCropped:
+  of LdtkTileRenderMode.FullSizeCropped:
     return newJString("FullSizeCropped")
-  of TestTestEntityDef_tileRenderMode.FullSizeUncropped:
+  of LdtkTileRenderMode.FullSizeUncropped:
     return newJString("FullSizeUncropped")
-  of TestTestEntityDef_tileRenderMode.Repeat:
+  of LdtkTileRenderMode.Repeat:
     return newJString("Repeat")
-  of TestTestEntityDef_tileRenderMode.FitInside:
+  of LdtkTileRenderMode.FitInside:
     return newJString("FitInside")
-  of TestTestEntityDef_tileRenderMode.NineSlice:
+  of LdtkTileRenderMode.NineSlice:
     return newJString("NineSlice")
-  of TestTestEntityDef_tileRenderMode.Cover:
+  of LdtkTileRenderMode.Cover:
     return newJString("Cover")
-  of TestTestEntityDef_tileRenderMode.Stretch:
+  of LdtkTileRenderMode.Stretch:
     return newJString("Stretch")
   
-proc fromJsonHook*(target: var TestTestEntityDef_tileRenderMode;
-                   source: JsonNode) =
+proc fromJsonHook*(target: var LdtkTileRenderMode; source: JsonNode) =
   target = case getStr(source)
   of "FullSizeCropped":
-    TestTestEntityDef_tileRenderMode.FullSizeCropped
+    LdtkTileRenderMode.FullSizeCropped
   of "FullSizeUncropped":
-    TestTestEntityDef_tileRenderMode.FullSizeUncropped
+    LdtkTileRenderMode.FullSizeUncropped
   of "Repeat":
-    TestTestEntityDef_tileRenderMode.Repeat
+    LdtkTileRenderMode.Repeat
   of "FitInside":
-    TestTestEntityDef_tileRenderMode.FitInside
+    LdtkTileRenderMode.FitInside
   of "NineSlice":
-    TestTestEntityDef_tileRenderMode.NineSlice
+    LdtkTileRenderMode.NineSlice
   of "Cover":
-    TestTestEntityDef_tileRenderMode.Cover
+    LdtkTileRenderMode.Cover
   of "Stretch":
-    TestTestEntityDef_tileRenderMode.Stretch
+    LdtkTileRenderMode.Stretch
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc fromJsonHook*(target: var TestEntityDef; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkEntityDef; source: JsonNode) =
   assert("allowOutOfBounds" in source,
-         "allowOutOfBounds" & " is missing while decoding " & "TestEntityDef")
+         "allowOutOfBounds" & " is missing while decoding " & "LdtkEntityDef")
   target.allowOutOfBounds = jsonTo(source{"allowOutOfBounds"},
                                    typeof(target.allowOutOfBounds))
   assert("pivotY" in source,
-         "pivotY" & " is missing while decoding " & "TestEntityDef")
+         "pivotY" & " is missing while decoding " & "LdtkEntityDef")
   target.pivotY = jsonTo(source{"pivotY"}, typeof(target.pivotY))
   assert("tileOpacity" in source,
-         "tileOpacity" & " is missing while decoding " & "TestEntityDef")
+         "tileOpacity" & " is missing while decoding " & "LdtkEntityDef")
   target.tileOpacity = jsonTo(source{"tileOpacity"}, typeof(target.tileOpacity))
   assert("color" in source,
-         "color" & " is missing while decoding " & "TestEntityDef")
+         "color" & " is missing while decoding " & "LdtkEntityDef")
   target.color = jsonTo(source{"color"}, typeof(target.color))
   assert("limitScope" in source,
-         "limitScope" & " is missing while decoding " & "TestEntityDef")
+         "limitScope" & " is missing while decoding " & "LdtkEntityDef")
   target.limitScope = jsonTo(source{"limitScope"}, typeof(target.limitScope))
   assert("limitBehavior" in source,
-         "limitBehavior" & " is missing while decoding " & "TestEntityDef")
+         "limitBehavior" & " is missing while decoding " & "LdtkEntityDef")
   target.limitBehavior = jsonTo(source{"limitBehavior"},
                                 typeof(target.limitBehavior))
   assert("hollow" in source,
-         "hollow" & " is missing while decoding " & "TestEntityDef")
+         "hollow" & " is missing while decoding " & "LdtkEntityDef")
   target.hollow = jsonTo(source{"hollow"}, typeof(target.hollow))
   assert("height" in source,
-         "height" & " is missing while decoding " & "TestEntityDef")
+         "height" & " is missing while decoding " & "LdtkEntityDef")
   target.height = jsonTo(source{"height"}, typeof(target.height))
   assert("renderMode" in source,
-         "renderMode" & " is missing while decoding " & "TestEntityDef")
+         "renderMode" & " is missing while decoding " & "LdtkEntityDef")
   target.renderMode = jsonTo(source{"renderMode"}, typeof(target.renderMode))
   if "tilesetId" in source and source{"tilesetId"}.kind != JNull:
     target.tilesetId = some(jsonTo(source{"tilesetId"},
                                    typeof(unsafeGet(target.tilesetId))))
   assert("keepAspectRatio" in source,
-         "keepAspectRatio" & " is missing while decoding " & "TestEntityDef")
+         "keepAspectRatio" & " is missing while decoding " & "LdtkEntityDef")
   target.keepAspectRatio = jsonTo(source{"keepAspectRatio"},
                                   typeof(target.keepAspectRatio))
   if "minWidth" in source and source{"minWidth"}.kind != JNull:
     target.minWidth = some(jsonTo(source{"minWidth"},
                                   typeof(unsafeGet(target.minWidth))))
   assert("showName" in source,
-         "showName" & " is missing while decoding " & "TestEntityDef")
+         "showName" & " is missing while decoding " & "LdtkEntityDef")
   target.showName = jsonTo(source{"showName"}, typeof(target.showName))
   assert("resizableX" in source,
-         "resizableX" & " is missing while decoding " & "TestEntityDef")
+         "resizableX" & " is missing while decoding " & "LdtkEntityDef")
   target.resizableX = jsonTo(source{"resizableX"}, typeof(target.resizableX))
   assert("identifier" in source,
-         "identifier" & " is missing while decoding " & "TestEntityDef")
+         "identifier" & " is missing while decoding " & "LdtkEntityDef")
   target.identifier = jsonTo(source{"identifier"}, typeof(target.identifier))
   assert("maxCount" in source,
-         "maxCount" & " is missing while decoding " & "TestEntityDef")
+         "maxCount" & " is missing while decoding " & "LdtkEntityDef")
   target.maxCount = jsonTo(source{"maxCount"}, typeof(target.maxCount))
   if "tileId" in source and source{"tileId"}.kind != JNull:
     target.tileId = some(jsonTo(source{"tileId"},
                                 typeof(unsafeGet(target.tileId))))
   assert("pivotX" in source,
-         "pivotX" & " is missing while decoding " & "TestEntityDef")
+         "pivotX" & " is missing while decoding " & "LdtkEntityDef")
   target.pivotX = jsonTo(source{"pivotX"}, typeof(target.pivotX))
   if "doc" in source and source{"doc"}.kind != JNull:
     target.doc = some(jsonTo(source{"doc"}, typeof(unsafeGet(target.doc))))
   assert("fieldDefs" in source,
-         "fieldDefs" & " is missing while decoding " & "TestEntityDef")
+         "fieldDefs" & " is missing while decoding " & "LdtkEntityDef")
   target.fieldDefs = jsonTo(source{"fieldDefs"}, typeof(target.fieldDefs))
   assert("uid" in source,
-         "uid" & " is missing while decoding " & "TestEntityDef")
+         "uid" & " is missing while decoding " & "LdtkEntityDef")
   target.uid = jsonTo(source{"uid"}, typeof(target.uid))
   assert("tileRenderMode" in source,
-         "tileRenderMode" & " is missing while decoding " & "TestEntityDef")
+         "tileRenderMode" & " is missing while decoding " & "LdtkEntityDef")
   target.tileRenderMode = jsonTo(source{"tileRenderMode"},
                                  typeof(target.tileRenderMode))
   if "uiTileRect" in source and source{"uiTileRect"}.kind != JNull:
     target.uiTileRect = some(jsonTo(source{"uiTileRect"},
                                     typeof(unsafeGet(target.uiTileRect))))
   assert("resizableY" in source,
-         "resizableY" & " is missing while decoding " & "TestEntityDef")
+         "resizableY" & " is missing while decoding " & "LdtkEntityDef")
   target.resizableY = jsonTo(source{"resizableY"}, typeof(target.resizableY))
   assert("lineOpacity" in source,
-         "lineOpacity" & " is missing while decoding " & "TestEntityDef")
+         "lineOpacity" & " is missing while decoding " & "LdtkEntityDef")
   target.lineOpacity = jsonTo(source{"lineOpacity"}, typeof(target.lineOpacity))
   if "minHeight" in source and source{"minHeight"}.kind != JNull:
     target.minHeight = some(jsonTo(source{"minHeight"},
@@ -1762,29 +1756,29 @@ proc fromJsonHook*(target: var TestEntityDef; source: JsonNode) =
     target.tileRect = some(jsonTo(source{"tileRect"},
                                   typeof(unsafeGet(target.tileRect))))
   assert("nineSliceBorders" in source,
-         "nineSliceBorders" & " is missing while decoding " & "TestEntityDef")
+         "nineSliceBorders" & " is missing while decoding " & "LdtkEntityDef")
   target.nineSliceBorders = jsonTo(source{"nineSliceBorders"},
                                    typeof(target.nineSliceBorders))
   if "maxWidth" in source and source{"maxWidth"}.kind != JNull:
     target.maxWidth = some(jsonTo(source{"maxWidth"},
                                   typeof(unsafeGet(target.maxWidth))))
   assert("width" in source,
-         "width" & " is missing while decoding " & "TestEntityDef")
+         "width" & " is missing while decoding " & "LdtkEntityDef")
   target.width = jsonTo(source{"width"}, typeof(target.width))
   assert("tags" in source,
-         "tags" & " is missing while decoding " & "TestEntityDef")
+         "tags" & " is missing while decoding " & "LdtkEntityDef")
   target.tags = jsonTo(source{"tags"}, typeof(target.tags))
   if "maxHeight" in source and source{"maxHeight"}.kind != JNull:
     target.maxHeight = some(jsonTo(source{"maxHeight"},
                                    typeof(unsafeGet(target.maxHeight))))
   assert("exportToToc" in source,
-         "exportToToc" & " is missing while decoding " & "TestEntityDef")
+         "exportToToc" & " is missing while decoding " & "LdtkEntityDef")
   target.exportToToc = jsonTo(source{"exportToToc"}, typeof(target.exportToToc))
   assert("fillOpacity" in source,
-         "fillOpacity" & " is missing while decoding " & "TestEntityDef")
+         "fillOpacity" & " is missing while decoding " & "LdtkEntityDef")
   target.fillOpacity = jsonTo(source{"fillOpacity"}, typeof(target.fillOpacity))
 
-proc toJsonHook*(source: TestEntityDef): JsonNode =
+proc toJsonHook*(source: LdtkEntityDef): JsonNode =
   result = newJObject()
   result{"allowOutOfBounds"} = toJson(source.allowOutOfBounds)
   result{"pivotY"} = toJson(source.pivotY)
@@ -1830,15 +1824,15 @@ proc toJsonHook*(source: TestEntityDef): JsonNode =
   result{"exportToToc"} = toJson(source.exportToToc)
   result{"fillOpacity"} = toJson(source.fillOpacity)
 
-proc fromJsonHook*(target: var TestEnumDefValues; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkEnumDefValues; source: JsonNode) =
   if "__tileSrcRect" in source and source{"__tileSrcRect"}.kind != JNull:
     target.tileSrcRect = some(jsonTo(source{"__tileSrcRect"},
                                      typeof(unsafeGet(target.tileSrcRect))))
   assert("color" in source,
-         "color" & " is missing while decoding " & "TestEnumDefValues")
+         "color" & " is missing while decoding " & "LdtkEnumDefValues")
   target.color = jsonTo(source{"color"}, typeof(target.color))
   assert("id" in source,
-         "id" & " is missing while decoding " & "TestEnumDefValues")
+         "id" & " is missing while decoding " & "LdtkEnumDefValues")
   target.id = jsonTo(source{"id"}, typeof(target.id))
   if "tileId" in source and source{"tileId"}.kind != JNull:
     target.tileId = some(jsonTo(source{"tileId"},
@@ -1847,7 +1841,7 @@ proc fromJsonHook*(target: var TestEnumDefValues; source: JsonNode) =
     target.tileRect = some(jsonTo(source{"tileRect"},
                                   typeof(unsafeGet(target.tileRect))))
 
-proc toJsonHook*(source: TestEnumDefValues): JsonNode =
+proc toJsonHook*(source: LdtkEnumDefValues): JsonNode =
   result = newJObject()
   if isSome(source.tileSrcRect):
     result{"__tileSrcRect"} = toJson(source.tileSrcRect)
@@ -1858,15 +1852,15 @@ proc toJsonHook*(source: TestEnumDefValues): JsonNode =
   if isSome(source.tileRect):
     result{"tileRect"} = toJson(source.tileRect)
 
-proc fromJsonHook*(target: var TestEnumDef; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkEnumDef; source: JsonNode) =
   assert("values" in source,
-         "values" & " is missing while decoding " & "TestEnumDef")
+         "values" & " is missing while decoding " & "LdtkEnumDef")
   target.values = jsonTo(source{"values"}, typeof(target.values))
   if "externalRelPath" in source and source{"externalRelPath"}.kind != JNull:
     target.externalRelPath = some(jsonTo(source{"externalRelPath"},
         typeof(unsafeGet(target.externalRelPath))))
   assert("identifier" in source,
-         "identifier" & " is missing while decoding " & "TestEnumDef")
+         "identifier" & " is missing while decoding " & "LdtkEnumDef")
   target.identifier = jsonTo(source{"identifier"}, typeof(target.identifier))
   if "externalFileChecksum" in source and
       source{"externalFileChecksum"}.kind != JNull:
@@ -1876,13 +1870,13 @@ proc fromJsonHook*(target: var TestEnumDef; source: JsonNode) =
   if "iconTilesetUid" in source and source{"iconTilesetUid"}.kind != JNull:
     target.iconTilesetUid = some(jsonTo(source{"iconTilesetUid"}, typeof(
         unsafeGet(target.iconTilesetUid))))
-  assert("uid" in source, "uid" & " is missing while decoding " & "TestEnumDef")
+  assert("uid" in source, "uid" & " is missing while decoding " & "LdtkEnumDef")
   target.uid = jsonTo(source{"uid"}, typeof(target.uid))
   assert("tags" in source,
-         "tags" & " is missing while decoding " & "TestEnumDef")
+         "tags" & " is missing while decoding " & "LdtkEnumDef")
   target.tags = jsonTo(source{"tags"}, typeof(target.tags))
 
-proc toJsonHook*(source: TestEnumDef): JsonNode =
+proc toJsonHook*(source: LdtkEnumDef): JsonNode =
   result = newJObject()
   result{"values"} = toJson(source.values)
   if isSome(source.externalRelPath):
@@ -1895,171 +1889,171 @@ proc toJsonHook*(source: TestEnumDef): JsonNode =
   result{"uid"} = toJson(source.uid)
   result{"tags"} = toJson(source.tags)
 
-proc toJsonHook*(source: TestTestLayerDef_type): JsonNode =
+proc toJsonHook*(source: LdtkType): JsonNode =
   case source
-  of TestTestLayerDef_type.Tiles:
+  of LdtkType.Tiles:
     return newJString("Tiles")
-  of TestTestLayerDef_type.Entities:
+  of LdtkType.Entities:
     return newJString("Entities")
-  of TestTestLayerDef_type.AutoLayer:
+  of LdtkType.AutoLayer:
     return newJString("AutoLayer")
-  of TestTestLayerDef_type.IntGrid:
+  of LdtkType.IntGrid:
     return newJString("IntGrid")
   
-proc fromJsonHook*(target: var TestTestLayerDef_type; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkType; source: JsonNode) =
   target = case getStr(source)
   of "Tiles":
-    TestTestLayerDef_type.Tiles
+    LdtkType.Tiles
   of "Entities":
-    TestTestLayerDef_type.Entities
+    LdtkType.Entities
   of "AutoLayer":
-    TestTestLayerDef_type.AutoLayer
+    LdtkType.AutoLayer
   of "IntGrid":
-    TestTestLayerDef_type.IntGrid
+    LdtkType.IntGrid
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc toJsonHook*(source: TestTestAutoRuleDef_checker): JsonNode =
+proc toJsonHook*(source: LdtkChecker): JsonNode =
   case source
-  of TestTestAutoRuleDef_checker.Horizontal:
+  of LdtkChecker.Horizontal:
     return newJString("Horizontal")
-  of TestTestAutoRuleDef_checker.Vertical:
+  of LdtkChecker.Vertical:
     return newJString("Vertical")
-  of TestTestAutoRuleDef_checker.None:
+  of LdtkChecker.None:
     return newJString("None")
   
-proc fromJsonHook*(target: var TestTestAutoRuleDef_checker; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkChecker; source: JsonNode) =
   target = case getStr(source)
   of "Horizontal":
-    TestTestAutoRuleDef_checker.Horizontal
+    LdtkChecker.Horizontal
   of "Vertical":
-    TestTestAutoRuleDef_checker.Vertical
+    LdtkChecker.Vertical
   of "None":
-    TestTestAutoRuleDef_checker.None
+    LdtkChecker.None
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc toJsonHook*(source: TestTestAutoRuleDef_tileMode): JsonNode =
+proc toJsonHook*(source: LdtkTileMode): JsonNode =
   case source
-  of TestTestAutoRuleDef_tileMode.Single:
+  of LdtkTileMode.Single:
     return newJString("Single")
-  of TestTestAutoRuleDef_tileMode.Stamp:
+  of LdtkTileMode.Stamp:
     return newJString("Stamp")
   
-proc fromJsonHook*(target: var TestTestAutoRuleDef_tileMode; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkTileMode; source: JsonNode) =
   target = case getStr(source)
   of "Single":
-    TestTestAutoRuleDef_tileMode.Single
+    LdtkTileMode.Single
   of "Stamp":
-    TestTestAutoRuleDef_tileMode.Stamp
+    LdtkTileMode.Stamp
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc fromJsonHook*(target: var TestAutoRuleDef; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkAutoRuleDef; source: JsonNode) =
   assert("checker" in source,
-         "checker" & " is missing while decoding " & "TestAutoRuleDef")
+         "checker" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.checker = jsonTo(source{"checker"}, typeof(target.checker))
   assert("pivotY" in source,
-         "pivotY" & " is missing while decoding " & "TestAutoRuleDef")
+         "pivotY" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.pivotY = jsonTo(source{"pivotY"}, typeof(target.pivotY))
   assert("breakOnMatch" in source,
-         "breakOnMatch" & " is missing while decoding " & "TestAutoRuleDef")
+         "breakOnMatch" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.breakOnMatch = jsonTo(source{"breakOnMatch"},
                                typeof(target.breakOnMatch))
   assert("perlinOctaves" in source,
-         "perlinOctaves" & " is missing while decoding " & "TestAutoRuleDef")
+         "perlinOctaves" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.perlinOctaves = jsonTo(source{"perlinOctaves"},
                                 typeof(target.perlinOctaves))
   assert("yModulo" in source,
-         "yModulo" & " is missing while decoding " & "TestAutoRuleDef")
+         "yModulo" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.yModulo = jsonTo(source{"yModulo"}, typeof(target.yModulo))
   assert("size" in source,
-         "size" & " is missing while decoding " & "TestAutoRuleDef")
+         "size" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.size = jsonTo(source{"size"}, typeof(target.size))
   assert("tileMode" in source,
-         "tileMode" & " is missing while decoding " & "TestAutoRuleDef")
+         "tileMode" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.tileMode = jsonTo(source{"tileMode"}, typeof(target.tileMode))
   assert("tileRandomXMax" in source,
-         "tileRandomXMax" & " is missing while decoding " & "TestAutoRuleDef")
+         "tileRandomXMax" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.tileRandomXMax = jsonTo(source{"tileRandomXMax"},
                                  typeof(target.tileRandomXMax))
   assert("tileRandomXMin" in source,
-         "tileRandomXMin" & " is missing while decoding " & "TestAutoRuleDef")
+         "tileRandomXMin" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.tileRandomXMin = jsonTo(source{"tileRandomXMin"},
                                  typeof(target.tileRandomXMin))
   assert("xModulo" in source,
-         "xModulo" & " is missing while decoding " & "TestAutoRuleDef")
+         "xModulo" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.xModulo = jsonTo(source{"xModulo"}, typeof(target.xModulo))
   assert("yOffset" in source,
-         "yOffset" & " is missing while decoding " & "TestAutoRuleDef")
+         "yOffset" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.yOffset = jsonTo(source{"yOffset"}, typeof(target.yOffset))
   assert("flipX" in source,
-         "flipX" & " is missing while decoding " & "TestAutoRuleDef")
+         "flipX" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.flipX = jsonTo(source{"flipX"}, typeof(target.flipX))
   assert("tileYOffset" in source,
-         "tileYOffset" & " is missing while decoding " & "TestAutoRuleDef")
+         "tileYOffset" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.tileYOffset = jsonTo(source{"tileYOffset"}, typeof(target.tileYOffset))
   assert("chance" in source,
-         "chance" & " is missing while decoding " & "TestAutoRuleDef")
+         "chance" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.chance = jsonTo(source{"chance"}, typeof(target.chance))
   assert("tileRandomYMax" in source,
-         "tileRandomYMax" & " is missing while decoding " & "TestAutoRuleDef")
+         "tileRandomYMax" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.tileRandomYMax = jsonTo(source{"tileRandomYMax"},
                                  typeof(target.tileRandomYMax))
   assert("perlinActive" in source,
-         "perlinActive" & " is missing while decoding " & "TestAutoRuleDef")
+         "perlinActive" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.perlinActive = jsonTo(source{"perlinActive"},
                                typeof(target.perlinActive))
   assert("perlinScale" in source,
-         "perlinScale" & " is missing while decoding " & "TestAutoRuleDef")
+         "perlinScale" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.perlinScale = jsonTo(source{"perlinScale"}, typeof(target.perlinScale))
   if "outOfBoundsValue" in source and
       source{"outOfBoundsValue"}.kind != JNull:
     target.outOfBoundsValue = some(jsonTo(source{"outOfBoundsValue"},
         typeof(unsafeGet(target.outOfBoundsValue))))
   assert("pivotX" in source,
-         "pivotX" & " is missing while decoding " & "TestAutoRuleDef")
+         "pivotX" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.pivotX = jsonTo(source{"pivotX"}, typeof(target.pivotX))
   assert("flipY" in source,
-         "flipY" & " is missing while decoding " & "TestAutoRuleDef")
+         "flipY" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.flipY = jsonTo(source{"flipY"}, typeof(target.flipY))
   assert("active" in source,
-         "active" & " is missing while decoding " & "TestAutoRuleDef")
+         "active" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.active = jsonTo(source{"active"}, typeof(target.active))
   assert("uid" in source,
-         "uid" & " is missing while decoding " & "TestAutoRuleDef")
+         "uid" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.uid = jsonTo(source{"uid"}, typeof(target.uid))
   if "tileIds" in source and source{"tileIds"}.kind != JNull:
     target.tileIds = some(jsonTo(source{"tileIds"},
                                  typeof(unsafeGet(target.tileIds))))
   assert("invalidated" in source,
-         "invalidated" & " is missing while decoding " & "TestAutoRuleDef")
+         "invalidated" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.invalidated = jsonTo(source{"invalidated"}, typeof(target.invalidated))
   assert("pattern" in source,
-         "pattern" & " is missing while decoding " & "TestAutoRuleDef")
+         "pattern" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.pattern = jsonTo(source{"pattern"}, typeof(target.pattern))
   assert("alpha" in source,
-         "alpha" & " is missing while decoding " & "TestAutoRuleDef")
+         "alpha" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.alpha = jsonTo(source{"alpha"}, typeof(target.alpha))
   assert("tileRectsIds" in source,
-         "tileRectsIds" & " is missing while decoding " & "TestAutoRuleDef")
+         "tileRectsIds" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.tileRectsIds = jsonTo(source{"tileRectsIds"},
                                typeof(target.tileRectsIds))
   assert("tileXOffset" in source,
-         "tileXOffset" & " is missing while decoding " & "TestAutoRuleDef")
+         "tileXOffset" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.tileXOffset = jsonTo(source{"tileXOffset"}, typeof(target.tileXOffset))
   assert("xOffset" in source,
-         "xOffset" & " is missing while decoding " & "TestAutoRuleDef")
+         "xOffset" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.xOffset = jsonTo(source{"xOffset"}, typeof(target.xOffset))
   assert("tileRandomYMin" in source,
-         "tileRandomYMin" & " is missing while decoding " & "TestAutoRuleDef")
+         "tileRandomYMin" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.tileRandomYMin = jsonTo(source{"tileRandomYMin"},
                                  typeof(target.tileRandomYMin))
   assert("perlinSeed" in source,
-         "perlinSeed" & " is missing while decoding " & "TestAutoRuleDef")
+         "perlinSeed" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.perlinSeed = jsonTo(source{"perlinSeed"}, typeof(target.perlinSeed))
 
-proc toJsonHook*(source: TestAutoRuleDef): JsonNode =
+proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode =
   result = newJObject()
   result{"checker"} = toJson(source.checker)
   result{"pivotY"} = toJson(source.pivotY)
@@ -2095,9 +2089,9 @@ proc toJsonHook*(source: TestAutoRuleDef): JsonNode =
   result{"tileRandomYMin"} = toJson(source.tileRandomYMin)
   result{"perlinSeed"} = toJson(source.perlinSeed)
 
-proc fromJsonHook*(target: var TestAutoLayerRuleGroup; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkAutoLayerRuleGroup; source: JsonNode) =
   assert("isOptional" in source, "isOptional" & " is missing while decoding " &
-      "TestAutoLayerRuleGroup")
+      "LdtkAutoLayerRuleGroup")
   target.isOptional = jsonTo(source{"isOptional"}, typeof(target.isOptional))
   if "color" in source and source{"color"}.kind != JNull:
     target.color = some(jsonTo(source{"color"}, typeof(unsafeGet(target.color))))
@@ -2105,34 +2099,34 @@ proc fromJsonHook*(target: var TestAutoLayerRuleGroup; source: JsonNode) =
     target.collapsed = some(jsonTo(source{"collapsed"},
                                    typeof(unsafeGet(target.collapsed))))
   assert("usesWizard" in source, "usesWizard" & " is missing while decoding " &
-      "TestAutoLayerRuleGroup")
+      "LdtkAutoLayerRuleGroup")
   target.usesWizard = jsonTo(source{"usesWizard"}, typeof(target.usesWizard))
   assert("biomeRequirementMode" in source, "biomeRequirementMode" &
       " is missing while decoding " &
-      "TestAutoLayerRuleGroup")
+      "LdtkAutoLayerRuleGroup")
   target.biomeRequirementMode = jsonTo(source{"biomeRequirementMode"},
                                        typeof(target.biomeRequirementMode))
   assert("rules" in source,
-         "rules" & " is missing while decoding " & "TestAutoLayerRuleGroup")
+         "rules" & " is missing while decoding " & "LdtkAutoLayerRuleGroup")
   target.rules = jsonTo(source{"rules"}, typeof(target.rules))
   if "icon" in source and source{"icon"}.kind != JNull:
     target.icon = some(jsonTo(source{"icon"}, typeof(unsafeGet(target.icon))))
   assert("active" in source,
-         "active" & " is missing while decoding " & "TestAutoLayerRuleGroup")
+         "active" & " is missing while decoding " & "LdtkAutoLayerRuleGroup")
   target.active = jsonTo(source{"active"}, typeof(target.active))
   assert("uid" in source,
-         "uid" & " is missing while decoding " & "TestAutoLayerRuleGroup")
+         "uid" & " is missing while decoding " & "LdtkAutoLayerRuleGroup")
   target.uid = jsonTo(source{"uid"}, typeof(target.uid))
   assert("name" in source,
-         "name" & " is missing while decoding " & "TestAutoLayerRuleGroup")
+         "name" & " is missing while decoding " & "LdtkAutoLayerRuleGroup")
   target.name = jsonTo(source{"name"}, typeof(target.name))
   assert("requiredBiomeValues" in source, "requiredBiomeValues" &
       " is missing while decoding " &
-      "TestAutoLayerRuleGroup")
+      "LdtkAutoLayerRuleGroup")
   target.requiredBiomeValues = jsonTo(source{"requiredBiomeValues"},
                                       typeof(target.requiredBiomeValues))
 
-proc toJsonHook*(source: TestAutoLayerRuleGroup): JsonNode =
+proc toJsonHook*(source: LdtkAutoLayerRuleGroup): JsonNode =
   result = newJObject()
   result{"isOptional"} = toJson(source.isOptional)
   if isSome(source.color):
@@ -2149,17 +2143,17 @@ proc toJsonHook*(source: TestAutoLayerRuleGroup): JsonNode =
   result{"name"} = toJson(source.name)
   result{"requiredBiomeValues"} = toJson(source.requiredBiomeValues)
 
-proc fromJsonHook*(target: var TestIntGridValueGroupDef; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkIntGridValueGroupDef; source: JsonNode) =
   if "color" in source and source{"color"}.kind != JNull:
     target.color = some(jsonTo(source{"color"}, typeof(unsafeGet(target.color))))
   if "identifier" in source and source{"identifier"}.kind != JNull:
     target.identifier = some(jsonTo(source{"identifier"},
                                     typeof(unsafeGet(target.identifier))))
   assert("uid" in source,
-         "uid" & " is missing while decoding " & "TestIntGridValueGroupDef")
+         "uid" & " is missing while decoding " & "LdtkIntGridValueGroupDef")
   target.uid = jsonTo(source{"uid"}, typeof(target.uid))
 
-proc toJsonHook*(source: TestIntGridValueGroupDef): JsonNode =
+proc toJsonHook*(source: LdtkIntGridValueGroupDef): JsonNode =
   result = newJObject()
   if isSome(source.color):
     result{"color"} = toJson(source.color)
@@ -2167,16 +2161,16 @@ proc toJsonHook*(source: TestIntGridValueGroupDef): JsonNode =
     result{"identifier"} = toJson(source.identifier)
   result{"uid"} = toJson(source.uid)
 
-proc fromJsonHook*(target: var TestLayerDef; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkLayerDef; source: JsonNode) =
   assert("type" in source,
-         "type" & " is missing while decoding " & "TestLayerDef")
+         "type" & " is missing while decoding " & "LdtkLayerDef")
   target.type1 = jsonTo(source{"type"}, typeof(target.type1))
   if "autoTilesetDefUid" in source and
       source{"autoTilesetDefUid"}.kind != JNull:
     target.autoTilesetDefUid = some(jsonTo(source{"autoTilesetDefUid"},
         typeof(unsafeGet(target.autoTilesetDefUid))))
   assert("parallaxScaling" in source,
-         "parallaxScaling" & " is missing while decoding " & "TestLayerDef")
+         "parallaxScaling" & " is missing while decoding " & "LdtkLayerDef")
   target.parallaxScaling = jsonTo(source{"parallaxScaling"},
                                   typeof(target.parallaxScaling))
   if "biomeFieldUid" in source and source{"biomeFieldUid"}.kind != JNull:
@@ -2188,21 +2182,21 @@ proc fromJsonHook*(target: var TestLayerDef; source: JsonNode) =
         source{"autoTilesKilledByOtherLayerUid"},
         typeof(unsafeGet(target.autoTilesKilledByOtherLayerUid))))
   assert("inactiveOpacity" in source,
-         "inactiveOpacity" & " is missing while decoding " & "TestLayerDef")
+         "inactiveOpacity" & " is missing while decoding " & "LdtkLayerDef")
   target.inactiveOpacity = jsonTo(source{"inactiveOpacity"},
                                   typeof(target.inactiveOpacity))
   assert("__type" in source,
-         "__type" & " is missing while decoding " & "TestLayerDef")
+         "__type" & " is missing while decoding " & "LdtkLayerDef")
   target.`type` = jsonTo(source{"__type"}, typeof(target.`type`))
   assert("autoRuleGroups" in source,
-         "autoRuleGroups" & " is missing while decoding " & "TestLayerDef")
+         "autoRuleGroups" & " is missing while decoding " & "LdtkLayerDef")
   target.autoRuleGroups = jsonTo(source{"autoRuleGroups"},
                                  typeof(target.autoRuleGroups))
   assert("gridSize" in source,
-         "gridSize" & " is missing while decoding " & "TestLayerDef")
+         "gridSize" & " is missing while decoding " & "LdtkLayerDef")
   target.gridSize = jsonTo(source{"gridSize"}, typeof(target.gridSize))
   assert("hideInList" in source,
-         "hideInList" & " is missing while decoding " & "TestLayerDef")
+         "hideInList" & " is missing while decoding " & "LdtkLayerDef")
   target.hideInList = jsonTo(source{"hideInList"}, typeof(target.hideInList))
   if "tilesetDefUid" in source and source{"tilesetDefUid"}.kind != JNull:
     target.tilesetDefUid = some(jsonTo(source{"tilesetDefUid"},
@@ -2211,48 +2205,48 @@ proc fromJsonHook*(target: var TestLayerDef; source: JsonNode) =
     target.uiColor = some(jsonTo(source{"uiColor"},
                                  typeof(unsafeGet(target.uiColor))))
   assert("requiredTags" in source,
-         "requiredTags" & " is missing while decoding " & "TestLayerDef")
+         "requiredTags" & " is missing while decoding " & "LdtkLayerDef")
   target.requiredTags = jsonTo(source{"requiredTags"},
                                typeof(target.requiredTags))
   assert("tilePivotX" in source,
-         "tilePivotX" & " is missing while decoding " & "TestLayerDef")
+         "tilePivotX" & " is missing while decoding " & "LdtkLayerDef")
   target.tilePivotX = jsonTo(source{"tilePivotX"}, typeof(target.tilePivotX))
   assert("uiFilterTags" in source,
-         "uiFilterTags" & " is missing while decoding " & "TestLayerDef")
+         "uiFilterTags" & " is missing while decoding " & "LdtkLayerDef")
   target.uiFilterTags = jsonTo(source{"uiFilterTags"},
                                typeof(target.uiFilterTags))
   assert("guideGridWid" in source,
-         "guideGridWid" & " is missing while decoding " & "TestLayerDef")
+         "guideGridWid" & " is missing while decoding " & "LdtkLayerDef")
   target.guideGridWid = jsonTo(source{"guideGridWid"},
                                typeof(target.guideGridWid))
   assert("parallaxFactorX" in source,
-         "parallaxFactorX" & " is missing while decoding " & "TestLayerDef")
+         "parallaxFactorX" & " is missing while decoding " & "LdtkLayerDef")
   target.parallaxFactorX = jsonTo(source{"parallaxFactorX"},
                                   typeof(target.parallaxFactorX))
   assert("identifier" in source,
-         "identifier" & " is missing while decoding " & "TestLayerDef")
+         "identifier" & " is missing while decoding " & "LdtkLayerDef")
   target.identifier = jsonTo(source{"identifier"}, typeof(target.identifier))
   assert("canSelectWhenInactive" in source, "canSelectWhenInactive" &
       " is missing while decoding " &
-      "TestLayerDef")
+      "LdtkLayerDef")
   target.canSelectWhenInactive = jsonTo(source{"canSelectWhenInactive"},
                                         typeof(target.canSelectWhenInactive))
   assert("pxOffsetX" in source,
-         "pxOffsetX" & " is missing while decoding " & "TestLayerDef")
+         "pxOffsetX" & " is missing while decoding " & "LdtkLayerDef")
   target.pxOffsetX = jsonTo(source{"pxOffsetX"}, typeof(target.pxOffsetX))
   assert("tilePivotY" in source,
-         "tilePivotY" & " is missing while decoding " & "TestLayerDef")
+         "tilePivotY" & " is missing while decoding " & "LdtkLayerDef")
   target.tilePivotY = jsonTo(source{"tilePivotY"}, typeof(target.tilePivotY))
   assert("excludedTags" in source,
-         "excludedTags" & " is missing while decoding " & "TestLayerDef")
+         "excludedTags" & " is missing while decoding " & "LdtkLayerDef")
   target.excludedTags = jsonTo(source{"excludedTags"},
                                typeof(target.excludedTags))
   if "doc" in source and source{"doc"}.kind != JNull:
     target.doc = some(jsonTo(source{"doc"}, typeof(unsafeGet(target.doc))))
-  assert("uid" in source, "uid" & " is missing while decoding " & "TestLayerDef")
+  assert("uid" in source, "uid" & " is missing while decoding " & "LdtkLayerDef")
   target.uid = jsonTo(source{"uid"}, typeof(target.uid))
   assert("guideGridHei" in source,
-         "guideGridHei" & " is missing while decoding " & "TestLayerDef")
+         "guideGridHei" & " is missing while decoding " & "LdtkLayerDef")
   target.guideGridHei = jsonTo(source{"guideGridHei"},
                                typeof(target.guideGridHei))
   if "autoSourceLayerDefUid" in source and
@@ -2261,39 +2255,39 @@ proc fromJsonHook*(target: var TestLayerDef; source: JsonNode) =
         source{"autoSourceLayerDefUid"},
         typeof(unsafeGet(target.autoSourceLayerDefUid))))
   assert("displayOpacity" in source,
-         "displayOpacity" & " is missing while decoding " & "TestLayerDef")
+         "displayOpacity" & " is missing while decoding " & "LdtkLayerDef")
   target.displayOpacity = jsonTo(source{"displayOpacity"},
                                  typeof(target.displayOpacity))
   assert("intGridValuesGroups" in source,
-         "intGridValuesGroups" & " is missing while decoding " & "TestLayerDef")
+         "intGridValuesGroups" & " is missing while decoding " & "LdtkLayerDef")
   target.intGridValuesGroups = jsonTo(source{"intGridValuesGroups"},
                                       typeof(target.intGridValuesGroups))
   assert("hideFieldsWhenInactive" in source, "hideFieldsWhenInactive" &
       " is missing while decoding " &
-      "TestLayerDef")
+      "LdtkLayerDef")
   target.hideFieldsWhenInactive = jsonTo(source{"hideFieldsWhenInactive"},
       typeof(target.hideFieldsWhenInactive))
   assert("useAsyncRender" in source,
-         "useAsyncRender" & " is missing while decoding " & "TestLayerDef")
+         "useAsyncRender" & " is missing while decoding " & "LdtkLayerDef")
   target.useAsyncRender = jsonTo(source{"useAsyncRender"},
                                  typeof(target.useAsyncRender))
   assert("pxOffsetY" in source,
-         "pxOffsetY" & " is missing while decoding " & "TestLayerDef")
+         "pxOffsetY" & " is missing while decoding " & "LdtkLayerDef")
   target.pxOffsetY = jsonTo(source{"pxOffsetY"}, typeof(target.pxOffsetY))
   assert("parallaxFactorY" in source,
-         "parallaxFactorY" & " is missing while decoding " & "TestLayerDef")
+         "parallaxFactorY" & " is missing while decoding " & "LdtkLayerDef")
   target.parallaxFactorY = jsonTo(source{"parallaxFactorY"},
                                   typeof(target.parallaxFactorY))
   assert("intGridValues" in source,
-         "intGridValues" & " is missing while decoding " & "TestLayerDef")
+         "intGridValues" & " is missing while decoding " & "LdtkLayerDef")
   target.intGridValues = jsonTo(source{"intGridValues"},
                                 typeof(target.intGridValues))
   assert("renderInWorldView" in source,
-         "renderInWorldView" & " is missing while decoding " & "TestLayerDef")
+         "renderInWorldView" & " is missing while decoding " & "LdtkLayerDef")
   target.renderInWorldView = jsonTo(source{"renderInWorldView"},
                                     typeof(target.renderInWorldView))
 
-proc toJsonHook*(source: TestLayerDef): JsonNode =
+proc toJsonHook*(source: LdtkLayerDef): JsonNode =
   result = newJObject()
   result{"type"} = toJson(source.type1)
   if isSome(source.autoTilesetDefUid):
@@ -2338,28 +2332,28 @@ proc toJsonHook*(source: TestLayerDef): JsonNode =
   result{"intGridValues"} = toJson(source.intGridValues)
   result{"renderInWorldView"} = toJson(source.renderInWorldView)
 
-proc fromJsonHook*(target: var TestDefinitions; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkDefinitions; source: JsonNode) =
   assert("levelFields" in source,
-         "levelFields" & " is missing while decoding " & "TestDefinitions")
+         "levelFields" & " is missing while decoding " & "LdtkDefinitions")
   target.levelFields = jsonTo(source{"levelFields"}, typeof(target.levelFields))
   assert("tilesets" in source,
-         "tilesets" & " is missing while decoding " & "TestDefinitions")
+         "tilesets" & " is missing while decoding " & "LdtkDefinitions")
   target.tilesets = jsonTo(source{"tilesets"}, typeof(target.tilesets))
   assert("entities" in source,
-         "entities" & " is missing while decoding " & "TestDefinitions")
+         "entities" & " is missing while decoding " & "LdtkDefinitions")
   target.entities = jsonTo(source{"entities"}, typeof(target.entities))
   assert("enums" in source,
-         "enums" & " is missing while decoding " & "TestDefinitions")
+         "enums" & " is missing while decoding " & "LdtkDefinitions")
   target.enums = jsonTo(source{"enums"}, typeof(target.enums))
   assert("layers" in source,
-         "layers" & " is missing while decoding " & "TestDefinitions")
+         "layers" & " is missing while decoding " & "LdtkDefinitions")
   target.layers = jsonTo(source{"layers"}, typeof(target.layers))
   assert("externalEnums" in source,
-         "externalEnums" & " is missing while decoding " & "TestDefinitions")
+         "externalEnums" & " is missing while decoding " & "LdtkDefinitions")
   target.externalEnums = jsonTo(source{"externalEnums"},
                                 typeof(target.externalEnums))
 
-proc toJsonHook*(source: TestDefinitions): JsonNode =
+proc toJsonHook*(source: LdtkDefinitions): JsonNode =
   result = newJObject()
   result{"levelFields"} = toJson(source.levelFields)
   result{"tilesets"} = toJson(source.tilesets)
@@ -2368,19 +2362,18 @@ proc toJsonHook*(source: TestDefinitions): JsonNode =
   result{"layers"} = toJson(source.layers)
   result{"externalEnums"} = toJson(source.externalEnums)
 
-proc fromJsonHook*(target: var TestGridPoint; source: JsonNode) =
-  assert("cx" in source, "cx" & " is missing while decoding " & "TestGridPoint")
+proc fromJsonHook*(target: var LdtkGridPoint; source: JsonNode) =
+  assert("cx" in source, "cx" & " is missing while decoding " & "LdtkGridPoint")
   target.cx = jsonTo(source{"cx"}, typeof(target.cx))
-  assert("cy" in source, "cy" & " is missing while decoding " & "TestGridPoint")
+  assert("cy" in source, "cy" & " is missing while decoding " & "LdtkGridPoint")
   target.cy = jsonTo(source{"cy"}, typeof(target.cy))
 
-proc toJsonHook*(source: TestGridPoint): JsonNode =
+proc toJsonHook*(source: LdtkGridPoint): JsonNode =
   result = newJObject()
   result{"cx"} = toJson(source.cx)
   result{"cy"} = toJson(source.cy)
 
-proc fromJsonHook*(target: var TestTestLdtkJsonRoot_FORCED_REFS;
-                   source: JsonNode) =
+proc fromJsonHook*(target: var Ldtk_FORCED_REFS; source: JsonNode) =
   if "CustomCommand" in source and source{"CustomCommand"}.kind != JNull:
     target.CustomCommand = some(jsonTo(source{"CustomCommand"},
                                        typeof(unsafeGet(target.CustomCommand))))
@@ -2472,7 +2465,7 @@ proc fromJsonHook*(target: var TestTestLdtkJsonRoot_FORCED_REFS;
     target.EnumDefValues = some(jsonTo(source{"EnumDefValues"},
                                        typeof(unsafeGet(target.EnumDefValues))))
 
-proc toJsonHook*(source: TestTestLdtkJsonRoot_FORCED_REFS): JsonNode =
+proc toJsonHook*(source: Ldtk_FORCED_REFS): JsonNode =
   result = newJObject()
   if isSome(source.CustomCommand):
     result{"CustomCommand"} = toJson(source.CustomCommand)
@@ -2531,131 +2524,129 @@ proc toJsonHook*(source: TestTestLdtkJsonRoot_FORCED_REFS): JsonNode =
   if isSome(source.EnumDefValues):
     result{"EnumDefValues"} = toJson(source.EnumDefValues)
 
-proc toJsonHook*(source: TestTestLdtkJsonRoot_worldLayout): JsonNode =
+proc toJsonHook*(source: LdtkldtkWorldLayout): JsonNode =
   case source
-  of TestTestLdtkJsonRoot_worldLayout.LinearHorizontal:
+  of LdtkldtkWorldLayout.LinearHorizontal:
     return newJString("LinearHorizontal")
-  of TestTestLdtkJsonRoot_worldLayout.LinearVertical:
+  of LdtkldtkWorldLayout.LinearVertical:
     return newJString("LinearVertical")
-  of TestTestLdtkJsonRoot_worldLayout.GridVania:
+  of LdtkldtkWorldLayout.GridVania:
     return newJString("GridVania")
-  of TestTestLdtkJsonRoot_worldLayout.Free:
+  of LdtkldtkWorldLayout.Free:
     return newJString("Free")
   
-proc fromJsonHook*(target: var TestTestLdtkJsonRoot_worldLayout;
-                   source: JsonNode) =
+proc fromJsonHook*(target: var LdtkldtkWorldLayout; source: JsonNode) =
   target = case getStr(source)
   of "LinearHorizontal":
-    TestTestLdtkJsonRoot_worldLayout.LinearHorizontal
+    LdtkldtkWorldLayout.LinearHorizontal
   of "LinearVertical":
-    TestTestLdtkJsonRoot_worldLayout.LinearVertical
+    LdtkldtkWorldLayout.LinearVertical
   of "GridVania":
-    TestTestLdtkJsonRoot_worldLayout.GridVania
+    LdtkldtkWorldLayout.GridVania
   of "Free":
-    TestTestLdtkJsonRoot_worldLayout.Free
+    LdtkldtkWorldLayout.Free
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc toJsonHook*(source: TestTestLdtkJsonRoot_flags): JsonNode =
+proc toJsonHook*(source: LdtkFlags): JsonNode =
   case source
-  of TestTestLdtkJsonRoot_flags.ExportPreCsvIntGridFormat:
+  of LdtkFlags.ExportPreCsvIntGridFormat:
     return newJString("ExportPreCsvIntGridFormat")
-  of TestTestLdtkJsonRoot_flags.DiscardPreCsvIntGrid:
+  of LdtkFlags.DiscardPreCsvIntGrid:
     return newJString("DiscardPreCsvIntGrid")
-  of TestTestLdtkJsonRoot_flags.ExportOldTableOfContentData:
+  of LdtkFlags.ExportOldTableOfContentData:
     return newJString("ExportOldTableOfContentData")
-  of TestTestLdtkJsonRoot_flags.PrependIndexToLevelFileNames:
+  of LdtkFlags.PrependIndexToLevelFileNames:
     return newJString("PrependIndexToLevelFileNames")
-  of TestTestLdtkJsonRoot_flags.MultiWorlds:
+  of LdtkFlags.MultiWorlds:
     return newJString("MultiWorlds")
-  of TestTestLdtkJsonRoot_flags.UseMultilinesType:
+  of LdtkFlags.UseMultilinesType:
     return newJString("UseMultilinesType")
-  of TestTestLdtkJsonRoot_flags.IgnoreBackupSuggest:
+  of LdtkFlags.IgnoreBackupSuggest:
     return newJString("IgnoreBackupSuggest")
   
-proc fromJsonHook*(target: var TestTestLdtkJsonRoot_flags; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkFlags; source: JsonNode) =
   target = case getStr(source)
   of "ExportPreCsvIntGridFormat":
-    TestTestLdtkJsonRoot_flags.ExportPreCsvIntGridFormat
+    LdtkFlags.ExportPreCsvIntGridFormat
   of "DiscardPreCsvIntGrid":
-    TestTestLdtkJsonRoot_flags.DiscardPreCsvIntGrid
+    LdtkFlags.DiscardPreCsvIntGrid
   of "ExportOldTableOfContentData":
-    TestTestLdtkJsonRoot_flags.ExportOldTableOfContentData
+    LdtkFlags.ExportOldTableOfContentData
   of "PrependIndexToLevelFileNames":
-    TestTestLdtkJsonRoot_flags.PrependIndexToLevelFileNames
+    LdtkFlags.PrependIndexToLevelFileNames
   of "MultiWorlds":
-    TestTestLdtkJsonRoot_flags.MultiWorlds
+    LdtkFlags.MultiWorlds
   of "UseMultilinesType":
-    TestTestLdtkJsonRoot_flags.UseMultilinesType
+    LdtkFlags.UseMultilinesType
   of "IgnoreBackupSuggest":
-    TestTestLdtkJsonRoot_flags.IgnoreBackupSuggest
+    LdtkFlags.IgnoreBackupSuggest
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc toJsonHook*(source: TestTestLdtkJsonRoot_identifierStyle): JsonNode =
+proc toJsonHook*(source: LdtkIdentifierStyle): JsonNode =
   case source
-  of TestTestLdtkJsonRoot_identifierStyle.Lowercase:
+  of LdtkIdentifierStyle.Lowercase:
     return newJString("Lowercase")
-  of TestTestLdtkJsonRoot_identifierStyle.Free:
+  of LdtkIdentifierStyle.Free:
     return newJString("Free")
-  of TestTestLdtkJsonRoot_identifierStyle.Capitalize:
+  of LdtkIdentifierStyle.Capitalize:
     return newJString("Capitalize")
-  of TestTestLdtkJsonRoot_identifierStyle.Uppercase:
+  of LdtkIdentifierStyle.Uppercase:
     return newJString("Uppercase")
   
-proc fromJsonHook*(target: var TestTestLdtkJsonRoot_identifierStyle;
-                   source: JsonNode) =
+proc fromJsonHook*(target: var LdtkIdentifierStyle; source: JsonNode) =
   target = case getStr(source)
   of "Lowercase":
-    TestTestLdtkJsonRoot_identifierStyle.Lowercase
+    LdtkIdentifierStyle.Lowercase
   of "Free":
-    TestTestLdtkJsonRoot_identifierStyle.Free
+    LdtkIdentifierStyle.Free
   of "Capitalize":
-    TestTestLdtkJsonRoot_identifierStyle.Capitalize
+    LdtkIdentifierStyle.Capitalize
   of "Uppercase":
-    TestTestLdtkJsonRoot_identifierStyle.Uppercase
+    LdtkIdentifierStyle.Uppercase
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc fromJsonHook*(target: var TestLdtkJsonRoot; source: JsonNode) =
+proc fromJsonHook*(target: var LdtkLdtkJsonRoot; source: JsonNode) =
   assert("backupLimit" in source,
-         "backupLimit" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "backupLimit" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.backupLimit = jsonTo(source{"backupLimit"}, typeof(target.backupLimit))
   assert("simplifiedExport" in source, "simplifiedExport" &
       " is missing while decoding " &
-      "TestLdtkJsonRoot")
+      "LdtkLdtkJsonRoot")
   target.simplifiedExport = jsonTo(source{"simplifiedExport"},
                                    typeof(target.simplifiedExport))
   assert("externalLevels" in source,
-         "externalLevels" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "externalLevels" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.externalLevels = jsonTo(source{"externalLevels"},
                                  typeof(target.externalLevels))
   if "backupRelPath" in source and source{"backupRelPath"}.kind != JNull:
     target.backupRelPath = some(jsonTo(source{"backupRelPath"},
                                        typeof(unsafeGet(target.backupRelPath))))
   assert("jsonVersion" in source,
-         "jsonVersion" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "jsonVersion" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.jsonVersion = jsonTo(source{"jsonVersion"}, typeof(target.jsonVersion))
   assert("bgColor" in source,
-         "bgColor" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "bgColor" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.bgColor = jsonTo(source{"bgColor"}, typeof(target.bgColor))
   assert("appBuildId" in source,
-         "appBuildId" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "appBuildId" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.appBuildId = jsonTo(source{"appBuildId"}, typeof(target.appBuildId))
   assert("defaultEntityHeight" in source, "defaultEntityHeight" &
       " is missing while decoding " &
-      "TestLdtkJsonRoot")
+      "LdtkLdtkJsonRoot")
   target.defaultEntityHeight = jsonTo(source{"defaultEntityHeight"},
                                       typeof(target.defaultEntityHeight))
   if "pngFilePattern" in source and source{"pngFilePattern"}.kind != JNull:
     target.pngFilePattern = some(jsonTo(source{"pngFilePattern"}, typeof(
         unsafeGet(target.pngFilePattern))))
   assert("customCommands" in source,
-         "customCommands" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "customCommands" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.customCommands = jsonTo(source{"customCommands"},
                                  typeof(target.customCommands))
   assert("exportTiled" in source,
-         "exportTiled" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "exportTiled" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.exportTiled = jsonTo(source{"exportTiled"}, typeof(target.exportTiled))
   if "exportPng" in source and source{"exportPng"}.kind != JNull:
     target.exportPng = some(jsonTo(source{"exportPng"},
@@ -2668,43 +2659,43 @@ proc fromJsonHook*(target: var TestLdtkJsonRoot; source: JsonNode) =
     target.defaultLevelHeight = some(jsonTo(source{"defaultLevelHeight"},
         typeof(unsafeGet(target.defaultLevelHeight))))
   assert("toc" in source,
-         "toc" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "toc" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.toc = jsonTo(source{"toc"}, typeof(target.toc))
   assert("worlds" in source,
-         "worlds" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "worlds" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.worlds = jsonTo(source{"worlds"}, typeof(target.worlds))
   assert("imageExportMode" in source,
-         "imageExportMode" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "imageExportMode" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.imageExportMode = jsonTo(source{"imageExportMode"},
                                   typeof(target.imageExportMode))
   assert("dummyWorldIid" in source,
-         "dummyWorldIid" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "dummyWorldIid" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.dummyWorldIid = jsonTo(source{"dummyWorldIid"},
                                 typeof(target.dummyWorldIid))
   if "__FORCED_REFS" in source and source{"__FORCED_REFS"}.kind != JNull:
     target.FORCED_REFS = some(jsonTo(source{"__FORCED_REFS"},
                                      typeof(unsafeGet(target.FORCED_REFS))))
   assert("defaultPivotY" in source,
-         "defaultPivotY" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "defaultPivotY" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.defaultPivotY = jsonTo(source{"defaultPivotY"},
                                 typeof(target.defaultPivotY))
   assert("exportLevelBg" in source,
-         "exportLevelBg" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "exportLevelBg" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.exportLevelBg = jsonTo(source{"exportLevelBg"},
                                 typeof(target.exportLevelBg))
   assert("nextUid" in source,
-         "nextUid" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "nextUid" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.nextUid = jsonTo(source{"nextUid"}, typeof(target.nextUid))
   assert("levelNamePattern" in source, "levelNamePattern" &
       " is missing while decoding " &
-      "TestLdtkJsonRoot")
+      "LdtkLdtkJsonRoot")
   target.levelNamePattern = jsonTo(source{"levelNamePattern"},
                                    typeof(target.levelNamePattern))
   assert("defs" in source,
-         "defs" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "defs" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.defs = jsonTo(source{"defs"}, typeof(target.defs))
   assert("defaultPivotX" in source,
-         "defaultPivotX" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "defaultPivotX" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.defaultPivotX = jsonTo(source{"defaultPivotX"},
                                 typeof(target.defaultPivotX))
   if "tutorialDesc" in source and source{"tutorialDesc"}.kind != JNull:
@@ -2715,14 +2706,14 @@ proc fromJsonHook*(target: var TestLdtkJsonRoot; source: JsonNode) =
                                      typeof(unsafeGet(target.worldLayout))))
   assert("defaultEntityWidth" in source, "defaultEntityWidth" &
       " is missing while decoding " &
-      "TestLdtkJsonRoot")
+      "LdtkLdtkJsonRoot")
   target.defaultEntityWidth = jsonTo(source{"defaultEntityWidth"},
                                      typeof(target.defaultEntityWidth))
   assert("iid" in source,
-         "iid" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "iid" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.iid = jsonTo(source{"iid"}, typeof(target.iid))
   assert("defaultGridSize" in source,
-         "defaultGridSize" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "defaultGridSize" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.defaultGridSize = jsonTo(source{"defaultGridSize"},
                                   typeof(target.defaultGridSize))
   if "defaultLevelWidth" in source and
@@ -2730,32 +2721,32 @@ proc fromJsonHook*(target: var TestLdtkJsonRoot; source: JsonNode) =
     target.defaultLevelWidth = some(jsonTo(source{"defaultLevelWidth"},
         typeof(unsafeGet(target.defaultLevelWidth))))
   assert("minifyJson" in source,
-         "minifyJson" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "minifyJson" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.minifyJson = jsonTo(source{"minifyJson"}, typeof(target.minifyJson))
   assert("backupOnSave" in source,
-         "backupOnSave" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "backupOnSave" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.backupOnSave = jsonTo(source{"backupOnSave"},
                                typeof(target.backupOnSave))
   assert("flags" in source,
-         "flags" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "flags" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.flags = jsonTo(source{"flags"}, typeof(target.flags))
   assert("defaultLevelBgColor" in source, "defaultLevelBgColor" &
       " is missing while decoding " &
-      "TestLdtkJsonRoot")
+      "LdtkLdtkJsonRoot")
   target.defaultLevelBgColor = jsonTo(source{"defaultLevelBgColor"},
                                       typeof(target.defaultLevelBgColor))
   assert("identifierStyle" in source,
-         "identifierStyle" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "identifierStyle" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.identifierStyle = jsonTo(source{"identifierStyle"},
                                   typeof(target.identifierStyle))
   if "worldGridHeight" in source and source{"worldGridHeight"}.kind != JNull:
     target.worldGridHeight = some(jsonTo(source{"worldGridHeight"},
         typeof(unsafeGet(target.worldGridHeight))))
   assert("levels" in source,
-         "levels" & " is missing while decoding " & "TestLdtkJsonRoot")
+         "levels" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.levels = jsonTo(source{"levels"}, typeof(target.levels))
 
-proc toJsonHook*(source: TestLdtkJsonRoot): JsonNode =
+proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode =
   result = newJObject()
   result{"backupLimit"} = toJson(source.backupLimit)
   result{"simplifiedExport"} = toJson(source.simplifiedExport)

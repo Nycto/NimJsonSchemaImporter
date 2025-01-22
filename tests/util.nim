@@ -13,4 +13,4 @@ proc testResolver*(uri: string): JsonNode =
         raiseAssert(fmt"Unsupported test uri: {uri}")
 
 proc conf*(rootTypeName: string): auto =
-    return JsonSchemaConfig(rootTypeName: rootTypeName, typePrefix: "Test", urlResolver: testResolver)
+    return JsonSchemaConfig(rootTypeName: rootTypeName, typePrefix: rootTypeName, urlResolver: testResolver)

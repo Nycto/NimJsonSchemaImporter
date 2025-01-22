@@ -2,11 +2,11 @@
 import std/[json, jsonutils, tables, options]
 
 type
-  Testbasic* = object
+  Basicbasic* = object
     firstName*: Option[string]
     age*: Option[BiggestInt]
     lastName*: Option[string]
-proc fromJsonHook*(target: var Testbasic; source: JsonNode) =
+proc fromJsonHook*(target: var Basicbasic; source: JsonNode) =
   if "firstName" in source and source{"firstName"}.kind != JNull:
     target.firstName = some(jsonTo(source{"firstName"},
                                    typeof(unsafeGet(target.firstName))))
@@ -16,7 +16,7 @@ proc fromJsonHook*(target: var Testbasic; source: JsonNode) =
     target.lastName = some(jsonTo(source{"lastName"},
                                   typeof(unsafeGet(target.lastName))))
 
-proc toJsonHook*(source: Testbasic): JsonNode =
+proc toJsonHook*(source: Basicbasic): JsonNode =
   result = newJObject()
   if isSome(source.firstName):
     result{"firstName"} = toJson(source.firstName)
