@@ -2,7 +2,7 @@
 ## Library for generating native nim types from a JSON schema
 ##
 
-import std/[json], json_schema_types/[parse, gen, util]
+import std/[json, macros, paths], json_schema_types/[parse, gen, util]
 
 export JsonSchemaConfig, UrlResolver
 
@@ -15,6 +15,12 @@ proc parseJsonSchema*(schema: JsonNode, conf: JsonSchemaConfig): NimNode {.compi
 proc parseJsonSchema*(schema: string, conf: JsonSchemaConfig): NimNode {.compileTime.} =
     parseJsonSchema(schema.parseJson, conf)
 
-macro importJsonSchema*(path: static string, conf: static JsonSchemaConfig) =
+macro realImportJsonSchema(rootDir, path: static Path, conf: static JsonSchemaConfig) =
+    let resolvedPath = if path.isAbsolute: path else: rootDir / path
+    parseJsonSchema(slurp($resolvedPath), conf)
+
+macro importJsonSchema*(path: string, conf: JsonSchemaConfig) =
     ## Imports a json schema file as if it were a nim file
-    parseJsonSchema(slurp(path), conf)
+    let rootDir = newLit($(lineInfoObj(path).filename.Path.parentDir))
+    quote:
+        realImportJsonSchema(Path(`rootDir`), Path(`path`), `conf`)
