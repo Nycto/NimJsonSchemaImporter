@@ -4,7 +4,7 @@ type
     JsonSchemaConfig* = object
         ## The configuration required for parsing a json schema
         rootTypeName*: string
-        typeNamePrefix*: string
+        typePrefix*: string
         urlResolver*: UrlResolver
 
     UrlResolver* = proc (url: string): JsonNode
