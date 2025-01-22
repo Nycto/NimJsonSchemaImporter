@@ -1,4 +1,4 @@
-import std/[sets, tables, strformat], schemaRef
+import std/[sets, tables, strformat, hashes, strutils], schemaRef
 
 type
     TypeDefKind* = enum
@@ -20,7 +20,6 @@ type
         ## The details of an object property
 
     TypeDef* = ref object
-        id*, title*, description*, comment*: string
         sref*: SchemaRef
         case kind*: TypeDefKind
         of ObjType:
@@ -43,6 +42,35 @@ type
     JsonSchema* = ref object
         rootType*: TypeDef
         defs*: Table[string, TypeDef]
+
+proc hash*(typ: TypeDef): Hash {.noSideEffect.} =
+    result = hash(typ.kind) !& hash(typ.sref)
+
+    case typ.kind:
+    of ObjType: result = result !& hash(typ.properties)
+    of EnumType: result = result !& hash(typ.values)
+    of RefType: result = result !& hash(typ.schemaRef)
+    of ArrayType: result = result !& hash(typ.items)
+    of UnionType: result = result !& hash(typ.subtypes)
+    of MapType: result = result !& hash(typ.entries)
+    of OptionalType: result = result !& hash(typ.subtype)
+    of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
+        discard
+
+proc `==`*(a, b: TypeDef): bool {.noSideEffect.} =
+    if a.kind != b.kind:
+        return false
+
+    case a.kind:
+    of ObjType: return a.properties == b.properties
+    of EnumType: return a.values == b.values
+    of RefType: return a.schemaRef == b.schemaRef
+    of ArrayType: return a.items == b.items
+    of UnionType: return a.subtypes == b.subtypes
+    of MapType: return a.entries == b.entries
+    of OptionalType: return a.subtype == b.subtype
+    of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
+        return true
 
 proc `$`*(typ: TypeDef): string =
     case typ.kind:
@@ -68,3 +96,47 @@ proc optional*(typ: TypeDef): TypeDef =
         typ
     else:
         TypeDef(kind: OptionalType, subtype: typ)
+
+proc abbrev*(typ: TypeDef): string =
+    ## Returns an abbreviated name of a type
+    if typ.sref != nil:
+        return typ.sref.getName().capitalizeAscii
+
+    return case typ.kind:
+    of ObjType: "Object"
+    of EnumType: "Enum"
+    of RefType: typ.schemaRef.getName
+    of ArrayType: "Seq"
+    of UnionType: "Union"
+    of MapType: "Map"
+    of OptionalType: "Opt"
+    of IntegerType: "Int"
+    of StringType: "Str"
+    of NumberType: "Float"
+    of BoolType: "Bool"
+    of NullType: "Null"
+    of JsonType: "Json"
+
+iterator nameFragments*(typ: TypeDef): string =
+    ## Produces fragments of a descriptive name for a type
+    if typ.sref != nil:
+        yield typ.sref.getName().capitalizeAscii
+    else:
+        yield typ.abbrev()
+
+        case typ.kind:
+        of ObjType: discard
+        of ArrayType: yield fmt"Of{typ.items.abbrev}"
+        of UnionType:
+            var accum: seq[string]
+            for subtype in typ.subtypes:
+                accum.add(subtype.abbrev)
+            yield "Of" & accum.join("And")
+        of MapType: yield fmt"Of{typ.entries.abbrev}"
+        of OptionalType: yield fmt"Of{typ.subtype.abbrev}"
+        of EnumType, RefType, IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
+            discard
+
+proc chooseName*(typ: TypeDef): string =
+    for fragment in typ.nameFragments:
+        result &= fragment

@@ -186,6 +186,20 @@ proc toJsonHook*(source: TestTestSpriteSheet_framesUnion): JsonNode =
   of 1:
     return toJson(source.key1)
   
+proc isMapOfFrame(value: TestTestSpriteSheet_framesUnion): bool =
+  value.kind == 0
+
+proc asMapOfFrame(value: TestTestSpriteSheet_framesUnion): auto =
+  assert(value.kind == 0)
+  return value.key0
+
+proc isSeqOfArrayFrame(value: TestTestSpriteSheet_framesUnion): bool =
+  value.kind == 1
+
+proc asSeqOfArrayFrame(value: TestTestSpriteSheet_framesUnion): auto =
+  assert(value.kind == 1)
+  return value.key1
+
 proc toJsonHook*(source: TestDirection): JsonNode =
   case source
   of TestDirection.Pingpong:

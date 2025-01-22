@@ -88,14 +88,17 @@ proc buildNullableUnion(subtypes: seq[TypeDef]): TypeDef =
 
 proc parseUnion(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JArray)
+
+    var seenTypes = initHashSet[TypeDef]()
     var subtypes = newSeq[TypeDef]()
     for subtype in node:
-        subtypes.add(
-            if subtype.kind == JString:
-                subtype.getStr.parseTypeStr(history)
-            else:
-                subtype.parseType(ctx, history)
-        )
+        let parsed = if subtype.kind == JString:
+            subtype.getStr.parseTypeStr(history)
+        else:
+            subtype.parseType(ctx, history)
+        if parsed notin seenTypes:
+            seenTypes.incl(parsed)
+            subtypes.add(parsed)
 
     if subtypes.len == 0:
         raise newException(ValueError, fmt"Empty union at {history}")
@@ -160,6 +163,8 @@ proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
         return parseUnion(node{"anyOf"}, ctx, history.add("anyOf"))
     elif "type" in node:
         return parseTyped(node, ctx, history)
+    elif "format" in node:
+        return parseTypeStr("string", history)
     else:
         return TypeDef(kind: JsonType)
 

@@ -12,18 +12,6 @@ type
       key2*: Testnfs
     of 3:
       key3*: Testtmpfs
-  Testnfs* = object
-    `type`*: TestTestnfs_type
-    server*: TestTestnfs_serverUnion
-    remotePath*: string
-  TestTestnfs_serverUnion* = object
-    case kind*: range[0 .. 2]
-    of 0:
-      key0*: JsonNode
-    of 1:
-      key1*: JsonNode
-    of 2:
-      key2*: JsonNode
   Testfile_system* = object
     options*: Option[seq[string]]
     readonly*: Option[bool]
@@ -33,6 +21,10 @@ type
     Nfs
   TestTestfile_system_fstype* = enum
     Ext4, Btrfs, Ext3
+  Testnfs* = object
+    `type`*: TestTestnfs_type
+    server*: string
+    remotePath*: string
   TestdiskUUID* = object
     `type`*: TestTestdiskUUID_type
     label*: string
@@ -110,28 +102,6 @@ proc fromJsonHook*(target: var TestTestnfs_type; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum")
   
-proc fromJsonHook*(target: var TestTestnfs_serverUnion; source: JsonNode) =
-  if true:
-    target = TestTestnfs_serverUnion(kind: 0,
-                                     key0: jsonTo(source, typeof(target.key0)))
-  elif true:
-    target = TestTestnfs_serverUnion(kind: 1,
-                                     key1: jsonTo(source, typeof(target.key1)))
-  elif true:
-    target = TestTestnfs_serverUnion(kind: 2,
-                                     key2: jsonTo(source, typeof(target.key2)))
-  else:
-    raise newException(ValueError, "Unable to deserialize json node to TestTestnfs_serverUnion")
-  
-proc toJsonHook*(source: TestTestnfs_serverUnion): JsonNode =
-  case source.kind
-  of 0:
-    return toJson(source.key0)
-  of 1:
-    return toJson(source.key1)
-  of 2:
-    return toJson(source.key2)
-  
 proc fromJsonHook*(target: var Testnfs; source: JsonNode) =
   assert("type" in source, "type" & " is missing while decoding " & "Testnfs")
   target.`type` = jsonTo(source{"type"}, typeof(target.`type`))
@@ -200,6 +170,34 @@ proc toJsonHook*(source: TestTestfile_system_storageUnion): JsonNode =
   of 3:
     return toJson(source.key3)
   
+proc isDiskDevice(value: TestTestfile_system_storageUnion): bool =
+  value.kind == 0
+
+proc asDiskDevice(value: TestTestfile_system_storageUnion): auto =
+  assert(value.kind == 0)
+  return value.key0
+
+proc isDiskUUID(value: TestTestfile_system_storageUnion): bool =
+  value.kind == 1
+
+proc asDiskUUID(value: TestTestfile_system_storageUnion): auto =
+  assert(value.kind == 1)
+  return value.key1
+
+proc isNfs(value: TestTestfile_system_storageUnion): bool =
+  value.kind == 2
+
+proc asNfs(value: TestTestfile_system_storageUnion): auto =
+  assert(value.kind == 2)
+  return value.key2
+
+proc isTmpfs(value: TestTestfile_system_storageUnion): bool =
+  value.kind == 3
+
+proc asTmpfs(value: TestTestfile_system_storageUnion): auto =
+  assert(value.kind == 3)
+  return value.key3
+
 proc toJsonHook*(source: TestTestfile_system_fstype): JsonNode =
   case source
   of TestTestfile_system_fstype.Ext4:

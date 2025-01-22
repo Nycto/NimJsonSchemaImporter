@@ -66,6 +66,41 @@ proc toJsonHook*(source: TestTestunion_key1Union): JsonNode =
   of 4:
     return toJson(source.key4)
   
+proc isStr(value: TestTestunion_key1Union): bool =
+  value.kind == 0
+
+proc asStr(value: TestTestunion_key1Union): auto =
+  assert(value.kind == 0)
+  return value.key0
+
+proc isInt(value: TestTestunion_key1Union): bool =
+  value.kind == 1
+
+proc asInt(value: TestTestunion_key1Union): auto =
+  assert(value.kind == 1)
+  return value.key1
+
+proc isBool(value: TestTestunion_key1Union): bool =
+  value.kind == 2
+
+proc asBool(value: TestTestunion_key1Union): auto =
+  assert(value.kind == 2)
+  return value.key2
+
+proc isNull(value: TestTestunion_key1Union): bool =
+  value.kind == 3
+
+proc asNull(value: TestTestunion_key1Union): auto =
+  assert(value.kind == 3)
+  return value.key3
+
+proc isFloat(value: TestTestunion_key1Union): bool =
+  value.kind == 4
+
+proc asFloat(value: TestTestunion_key1Union): auto =
+  assert(value.kind == 4)
+  return value.key4
+
 proc fromJsonHook*(target: var TestTestunion_key30; source: JsonNode) =
   if "foo" in source and source{"foo"}.kind != JNull:
     target.foo = some(jsonTo(source{"foo"}, typeof(unsafeGet(target.foo))))
@@ -127,6 +162,41 @@ proc toJsonHook*(source: TestTestunion_key3Union): JsonNode =
   of 4:
     return toJson(source.key4)
   
+proc isObject(value: TestTestunion_key3Union): bool =
+  value.kind == 0
+
+proc asObject(value: TestTestunion_key3Union): auto =
+  assert(value.kind == 0)
+  return value.key0
+
+proc isSeqOfStr(value: TestTestunion_key3Union): bool =
+  value.kind == 1
+
+proc asSeqOfStr(value: TestTestunion_key3Union): auto =
+  assert(value.kind == 1)
+  return value.key1
+
+proc isMapOfStr(value: TestTestunion_key3Union): bool =
+  value.kind == 2
+
+proc asMapOfStr(value: TestTestunion_key3Union): auto =
+  assert(value.kind == 2)
+  return value.key2
+
+proc isEnum(value: TestTestunion_key3Union): bool =
+  value.kind == 3
+
+proc asEnum(value: TestTestunion_key3Union): auto =
+  assert(value.kind == 3)
+  return value.key3
+
+proc isOptOfStr(value: TestTestunion_key3Union): bool =
+  value.kind == 4
+
+proc asOptOfStr(value: TestTestunion_key3Union): auto =
+  assert(value.kind == 4)
+  return value.key4
+
 proc fromJsonHook*(target: var Testunion; source: JsonNode) =
   if "key1" in source and source{"key1"}.kind != JNull:
     target.key1 = some(jsonTo(source{"key1"}, typeof(unsafeGet(target.key1))))

@@ -1,4 +1,4 @@
-import types, schemaRef, marshalling, util
+import types, schemaRef, marshalling, util, unpack
 import std/[macros, tables, sets, strformat, json, options, hashes]
 
 type GenContext = ref object
@@ -95,6 +95,7 @@ proc genUnion(typ: TypeDef, name: string, ctx: GenContext): NimNode =
     ctx.procs.add(
         typ.buildUnionDecoder(result),
         typ.buildUnionEncoder(result),
+        typ.buildUnionUnpacker(result),
     )
 
 proc genMap(typ: TypeDef, name: string, ctx: GenContext): NimNode =
