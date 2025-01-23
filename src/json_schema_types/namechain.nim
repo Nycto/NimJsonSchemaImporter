@@ -5,7 +5,8 @@ type
         name, category: string
         parent: NameChain
 
-proc rootName*(name: string): auto = NameChain(name: name)
+proc rootName*(name: string): auto =
+    return if name != "": NameChain(name: name) else: nil
 
 proc add*(parent: NameChain, child: string): auto =
     if child != "":

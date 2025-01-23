@@ -14,6 +14,10 @@ suite "Name chaining and generation":
     test "Single name chain":
         check(take(rootName("Foo"), 4) == @["PreFoo", "PreFoo2", "PreFoo3", "PreFoo4"])
 
+    test "Empty name strings":
+        check(take(rootName(""), 2) == @["PreAnon", "PreAnon2"])
+        check(take(rootName("").add(""), 2) == @["PreAnon", "PreAnon2"])
+
     test "Single added name":
         check(take(rootName("Foo").add("bar"), 4) == @["PreBar", "PreFooBar", "PreFooBar2", "PreFooBar3"])
 
