@@ -1,4 +1,4 @@
-import std/unittest, json_schema_types/namechain
+import std/unittest, json_schema_types/private/namechain
 
 proc take(name: NameChain, count: int): seq[string] =
     for next in name.nameOptions("Pre"):

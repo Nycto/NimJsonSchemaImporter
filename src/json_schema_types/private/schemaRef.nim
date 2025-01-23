@@ -1,4 +1,4 @@
-import util, std/[strutils, parseutils, json, strformat, hashes]
+import ../config, std/[strutils, parseutils, json, strformat, hashes]
 
 type
     RefKind* = enum

@@ -1,4 +1,4 @@
-import std/[unittest, uri], json_schema_types/[namechain, types]
+import std/[unittest, uri], json_schema_types/private/[namechain, types]
 
 proc take(typ: TypeDef, name: NameChain, count: int): seq[string] =
     for next in typ.proposeNames("Pre", name):

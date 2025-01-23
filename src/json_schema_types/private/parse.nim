@@ -1,4 +1,4 @@
-import std/[json, sets, tables, strformat, uri], types, schemaRef, history, util
+import std/[json, sets, tables, strformat, uri], types, schemaRef, history, util, ../config
 
 type
     ParseContext = ref object
