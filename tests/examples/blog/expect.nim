@@ -12,31 +12,33 @@ type
     content*: string
     publishedDate*: Option[string]
 proc fromJsonHook*(target: var BlogAuthor; source: JsonNode) =
-  if "username" in source and source{"username"}.kind != JNull:
+  if hasKey(source, "username") and source{"username"}.kind != JNull:
     target.username = some(jsonTo(source{"username"},
                                   typeof(unsafeGet(target.username))))
-  if "email" in source and source{"email"}.kind != JNull:
+  if hasKey(source, "email") and source{"email"}.kind != JNull:
     target.email = some(jsonTo(source{"email"}, typeof(unsafeGet(target.email))))
 
 proc toJsonHook*(source: BlogAuthor): JsonNode =
   result = newJObject()
   if isSome(source.username):
-    result{"username"} = toJson(source.username)
+    result{"username"} = toJson(unsafeGet(source.username))
   if isSome(source.email):
-    result{"email"} = toJson(source.email)
+    result{"email"} = toJson(unsafeGet(source.email))
 
 proc fromJsonHook*(target: var Blogblog; source: JsonNode) =
-  assert("author" in source,
+  assert(hasKey(source, "author"),
          "author" & " is missing while decoding " & "Blogblog")
   target.author = jsonTo(source{"author"}, typeof(target.author))
-  assert("title" in source, "title" & " is missing while decoding " & "Blogblog")
+  assert(hasKey(source, "title"),
+         "title" & " is missing while decoding " & "Blogblog")
   target.title = jsonTo(source{"title"}, typeof(target.title))
-  if "tags" in source and source{"tags"}.kind != JNull:
+  if hasKey(source, "tags") and source{"tags"}.kind != JNull:
     target.tags = some(jsonTo(source{"tags"}, typeof(unsafeGet(target.tags))))
-  assert("content" in source,
+  assert(hasKey(source, "content"),
          "content" & " is missing while decoding " & "Blogblog")
   target.content = jsonTo(source{"content"}, typeof(target.content))
-  if "publishedDate" in source and source{"publishedDate"}.kind != JNull:
+  if hasKey(source, "publishedDate") and
+      source{"publishedDate"}.kind != JNull:
     target.publishedDate = some(jsonTo(source{"publishedDate"},
                                        typeof(unsafeGet(target.publishedDate))))
 
@@ -45,7 +47,7 @@ proc toJsonHook*(source: Blogblog): JsonNode =
   result{"author"} = toJson(source.author)
   result{"title"} = toJson(source.title)
   if isSome(source.tags):
-    result{"tags"} = toJson(source.tags)
+    result{"tags"} = toJson(unsafeGet(source.tags))
   result{"content"} = toJson(source.content)
   if isSome(source.publishedDate):
-    result{"publishedDate"} = toJson(source.publishedDate)
+    result{"publishedDate"} = toJson(unsafeGet(source.publishedDate))

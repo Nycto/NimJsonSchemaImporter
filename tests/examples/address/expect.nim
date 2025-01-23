@@ -11,38 +11,41 @@ type
     extendedAddress*: Option[string]
     postalCode*: Option[string]
 proc fromJsonHook*(target: var Addressaddress; source: JsonNode) =
-  if "streetAddress" in source and source{"streetAddress"}.kind != JNull:
+  if hasKey(source, "streetAddress") and
+      source{"streetAddress"}.kind != JNull:
     target.streetAddress = some(jsonTo(source{"streetAddress"},
                                        typeof(unsafeGet(target.streetAddress))))
-  assert("region" in source,
+  assert(hasKey(source, "region"),
          "region" & " is missing while decoding " & "Addressaddress")
   target.region = jsonTo(source{"region"}, typeof(target.region))
-  assert("locality" in source,
+  assert(hasKey(source, "locality"),
          "locality" & " is missing while decoding " & "Addressaddress")
   target.locality = jsonTo(source{"locality"}, typeof(target.locality))
-  assert("countryName" in source,
+  assert(hasKey(source, "countryName"),
          "countryName" & " is missing while decoding " & "Addressaddress")
   target.countryName = jsonTo(source{"countryName"}, typeof(target.countryName))
-  if "postOfficeBox" in source and source{"postOfficeBox"}.kind != JNull:
+  if hasKey(source, "postOfficeBox") and
+      source{"postOfficeBox"}.kind != JNull:
     target.postOfficeBox = some(jsonTo(source{"postOfficeBox"},
                                        typeof(unsafeGet(target.postOfficeBox))))
-  if "extendedAddress" in source and source{"extendedAddress"}.kind != JNull:
+  if hasKey(source, "extendedAddress") and
+      source{"extendedAddress"}.kind != JNull:
     target.extendedAddress = some(jsonTo(source{"extendedAddress"},
         typeof(unsafeGet(target.extendedAddress))))
-  if "postalCode" in source and source{"postalCode"}.kind != JNull:
+  if hasKey(source, "postalCode") and source{"postalCode"}.kind != JNull:
     target.postalCode = some(jsonTo(source{"postalCode"},
                                     typeof(unsafeGet(target.postalCode))))
 
 proc toJsonHook*(source: Addressaddress): JsonNode =
   result = newJObject()
   if isSome(source.streetAddress):
-    result{"streetAddress"} = toJson(source.streetAddress)
+    result{"streetAddress"} = toJson(unsafeGet(source.streetAddress))
   result{"region"} = toJson(source.region)
   result{"locality"} = toJson(source.locality)
   result{"countryName"} = toJson(source.countryName)
   if isSome(source.postOfficeBox):
-    result{"postOfficeBox"} = toJson(source.postOfficeBox)
+    result{"postOfficeBox"} = toJson(unsafeGet(source.postOfficeBox))
   if isSome(source.extendedAddress):
-    result{"extendedAddress"} = toJson(source.extendedAddress)
+    result{"extendedAddress"} = toJson(unsafeGet(source.extendedAddress))
   if isSome(source.postalCode):
-    result{"postalCode"} = toJson(source.postalCode)
+    result{"postalCode"} = toJson(unsafeGet(source.postalCode))

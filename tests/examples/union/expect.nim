@@ -98,13 +98,13 @@ proc asFloat(value: UnionKey1Union): auto =
   return value.key4
 
 proc fromJsonHook*(target: var UnionKey3; source: JsonNode) =
-  if "foo" in source and source{"foo"}.kind != JNull:
+  if hasKey(source, "foo") and source{"foo"}.kind != JNull:
     target.foo = some(jsonTo(source{"foo"}, typeof(unsafeGet(target.foo))))
 
 proc toJsonHook*(source: UnionKey3): JsonNode =
   result = newJObject()
   if isSome(source.foo):
-    result{"foo"} = toJson(source.foo)
+    result{"foo"} = toJson(unsafeGet(source.foo))
 
 proc toJsonHook*(source: UnionunionKey3): JsonNode =
   case source
@@ -124,7 +124,7 @@ proc fromJsonHook*(target: var UnionunionKey3; source: JsonNode) =
   of "a":
     UnionunionKey3.A
   else:
-    raise newException(ValueError, "Unable to decode enum")
+    raise newException(ValueError, "Unable to decode enum: " & $source)
   
 proc fromJsonHook*(target: var UnionKey3Union; source: JsonNode) =
   if source.kind == JObject:
@@ -190,18 +190,18 @@ proc asOptOfStr(value: UnionKey3Union): auto =
   return value.key4
 
 proc fromJsonHook*(target: var Unionunion; source: JsonNode) =
-  if "key1" in source and source{"key1"}.kind != JNull:
+  if hasKey(source, "key1") and source{"key1"}.kind != JNull:
     target.key1 = some(jsonTo(source{"key1"}, typeof(unsafeGet(target.key1))))
-  if "key2" in source and source{"key2"}.kind != JNull:
+  if hasKey(source, "key2") and source{"key2"}.kind != JNull:
     target.key2 = some(jsonTo(source{"key2"}, typeof(unsafeGet(target.key2))))
-  if "key3" in source and source{"key3"}.kind != JNull:
+  if hasKey(source, "key3") and source{"key3"}.kind != JNull:
     target.key3 = some(jsonTo(source{"key3"}, typeof(unsafeGet(target.key3))))
 
 proc toJsonHook*(source: Unionunion): JsonNode =
   result = newJObject()
   if isSome(source.key1):
-    result{"key1"} = toJson(source.key1)
+    result{"key1"} = toJson(unsafeGet(source.key1))
   if isSome(source.key2):
-    result{"key2"} = toJson(source.key2)
+    result{"key2"} = toJson(unsafeGet(source.key2))
   if isSome(source.key3):
-    result{"key3"} = toJson(source.key3)
+    result{"key3"} = toJson(unsafeGet(source.key3))

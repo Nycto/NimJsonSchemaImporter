@@ -1,4 +1,4 @@
-import std/[unittest, json, os, paths, strutils, strformat, jsonutils], json_schema_types, util
+import json_schema_types, util
 
 importJsonSchema("examples/address/schema.json", conf("Address"))
 importJsonSchema("examples/blog/schema.json", conf("Blog"))
@@ -15,6 +15,8 @@ importJsonSchema("examples/file_system/schema.json", conf("FileSystem"))
 importJsonSchema("examples/ecommerce/schema.json", conf("Ecommerce"))
 importJsonSchema("examples/ldtk/schema.json", conf("Ldtk"))
 importJsonSchema("examples/aseprite/schema.json", conf("Aseprite"))
+
+import std/[unittest, json, os, paths, strformat, jsonutils]
 
 suite "Parsing example json schema":
 

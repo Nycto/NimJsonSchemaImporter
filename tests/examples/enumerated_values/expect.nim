@@ -6,10 +6,10 @@ type
     data*: Option[JsonNode]
 proc fromJsonHook*(target: var Enumerated_valuesenumerated_values;
                    source: JsonNode) =
-  if "data" in source and source{"data"}.kind != JNull:
+  if hasKey(source, "data") and source{"data"}.kind != JNull:
     target.data = some(jsonTo(source{"data"}, typeof(unsafeGet(target.data))))
 
 proc toJsonHook*(source: Enumerated_valuesenumerated_values): JsonNode =
   result = newJObject()
   if isSome(source.data):
-    result{"data"} = toJson(source.data)
+    result{"data"} = toJson(unsafeGet(source.data))

@@ -6,10 +6,10 @@ type
     latitude*: BiggestFloat
     longitude*: BiggestFloat
 proc fromJsonHook*(target: var Locationlocation; source: JsonNode) =
-  assert("latitude" in source,
+  assert(hasKey(source, "latitude"),
          "latitude" & " is missing while decoding " & "Locationlocation")
   target.latitude = jsonTo(source{"latitude"}, typeof(target.latitude))
-  assert("longitude" in source,
+  assert(hasKey(source, "longitude"),
          "longitude" & " is missing while decoding " & "Locationlocation")
   target.longitude = jsonTo(source{"longitude"}, typeof(target.longitude))
 

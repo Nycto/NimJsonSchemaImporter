@@ -9,10 +9,10 @@ type
     vegetables*: Option[seq[Array_of_thingsVeggie]]
     fruits*: Option[seq[string]]
 proc fromJsonHook*(target: var Array_of_thingsVeggie; source: JsonNode) =
-  assert("veggieName" in source,
+  assert(hasKey(source, "veggieName"),
          "veggieName" & " is missing while decoding " & "Array_of_thingsVeggie")
   target.veggieName = jsonTo(source{"veggieName"}, typeof(target.veggieName))
-  assert("veggieLike" in source,
+  assert(hasKey(source, "veggieLike"),
          "veggieLike" & " is missing while decoding " & "Array_of_thingsVeggie")
   target.veggieLike = jsonTo(source{"veggieLike"}, typeof(target.veggieLike))
 
@@ -22,16 +22,16 @@ proc toJsonHook*(source: Array_of_thingsVeggie): JsonNode =
   result{"veggieLike"} = toJson(source.veggieLike)
 
 proc fromJsonHook*(target: var Array_of_thingsarray_of_things; source: JsonNode) =
-  if "vegetables" in source and source{"vegetables"}.kind != JNull:
+  if hasKey(source, "vegetables") and source{"vegetables"}.kind != JNull:
     target.vegetables = some(jsonTo(source{"vegetables"},
                                     typeof(unsafeGet(target.vegetables))))
-  if "fruits" in source and source{"fruits"}.kind != JNull:
+  if hasKey(source, "fruits") and source{"fruits"}.kind != JNull:
     target.fruits = some(jsonTo(source{"fruits"},
                                 typeof(unsafeGet(target.fruits))))
 
 proc toJsonHook*(source: Array_of_thingsarray_of_things): JsonNode =
   result = newJObject()
   if isSome(source.vegetables):
-    result{"vegetables"} = toJson(source.vegetables)
+    result{"vegetables"} = toJson(unsafeGet(source.vegetables))
   if isSome(source.fruits):
-    result{"fruits"} = toJson(source.fruits)
+    result{"fruits"} = toJson(unsafeGet(source.fruits))

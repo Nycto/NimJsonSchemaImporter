@@ -9,7 +9,7 @@ proc hasAllProps(base, value: NimNode, typ: TypeDef): NimNode =
     result = base
     for key, (_, subtyp) in typ.properties:
         if subtyp.kind != OptionalType:
-            result = infix(base, "and", infix(key.newLit, "in", value))
+            result = infix(base, "and", newCall(bindSym("hasKey"), value, key.newLit))
 
 proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
     case typ.kind
@@ -91,7 +91,7 @@ proc buildEnumDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
         cases.add(nnkOfBranch.newTree(value.newLit, newDotExpr(typeName, safeTypeName(value))))
 
     cases.add nnkElse.newTree quote do:
-        raise newException(ValueError, "Unable to decode enum")
+        raise newException(ValueError, "Unable to decode enum: " & $`source`)
 
     return quote:
         proc fromJsonHook*(`target`: var `typeName`; `source`: JsonNode) =
@@ -106,11 +106,11 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
         let safeKey = safePropName(propName)
         if subtype.kind == OptionalType:
             decodeKeys.add quote do:
-                if `key` in `source` and `source`{`key`}.kind != JNull:
+                if hasKey(`source`, `key`) and `source`{`key`}.kind != JNull:
                     `target`.`safeKey` = some(jsonTo(`source`{`key`}, typeof(unsafeGet(`target`.`safeKey`))))
         else:
             decodeKeys.add quote do:
-                assert(`key` in `source`, `key` & " is missing while decoding " & `typeNameStr`)
+                assert(hasKey(`source`, `key`), `key` & " is missing while decoding " & `typeNameStr`)
                 `target`.`safeKey` = jsonTo(`source`{`key`}, typeof(`target`.`safeKey`))
 
     return quote:
@@ -125,7 +125,7 @@ proc buildObjectEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
         if subtype.kind == OptionalType:
             encodeKeys.add quote do:
                 if isSome(`source`.`safeKey`):
-                    result{`key`} = toJson(`source`.`safeKey`)
+                    result{`key`} = toJson(unsafeGet(`source`.`safeKey`))
         else:
             encodeKeys.add quote do:
                 result{`key`} = toJson(`source`.`safeKey`)

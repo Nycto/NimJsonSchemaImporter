@@ -2,9 +2,9 @@
 ## Library for generating native nim types from a JSON schema
 ##
 
-import std/[json, macros, paths], json_schema_types/[parse, gen, util]
+import std/[json, macros, paths, jsonutils], json_schema_types/[parse, gen, util]
 
-export JsonSchemaConfig, UrlResolver
+export JsonSchemaConfig, UrlResolver, json, jsonutils
 
 proc defaultUrlResolver*(uri: string): JsonNode = nil
 
