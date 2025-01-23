@@ -1,4 +1,4 @@
-import json_schema_types, std/unittest
+import json_schema_import, std/unittest
 
 importJsonSchema "examples/address/schema.json"
 importJsonSchema "examples/movie/schema.json", "Prefix"

@@ -27,7 +27,7 @@ Given a simple json schema file:
 This can be directly imported into a nim file as follows:
 
 ```nim
-import json_schema_types
+import json_schema_import
 
 importJsonSchema "address.schema.json"
 

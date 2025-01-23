@@ -1,4 +1,4 @@
-import std/[json, strformat], json_schema_types
+import std/[json, strformat], json_schema_import
 
 proc testResolver*(uri: string): JsonNode =
     if uri == "https://example.com/user-profile.schema.json":

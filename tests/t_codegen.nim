@@ -1,4 +1,4 @@
-import std/[unittest, json, os, paths, strutils], json_schema_types, regex, util
+import std/[unittest, json, os, paths, strutils], json_schema_import, regex, util
 
 proc addHeader(content: string): string =
     "{.push warning[UnusedImport]:off.}\n" &

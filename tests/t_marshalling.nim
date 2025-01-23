@@ -1,4 +1,4 @@
-import json_schema_types, util
+import json_schema_import, util
 
 importJsonSchema("examples/address/schema.json", conf("Address"))
 importJsonSchema("examples/blog/schema.json", conf("Blog"))
