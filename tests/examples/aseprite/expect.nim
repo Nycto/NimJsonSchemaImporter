@@ -192,17 +192,17 @@ proc toJsonHook*(source: AsepriteUnion): JsonNode =
   of 1:
     return toJson(source.key1)
   
-proc isMapOfFrame(value: AsepriteUnion): bool =
+proc isMapOfFrame*(value: AsepriteUnion): bool =
   value.kind == 0
 
-proc asMapOfFrame(value: AsepriteUnion): auto =
+proc asMapOfFrame*(value: AsepriteUnion): auto =
   assert(value.kind == 0)
   return value.key0
 
-proc isSeqOfArrayFrame(value: AsepriteUnion): bool =
+proc isSeqOfArrayFrame*(value: AsepriteUnion): bool =
   value.kind == 1
 
-proc asSeqOfArrayFrame(value: AsepriteUnion): auto =
+proc asSeqOfArrayFrame*(value: AsepriteUnion): auto =
   assert(value.kind == 1)
   return value.key1
 

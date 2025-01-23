@@ -12,8 +12,8 @@ proc buildUnionUnpacker*(typ: TypeDef, typeName: NimNode): NimNode =
         let getter = ident("as" & suffix)
         let keyName = i.unionKey
         result.add quote do:
-            proc `checker`(value: `typeName`): bool = value.kind == `i`
+            proc `checker`*(value: `typeName`): bool = value.kind == `i`
 
-            proc `getter`(value: `typeName`): auto =
+            proc `getter`*(value: `typeName`): auto =
                 assert(value.kind == `i`)
                 return value.`keyName`
