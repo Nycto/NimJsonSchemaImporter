@@ -1,4 +1,4 @@
-import std/[sets, tables, strformat, hashes, strutils], schemaRef
+import std/[sets, tables, strformat, hashes, strutils, uri, paths], schemaRef, namechain
 
 type
     TypeDefKind* = enum
@@ -21,6 +21,7 @@ type
 
     TypeDef* = ref object
         sref*: SchemaRef
+        id*: Uri
         case kind*: TypeDefKind
         of ObjType:
             properties*: Table[string, tuple[propName: string, typ: TypeDef]]
@@ -140,3 +141,19 @@ iterator nameFragments*(typ: TypeDef): string =
 proc chooseName*(typ: TypeDef): string =
     for fragment in typ.nameFragments:
         result &= fragment
+
+iterator proposeNames*(typ: TypeDef, prefix: string, name: NameChain): string =
+    ## Proposes all possible names for a type
+    for name in name.add(typ.sref.getName).nameOptions(prefix):
+        yield name
+
+    var base = typ.id.path.Path.extractFilename.string.capitalizeAscii
+    if base == "":
+        base = "Anon"
+
+    yield prefix & base
+
+    var i = 1
+    while true:
+        inc i
+        yield prefix & base & $i

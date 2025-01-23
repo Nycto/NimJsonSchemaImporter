@@ -22,18 +22,8 @@ proc add(ctx: GenContext, name, typ: NimNode) =
     ctx.usedNames.incl(name.strVal.toUpperAscii)
     ctx.types.incl(nnkTypeDef.newTree(postfix(name, "*"), newEmptyNode(), typ))
 
-iterator proposeNames(ctx: GenContext, name: NameChain, typ: TypeDef): string =
-    ## Proposes all possible names for a type
-    for name in name.add(typ.sref.getName).nameOptions(ctx.prefix):
-        yield name
-
-    var i = 0
-    while true:
-        inc i
-        yield "Anon" & $i
-
 proc genName(ctx: GenContext, name: NameChain, typ: TypeDef): NimNode =
-    for name in proposeNames(ctx, name, typ):
+    for name in typ.proposeNames(ctx.prefix, name):
         let upperName = name.toUpperAscii
         if upperName notin ctx.usedNames:
             ctx.usedNames.incl(upperName)

@@ -1,4 +1,4 @@
-import std/[json, sets, tables, strformat], types, schemaRef, history, util
+import std/[json, sets, tables, strformat, uri], types, schemaRef, history, util
 
 type
     ParseContext = ref object
@@ -15,6 +15,13 @@ proc parseSubnodeType(parent: JsonNode, prop: string, ctx: ParseContext, history
 proc expectKind(node: JsonNode, kind: JsonNodeKind) =
     assert(node.kind == kind, fmt"Expecting a(n) {kind}: {node}")
 
+proc id(node: JsonNode): Uri =
+    if node.kind == JObject and node.hasKey("$id"):
+        try:
+            return parseUri(node{"$id"}.getStr)
+        except:
+            discard
+
 proc choosePropName(initialName: string, seen: var HashSet[string], increment: int = 0): string =
     ## Chooses a unique name for an object property
     let name = if increment == 0: initialName else: fmt"{initialName}{increment}"
@@ -25,7 +32,6 @@ proc choosePropName(initialName: string, seen: var HashSet[string], increment: i
     else:
         return choosePropName(initialName, seen, increment + 1)
 
-
 proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JObject)
 
@@ -34,7 +40,7 @@ proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
         for key in node{"required"}:
             required.incl(key.getStr)
 
-    result = TypeDef(kind: ObjType, properties: initTable[string, PropDef]())
+    result = TypeDef(kind: ObjType, properties: initTable[string, PropDef](), id: id(node))
 
     var seen = initHashSet[string]()
 
@@ -51,11 +57,11 @@ proc parseMap(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
         return parseObj(node, ctx, history)
     if "properties" in node:
         raise newException(ValueError, fmt"Mixing properties and additionalProperties is unsupported at {history}")
-    return TypeDef(kind: MapType, entries: node.parseSubnodeType("additionalProperties", ctx, history))
+    return TypeDef(kind: MapType, entries: node.parseSubnodeType("additionalProperties", ctx, history), id: id(node))
 
 proc parseArray(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JObject)
-    return TypeDef(kind: ArrayType, items: parseType(node{"items"}, ctx, history.add("items")))
+    return TypeDef(kind: ArrayType, items: parseType(node{"items"}, ctx, history.add("items")), id: id(node))
 
 proc parseRef(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JObject)
@@ -107,7 +113,7 @@ proc parseUnion(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     elif subtypes.isNullableUnion():
         return subtypes.buildNullableUnion()
     else:
-        return TypeDef(kind: UnionType, subtypes: subtypes)
+        return TypeDef(kind: UnionType, subtypes: subtypes, id: id(node))
 
 proc parseEnum(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JObject)
@@ -117,9 +123,9 @@ proc parseEnum(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
         case value.kind:
         of JString: values.incl(value.getStr)
         of JNull: isOptional = true
-        else: return TypeDef(kind: JsonType)
+        else: return TypeDef(kind: JsonType, id: id(node))
 
-    result = TypeDef(kind: EnumType, values: values)
+    result = TypeDef(kind: EnumType, values: values, id: id(node))
     if isOptional:
         result = result.optional()
 
@@ -166,7 +172,7 @@ proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     elif "format" in node:
         return parseTypeStr("string", history)
     else:
-        return TypeDef(kind: JsonType)
+        return TypeDef(kind: JsonType, id: id(node))
 
 proc parseSchema*(node: JsonNode, resolver: UrlResolver): JsonSchema =
     result = JsonSchema()
