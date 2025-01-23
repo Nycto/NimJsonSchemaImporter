@@ -19,8 +19,23 @@ macro realImportJsonSchema(rootDir, path: static Path, conf: static JsonSchemaCo
     let resolvedPath = if path.isAbsolute: path else: rootDir / path
     parseJsonSchema(slurp($resolvedPath), conf)
 
+proc getRootDir(node: NimNode): NimNode =
+    newCall(bindSym("Path"), newLit($(lineInfoObj(node).filename.Path.parentDir)))
+
 macro importJsonSchema*(path: string, conf: JsonSchemaConfig) =
     ## Imports a json schema file as if it were a nim file
-    let rootDir = newLit($(lineInfoObj(path).filename.Path.parentDir))
+    let rootDir = path.getRootDir
     quote:
-        realImportJsonSchema(Path(`rootDir`), Path(`path`), `conf`)
+        realImportJsonSchema(`rootDir`, Path(`path`), `conf`)
+
+macro importJsonSchema*(path: string) =
+    ## Imports a json schema file as if it were a nim file
+    let rootDir = path.getRootDir
+    return quote:
+        realImportJsonSchema(`rootDir`, Path(`path`), JsonSchemaConfig())
+
+macro importJsonSchema*(path, prefix: string) =
+    ## Imports a json schema file as if it were a nim file
+    let rootDir = path.getRootDir
+    quote:
+        realImportJsonSchema(`rootDir`, Path(`path`), JsonSchemaConfig(typePrefix: `prefix`))
