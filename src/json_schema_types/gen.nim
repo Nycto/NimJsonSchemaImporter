@@ -18,8 +18,8 @@ proc hash(node: NimNode): Hash =
         result = result !& hash(child)
 
 proc add(ctx: GenContext, name, typ: NimNode) =
-    name.expectKind(nnkIdent)
-    ctx.usedNames.incl(name.strVal.toUpperAscii)
+    name.expectKind({ nnkIdent, nnkAccQuoted })
+    ctx.usedNames.incl(name.getName.toUpperAscii)
     ctx.types.incl(nnkTypeDef.newTree(postfix(name, "*"), newEmptyNode(), typ))
 
 proc genName(ctx: GenContext, name: NameChain, typ: TypeDef): NimNode =
