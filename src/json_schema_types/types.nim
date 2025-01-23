@@ -142,12 +142,16 @@ proc chooseName*(typ: TypeDef): string =
     for fragment in typ.nameFragments:
         result &= fragment
 
+proc removeExt(value: string): string =
+    let pos = value.find('.')
+    return if pos == -1: value else: value[0..<pos]
+
 iterator proposeNames*(typ: TypeDef, prefix: string, name: NameChain): string =
     ## Proposes all possible names for a type
     for name in name.add(typ.sref.getName).nameOptions(prefix):
         yield name
 
-    var base = typ.id.path.Path.extractFilename.string.capitalizeAscii
+    var base = typ.id.path.Path.extractFilename.string.capitalizeAscii.removeExt
     if base == "":
         base = "Anon"
 

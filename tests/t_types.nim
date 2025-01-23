@@ -9,7 +9,7 @@ proc take(typ: TypeDef, name: NameChain, count: int): seq[string] =
 suite "Types":
 
     test "Generating names for a type with an id":
-        let typ = TypeDef(kind: StringType, id: parseUri("http://example.com/foo/bar/baz"))
+        let typ = TypeDef(kind: StringType, id: parseUri("http://example.com/foo/bar/baz.schema.json"))
         check(typ.take(nil, 3) == @["PreBaz", "PreBaz2", "PreBaz3"])
 
     test "Generating anonomous names":
