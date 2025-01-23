@@ -35,11 +35,8 @@ iterator nameOptions*(name: NameChain, prefix: string): string =
 
         next = next.parent
 
-    if accum == "":
-        accum = "Anon"
-        yield prefix & accum
-
-    var i = 2
-    while true:
-        yield prefix & accum & $i
-        inc i
+    if accum != "":
+        var i = 2
+        while true:
+            yield prefix & accum & $i
+            inc i

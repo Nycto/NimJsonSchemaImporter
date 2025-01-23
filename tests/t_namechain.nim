@@ -9,14 +9,14 @@ proc take(name: NameChain, count: int): seq[string] =
 suite "Name chaining and generation":
 
     test "Empty name chain":
-        check(take(nil, 4) == @["PreAnon", "PreAnon2", "PreAnon3", "PreAnon4"])
+        check(take(nil, 4).len == 0)
 
     test "Single name chain":
         check(take(rootName("Foo"), 4) == @["PreFoo", "PreFoo2", "PreFoo3", "PreFoo4"])
 
     test "Empty name strings":
-        check(take(rootName(""), 2) == @["PreAnon", "PreAnon2"])
-        check(take(rootName("").add(""), 2) == @["PreAnon", "PreAnon2"])
+        check(take(rootName(""), 4).len == 0)
+        check(take(rootName("").add(""), 4).len == 0)
 
     test "Single added name":
         check(take(rootName("Foo").add("bar"), 4) == @["PreBar", "PreFooBar", "PreFooBar2", "PreFooBar3"])
