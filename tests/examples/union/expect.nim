@@ -34,6 +34,21 @@ type
     key1*: Option[UnionKey1Union]
     key2*: Option[string]
     key3*: Option[UnionKey3Union]
+proc forUnionKey1Union*(value: string): UnionKey1Union =
+  return UnionKey1Union(kind: 0, key0: value)
+
+proc forUnionKey1Union*(value: BiggestInt): UnionKey1Union =
+  return UnionKey1Union(kind: 1, key1: value)
+
+proc forUnionKey1Union*(value: bool): UnionKey1Union =
+  return UnionKey1Union(kind: 2, key2: value)
+
+proc forUnionKey1Union*(value: pointer): UnionKey1Union =
+  return UnionKey1Union(kind: 3, key3: value)
+
+proc forUnionKey1Union*(value: BiggestFloat): UnionKey1Union =
+  return UnionKey1Union(kind: 4, key4: value)
+
 proc fromJsonHook*(target: var UnionKey1Union; source: JsonNode) =
   if source.kind == JString:
     target = UnionKey1Union(kind: 0, key0: jsonTo(source, typeof(target.key0)))
@@ -106,6 +121,15 @@ proc toJsonHook*(source: UnionKey3): JsonNode =
   if isSome(source.foo):
     result{"foo"} = toJson(unsafeGet(source.foo))
 
+proc forUnionKey3Union*(value: UnionKey3): UnionKey3Union =
+  return UnionKey3Union(kind: 0, key0: value)
+
+proc forUnionKey3Union*(value: seq[string]): UnionKey3Union =
+  return UnionKey3Union(kind: 1, key1: value)
+
+proc forUnionKey3Union*(value: Table[string, string]): UnionKey3Union =
+  return UnionKey3Union(kind: 2, key2: value)
+
 proc toJsonHook*(source: UnionunionKey3): JsonNode =
   case source
   of UnionunionKey3.B:
@@ -126,6 +150,12 @@ proc fromJsonHook*(target: var UnionunionKey3; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc forUnionKey3Union*(value: UnionunionKey3): UnionKey3Union =
+  return UnionKey3Union(kind: 3, key3: value)
+
+proc forUnionKey3Union*(value: Option[string]): UnionKey3Union =
+  return UnionKey3Union(kind: 4, key4: value)
+
 proc fromJsonHook*(target: var UnionKey3Union; source: JsonNode) =
   if source.kind == JObject:
     target = UnionKey3Union(kind: 0, key0: jsonTo(source, typeof(target.key0)))

@@ -141,6 +141,9 @@ proc toJsonHook*(source: AsepriteFrame): JsonNode =
   result{"spriteSourceSize"} = toJson(source.spriteSourceSize)
   result{"frame"} = toJson(source.frame)
 
+proc forAsepriteUnion*(value: Table[string, AsepriteFrame]): AsepriteUnion =
+  return AsepriteUnion(kind: 0, key0: value)
+
 proc fromJsonHook*(target: var AsepriteArrayFrame; source: JsonNode) =
   assert(hasKey(source, "sourceSize"),
          "sourceSize" & " is missing while decoding " & "AsepriteArrayFrame")
@@ -175,6 +178,9 @@ proc toJsonHook*(source: AsepriteArrayFrame): JsonNode =
   result{"spriteSourceSize"} = toJson(source.spriteSourceSize)
   result{"filename"} = toJson(source.filename)
   result{"frame"} = toJson(source.frame)
+
+proc forAsepriteUnion*(value: seq[AsepriteArrayFrame]): AsepriteUnion =
+  return AsepriteUnion(kind: 1, key1: value)
 
 proc fromJsonHook*(target: var AsepriteUnion; source: JsonNode) =
   if source.kind == JObject:

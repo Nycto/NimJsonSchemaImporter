@@ -65,6 +65,9 @@ proc toJsonHook*(source: File_systemDiskDevice): JsonNode =
   result{"type"} = toJson(source.`type`)
   result{"device"} = toJson(source.device)
 
+proc forFile_systemUnion*(value: File_systemDiskDevice): File_systemUnion =
+  return File_systemUnion(kind: 0, key0: value)
+
 proc toJsonHook*(source: File_systemStorageType): JsonNode =
   case source
   of File_systemStorageType.Disk:
@@ -89,6 +92,9 @@ proc toJsonHook*(source: File_systemDiskUUID): JsonNode =
   result = newJObject()
   result{"type"} = toJson(source.`type`)
   result{"label"} = toJson(source.label)
+
+proc forFile_systemUnion*(value: File_systemDiskUUID): File_systemUnion =
+  return File_systemUnion(kind: 1, key1: value)
 
 proc toJsonHook*(source: File_systemfile_systemStorageType): JsonNode =
   case source
@@ -120,6 +126,9 @@ proc toJsonHook*(source: File_systemNfs): JsonNode =
   result{"server"} = toJson(source.server)
   result{"remotePath"} = toJson(source.remotePath)
 
+proc forFile_systemUnion*(value: File_systemNfs): File_systemUnion =
+  return File_systemUnion(kind: 2, key2: value)
+
 proc toJsonHook*(source: File_systemfile_systemStorageType2): JsonNode =
   case source
   of File_systemfile_systemStorageType2.Tmpfs:
@@ -145,6 +154,9 @@ proc toJsonHook*(source: File_systemTmpfs): JsonNode =
   result = newJObject()
   result{"type"} = toJson(source.`type`)
   result{"sizeInMB"} = toJson(source.sizeInMB)
+
+proc forFile_systemUnion*(value: File_systemTmpfs): File_systemUnion =
+  return File_systemUnion(kind: 3, key3: value)
 
 proc fromJsonHook*(target: var File_systemUnion; source: JsonNode) =
   if source.kind == JObject and hasKey(source, "device"):

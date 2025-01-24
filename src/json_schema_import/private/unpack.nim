@@ -24,3 +24,11 @@ proc buildUnionUnpacker*(typ: TypeDef, typeName: NimNode): NimNode =
                     proc `getter`*(value: `typeName`): auto =
                         assert(value.kind == `i`)
                         return value.`keyName`
+
+proc buildUnionPacker*(unionIndex: int, subtype, unionType: NimNode): NimNode =
+    ## Builds methods for packing values into a union
+    let baseName = ident("for" & unionType.strVal)
+    let key = unionIndex.unionKey
+    return quote:
+        proc `baseName`*(value: `subtype`): `unionType` =
+            return `unionType`(kind: `unionIndex`, `key`: value)

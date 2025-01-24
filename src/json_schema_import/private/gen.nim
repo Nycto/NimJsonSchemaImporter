@@ -85,16 +85,19 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     )
 
     for i, subtype in typ.subtypes:
+        let subtypeNode = subtype.genType(name, ctx)
         cases.add(
             nnkOfBranch.newTree(
                 i.newLit,
                 nnkIdentDefs.newTree(
                     postfix(i.unionKey, "*"),
-                    subtype.genType(name, ctx),
+                    subtypeNode,
                     newEmptyNode()
                 )
             )
         )
+
+        ctx.procs.add(buildUnionPacker(i, subtypeNode, result))
 
     ctx.add(result, nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), nnkRecList.newTree(cases)))
 
