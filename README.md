@@ -7,11 +7,17 @@ This is a Nim package that allows [json schema](https://json-schema.org) documen
 imported into a project. The types will available, as well as helper functions for serializing
 and deserializing JSON.
 
+It is intended for situations where you don't need to dynamically load the JSON schema itself. For example, if you
+are building a game that uses [LDtk](https://ldtk.io) as a level editor, you could download the
+[json schema](https://ldtk.io/docs/game-dev/json-overview/json-schema/) that describes the file format and directly
+import it into your project. This would allow you to immediately start opening and interacting with the save
+files using native Nim objects.
+
 ## Example
 
 Given a simple json schema file:
 
-```json
+```json address.schema.json
 {
   "$id": "/schemas/address",
   "type": "object",
@@ -26,7 +32,7 @@ Given a simple json schema file:
 
 This can be directly imported into a nim file as follows:
 
-```nim
+```nim example.nim
 import json_schema_import
 
 importJsonSchema "address.schema.json"
