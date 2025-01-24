@@ -8,12 +8,12 @@ export JsonSchemaConfig, UrlResolver, json, jsonutils
 
 proc defaultUrlResolver(uri: string): JsonNode = nil
 
-proc parseJsonSchema*(schema: JsonNode, conf: JsonSchemaConfig): NimNode {.compileTime.} =
+proc parseJsonSchema(schema: JsonNode, conf: JsonSchemaConfig): NimNode {.compileTime.} =
     ## Parses a json schema
     let resolver = if conf.urlResolver == nil: defaultUrlResolver else: conf.urlResolver
     parseSchema(schema, resolver).genDeclarations(conf.rootTypeName, conf.typePrefix)
 
-proc parseJsonSchema*(schema: string, conf: JsonSchemaConfig): NimNode {.compileTime.} =
+proc parseJsonSchema(schema: string, conf: JsonSchemaConfig): NimNode {.compileTime.} =
     ## Parses a json schema from a string
     parseJsonSchema(schema.parseJson, conf)
 
