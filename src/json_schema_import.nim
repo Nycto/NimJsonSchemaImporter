@@ -43,3 +43,7 @@ macro importJsonSchema*(path, prefix: string) =
     let rootDir = path.getRootDir
     quote:
         realImportJsonSchema(`rootDir`, Path(`path`), JsonSchemaConfig(typePrefix: `prefix`))
+
+macro jsonSchema*(schema: static JsonNode) =
+    ## Converts a direct json reference to nim as if it were a json schema
+    parseJsonSchema(schema, JsonSchemaConfig())

@@ -161,12 +161,26 @@ proc asObject*(value: UnionKey3Union): auto =
   assert(value.kind == 0)
   return value.key0
 
+proc isSeq*(value: UnionKey3Union): bool =
+  value.kind == 1
+
+proc asSeq*(value: UnionKey3Union): auto =
+  assert(value.kind == 1)
+  return value.key1
+
 proc isSeqOfStr*(value: UnionKey3Union): bool =
   value.kind == 1
 
 proc asSeqOfStr*(value: UnionKey3Union): auto =
   assert(value.kind == 1)
   return value.key1
+
+proc isMap*(value: UnionKey3Union): bool =
+  value.kind == 2
+
+proc asMap*(value: UnionKey3Union): auto =
+  assert(value.kind == 2)
+  return value.key2
 
 proc isMapOfStr*(value: UnionKey3Union): bool =
   value.kind == 2
@@ -181,6 +195,13 @@ proc isEnum*(value: UnionKey3Union): bool =
 proc asEnum*(value: UnionKey3Union): auto =
   assert(value.kind == 3)
   return value.key3
+
+proc isOpt*(value: UnionKey3Union): bool =
+  value.kind == 4
+
+proc asOpt*(value: UnionKey3Union): auto =
+  assert(value.kind == 4)
+  return value.key4
 
 proc isOptOfStr*(value: UnionKey3Union): bool =
   value.kind == 4
