@@ -1025,9 +1025,9 @@ proc fromJsonHook*(target: var LdtkWorld; source: JsonNode) =
   assert(hasKey(source, "identifier"),
          "identifier" & " is missing while decoding " & "LdtkWorld")
   target.identifier = jsonTo(source{"identifier"}, typeof(target.identifier))
-  if hasKey(source, "worldLayout") and source{"worldLayout"}.kind != JNull:
-    target.worldLayout = some(jsonTo(source{"worldLayout"},
-                                     typeof(unsafeGet(target.worldLayout))))
+  assert(hasKey(source, "worldLayout"),
+         "worldLayout" & " is missing while decoding " & "LdtkWorld")
+  target.worldLayout = jsonTo(source{"worldLayout"}, typeof(target.worldLayout))
   assert(hasKey(source, "iid"),
          "iid" & " is missing while decoding " & "LdtkWorld")
   target.iid = jsonTo(source{"iid"}, typeof(target.iid))
@@ -1048,8 +1048,9 @@ proc toJsonHook*(source: LdtkWorld): JsonNode =
   result{"worldGridWidth"} = toJson(source.worldGridWidth)
   result{"defaultLevelHeight"} = toJson(source.defaultLevelHeight)
   result{"identifier"} = toJson(source.identifier)
-  if isSome(source.worldLayout):
-    result{"worldLayout"} = toJson(unsafeGet(source.worldLayout))
+  result{"worldLayout"} = if isSome(source.worldLayout):
+    toJson(unsafeGet(source.worldLayout)) else:
+    newJNull()
   result{"iid"} = toJson(source.iid)
   result{"defaultLevelWidth"} = toJson(source.defaultLevelWidth)
   result{"worldGridHeight"} = toJson(source.worldGridHeight)

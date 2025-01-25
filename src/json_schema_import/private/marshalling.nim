@@ -7,8 +7,8 @@ proc isJsonKind(value: NimNode, kind: JsonNodeKind): NimNode =
 
 proc hasAllProps(base, value: NimNode, typ: TypeDef): NimNode =
     result = base
-    for key, (_, subtyp) in typ.properties:
-        if subtyp.kind != OptionalType:
+    for key, (_, _, required) in typ.properties:
+        if required:
             result = infix(base, "and", newCall(bindSym("hasKey"), value, key.newLit))
 
 proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
@@ -102,16 +102,16 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
 
     let typeNameStr = typeName.getName.newLit
 
-    for key, (propName, subtype) in typ.properties:
+    for key, (propName, subtype, required) in typ.properties:
         let safeKey = safePropName(propName)
-        if subtype.kind == OptionalType:
-            decodeKeys.add quote do:
-                if hasKey(`source`, `key`) and `source`{`key`}.kind != JNull:
-                    `target`.`safeKey` = some(jsonTo(`source`{`key`}, typeof(unsafeGet(`target`.`safeKey`))))
-        else:
+        if required:
             decodeKeys.add quote do:
                 assert(hasKey(`source`, `key`), `key` & " is missing while decoding " & `typeNameStr`)
                 `target`.`safeKey` = jsonTo(`source`{`key`}, typeof(`target`.`safeKey`))
+        else:
+            decodeKeys.add quote do:
+                if hasKey(`source`, `key`) and `source`{`key`}.kind != JNull:
+                    `target`.`safeKey` = some(jsonTo(`source`{`key`}, typeof(unsafeGet(`target`.`safeKey`))))
 
     return quote:
         proc fromJsonHook*(`target`: var `typeName`; `source`: JsonNode) =
@@ -120,12 +120,16 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
 proc buildObjectEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
     var encodeKeys = newStmtList()
 
-    for key, (propName, subtype) in typ.properties:
+    for key, (propName, subtype, required) in typ.properties:
         let safeKey = safePropName(propName)
         if subtype.kind == OptionalType:
-            encodeKeys.add quote do:
-                if isSome(`source`.`safeKey`):
-                    result{`key`} = toJson(unsafeGet(`source`.`safeKey`))
+            if required:
+                encodeKeys.add quote do:
+                    result{`key`} = if isSome(`source`.`safeKey`): toJson(unsafeGet(`source`.`safeKey`)) else: newJNull()
+            else:
+                encodeKeys.add quote do:
+                    if isSome(`source`.`safeKey`):
+                        result{`key`} = toJson(unsafeGet(`source`.`safeKey`))
         else:
             encodeKeys.add quote do:
                 result{`key`} = toJson(`source`.`safeKey`)

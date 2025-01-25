@@ -16,7 +16,7 @@ type
         MapType,
         OptionalType,
 
-    PropDef* = tuple[propName: string, typ: TypeDef]
+    PropDef* = tuple[propName: string, typ: TypeDef, required: bool]
         ## The details of an object property
 
     TypeDef* = ref object
@@ -24,7 +24,7 @@ type
         id*: Uri
         case kind*: TypeDefKind
         of ObjType:
-            properties*: Table[string, tuple[propName: string, typ: TypeDef]]
+            properties*: Table[string, PropDef]
         of EnumType:
             values*: HashSet[string]
         of RefType:

@@ -48,7 +48,8 @@ proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
         let subtype = typeDef.parseType(ctx, history.add("properties").add(key))
         result.properties[key] = (
             propName: key.cleanupIdent.choosePropName(seen),
-            typ: if key in required: subtype else: subtype.optional()
+            typ: if key in required: subtype else: subtype.optional(),
+            required: key in required
         )
 
 proc parseMap(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
@@ -79,18 +80,36 @@ proc parseTypeStr(typ: string, history: History): TypeDef =
     of "object": return TypeDef(kind: MapType, entries: TypeDef(kind: JsonType))
     else: raise newException(ValueError, fmt"Unsupported type {typ} at {history}")
 
-proc isNullableUnion(subtypes: seq[TypeDef]): bool =
-    if subtypes.len == 2:
-        for subtype in subtypes:
-            if subtype.kind == NullType:
-                return true
+proc collapseUnion(typ: TypeDef, history: History): TypeDef =
+    assert(typ.kind == UnionType)
 
-proc buildNullableUnion(subtypes: seq[TypeDef]): TypeDef =
-    assert(subtypes.len == 2)
-    for subtype in subtypes:
-        if subtype.kind != NullType:
-            return subtype.optional()
-    raise newException(AssertionDefect, "Failed to generate nullable union")
+    if typ.subtypes.len == 0:
+        raise newException(ValueError, fmt"Empty union at {history}")
+    elif typ.subtypes.len == 1:
+        return typ.subtypes[0]
+
+    var nestedUnion = false
+    var markOptional = false
+    var subtypes: seq[TypeDef]
+    for subtype in typ.subtypes:
+        case subtype.kind
+        of NullType:
+            markOptional = true
+        of OptionalType:
+            markOptional = true
+            subtypes.add(subtype.subtype)
+        of UnionType:
+            nestedUnion = true
+            subtypes.add(subtype.subtypes)
+        else:
+            subtypes.add(subtype)
+
+    return if markOptional:
+        TypeDef(kind: UnionType, subtypes: subtypes, id: typ.id).collapseUnion(history).optional()
+    elif nestedUnion:
+        TypeDef(kind: UnionType, subtypes: subtypes, id: typ.id).collapseUnion(history)
+    else:
+        typ
 
 proc parseUnion(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JArray)
@@ -106,14 +125,7 @@ proc parseUnion(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
             seenTypes.incl(parsed)
             subtypes.add(parsed)
 
-    if subtypes.len == 0:
-        raise newException(ValueError, fmt"Empty union at {history}")
-    elif subtypes.len == 1:
-        return subtypes[0]
-    elif subtypes.isNullableUnion():
-        return subtypes.buildNullableUnion()
-    else:
-        return TypeDef(kind: UnionType, subtypes: subtypes, id: id(node))
+    return TypeDef(kind: UnionType, subtypes: subtypes, id: id(node)).collapseUnion(history)
 
 proc parseEnum(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JObject)
