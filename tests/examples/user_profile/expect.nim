@@ -9,6 +9,7 @@ type
     username*: string
     location*: Option[string]
     email*: string
+proc toJsonHook*(source: User_profileuser_profile): JsonNode
 proc fromJsonHook*(target: var User_profileuser_profile; source: JsonNode) =
   if hasKey(source, "interests") and source{"interests"}.kind != JNull:
     target.interests = some(jsonTo(source{"interests"},
@@ -31,12 +32,17 @@ proc fromJsonHook*(target: var User_profileuser_profile; source: JsonNode) =
 proc toJsonHook*(source: User_profileuser_profile): JsonNode =
   result = newJObject()
   if isSome(source.interests):
-    result{"interests"} = toJson(unsafeGet(source.interests))
+    result{"interests"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.interests):
+        output.add(newJString(entry))
+      output
   if isSome(source.fullName):
-    result{"fullName"} = toJson(unsafeGet(source.fullName))
+    result{"fullName"} = newJString(unsafeGet(source.fullName))
   if isSome(source.age):
-    result{"age"} = toJson(unsafeGet(source.age))
-  result{"username"} = toJson(source.username)
+    result{"age"} = newJInt(unsafeGet(source.age))
+  result{"username"} = newJString(source.username)
   if isSome(source.location):
-    result{"location"} = toJson(unsafeGet(source.location))
-  result{"email"} = toJson(source.email)
+    result{"location"} = newJString(unsafeGet(source.location))
+  result{"email"} = newJString(source.email)
+{.pop.}

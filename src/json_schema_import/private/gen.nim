@@ -4,6 +4,7 @@ import std/[macros, tables, sets, json, options, hashes, strutils]
 type
     GenContext = ref object
         types: OrderedSet[NimNode]
+        declarations: NimNode
         procs: NimNode
         nextId: uint
         prefix: string
@@ -21,6 +22,10 @@ proc add(ctx: GenContext, name, typ: NimNode) =
     name.expectKind({ nnkIdent, nnkAccQuoted })
     ctx.usedNames.incl(name.getName.toUpperAscii)
     ctx.types.incl(nnkTypeDef.newTree(postfix(name, "*"), newEmptyNode(), typ))
+
+    let source = ident("source")
+    ctx.declarations.add quote do:
+        proc toJsonHook*(`source`: `name`): JsonNode
 
 proc genName(ctx: GenContext, name: NameChain, typ: TypeDef): NimNode =
     for name in typ.proposeNames(ctx.prefix, name):
@@ -143,7 +148,8 @@ proc genDeclarations*(schema: JsonSchema, name, namePrefix: string): NimNode =
         types: initOrderedSet[NimNode](),
         prefix: namePrefix,
         cache: initTable[SchemaRef, NimNode](),
-        procs: newStmtList()
+        declarations: newStmtList(),
+        procs: newStmtList(),
     )
 
     discard schema.rootType.genType(rootName(name), ctx)
@@ -152,5 +158,5 @@ proc genDeclarations*(schema: JsonSchema, name, namePrefix: string): NimNode =
     for typ in ctx.types:
         types.add(typ)
 
-    return newStmtList(types, ctx.procs)
+    return newStmtList(types, ctx.declarations, ctx.procs)
 

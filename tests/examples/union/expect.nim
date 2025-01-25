@@ -32,6 +32,11 @@ type
     key1*: Option[UnionKey1Union]
     key2*: string
     key3*: Option[UnionKey3Union]
+proc toJsonHook*(source: UnionKey1Union): JsonNode
+proc toJsonHook*(source: UnionKey3): JsonNode
+proc toJsonHook*(source: UnionunionKey3): JsonNode
+proc toJsonHook*(source: UnionKey3Union): JsonNode
+proc toJsonHook*(source: Unionunion): JsonNode
 converter forUnionKey1Union*(value: string): UnionKey1Union =
   return UnionKey1Union(kind: 0, key0: value)
 
@@ -60,13 +65,13 @@ proc fromJsonHook*(target: var UnionKey1Union; source: JsonNode) =
 proc toJsonHook*(source: UnionKey1Union): JsonNode =
   case source.kind
   of 0:
-    toJson(source.key0)
+    newJString(source.key0)
   of 1:
-    toJson(source.key1)
+    newJInt(source.key1)
   of 2:
-    toJson(source.key2)
+    newJBool(source.key2)
   of 3:
-    toJson(source.key3)
+    newJFloat(source.key3)
   
 proc isStr*(value: UnionKey1Union): bool =
   value.kind == 0
@@ -103,7 +108,7 @@ proc fromJsonHook*(target: var UnionKey3; source: JsonNode) =
 proc toJsonHook*(source: UnionKey3): JsonNode =
   result = newJObject()
   if isSome(source.foo):
-    result{"foo"} = toJson(unsafeGet(source.foo))
+    result{"foo"} = newJString(unsafeGet(source.foo))
 
 converter forUnionKey3Union*(value: UnionKey3): UnionKey3Union =
   return UnionKey3Union(kind: 0, key0: value)
@@ -158,19 +163,23 @@ proc fromJsonHook*(target: var UnionKey3Union; source: JsonNode) =
 proc toJsonHook*(source: UnionKey3Union): JsonNode =
   case source.kind
   of 0:
-    toJson(source.key0)
+    toJsonHook(source.key0)
   of 1:
     block:
       var output = newJArray()
       for entry in source.key1:
-        output.add(toJson(entry))
+        output.add(newJString(entry))
       output
   of 2:
-    toJson(source.key2)
+    block:
+      var output = newJObject()
+      for key, entry in pairs(source.key2):
+        output[key] = newJString(entry)
+      output
   of 3:
-    toJson(source.key3)
+    toJsonHook(source.key3)
   of 4:
-    toJson(source.key4)
+    newJString(source.key4)
   
 proc isObject*(value: UnionKey3Union): bool =
   value.kind == 0
@@ -235,9 +244,12 @@ proc fromJsonHook*(target: var Unionunion; source: JsonNode) =
 proc toJsonHook*(source: Unionunion): JsonNode =
   result = newJObject()
   result{"key1"} = if isSome(source.key1):
-    toJson(unsafeGet(source.key1)) else:
+    toJsonHook(unsafeGet(source.key1))
+  else:
     newJNull()
-  result{"key2"} = toJson(source.key2)
+  result{"key2"} = newJString(source.key2)
   result{"key3"} = if isSome(source.key3):
-    toJson(unsafeGet(source.key3)) else:
+    toJsonHook(unsafeGet(source.key3))
+  else:
     newJNull()
+{.pop.}

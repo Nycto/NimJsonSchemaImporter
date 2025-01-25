@@ -1,4 +1,4 @@
-import std/[macros, json, strutils, sets]
+import std/[macros, json, strutils, sets], regex
 
 proc unionKey*(i: int): NimNode = ident("key" & $i)
 
@@ -51,3 +51,9 @@ proc wrapIdent(name: string): NimNode =
 proc safeTypeName*(name: string): NimNode = name.cleanupIdent.capitalizeAscii.wrapIdent
 
 proc safePropName*(name: string): NimNode = name.cleanupIdent.wrapIdent
+
+proc formatCodeDump*(code: NimNode): string =
+    result = "{.push warning[UnusedImport]:off.}\n"
+    result &= "import std/[json, jsonutils, tables, options]\n"
+    result &= code.repr.replace(re2"\`gensym_?\d+", "")
+    result &= "{.pop.}\n"

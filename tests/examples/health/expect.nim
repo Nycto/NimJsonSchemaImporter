@@ -13,6 +13,8 @@ type
     medications*: Option[seq[string]]
     conditions*: Option[seq[string]]
     allergies*: Option[seq[string]]
+proc toJsonHook*(source: HealthEmergencyContact): JsonNode
+proc toJsonHook*(source: Healthhealth): JsonNode
 proc fromJsonHook*(target: var HealthEmergencyContact; source: JsonNode) =
   if hasKey(source, "username") and source{"username"}.kind != JNull:
     target.username = some(jsonTo(source{"username"},
@@ -23,9 +25,9 @@ proc fromJsonHook*(target: var HealthEmergencyContact; source: JsonNode) =
 proc toJsonHook*(source: HealthEmergencyContact): JsonNode =
   result = newJObject()
   if isSome(source.username):
-    result{"username"} = toJson(unsafeGet(source.username))
+    result{"username"} = newJString(unsafeGet(source.username))
   if isSome(source.email):
-    result{"email"} = toJson(unsafeGet(source.email))
+    result{"email"} = newJString(unsafeGet(source.email))
 
 proc fromJsonHook*(target: var Healthhealth; source: JsonNode) =
   assert(hasKey(source, "dateOfBirth"),
@@ -53,14 +55,27 @@ proc fromJsonHook*(target: var Healthhealth; source: JsonNode) =
 
 proc toJsonHook*(source: Healthhealth): JsonNode =
   result = newJObject()
-  result{"dateOfBirth"} = toJson(source.dateOfBirth)
+  result{"dateOfBirth"} = newJString(source.dateOfBirth)
   if isSome(source.emergencyContact):
-    result{"emergencyContact"} = toJson(unsafeGet(source.emergencyContact))
-  result{"patientName"} = toJson(source.patientName)
-  result{"bloodType"} = toJson(source.bloodType)
+    result{"emergencyContact"} = toJsonHook(unsafeGet(source.emergencyContact))
+  result{"patientName"} = newJString(source.patientName)
+  result{"bloodType"} = newJString(source.bloodType)
   if isSome(source.medications):
-    result{"medications"} = toJson(unsafeGet(source.medications))
+    result{"medications"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.medications):
+        output.add(newJString(entry))
+      output
   if isSome(source.conditions):
-    result{"conditions"} = toJson(unsafeGet(source.conditions))
+    result{"conditions"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.conditions):
+        output.add(newJString(entry))
+      output
   if isSome(source.allergies):
-    result{"allergies"} = toJson(unsafeGet(source.allergies))
+    result{"allergies"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.allergies):
+        output.add(newJString(entry))
+      output
+{.pop.}

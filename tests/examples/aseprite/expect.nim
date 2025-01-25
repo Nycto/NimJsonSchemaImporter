@@ -77,6 +77,21 @@ type
   AsepriteSpriteSheet* = object
     frames*: AsepriteUnion
     meta*: AsepriteMeta
+proc toJsonHook*(source: AsepriteSize): JsonNode
+proc toJsonHook*(source: AsepriteRectangle): JsonNode
+proc toJsonHook*(source: AsepriteFrame): JsonNode
+proc toJsonHook*(source: AsepriteArrayFrame): JsonNode
+proc toJsonHook*(source: AsepriteUnion): JsonNode
+proc toJsonHook*(source: AsepriteDirection): JsonNode
+proc toJsonHook*(source: AsepriteFrameTag): JsonNode
+proc toJsonHook*(source: AsepriteFormat): JsonNode
+proc toJsonHook*(source: AsepritePoint): JsonNode
+proc toJsonHook*(source: AsepriteSliceKey): JsonNode
+proc toJsonHook*(source: AsepriteSlice): JsonNode
+proc toJsonHook*(source: AsepriteBlendMode): JsonNode
+proc toJsonHook*(source: AsepriteLayer): JsonNode
+proc toJsonHook*(source: AsepriteMeta): JsonNode
+proc toJsonHook*(source: AsepriteSpriteSheet): JsonNode
 proc fromJsonHook*(target: var AsepriteSize; source: JsonNode) =
   assert(hasKey(source, "w"),
          "w" & " is missing while decoding " & "AsepriteSize")
@@ -87,8 +102,8 @@ proc fromJsonHook*(target: var AsepriteSize; source: JsonNode) =
 
 proc toJsonHook*(source: AsepriteSize): JsonNode =
   result = newJObject()
-  result{"w"} = toJson(source.w)
-  result{"h"} = toJson(source.h)
+  result{"w"} = newJFloat(source.w)
+  result{"h"} = newJFloat(source.h)
 
 proc fromJsonHook*(target: var AsepriteRectangle; source: JsonNode) =
   assert(hasKey(source, "x"),
@@ -106,10 +121,10 @@ proc fromJsonHook*(target: var AsepriteRectangle; source: JsonNode) =
 
 proc toJsonHook*(source: AsepriteRectangle): JsonNode =
   result = newJObject()
-  result{"x"} = toJson(source.x)
-  result{"w"} = toJson(source.w)
-  result{"y"} = toJson(source.y)
-  result{"h"} = toJson(source.h)
+  result{"x"} = newJFloat(source.x)
+  result{"w"} = newJFloat(source.w)
+  result{"y"} = newJFloat(source.y)
+  result{"h"} = newJFloat(source.h)
 
 proc fromJsonHook*(target: var AsepriteFrame; source: JsonNode) =
   assert(hasKey(source, "sourceSize"),
@@ -134,12 +149,12 @@ proc fromJsonHook*(target: var AsepriteFrame; source: JsonNode) =
 
 proc toJsonHook*(source: AsepriteFrame): JsonNode =
   result = newJObject()
-  result{"sourceSize"} = toJson(source.sourceSize)
-  result{"duration"} = toJson(source.duration)
-  result{"rotated"} = toJson(source.rotated)
-  result{"trimmed"} = toJson(source.trimmed)
-  result{"spriteSourceSize"} = toJson(source.spriteSourceSize)
-  result{"frame"} = toJson(source.frame)
+  result{"sourceSize"} = toJsonHook(source.sourceSize)
+  result{"duration"} = newJFloat(source.duration)
+  result{"rotated"} = newJBool(source.rotated)
+  result{"trimmed"} = newJBool(source.trimmed)
+  result{"spriteSourceSize"} = toJsonHook(source.spriteSourceSize)
+  result{"frame"} = toJsonHook(source.frame)
 
 converter forAsepriteUnion*(value: Table[string, AsepriteFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 0, key0: value)
@@ -171,13 +186,13 @@ proc fromJsonHook*(target: var AsepriteArrayFrame; source: JsonNode) =
 
 proc toJsonHook*(source: AsepriteArrayFrame): JsonNode =
   result = newJObject()
-  result{"sourceSize"} = toJson(source.sourceSize)
-  result{"duration"} = toJson(source.duration)
-  result{"rotated"} = toJson(source.rotated)
-  result{"trimmed"} = toJson(source.trimmed)
-  result{"spriteSourceSize"} = toJson(source.spriteSourceSize)
-  result{"filename"} = toJson(source.filename)
-  result{"frame"} = toJson(source.frame)
+  result{"sourceSize"} = toJsonHook(source.sourceSize)
+  result{"duration"} = newJFloat(source.duration)
+  result{"rotated"} = newJBool(source.rotated)
+  result{"trimmed"} = newJBool(source.trimmed)
+  result{"spriteSourceSize"} = toJsonHook(source.spriteSourceSize)
+  result{"filename"} = newJString(source.filename)
+  result{"frame"} = toJsonHook(source.frame)
 
 converter forAsepriteUnion*(value: seq[AsepriteArrayFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 1, key1: value)
@@ -194,12 +209,16 @@ proc fromJsonHook*(target: var AsepriteUnion; source: JsonNode) =
 proc toJsonHook*(source: AsepriteUnion): JsonNode =
   case source.kind
   of 0:
-    toJson(source.key0)
+    block:
+      var output = newJObject()
+      for key, entry in pairs(source.key0):
+        output[key] = toJsonHook(entry)
+      output
   of 1:
     block:
       var output = newJArray()
       for entry in source.key1:
-        output.add(toJson(entry))
+        output.add(toJsonHook(entry))
       output
   
 proc isMap*(value: AsepriteUnion): bool =
@@ -266,10 +285,10 @@ proc fromJsonHook*(target: var AsepriteFrameTag; source: JsonNode) =
 
 proc toJsonHook*(source: AsepriteFrameTag): JsonNode =
   result = newJObject()
-  result{"direction"} = toJson(source.direction)
-  result{"from"} = toJson(source.`from`)
-  result{"to"} = toJson(source.to)
-  result{"name"} = toJson(source.name)
+  result{"direction"} = toJsonHook(source.direction)
+  result{"from"} = newJFloat(source.`from`)
+  result{"to"} = newJFloat(source.to)
+  result{"name"} = newJString(source.name)
 
 proc toJsonHook*(source: AsepriteFormat): JsonNode =
   case source
@@ -297,8 +316,8 @@ proc fromJsonHook*(target: var AsepritePoint; source: JsonNode) =
 
 proc toJsonHook*(source: AsepritePoint): JsonNode =
   result = newJObject()
-  result{"x"} = toJson(source.x)
-  result{"y"} = toJson(source.y)
+  result{"x"} = newJFloat(source.x)
+  result{"y"} = newJFloat(source.y)
 
 proc fromJsonHook*(target: var AsepriteSliceKey; source: JsonNode) =
   if hasKey(source, "pivot") and source{"pivot"}.kind != JNull:
@@ -316,11 +335,11 @@ proc fromJsonHook*(target: var AsepriteSliceKey; source: JsonNode) =
 proc toJsonHook*(source: AsepriteSliceKey): JsonNode =
   result = newJObject()
   if isSome(source.pivot):
-    result{"pivot"} = toJson(unsafeGet(source.pivot))
+    result{"pivot"} = toJsonHook(unsafeGet(source.pivot))
   if isSome(source.center):
-    result{"center"} = toJson(unsafeGet(source.center))
-  result{"bounds"} = toJson(source.bounds)
-  result{"frame"} = toJson(source.frame)
+    result{"center"} = toJsonHook(unsafeGet(source.center))
+  result{"bounds"} = toJsonHook(source.bounds)
+  result{"frame"} = newJFloat(source.frame)
 
 proc fromJsonHook*(target: var AsepriteSlice; source: JsonNode) =
   if hasKey(source, "data") and source{"data"}.kind != JNull:
@@ -337,11 +356,15 @@ proc fromJsonHook*(target: var AsepriteSlice; source: JsonNode) =
 proc toJsonHook*(source: AsepriteSlice): JsonNode =
   result = newJObject()
   if isSome(source.data):
-    result{"data"} = toJson(unsafeGet(source.data))
+    result{"data"} = newJString(unsafeGet(source.data))
   if isSome(source.color):
-    result{"color"} = toJson(unsafeGet(source.color))
-  result{"name"} = toJson(source.name)
-  result{"keys"} = toJson(source.keys)
+    result{"color"} = newJString(unsafeGet(source.color))
+  result{"name"} = newJString(source.name)
+  result{"keys"} = block:
+    var output = newJArray()
+    for entry in source.keys:
+      output.add(toJsonHook(entry))
+    output
 
 proc toJsonHook*(source: AsepriteBlendMode): JsonNode =
   case source
@@ -447,16 +470,16 @@ proc fromJsonHook*(target: var AsepriteLayer; source: JsonNode) =
 proc toJsonHook*(source: AsepriteLayer): JsonNode =
   result = newJObject()
   if isSome(source.blendMode):
-    result{"blendMode"} = toJson(unsafeGet(source.blendMode))
+    result{"blendMode"} = toJsonHook(unsafeGet(source.blendMode))
   if isSome(source.data):
-    result{"data"} = toJson(unsafeGet(source.data))
+    result{"data"} = newJString(unsafeGet(source.data))
   if isSome(source.color):
-    result{"color"} = toJson(unsafeGet(source.color))
+    result{"color"} = newJString(unsafeGet(source.color))
   if isSome(source.group):
-    result{"group"} = toJson(unsafeGet(source.group))
-  result{"name"} = toJson(source.name)
+    result{"group"} = newJString(unsafeGet(source.group))
+  result{"name"} = newJString(source.name)
   if isSome(source.opacity):
-    result{"opacity"} = toJson(unsafeGet(source.opacity))
+    result{"opacity"} = newJFloat(unsafeGet(source.opacity))
 
 proc fromJsonHook*(target: var AsepriteMeta; source: JsonNode) =
   assert(hasKey(source, "scale"),
@@ -489,18 +512,30 @@ proc fromJsonHook*(target: var AsepriteMeta; source: JsonNode) =
 
 proc toJsonHook*(source: AsepriteMeta): JsonNode =
   result = newJObject()
-  result{"scale"} = toJson(source.scale)
+  result{"scale"} = newJString(source.scale)
   if isSome(source.frameTags):
-    result{"frameTags"} = toJson(unsafeGet(source.frameTags))
-  result{"format"} = toJson(source.format)
-  result{"size"} = toJson(source.size)
+    result{"frameTags"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.frameTags):
+        output.add(toJsonHook(entry))
+      output
+  result{"format"} = toJsonHook(source.format)
+  result{"size"} = toJsonHook(source.size)
   if isSome(source.slices):
-    result{"slices"} = toJson(unsafeGet(source.slices))
-  result{"version"} = toJson(source.version)
+    result{"slices"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.slices):
+        output.add(toJsonHook(entry))
+      output
+  result{"version"} = newJString(source.version)
   if isSome(source.layers):
-    result{"layers"} = toJson(unsafeGet(source.layers))
-  result{"app"} = toJson(source.app)
-  result{"image"} = toJson(source.image)
+    result{"layers"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.layers):
+        output.add(toJsonHook(entry))
+      output
+  result{"app"} = newJString(source.app)
+  result{"image"} = newJString(source.image)
 
 proc fromJsonHook*(target: var AsepriteSpriteSheet; source: JsonNode) =
   assert(hasKey(source, "frames"),
@@ -512,5 +547,6 @@ proc fromJsonHook*(target: var AsepriteSpriteSheet; source: JsonNode) =
 
 proc toJsonHook*(source: AsepriteSpriteSheet): JsonNode =
   result = newJObject()
-  result{"frames"} = toJson(source.frames)
-  result{"meta"} = toJson(source.meta)
+  result{"frames"} = toJsonHook(source.frames)
+  result{"meta"} = toJsonHook(source.meta)
+{.pop.}

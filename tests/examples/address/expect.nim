@@ -10,6 +10,7 @@ type
     postOfficeBox*: Option[string]
     extendedAddress*: Option[string]
     postalCode*: Option[string]
+proc toJsonHook*(source: Addressaddress): JsonNode
 proc fromJsonHook*(target: var Addressaddress; source: JsonNode) =
   if hasKey(source, "streetAddress") and
       source{"streetAddress"}.kind != JNull:
@@ -39,13 +40,14 @@ proc fromJsonHook*(target: var Addressaddress; source: JsonNode) =
 proc toJsonHook*(source: Addressaddress): JsonNode =
   result = newJObject()
   if isSome(source.streetAddress):
-    result{"streetAddress"} = toJson(unsafeGet(source.streetAddress))
-  result{"region"} = toJson(source.region)
-  result{"locality"} = toJson(source.locality)
-  result{"countryName"} = toJson(source.countryName)
+    result{"streetAddress"} = newJString(unsafeGet(source.streetAddress))
+  result{"region"} = newJString(source.region)
+  result{"locality"} = newJString(source.locality)
+  result{"countryName"} = newJString(source.countryName)
   if isSome(source.postOfficeBox):
-    result{"postOfficeBox"} = toJson(unsafeGet(source.postOfficeBox))
+    result{"postOfficeBox"} = newJString(unsafeGet(source.postOfficeBox))
   if isSome(source.extendedAddress):
-    result{"extendedAddress"} = toJson(unsafeGet(source.extendedAddress))
+    result{"extendedAddress"} = newJString(unsafeGet(source.extendedAddress))
   if isSome(source.postalCode):
-    result{"postalCode"} = toJson(unsafeGet(source.postalCode))
+    result{"postalCode"} = newJString(unsafeGet(source.postalCode))
+{.pop.}

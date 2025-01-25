@@ -11,6 +11,8 @@ type
     title*: string
     `cast`*: Option[seq[string]]
     director*: string
+proc toJsonHook*(source: MovieGenre): JsonNode
+proc toJsonHook*(source: Moviemovie): JsonNode
 proc toJsonHook*(source: MovieGenre): JsonNode =
   case source
   of MovieGenre.Comedy:
@@ -56,11 +58,16 @@ proc fromJsonHook*(target: var Moviemovie; source: JsonNode) =
 proc toJsonHook*(source: Moviemovie): JsonNode =
   result = newJObject()
   if isSome(source.duration):
-    result{"duration"} = toJson(unsafeGet(source.duration))
-  result{"releaseDate"} = toJson(source.releaseDate)
+    result{"duration"} = newJString(unsafeGet(source.duration))
+  result{"releaseDate"} = newJString(source.releaseDate)
   if isSome(source.genre):
-    result{"genre"} = toJson(unsafeGet(source.genre))
-  result{"title"} = toJson(source.title)
+    result{"genre"} = toJsonHook(unsafeGet(source.genre))
+  result{"title"} = newJString(source.title)
   if isSome(source.`cast`):
-    result{"cast"} = toJson(unsafeGet(source.`cast`))
-  result{"director"} = toJson(source.director)
+    result{"cast"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.`cast`):
+        output.add(newJString(entry))
+      output
+  result{"director"} = newJString(source.director)
+{.pop.}

@@ -12,6 +12,8 @@ type
     address*: Option[Complex_objectAddress]
     age*: BiggestInt
     name*: string
+proc toJsonHook*(source: Complex_objectAddress): JsonNode
+proc toJsonHook*(source: Complex_objectcomplex_object): JsonNode
 proc fromJsonHook*(target: var Complex_objectAddress; source: JsonNode) =
   assert(hasKey(source, "street"),
          "street" & " is missing while decoding " & "Complex_objectAddress")
@@ -28,10 +30,10 @@ proc fromJsonHook*(target: var Complex_objectAddress; source: JsonNode) =
 
 proc toJsonHook*(source: Complex_objectAddress): JsonNode =
   result = newJObject()
-  result{"street"} = toJson(source.street)
-  result{"city"} = toJson(source.city)
-  result{"postalCode"} = toJson(source.postalCode)
-  result{"state"} = toJson(source.state)
+  result{"street"} = newJString(source.street)
+  result{"city"} = newJString(source.city)
+  result{"postalCode"} = newJString(source.postalCode)
+  result{"state"} = newJString(source.state)
 
 proc fromJsonHook*(target: var Complex_objectcomplex_object; source: JsonNode) =
   if hasKey(source, "hobbies") and source{"hobbies"}.kind != JNull:
@@ -50,8 +52,13 @@ proc fromJsonHook*(target: var Complex_objectcomplex_object; source: JsonNode) =
 proc toJsonHook*(source: Complex_objectcomplex_object): JsonNode =
   result = newJObject()
   if isSome(source.hobbies):
-    result{"hobbies"} = toJson(unsafeGet(source.hobbies))
+    result{"hobbies"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.hobbies):
+        output.add(newJString(entry))
+      output
   if isSome(source.address):
-    result{"address"} = toJson(unsafeGet(source.address))
-  result{"age"} = toJson(source.age)
-  result{"name"} = toJson(source.name)
+    result{"address"} = toJsonHook(unsafeGet(source.address))
+  result{"age"} = newJInt(source.age)
+  result{"name"} = newJString(source.name)
+{.pop.}

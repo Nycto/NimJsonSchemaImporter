@@ -20,11 +20,36 @@ proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
         return quote:
             block:
                 var output = newJArray()
-                for entry in `input`:
+                for `entry` in `input`:
                     output.add(`encodeItem`)
                 output
-    else:
-        return newCall(bindSym("toJson"), input)
+    of MapType:
+        let entry = genSym(nskForVar, "entry`gensym")
+        let encodeEntry = entry.createEncodeExpr(typ.entries)
+        return quote:
+            block:
+                var output = newJObject()
+                for key, `entry` in pairs(`input`):
+                    output[key] = `encodeEntry`
+                output
+    of OptionalType:
+        let encodeValue = newCall(bindSym("unsafeGet"), `input`).createEncodeExpr(typ.subtype)
+        return quote:
+            if isSome(`input`): `encodeValue` else: newJNull()
+    of StringType:
+        return newCall(bindSym("newJString"), input)
+    of IntegerType:
+        return newCall(bindSym("newJInt"), input)
+    of NumberType:
+        return newCall(bindSym("newJFloat"), input)
+    of BoolType:
+        return newCall(bindSym("newJBool"), input)
+    of ObjType, EnumType, UnionType:
+        return newCall(ident("toJsonHook"), input)
+    of NullType, RefType:
+        return newCall(bindSym("newJNull"))
+    of JsonType:
+        return input
 
 proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
     case typ.kind
@@ -133,19 +158,19 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
 proc buildObjectEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
     var encodeKeys = newStmtList()
 
-    for key, (propName, subtype, required) in typ.properties:
-        let safeKey = safePropName(propName)
-        if subtype.kind == OptionalType:
-            if required:
-                encodeKeys.add quote do:
-                    result{`key`} = if isSome(`source`.`safeKey`): toJson(unsafeGet(`source`.`safeKey`)) else: newJNull()
-            else:
-                encodeKeys.add quote do:
-                    if isSome(`source`.`safeKey`):
-                        result{`key`} = toJson(unsafeGet(`source`.`safeKey`))
-        else:
+    for key, (propName, propType, required) in typ.properties:
+        let readProp = newDotExpr(source, safePropName(propName))
+        if required:
+            let encode = readProp.createEncodeExpr(propType)
             encodeKeys.add quote do:
-                result{`key`} = toJson(`source`.`safeKey`)
+                result{`key`} = `encode`
+        else:
+            assert(propType.kind == OptionalType)
+
+            let encode = newCall(bindSym("unsafeGet"), readProp).createEncodeExpr(propType.subtype)
+            encodeKeys.add quote do:
+                if isSome(`readProp`):
+                    result{`key`} = `encode`
 
     return quote:
         proc toJsonHook*(`source`: `typeName`): JsonNode =

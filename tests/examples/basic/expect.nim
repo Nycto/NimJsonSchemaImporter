@@ -6,6 +6,7 @@ type
     firstName*: Option[string]
     age*: Option[BiggestInt]
     lastName*: Option[string]
+proc toJsonHook*(source: Basicbasic): JsonNode
 proc fromJsonHook*(target: var Basicbasic; source: JsonNode) =
   if hasKey(source, "firstName") and source{"firstName"}.kind != JNull:
     target.firstName = some(jsonTo(source{"firstName"},
@@ -19,8 +20,9 @@ proc fromJsonHook*(target: var Basicbasic; source: JsonNode) =
 proc toJsonHook*(source: Basicbasic): JsonNode =
   result = newJObject()
   if isSome(source.firstName):
-    result{"firstName"} = toJson(unsafeGet(source.firstName))
+    result{"firstName"} = newJString(unsafeGet(source.firstName))
   if isSome(source.age):
-    result{"age"} = toJson(unsafeGet(source.age))
+    result{"age"} = newJInt(unsafeGet(source.age))
   if isSome(source.lastName):
-    result{"lastName"} = toJson(unsafeGet(source.lastName))
+    result{"lastName"} = newJString(unsafeGet(source.lastName))
+{.pop.}

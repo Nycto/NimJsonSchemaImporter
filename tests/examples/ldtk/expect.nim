@@ -445,6 +445,56 @@ type
     identifierStyle*: LdtkIdentifierStyle
     worldGridHeight*: Option[BiggestInt]
     levels*: seq[LdtkLevel]
+proc toJsonHook*(source: LdtkWhen): JsonNode
+proc toJsonHook*(source: LdtkCustomCommand): JsonNode
+proc toJsonHook*(source: LdtkEntityReferenceInfos): JsonNode
+proc toJsonHook*(source: LdtkTocInstanceData): JsonNode
+proc toJsonHook*(source: LdtkTableOfContentEntry): JsonNode
+proc toJsonHook*(source: LdtkWorldLayout): JsonNode
+proc toJsonHook*(source: LdtkNeighbourLevel): JsonNode
+proc toJsonHook*(source: LdtkBgPos): JsonNode
+proc toJsonHook*(source: LdtkTile): JsonNode
+proc toJsonHook*(source: LdtkIntGridValueInstance): JsonNode
+proc toJsonHook*(source: LdtkTilesetRect): JsonNode
+proc toJsonHook*(source: LdtkFieldInstance): JsonNode
+proc toJsonHook*(source: LdtkEntityInstance): JsonNode
+proc toJsonHook*(source: LdtkLayerInstance): JsonNode
+proc toJsonHook*(source: LdtkLevelBgPosInfos): JsonNode
+proc toJsonHook*(source: LdtkLevel): JsonNode
+proc toJsonHook*(source: LdtkWorld): JsonNode
+proc toJsonHook*(source: LdtkImageExportMode): JsonNode
+proc toJsonHook*(source: LdtkIntGridValueDef): JsonNode
+proc toJsonHook*(source: LdtkTextLanguageMode): JsonNode
+proc toJsonHook*(source: LdtkEditorDisplayPos): JsonNode
+proc toJsonHook*(source: LdtkEditorDisplayMode): JsonNode
+proc toJsonHook*(source: LdtkEditorLinkStyle): JsonNode
+proc toJsonHook*(source: LdtkAllowedRefs): JsonNode
+proc toJsonHook*(source: LdtkFieldDef): JsonNode
+proc toJsonHook*(source: LdtkEmbedAtlas): JsonNode
+proc toJsonHook*(source: LdtkEnumTagValue): JsonNode
+proc toJsonHook*(source: LdtkTileCustomMetadata): JsonNode
+proc toJsonHook*(source: LdtkTilesetDef): JsonNode
+proc toJsonHook*(source: LdtkLimitScope): JsonNode
+proc toJsonHook*(source: LdtkLimitBehavior): JsonNode
+proc toJsonHook*(source: LdtkRenderMode): JsonNode
+proc toJsonHook*(source: LdtkTileRenderMode): JsonNode
+proc toJsonHook*(source: LdtkEntityDef): JsonNode
+proc toJsonHook*(source: LdtkEnumDefValues): JsonNode
+proc toJsonHook*(source: LdtkEnumDef): JsonNode
+proc toJsonHook*(source: LdtkType): JsonNode
+proc toJsonHook*(source: LdtkChecker): JsonNode
+proc toJsonHook*(source: LdtkTileMode): JsonNode
+proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode
+proc toJsonHook*(source: LdtkAutoLayerRuleGroup): JsonNode
+proc toJsonHook*(source: LdtkIntGridValueGroupDef): JsonNode
+proc toJsonHook*(source: LdtkLayerDef): JsonNode
+proc toJsonHook*(source: LdtkDefinitions): JsonNode
+proc toJsonHook*(source: LdtkGridPoint): JsonNode
+proc toJsonHook*(source: Ldtk_FORCED_REFS): JsonNode
+proc toJsonHook*(source: LdtkldtkWorldLayout): JsonNode
+proc toJsonHook*(source: LdtkFlags): JsonNode
+proc toJsonHook*(source: LdtkIdentifierStyle): JsonNode
+proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode
 proc toJsonHook*(source: LdtkWhen): JsonNode =
   case source
   of LdtkWhen.AfterLoad:
@@ -479,8 +529,8 @@ proc fromJsonHook*(target: var LdtkCustomCommand; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkCustomCommand): JsonNode =
   result = newJObject()
-  result{"command"} = toJson(source.command)
-  result{"when"} = toJson(source.`when`)
+  result{"command"} = newJString(source.command)
+  result{"when"} = toJsonHook(source.`when`)
 
 proc fromJsonHook*(target: var LdtkEntityReferenceInfos; source: JsonNode) =
   assert(hasKey(source, "layerIid"), "layerIid" & " is missing while decoding " &
@@ -499,10 +549,10 @@ proc fromJsonHook*(target: var LdtkEntityReferenceInfos; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkEntityReferenceInfos): JsonNode =
   result = newJObject()
-  result{"layerIid"} = toJson(source.layerIid)
-  result{"levelIid"} = toJson(source.levelIid)
-  result{"entityIid"} = toJson(source.entityIid)
-  result{"worldIid"} = toJson(source.worldIid)
+  result{"layerIid"} = newJString(source.layerIid)
+  result{"levelIid"} = newJString(source.levelIid)
+  result{"entityIid"} = newJString(source.entityIid)
+  result{"worldIid"} = newJString(source.worldIid)
 
 proc fromJsonHook*(target: var LdtkTocInstanceData; source: JsonNode) =
   assert(hasKey(source, "worldY"),
@@ -526,12 +576,12 @@ proc fromJsonHook*(target: var LdtkTocInstanceData; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkTocInstanceData): JsonNode =
   result = newJObject()
-  result{"worldY"} = toJson(source.worldY)
-  result{"fields"} = toJson(source.fields)
-  result{"widPx"} = toJson(source.widPx)
-  result{"iids"} = toJson(source.iids)
-  result{"heiPx"} = toJson(source.heiPx)
-  result{"worldX"} = toJson(source.worldX)
+  result{"worldY"} = newJInt(source.worldY)
+  result{"fields"} = source.fields
+  result{"widPx"} = newJInt(source.widPx)
+  result{"iids"} = toJsonHook(source.iids)
+  result{"heiPx"} = newJInt(source.heiPx)
+  result{"worldX"} = newJInt(source.worldX)
 
 proc fromJsonHook*(target: var LdtkTableOfContentEntry; source: JsonNode) =
   assert(hasKey(source, "instancesData"), "instancesData" &
@@ -549,10 +599,18 @@ proc fromJsonHook*(target: var LdtkTableOfContentEntry; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkTableOfContentEntry): JsonNode =
   result = newJObject()
-  result{"instancesData"} = toJson(source.instancesData)
-  result{"identifier"} = toJson(source.identifier)
+  result{"instancesData"} = block:
+    var output = newJArray()
+    for entry in source.instancesData:
+      output.add(toJsonHook(entry))
+    output
+  result{"identifier"} = newJString(source.identifier)
   if isSome(source.instances):
-    result{"instances"} = toJson(unsafeGet(source.instances))
+    result{"instances"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.instances):
+        output.add(toJsonHook(entry))
+      output
 
 proc toJsonHook*(source: LdtkWorldLayout): JsonNode =
   case source
@@ -592,9 +650,9 @@ proc fromJsonHook*(target: var LdtkNeighbourLevel; source: JsonNode) =
 proc toJsonHook*(source: LdtkNeighbourLevel): JsonNode =
   result = newJObject()
   if isSome(source.levelUid):
-    result{"levelUid"} = toJson(unsafeGet(source.levelUid))
-  result{"levelIid"} = toJson(source.levelIid)
-  result{"dir"} = toJson(source.dir)
+    result{"levelUid"} = newJInt(unsafeGet(source.levelUid))
+  result{"levelIid"} = newJString(source.levelIid)
+  result{"dir"} = newJString(source.dir)
 
 proc toJsonHook*(source: LdtkBgPos): JsonNode =
   case source
@@ -641,12 +699,24 @@ proc fromJsonHook*(target: var LdtkTile; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkTile): JsonNode =
   result = newJObject()
-  result{"px"} = toJson(source.px)
-  result{"t"} = toJson(source.t)
-  result{"d"} = toJson(source.d)
-  result{"a"} = toJson(source.a)
-  result{"src"} = toJson(source.src)
-  result{"f"} = toJson(source.f)
+  result{"px"} = block:
+    var output = newJArray()
+    for entry in source.px:
+      output.add(newJInt(entry))
+    output
+  result{"t"} = newJInt(source.t)
+  result{"d"} = block:
+    var output = newJArray()
+    for entry in source.d:
+      output.add(newJInt(entry))
+    output
+  result{"a"} = newJFloat(source.a)
+  result{"src"} = block:
+    var output = newJArray()
+    for entry in source.src:
+      output.add(newJInt(entry))
+    output
+  result{"f"} = newJInt(source.f)
 
 proc fromJsonHook*(target: var LdtkIntGridValueInstance; source: JsonNode) =
   assert(hasKey(source, "coordId"),
@@ -658,8 +728,8 @@ proc fromJsonHook*(target: var LdtkIntGridValueInstance; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkIntGridValueInstance): JsonNode =
   result = newJObject()
-  result{"coordId"} = toJson(source.coordId)
-  result{"v"} = toJson(source.v)
+  result{"coordId"} = newJInt(source.coordId)
+  result{"v"} = newJInt(source.v)
 
 proc fromJsonHook*(target: var LdtkTilesetRect; source: JsonNode) =
   assert(hasKey(source, "x"),
@@ -680,11 +750,11 @@ proc fromJsonHook*(target: var LdtkTilesetRect; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkTilesetRect): JsonNode =
   result = newJObject()
-  result{"x"} = toJson(source.x)
-  result{"w"} = toJson(source.w)
-  result{"y"} = toJson(source.y)
-  result{"h"} = toJson(source.h)
-  result{"tilesetUid"} = toJson(source.tilesetUid)
+  result{"x"} = newJInt(source.x)
+  result{"w"} = newJInt(source.w)
+  result{"y"} = newJInt(source.y)
+  result{"h"} = newJInt(source.h)
+  result{"tilesetUid"} = newJInt(source.tilesetUid)
 
 proc fromJsonHook*(target: var LdtkFieldInstance; source: JsonNode) =
   assert(hasKey(source, "realEditorValues"), "realEditorValues" &
@@ -709,13 +779,17 @@ proc fromJsonHook*(target: var LdtkFieldInstance; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkFieldInstance): JsonNode =
   result = newJObject()
-  result{"realEditorValues"} = toJson(source.realEditorValues)
-  result{"__value"} = toJson(source.value)
+  result{"realEditorValues"} = block:
+    var output = newJArray()
+    for entry in source.realEditorValues:
+      output.add(entry)
+    output
+  result{"__value"} = source.value
   if isSome(source.tile):
-    result{"__tile"} = toJson(unsafeGet(source.tile))
-  result{"__type"} = toJson(source.`type`)
-  result{"__identifier"} = toJson(source.identifier)
-  result{"defUid"} = toJson(source.defUid)
+    result{"__tile"} = toJsonHook(unsafeGet(source.tile))
+  result{"__type"} = newJString(source.`type`)
+  result{"__identifier"} = newJString(source.identifier)
+  result{"defUid"} = newJInt(source.defUid)
 
 proc fromJsonHook*(target: var LdtkEntityInstance; source: JsonNode) =
   if hasKey(source, "__worldY") and source{"__worldY"}.kind != JNull:
@@ -765,22 +839,42 @@ proc fromJsonHook*(target: var LdtkEntityInstance; source: JsonNode) =
 proc toJsonHook*(source: LdtkEntityInstance): JsonNode =
   result = newJObject()
   if isSome(source.worldY):
-    result{"__worldY"} = toJson(unsafeGet(source.worldY))
+    result{"__worldY"} = newJInt(unsafeGet(source.worldY))
   if isSome(source.tile):
-    result{"__tile"} = toJson(unsafeGet(source.tile))
-  result{"__identifier"} = toJson(source.identifier)
-  result{"__tags"} = toJson(source.tags)
-  result{"height"} = toJson(source.height)
-  result{"px"} = toJson(source.px)
-  result{"defUid"} = toJson(source.defUid)
-  result{"__pivot"} = toJson(source.pivot)
-  result{"fieldInstances"} = toJson(source.fieldInstances)
-  result{"iid"} = toJson(source.iid)
-  result{"width"} = toJson(source.width)
+    result{"__tile"} = toJsonHook(unsafeGet(source.tile))
+  result{"__identifier"} = newJString(source.identifier)
+  result{"__tags"} = block:
+    var output = newJArray()
+    for entry in source.tags:
+      output.add(newJString(entry))
+    output
+  result{"height"} = newJInt(source.height)
+  result{"px"} = block:
+    var output = newJArray()
+    for entry in source.px:
+      output.add(newJInt(entry))
+    output
+  result{"defUid"} = newJInt(source.defUid)
+  result{"__pivot"} = block:
+    var output = newJArray()
+    for entry in source.pivot:
+      output.add(newJFloat(entry))
+    output
+  result{"fieldInstances"} = block:
+    var output = newJArray()
+    for entry in source.fieldInstances:
+      output.add(toJsonHook(entry))
+    output
+  result{"iid"} = newJString(source.iid)
+  result{"width"} = newJInt(source.width)
   if isSome(source.worldX):
-    result{"__worldX"} = toJson(unsafeGet(source.worldX))
-  result{"__grid"} = toJson(source.grid)
-  result{"__smartColor"} = toJson(source.smartColor)
+    result{"__worldX"} = newJInt(unsafeGet(source.worldX))
+  result{"__grid"} = block:
+    var output = newJArray()
+    for entry in source.grid:
+      output.add(newJInt(entry))
+    output
+  result{"__smartColor"} = newJString(source.smartColor)
 
 proc fromJsonHook*(target: var LdtkLayerInstance; source: JsonNode) =
   assert(hasKey(source, "__opacity"),
@@ -869,34 +963,58 @@ proc fromJsonHook*(target: var LdtkLayerInstance; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkLayerInstance): JsonNode =
   result = newJObject()
-  result{"__opacity"} = toJson(source.opacity)
-  result{"optionalRules"} = toJson(source.optionalRules)
-  result{"__gridSize"} = toJson(source.gridSize)
-  result{"__pxTotalOffsetX"} = toJson(source.pxTotalOffsetX)
-  result{"gridTiles"} = toJson(source.gridTiles)
-  result{"__type"} = toJson(source.`type`)
-  result{"__identifier"} = toJson(source.identifier)
+  result{"__opacity"} = newJFloat(source.opacity)
+  result{"optionalRules"} = block:
+    var output = newJArray()
+    for entry in source.optionalRules:
+      output.add(newJInt(entry))
+    output
+  result{"__gridSize"} = newJInt(source.gridSize)
+  result{"__pxTotalOffsetX"} = newJInt(source.pxTotalOffsetX)
+  result{"gridTiles"} = block:
+    var output = newJArray()
+    for entry in source.gridTiles:
+      output.add(toJsonHook(entry))
+    output
+  result{"__type"} = newJString(source.`type`)
+  result{"__identifier"} = newJString(source.identifier)
   if isSome(source.overrideTilesetUid):
-    result{"overrideTilesetUid"} = toJson(unsafeGet(source.overrideTilesetUid))
-  result{"levelId"} = toJson(source.levelId)
+    result{"overrideTilesetUid"} = newJInt(unsafeGet(source.overrideTilesetUid))
+  result{"levelId"} = newJInt(source.levelId)
   if isSome(source.intGrid):
-    result{"intGrid"} = toJson(unsafeGet(source.intGrid))
-  result{"autoLayerTiles"} = toJson(source.autoLayerTiles)
-  result{"layerDefUid"} = toJson(source.layerDefUid)
-  result{"entityInstances"} = toJson(source.entityInstances)
-  result{"intGridCsv"} = toJson(source.intGridCsv)
-  result{"pxOffsetX"} = toJson(source.pxOffsetX)
+    result{"intGrid"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.intGrid):
+        output.add(toJsonHook(entry))
+      output
+  result{"autoLayerTiles"} = block:
+    var output = newJArray()
+    for entry in source.autoLayerTiles:
+      output.add(toJsonHook(entry))
+    output
+  result{"layerDefUid"} = newJInt(source.layerDefUid)
+  result{"entityInstances"} = block:
+    var output = newJArray()
+    for entry in source.entityInstances:
+      output.add(toJsonHook(entry))
+    output
+  result{"intGridCsv"} = block:
+    var output = newJArray()
+    for entry in source.intGridCsv:
+      output.add(newJInt(entry))
+    output
+  result{"pxOffsetX"} = newJInt(source.pxOffsetX)
   if isSome(source.tilesetRelPath):
-    result{"__tilesetRelPath"} = toJson(unsafeGet(source.tilesetRelPath))
+    result{"__tilesetRelPath"} = newJString(unsafeGet(source.tilesetRelPath))
   if isSome(source.tilesetDefUid):
-    result{"__tilesetDefUid"} = toJson(unsafeGet(source.tilesetDefUid))
-  result{"__cHei"} = toJson(source.cHei)
-  result{"seed"} = toJson(source.seed)
-  result{"visible"} = toJson(source.visible)
-  result{"pxOffsetY"} = toJson(source.pxOffsetY)
-  result{"iid"} = toJson(source.iid)
-  result{"__pxTotalOffsetY"} = toJson(source.pxTotalOffsetY)
-  result{"__cWid"} = toJson(source.cWid)
+    result{"__tilesetDefUid"} = newJInt(unsafeGet(source.tilesetDefUid))
+  result{"__cHei"} = newJInt(source.cHei)
+  result{"seed"} = newJInt(source.seed)
+  result{"visible"} = newJBool(source.visible)
+  result{"pxOffsetY"} = newJInt(source.pxOffsetY)
+  result{"iid"} = newJString(source.iid)
+  result{"__pxTotalOffsetY"} = newJInt(source.pxTotalOffsetY)
+  result{"__cWid"} = newJInt(source.cWid)
 
 proc fromJsonHook*(target: var LdtkLevelBgPosInfos; source: JsonNode) =
   assert(hasKey(source, "scale"),
@@ -911,9 +1029,21 @@ proc fromJsonHook*(target: var LdtkLevelBgPosInfos; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkLevelBgPosInfos): JsonNode =
   result = newJObject()
-  result{"scale"} = toJson(source.scale)
-  result{"cropRect"} = toJson(source.cropRect)
-  result{"topLeftPx"} = toJson(source.topLeftPx)
+  result{"scale"} = block:
+    var output = newJArray()
+    for entry in source.scale:
+      output.add(newJFloat(entry))
+    output
+  result{"cropRect"} = block:
+    var output = newJArray()
+    for entry in source.cropRect:
+      output.add(newJFloat(entry))
+    output
+  result{"topLeftPx"} = block:
+    var output = newJArray()
+    for entry in source.topLeftPx:
+      output.add(newJInt(entry))
+    output
 
 proc fromJsonHook*(target: var LdtkLevel; source: JsonNode) =
   assert(hasKey(source, "pxHei"),
@@ -985,33 +1115,45 @@ proc fromJsonHook*(target: var LdtkLevel; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkLevel): JsonNode =
   result = newJObject()
-  result{"pxHei"} = toJson(source.pxHei)
-  result{"useAutoIdentifier"} = toJson(source.useAutoIdentifier)
-  result{"__bgColor"} = toJson(source.bgColor)
+  result{"pxHei"} = newJInt(source.pxHei)
+  result{"useAutoIdentifier"} = newJBool(source.useAutoIdentifier)
+  result{"__bgColor"} = newJString(source.bgColor)
   if isSome(source.bgColor1):
-    result{"bgColor"} = toJson(unsafeGet(source.bgColor1))
+    result{"bgColor"} = newJString(unsafeGet(source.bgColor1))
   if isSome(source.externalRelPath):
-    result{"externalRelPath"} = toJson(unsafeGet(source.externalRelPath))
-  result{"worldY"} = toJson(source.worldY)
+    result{"externalRelPath"} = newJString(unsafeGet(source.externalRelPath))
+  result{"worldY"} = newJInt(source.worldY)
   if isSome(source.bgRelPath):
-    result{"bgRelPath"} = toJson(unsafeGet(source.bgRelPath))
-  result{"identifier"} = toJson(source.identifier)
-  result{"pxWid"} = toJson(source.pxWid)
-  result{"worldDepth"} = toJson(source.worldDepth)
-  result{"bgPivotX"} = toJson(source.bgPivotX)
-  result{"__neighbours"} = toJson(source.neighbours)
-  result{"uid"} = toJson(source.uid)
+    result{"bgRelPath"} = newJString(unsafeGet(source.bgRelPath))
+  result{"identifier"} = newJString(source.identifier)
+  result{"pxWid"} = newJInt(source.pxWid)
+  result{"worldDepth"} = newJInt(source.worldDepth)
+  result{"bgPivotX"} = newJFloat(source.bgPivotX)
+  result{"__neighbours"} = block:
+    var output = newJArray()
+    for entry in source.neighbours:
+      output.add(toJsonHook(entry))
+    output
+  result{"uid"} = newJInt(source.uid)
   if isSome(source.bgPos):
-    result{"bgPos"} = toJson(unsafeGet(source.bgPos))
+    result{"bgPos"} = toJsonHook(unsafeGet(source.bgPos))
   if isSome(source.layerInstances):
-    result{"layerInstances"} = toJson(unsafeGet(source.layerInstances))
-  result{"fieldInstances"} = toJson(source.fieldInstances)
+    result{"layerInstances"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.layerInstances):
+        output.add(toJsonHook(entry))
+      output
+  result{"fieldInstances"} = block:
+    var output = newJArray()
+    for entry in source.fieldInstances:
+      output.add(toJsonHook(entry))
+    output
   if isSome(source.bgPos1):
-    result{"__bgPos"} = toJson(unsafeGet(source.bgPos1))
-  result{"worldX"} = toJson(source.worldX)
-  result{"iid"} = toJson(source.iid)
-  result{"bgPivotY"} = toJson(source.bgPivotY)
-  result{"__smartColor"} = toJson(source.smartColor)
+    result{"__bgPos"} = toJsonHook(unsafeGet(source.bgPos1))
+  result{"worldX"} = newJInt(source.worldX)
+  result{"iid"} = newJString(source.iid)
+  result{"bgPivotY"} = newJFloat(source.bgPivotY)
+  result{"__smartColor"} = newJString(source.smartColor)
 
 proc fromJsonHook*(target: var LdtkWorld; source: JsonNode) =
   assert(hasKey(source, "worldGridWidth"),
@@ -1045,16 +1187,21 @@ proc fromJsonHook*(target: var LdtkWorld; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkWorld): JsonNode =
   result = newJObject()
-  result{"worldGridWidth"} = toJson(source.worldGridWidth)
-  result{"defaultLevelHeight"} = toJson(source.defaultLevelHeight)
-  result{"identifier"} = toJson(source.identifier)
+  result{"worldGridWidth"} = newJInt(source.worldGridWidth)
+  result{"defaultLevelHeight"} = newJInt(source.defaultLevelHeight)
+  result{"identifier"} = newJString(source.identifier)
   result{"worldLayout"} = if isSome(source.worldLayout):
-    toJson(unsafeGet(source.worldLayout)) else:
+    toJsonHook(unsafeGet(source.worldLayout))
+  else:
     newJNull()
-  result{"iid"} = toJson(source.iid)
-  result{"defaultLevelWidth"} = toJson(source.defaultLevelWidth)
-  result{"worldGridHeight"} = toJson(source.worldGridHeight)
-  result{"levels"} = toJson(source.levels)
+  result{"iid"} = newJString(source.iid)
+  result{"defaultLevelWidth"} = newJInt(source.defaultLevelWidth)
+  result{"worldGridHeight"} = newJInt(source.worldGridHeight)
+  result{"levels"} = block:
+    var output = newJArray()
+    for entry in source.levels:
+      output.add(toJsonHook(entry))
+    output
 
 proc toJsonHook*(source: LdtkImageExportMode): JsonNode =
   case source
@@ -1099,12 +1246,12 @@ proc fromJsonHook*(target: var LdtkIntGridValueDef; source: JsonNode) =
 proc toJsonHook*(source: LdtkIntGridValueDef): JsonNode =
   result = newJObject()
   if isSome(source.tile):
-    result{"tile"} = toJson(unsafeGet(source.tile))
-  result{"color"} = toJson(source.color)
+    result{"tile"} = toJsonHook(unsafeGet(source.tile))
+  result{"color"} = newJString(source.color)
   if isSome(source.identifier):
-    result{"identifier"} = toJson(unsafeGet(source.identifier))
-  result{"groupUid"} = toJson(source.groupUid)
-  result{"value"} = toJson(source.value)
+    result{"identifier"} = newJString(unsafeGet(source.identifier))
+  result{"groupUid"} = newJInt(source.groupUid)
+  result{"value"} = newJInt(source.value)
 
 proc toJsonHook*(source: LdtkTextLanguageMode): JsonNode =
   case source
@@ -1421,56 +1568,65 @@ proc fromJsonHook*(target: var LdtkFieldDef; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkFieldDef): JsonNode =
   result = newJObject()
-  result{"type"} = toJson(source.type1)
-  result{"editorDisplayScale"} = toJson(source.editorDisplayScale)
-  result{"__type"} = toJson(source.`type`)
+  result{"type"} = newJString(source.type1)
+  result{"editorDisplayScale"} = newJFloat(source.editorDisplayScale)
+  result{"__type"} = newJString(source.`type`)
   if isSome(source.allowedRefsEntityUid):
-    result{"allowedRefsEntityUid"} = toJson(
+    result{"allowedRefsEntityUid"} = newJInt(
         unsafeGet(source.allowedRefsEntityUid))
   if isSome(source.textLanguageMode):
-    result{"textLanguageMode"} = toJson(unsafeGet(source.textLanguageMode))
-  result{"editorAlwaysShow"} = toJson(source.editorAlwaysShow)
+    result{"textLanguageMode"} = toJsonHook(unsafeGet(source.textLanguageMode))
+  result{"editorAlwaysShow"} = newJBool(source.editorAlwaysShow)
   if isSome(source.defaultOverride):
-    result{"defaultOverride"} = toJson(unsafeGet(source.defaultOverride))
-  result{"autoChainRef"} = toJson(source.autoChainRef)
-  result{"editorDisplayPos"} = toJson(source.editorDisplayPos)
-  result{"editorDisplayMode"} = toJson(source.editorDisplayMode)
-  result{"identifier"} = toJson(source.identifier)
+    result{"defaultOverride"} = unsafeGet(source.defaultOverride)
+  result{"autoChainRef"} = newJBool(source.autoChainRef)
+  result{"editorDisplayPos"} = toJsonHook(source.editorDisplayPos)
+  result{"editorDisplayMode"} = toJsonHook(source.editorDisplayMode)
+  result{"identifier"} = newJString(source.identifier)
   if isSome(source.regex):
-    result{"regex"} = toJson(unsafeGet(source.regex))
-  result{"isArray"} = toJson(source.isArray)
-  result{"editorLinkStyle"} = toJson(source.editorLinkStyle)
-  result{"allowedRefs"} = toJson(source.allowedRefs)
-  result{"useForSmartColor"} = toJson(source.useForSmartColor)
+    result{"regex"} = newJString(unsafeGet(source.regex))
+  result{"isArray"} = newJBool(source.isArray)
+  result{"editorLinkStyle"} = toJsonHook(source.editorLinkStyle)
+  result{"allowedRefs"} = toJsonHook(source.allowedRefs)
+  result{"useForSmartColor"} = newJBool(source.useForSmartColor)
   if isSome(source.editorTextSuffix):
-    result{"editorTextSuffix"} = toJson(unsafeGet(source.editorTextSuffix))
+    result{"editorTextSuffix"} = newJString(unsafeGet(source.editorTextSuffix))
   if isSome(source.doc):
-    result{"doc"} = toJson(unsafeGet(source.doc))
+    result{"doc"} = newJString(unsafeGet(source.doc))
   if isSome(source.editorTextPrefix):
-    result{"editorTextPrefix"} = toJson(unsafeGet(source.editorTextPrefix))
-  result{"editorCutLongValues"} = toJson(source.editorCutLongValues)
-  result{"canBeNull"} = toJson(source.canBeNull)
-  result{"allowedRefTags"} = toJson(source.allowedRefTags)
-  result{"uid"} = toJson(source.uid)
-  result{"symmetricalRef"} = toJson(source.symmetricalRef)
+    result{"editorTextPrefix"} = newJString(unsafeGet(source.editorTextPrefix))
+  result{"editorCutLongValues"} = newJBool(source.editorCutLongValues)
+  result{"canBeNull"} = newJBool(source.canBeNull)
+  result{"allowedRefTags"} = block:
+    var output = newJArray()
+    for entry in source.allowedRefTags:
+      output.add(newJString(entry))
+    output
+  result{"uid"} = newJInt(source.uid)
+  result{"symmetricalRef"} = newJBool(source.symmetricalRef)
   if isSome(source.editorDisplayColor):
-    result{"editorDisplayColor"} = toJson(unsafeGet(source.editorDisplayColor))
-  result{"allowOutOfLevelRef"} = toJson(source.allowOutOfLevelRef)
+    result{"editorDisplayColor"} = newJString(
+        unsafeGet(source.editorDisplayColor))
+  result{"allowOutOfLevelRef"} = newJBool(source.allowOutOfLevelRef)
   if isSome(source.acceptFileTypes):
-    result{"acceptFileTypes"} = toJson(unsafeGet(source.acceptFileTypes))
-  result{"editorShowInWorld"} = toJson(source.editorShowInWorld)
+    result{"acceptFileTypes"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.acceptFileTypes):
+        output.add(newJString(entry))
+      output
+  result{"editorShowInWorld"} = newJBool(source.editorShowInWorld)
   if isSome(source.tilesetUid):
-    result{"tilesetUid"} = toJson(unsafeGet(source.tilesetUid))
+    result{"tilesetUid"} = newJInt(unsafeGet(source.tilesetUid))
   if isSome(source.arrayMaxLength):
-    result{"arrayMaxLength"} = toJson(unsafeGet(source.arrayMaxLength))
+    result{"arrayMaxLength"} = newJInt(unsafeGet(source.arrayMaxLength))
   if isSome(source.arrayMinLength):
-    result{"arrayMinLength"} = toJson(unsafeGet(source.arrayMinLength))
-  result{"searchable"} = toJson(source.searchable)
+    result{"arrayMinLength"} = newJInt(unsafeGet(source.arrayMinLength))
+  result{"searchable"} = newJBool(source.searchable)
   if isSome(source.min):
-    result{"min"} = toJson(unsafeGet(source.min))
-  result{"exportToToc"} = toJson(source.exportToToc)
+    result{"min"} = newJFloat(unsafeGet(source.min))
+  result{"exportToToc"} = newJBool(source.exportToToc)
   if isSome(source.max):
-    result{"max"} = toJson(unsafeGet(source.max))
+    result{"max"} = newJFloat(unsafeGet(source.max))
 
 proc toJsonHook*(source: LdtkEmbedAtlas): JsonNode =
   case source
@@ -1494,8 +1650,12 @@ proc fromJsonHook*(target: var LdtkEnumTagValue; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkEnumTagValue): JsonNode =
   result = newJObject()
-  result{"tileIds"} = toJson(source.tileIds)
-  result{"enumValueId"} = toJson(source.enumValueId)
+  result{"tileIds"} = block:
+    var output = newJArray()
+    for entry in source.tileIds:
+      output.add(newJInt(entry))
+    output
+  result{"enumValueId"} = newJString(source.enumValueId)
 
 proc fromJsonHook*(target: var LdtkTileCustomMetadata; source: JsonNode) =
   assert(hasKey(source, "data"),
@@ -1507,8 +1667,8 @@ proc fromJsonHook*(target: var LdtkTileCustomMetadata; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkTileCustomMetadata): JsonNode =
   result = newJObject()
-  result{"data"} = toJson(source.data)
-  result{"tileId"} = toJson(source.tileId)
+  result{"data"} = newJString(source.data)
+  result{"tileId"} = newJInt(source.tileId)
 
 proc fromJsonHook*(target: var LdtkTilesetDef; source: JsonNode) =
   assert(hasKey(source, "pxHei"),
@@ -1569,27 +1729,52 @@ proc fromJsonHook*(target: var LdtkTilesetDef; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkTilesetDef): JsonNode =
   result = newJObject()
-  result{"pxHei"} = toJson(source.pxHei)
-  result{"savedSelections"} = toJson(source.savedSelections)
-  result{"padding"} = toJson(source.padding)
-  result{"spacing"} = toJson(source.spacing)
+  result{"pxHei"} = newJInt(source.pxHei)
+  result{"savedSelections"} = block:
+    var output = newJArray()
+    for entry in source.savedSelections:
+      output.add(block:
+        var output = newJObject()
+        for key, entry in pairs(entry):
+          output[key] = entry
+        output)
+    output
+  result{"padding"} = newJInt(source.padding)
+  result{"spacing"} = newJInt(source.spacing)
   if isSome(source.tagsSourceEnumUid):
-    result{"tagsSourceEnumUid"} = toJson(unsafeGet(source.tagsSourceEnumUid))
+    result{"tagsSourceEnumUid"} = newJInt(unsafeGet(source.tagsSourceEnumUid))
   if isSome(source.embedAtlas):
-    result{"embedAtlas"} = toJson(unsafeGet(source.embedAtlas))
-  result{"identifier"} = toJson(source.identifier)
+    result{"embedAtlas"} = toJsonHook(unsafeGet(source.embedAtlas))
+  result{"identifier"} = newJString(source.identifier)
   if isSome(source.cachedPixelData):
-    result{"cachedPixelData"} = toJson(unsafeGet(source.cachedPixelData))
-  result{"enumTags"} = toJson(source.enumTags)
-  result{"pxWid"} = toJson(source.pxWid)
-  result{"tileGridSize"} = toJson(source.tileGridSize)
-  result{"customData"} = toJson(source.customData)
-  result{"uid"} = toJson(source.uid)
-  result{"__cHei"} = toJson(source.cHei)
-  result{"__cWid"} = toJson(source.cWid)
+    result{"cachedPixelData"} = block:
+      var output = newJObject()
+      for key, entry in pairs(
+          unsafeGet(source.cachedPixelData)):
+        output[key] = entry
+      output
+  result{"enumTags"} = block:
+    var output = newJArray()
+    for entry in source.enumTags:
+      output.add(toJsonHook(entry))
+    output
+  result{"pxWid"} = newJInt(source.pxWid)
+  result{"tileGridSize"} = newJInt(source.tileGridSize)
+  result{"customData"} = block:
+    var output = newJArray()
+    for entry in source.customData:
+      output.add(toJsonHook(entry))
+    output
+  result{"uid"} = newJInt(source.uid)
+  result{"__cHei"} = newJInt(source.cHei)
+  result{"__cWid"} = newJInt(source.cWid)
   if isSome(source.relPath):
-    result{"relPath"} = toJson(unsafeGet(source.relPath))
-  result{"tags"} = toJson(source.tags)
+    result{"relPath"} = newJString(unsafeGet(source.relPath))
+  result{"tags"} = block:
+    var output = newJArray()
+    for entry in source.tags:
+      output.add(newJString(entry))
+    output
 
 proc toJsonHook*(source: LdtkLimitScope): JsonNode =
   case source
@@ -1801,49 +1986,61 @@ proc fromJsonHook*(target: var LdtkEntityDef; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkEntityDef): JsonNode =
   result = newJObject()
-  result{"allowOutOfBounds"} = toJson(source.allowOutOfBounds)
-  result{"pivotY"} = toJson(source.pivotY)
-  result{"tileOpacity"} = toJson(source.tileOpacity)
-  result{"color"} = toJson(source.color)
-  result{"limitScope"} = toJson(source.limitScope)
-  result{"limitBehavior"} = toJson(source.limitBehavior)
-  result{"hollow"} = toJson(source.hollow)
-  result{"height"} = toJson(source.height)
-  result{"renderMode"} = toJson(source.renderMode)
+  result{"allowOutOfBounds"} = newJBool(source.allowOutOfBounds)
+  result{"pivotY"} = newJFloat(source.pivotY)
+  result{"tileOpacity"} = newJFloat(source.tileOpacity)
+  result{"color"} = newJString(source.color)
+  result{"limitScope"} = toJsonHook(source.limitScope)
+  result{"limitBehavior"} = toJsonHook(source.limitBehavior)
+  result{"hollow"} = newJBool(source.hollow)
+  result{"height"} = newJInt(source.height)
+  result{"renderMode"} = toJsonHook(source.renderMode)
   if isSome(source.tilesetId):
-    result{"tilesetId"} = toJson(unsafeGet(source.tilesetId))
-  result{"keepAspectRatio"} = toJson(source.keepAspectRatio)
+    result{"tilesetId"} = newJInt(unsafeGet(source.tilesetId))
+  result{"keepAspectRatio"} = newJBool(source.keepAspectRatio)
   if isSome(source.minWidth):
-    result{"minWidth"} = toJson(unsafeGet(source.minWidth))
-  result{"showName"} = toJson(source.showName)
-  result{"resizableX"} = toJson(source.resizableX)
-  result{"identifier"} = toJson(source.identifier)
-  result{"maxCount"} = toJson(source.maxCount)
+    result{"minWidth"} = newJInt(unsafeGet(source.minWidth))
+  result{"showName"} = newJBool(source.showName)
+  result{"resizableX"} = newJBool(source.resizableX)
+  result{"identifier"} = newJString(source.identifier)
+  result{"maxCount"} = newJInt(source.maxCount)
   if isSome(source.tileId):
-    result{"tileId"} = toJson(unsafeGet(source.tileId))
-  result{"pivotX"} = toJson(source.pivotX)
+    result{"tileId"} = newJInt(unsafeGet(source.tileId))
+  result{"pivotX"} = newJFloat(source.pivotX)
   if isSome(source.doc):
-    result{"doc"} = toJson(unsafeGet(source.doc))
-  result{"fieldDefs"} = toJson(source.fieldDefs)
-  result{"uid"} = toJson(source.uid)
-  result{"tileRenderMode"} = toJson(source.tileRenderMode)
+    result{"doc"} = newJString(unsafeGet(source.doc))
+  result{"fieldDefs"} = block:
+    var output = newJArray()
+    for entry in source.fieldDefs:
+      output.add(toJsonHook(entry))
+    output
+  result{"uid"} = newJInt(source.uid)
+  result{"tileRenderMode"} = toJsonHook(source.tileRenderMode)
   if isSome(source.uiTileRect):
-    result{"uiTileRect"} = toJson(unsafeGet(source.uiTileRect))
-  result{"resizableY"} = toJson(source.resizableY)
-  result{"lineOpacity"} = toJson(source.lineOpacity)
+    result{"uiTileRect"} = toJsonHook(unsafeGet(source.uiTileRect))
+  result{"resizableY"} = newJBool(source.resizableY)
+  result{"lineOpacity"} = newJFloat(source.lineOpacity)
   if isSome(source.minHeight):
-    result{"minHeight"} = toJson(unsafeGet(source.minHeight))
+    result{"minHeight"} = newJInt(unsafeGet(source.minHeight))
   if isSome(source.tileRect):
-    result{"tileRect"} = toJson(unsafeGet(source.tileRect))
-  result{"nineSliceBorders"} = toJson(source.nineSliceBorders)
+    result{"tileRect"} = toJsonHook(unsafeGet(source.tileRect))
+  result{"nineSliceBorders"} = block:
+    var output = newJArray()
+    for entry in source.nineSliceBorders:
+      output.add(newJInt(entry))
+    output
   if isSome(source.maxWidth):
-    result{"maxWidth"} = toJson(unsafeGet(source.maxWidth))
-  result{"width"} = toJson(source.width)
-  result{"tags"} = toJson(source.tags)
+    result{"maxWidth"} = newJInt(unsafeGet(source.maxWidth))
+  result{"width"} = newJInt(source.width)
+  result{"tags"} = block:
+    var output = newJArray()
+    for entry in source.tags:
+      output.add(newJString(entry))
+    output
   if isSome(source.maxHeight):
-    result{"maxHeight"} = toJson(unsafeGet(source.maxHeight))
-  result{"exportToToc"} = toJson(source.exportToToc)
-  result{"fillOpacity"} = toJson(source.fillOpacity)
+    result{"maxHeight"} = newJInt(unsafeGet(source.maxHeight))
+  result{"exportToToc"} = newJBool(source.exportToToc)
+  result{"fillOpacity"} = newJFloat(source.fillOpacity)
 
 proc fromJsonHook*(target: var LdtkEnumDefValues; source: JsonNode) =
   if hasKey(source, "__tileSrcRect") and
@@ -1866,13 +2063,17 @@ proc fromJsonHook*(target: var LdtkEnumDefValues; source: JsonNode) =
 proc toJsonHook*(source: LdtkEnumDefValues): JsonNode =
   result = newJObject()
   if isSome(source.tileSrcRect):
-    result{"__tileSrcRect"} = toJson(unsafeGet(source.tileSrcRect))
-  result{"color"} = toJson(source.color)
-  result{"id"} = toJson(source.id)
+    result{"__tileSrcRect"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.tileSrcRect):
+        output.add(newJInt(entry))
+      output
+  result{"color"} = newJInt(source.color)
+  result{"id"} = newJString(source.id)
   if isSome(source.tileId):
-    result{"tileId"} = toJson(unsafeGet(source.tileId))
+    result{"tileId"} = newJInt(unsafeGet(source.tileId))
   if isSome(source.tileRect):
-    result{"tileRect"} = toJson(unsafeGet(source.tileRect))
+    result{"tileRect"} = toJsonHook(unsafeGet(source.tileRect))
 
 proc fromJsonHook*(target: var LdtkEnumDef; source: JsonNode) =
   assert(hasKey(source, "values"),
@@ -1903,17 +2104,25 @@ proc fromJsonHook*(target: var LdtkEnumDef; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkEnumDef): JsonNode =
   result = newJObject()
-  result{"values"} = toJson(source.values)
+  result{"values"} = block:
+    var output = newJArray()
+    for entry in source.values:
+      output.add(toJsonHook(entry))
+    output
   if isSome(source.externalRelPath):
-    result{"externalRelPath"} = toJson(unsafeGet(source.externalRelPath))
-  result{"identifier"} = toJson(source.identifier)
+    result{"externalRelPath"} = newJString(unsafeGet(source.externalRelPath))
+  result{"identifier"} = newJString(source.identifier)
   if isSome(source.externalFileChecksum):
-    result{"externalFileChecksum"} = toJson(
+    result{"externalFileChecksum"} = newJString(
         unsafeGet(source.externalFileChecksum))
   if isSome(source.iconTilesetUid):
-    result{"iconTilesetUid"} = toJson(unsafeGet(source.iconTilesetUid))
-  result{"uid"} = toJson(source.uid)
-  result{"tags"} = toJson(source.tags)
+    result{"iconTilesetUid"} = newJInt(unsafeGet(source.iconTilesetUid))
+  result{"uid"} = newJInt(source.uid)
+  result{"tags"} = block:
+    var output = newJArray()
+    for entry in source.tags:
+      output.add(newJString(entry))
+    output
 
 proc toJsonHook*(source: LdtkType): JsonNode =
   case source
@@ -2081,39 +2290,55 @@ proc fromJsonHook*(target: var LdtkAutoRuleDef; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode =
   result = newJObject()
-  result{"checker"} = toJson(source.checker)
-  result{"pivotY"} = toJson(source.pivotY)
-  result{"breakOnMatch"} = toJson(source.breakOnMatch)
-  result{"perlinOctaves"} = toJson(source.perlinOctaves)
-  result{"yModulo"} = toJson(source.yModulo)
-  result{"size"} = toJson(source.size)
-  result{"tileMode"} = toJson(source.tileMode)
-  result{"tileRandomXMax"} = toJson(source.tileRandomXMax)
-  result{"tileRandomXMin"} = toJson(source.tileRandomXMin)
-  result{"xModulo"} = toJson(source.xModulo)
-  result{"yOffset"} = toJson(source.yOffset)
-  result{"flipX"} = toJson(source.flipX)
-  result{"tileYOffset"} = toJson(source.tileYOffset)
-  result{"chance"} = toJson(source.chance)
-  result{"tileRandomYMax"} = toJson(source.tileRandomYMax)
-  result{"perlinActive"} = toJson(source.perlinActive)
-  result{"perlinScale"} = toJson(source.perlinScale)
+  result{"checker"} = toJsonHook(source.checker)
+  result{"pivotY"} = newJFloat(source.pivotY)
+  result{"breakOnMatch"} = newJBool(source.breakOnMatch)
+  result{"perlinOctaves"} = newJFloat(source.perlinOctaves)
+  result{"yModulo"} = newJInt(source.yModulo)
+  result{"size"} = newJInt(source.size)
+  result{"tileMode"} = toJsonHook(source.tileMode)
+  result{"tileRandomXMax"} = newJInt(source.tileRandomXMax)
+  result{"tileRandomXMin"} = newJInt(source.tileRandomXMin)
+  result{"xModulo"} = newJInt(source.xModulo)
+  result{"yOffset"} = newJInt(source.yOffset)
+  result{"flipX"} = newJBool(source.flipX)
+  result{"tileYOffset"} = newJInt(source.tileYOffset)
+  result{"chance"} = newJFloat(source.chance)
+  result{"tileRandomYMax"} = newJInt(source.tileRandomYMax)
+  result{"perlinActive"} = newJBool(source.perlinActive)
+  result{"perlinScale"} = newJFloat(source.perlinScale)
   if isSome(source.outOfBoundsValue):
-    result{"outOfBoundsValue"} = toJson(unsafeGet(source.outOfBoundsValue))
-  result{"pivotX"} = toJson(source.pivotX)
-  result{"flipY"} = toJson(source.flipY)
-  result{"active"} = toJson(source.active)
-  result{"uid"} = toJson(source.uid)
+    result{"outOfBoundsValue"} = newJInt(unsafeGet(source.outOfBoundsValue))
+  result{"pivotX"} = newJFloat(source.pivotX)
+  result{"flipY"} = newJBool(source.flipY)
+  result{"active"} = newJBool(source.active)
+  result{"uid"} = newJInt(source.uid)
   if isSome(source.tileIds):
-    result{"tileIds"} = toJson(unsafeGet(source.tileIds))
-  result{"invalidated"} = toJson(source.invalidated)
-  result{"pattern"} = toJson(source.pattern)
-  result{"alpha"} = toJson(source.alpha)
-  result{"tileRectsIds"} = toJson(source.tileRectsIds)
-  result{"tileXOffset"} = toJson(source.tileXOffset)
-  result{"xOffset"} = toJson(source.xOffset)
-  result{"tileRandomYMin"} = toJson(source.tileRandomYMin)
-  result{"perlinSeed"} = toJson(source.perlinSeed)
+    result{"tileIds"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.tileIds):
+        output.add(newJInt(entry))
+      output
+  result{"invalidated"} = newJBool(source.invalidated)
+  result{"pattern"} = block:
+    var output = newJArray()
+    for entry in source.pattern:
+      output.add(newJInt(entry))
+    output
+  result{"alpha"} = newJFloat(source.alpha)
+  result{"tileRectsIds"} = block:
+    var output = newJArray()
+    for entry in source.tileRectsIds:
+      output.add(block:
+        var output = newJArray()
+        for entry in entry:
+          output.add(newJInt(entry))
+        output)
+    output
+  result{"tileXOffset"} = newJInt(source.tileXOffset)
+  result{"xOffset"} = newJInt(source.xOffset)
+  result{"tileRandomYMin"} = newJInt(source.tileRandomYMin)
+  result{"perlinSeed"} = newJFloat(source.perlinSeed)
 
 proc fromJsonHook*(target: var LdtkAutoLayerRuleGroup; source: JsonNode) =
   assert(hasKey(source, "isOptional"), "isOptional" &
@@ -2156,20 +2381,28 @@ proc fromJsonHook*(target: var LdtkAutoLayerRuleGroup; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkAutoLayerRuleGroup): JsonNode =
   result = newJObject()
-  result{"isOptional"} = toJson(source.isOptional)
+  result{"isOptional"} = newJBool(source.isOptional)
   if isSome(source.color):
-    result{"color"} = toJson(unsafeGet(source.color))
+    result{"color"} = newJString(unsafeGet(source.color))
   if isSome(source.collapsed):
-    result{"collapsed"} = toJson(unsafeGet(source.collapsed))
-  result{"usesWizard"} = toJson(source.usesWizard)
-  result{"biomeRequirementMode"} = toJson(source.biomeRequirementMode)
-  result{"rules"} = toJson(source.rules)
+    result{"collapsed"} = newJBool(unsafeGet(source.collapsed))
+  result{"usesWizard"} = newJBool(source.usesWizard)
+  result{"biomeRequirementMode"} = newJInt(source.biomeRequirementMode)
+  result{"rules"} = block:
+    var output = newJArray()
+    for entry in source.rules:
+      output.add(toJsonHook(entry))
+    output
   if isSome(source.icon):
-    result{"icon"} = toJson(unsafeGet(source.icon))
-  result{"active"} = toJson(source.active)
-  result{"uid"} = toJson(source.uid)
-  result{"name"} = toJson(source.name)
-  result{"requiredBiomeValues"} = toJson(source.requiredBiomeValues)
+    result{"icon"} = toJsonHook(unsafeGet(source.icon))
+  result{"active"} = newJBool(source.active)
+  result{"uid"} = newJInt(source.uid)
+  result{"name"} = newJString(source.name)
+  result{"requiredBiomeValues"} = block:
+    var output = newJArray()
+    for entry in source.requiredBiomeValues:
+      output.add(newJString(entry))
+    output
 
 proc fromJsonHook*(target: var LdtkIntGridValueGroupDef; source: JsonNode) =
   if hasKey(source, "color") and source{"color"}.kind != JNull:
@@ -2184,10 +2417,10 @@ proc fromJsonHook*(target: var LdtkIntGridValueGroupDef; source: JsonNode) =
 proc toJsonHook*(source: LdtkIntGridValueGroupDef): JsonNode =
   result = newJObject()
   if isSome(source.color):
-    result{"color"} = toJson(unsafeGet(source.color))
+    result{"color"} = newJString(unsafeGet(source.color))
   if isSome(source.identifier):
-    result{"identifier"} = toJson(unsafeGet(source.identifier))
-  result{"uid"} = toJson(source.uid)
+    result{"identifier"} = newJString(unsafeGet(source.identifier))
+  result{"uid"} = newJInt(source.uid)
 
 proc fromJsonHook*(target: var LdtkLayerDef; source: JsonNode) =
   assert(hasKey(source, "type"),
@@ -2320,49 +2553,73 @@ proc fromJsonHook*(target: var LdtkLayerDef; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkLayerDef): JsonNode =
   result = newJObject()
-  result{"type"} = toJson(source.type1)
+  result{"type"} = toJsonHook(source.type1)
   if isSome(source.autoTilesetDefUid):
-    result{"autoTilesetDefUid"} = toJson(unsafeGet(source.autoTilesetDefUid))
-  result{"parallaxScaling"} = toJson(source.parallaxScaling)
+    result{"autoTilesetDefUid"} = newJInt(unsafeGet(source.autoTilesetDefUid))
+  result{"parallaxScaling"} = newJBool(source.parallaxScaling)
   if isSome(source.biomeFieldUid):
-    result{"biomeFieldUid"} = toJson(unsafeGet(source.biomeFieldUid))
+    result{"biomeFieldUid"} = newJInt(unsafeGet(source.biomeFieldUid))
   if isSome(source.autoTilesKilledByOtherLayerUid):
-    result{"autoTilesKilledByOtherLayerUid"} = toJson(
+    result{"autoTilesKilledByOtherLayerUid"} = newJInt(
         unsafeGet(source.autoTilesKilledByOtherLayerUid))
-  result{"inactiveOpacity"} = toJson(source.inactiveOpacity)
-  result{"__type"} = toJson(source.`type`)
-  result{"autoRuleGroups"} = toJson(source.autoRuleGroups)
-  result{"gridSize"} = toJson(source.gridSize)
-  result{"hideInList"} = toJson(source.hideInList)
+  result{"inactiveOpacity"} = newJFloat(source.inactiveOpacity)
+  result{"__type"} = newJString(source.`type`)
+  result{"autoRuleGroups"} = block:
+    var output = newJArray()
+    for entry in source.autoRuleGroups:
+      output.add(toJsonHook(entry))
+    output
+  result{"gridSize"} = newJInt(source.gridSize)
+  result{"hideInList"} = newJBool(source.hideInList)
   if isSome(source.tilesetDefUid):
-    result{"tilesetDefUid"} = toJson(unsafeGet(source.tilesetDefUid))
+    result{"tilesetDefUid"} = newJInt(unsafeGet(source.tilesetDefUid))
   if isSome(source.uiColor):
-    result{"uiColor"} = toJson(unsafeGet(source.uiColor))
-  result{"requiredTags"} = toJson(source.requiredTags)
-  result{"tilePivotX"} = toJson(source.tilePivotX)
-  result{"uiFilterTags"} = toJson(source.uiFilterTags)
-  result{"guideGridWid"} = toJson(source.guideGridWid)
-  result{"parallaxFactorX"} = toJson(source.parallaxFactorX)
-  result{"identifier"} = toJson(source.identifier)
-  result{"canSelectWhenInactive"} = toJson(source.canSelectWhenInactive)
-  result{"pxOffsetX"} = toJson(source.pxOffsetX)
-  result{"tilePivotY"} = toJson(source.tilePivotY)
-  result{"excludedTags"} = toJson(source.excludedTags)
+    result{"uiColor"} = newJString(unsafeGet(source.uiColor))
+  result{"requiredTags"} = block:
+    var output = newJArray()
+    for entry in source.requiredTags:
+      output.add(newJString(entry))
+    output
+  result{"tilePivotX"} = newJFloat(source.tilePivotX)
+  result{"uiFilterTags"} = block:
+    var output = newJArray()
+    for entry in source.uiFilterTags:
+      output.add(newJString(entry))
+    output
+  result{"guideGridWid"} = newJInt(source.guideGridWid)
+  result{"parallaxFactorX"} = newJFloat(source.parallaxFactorX)
+  result{"identifier"} = newJString(source.identifier)
+  result{"canSelectWhenInactive"} = newJBool(source.canSelectWhenInactive)
+  result{"pxOffsetX"} = newJInt(source.pxOffsetX)
+  result{"tilePivotY"} = newJFloat(source.tilePivotY)
+  result{"excludedTags"} = block:
+    var output = newJArray()
+    for entry in source.excludedTags:
+      output.add(newJString(entry))
+    output
   if isSome(source.doc):
-    result{"doc"} = toJson(unsafeGet(source.doc))
-  result{"uid"} = toJson(source.uid)
-  result{"guideGridHei"} = toJson(source.guideGridHei)
+    result{"doc"} = newJString(unsafeGet(source.doc))
+  result{"uid"} = newJInt(source.uid)
+  result{"guideGridHei"} = newJInt(source.guideGridHei)
   if isSome(source.autoSourceLayerDefUid):
-    result{"autoSourceLayerDefUid"} = toJson(
+    result{"autoSourceLayerDefUid"} = newJInt(
         unsafeGet(source.autoSourceLayerDefUid))
-  result{"displayOpacity"} = toJson(source.displayOpacity)
-  result{"intGridValuesGroups"} = toJson(source.intGridValuesGroups)
-  result{"hideFieldsWhenInactive"} = toJson(source.hideFieldsWhenInactive)
-  result{"useAsyncRender"} = toJson(source.useAsyncRender)
-  result{"pxOffsetY"} = toJson(source.pxOffsetY)
-  result{"parallaxFactorY"} = toJson(source.parallaxFactorY)
-  result{"intGridValues"} = toJson(source.intGridValues)
-  result{"renderInWorldView"} = toJson(source.renderInWorldView)
+  result{"displayOpacity"} = newJFloat(source.displayOpacity)
+  result{"intGridValuesGroups"} = block:
+    var output = newJArray()
+    for entry in source.intGridValuesGroups:
+      output.add(toJsonHook(entry))
+    output
+  result{"hideFieldsWhenInactive"} = newJBool(source.hideFieldsWhenInactive)
+  result{"useAsyncRender"} = newJBool(source.useAsyncRender)
+  result{"pxOffsetY"} = newJInt(source.pxOffsetY)
+  result{"parallaxFactorY"} = newJFloat(source.parallaxFactorY)
+  result{"intGridValues"} = block:
+    var output = newJArray()
+    for entry in source.intGridValues:
+      output.add(toJsonHook(entry))
+    output
+  result{"renderInWorldView"} = newJBool(source.renderInWorldView)
 
 proc fromJsonHook*(target: var LdtkDefinitions; source: JsonNode) =
   assert(hasKey(source, "levelFields"),
@@ -2387,12 +2644,36 @@ proc fromJsonHook*(target: var LdtkDefinitions; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkDefinitions): JsonNode =
   result = newJObject()
-  result{"levelFields"} = toJson(source.levelFields)
-  result{"tilesets"} = toJson(source.tilesets)
-  result{"entities"} = toJson(source.entities)
-  result{"enums"} = toJson(source.enums)
-  result{"layers"} = toJson(source.layers)
-  result{"externalEnums"} = toJson(source.externalEnums)
+  result{"levelFields"} = block:
+    var output = newJArray()
+    for entry in source.levelFields:
+      output.add(toJsonHook(entry))
+    output
+  result{"tilesets"} = block:
+    var output = newJArray()
+    for entry in source.tilesets:
+      output.add(toJsonHook(entry))
+    output
+  result{"entities"} = block:
+    var output = newJArray()
+    for entry in source.entities:
+      output.add(toJsonHook(entry))
+    output
+  result{"enums"} = block:
+    var output = newJArray()
+    for entry in source.enums:
+      output.add(toJsonHook(entry))
+    output
+  result{"layers"} = block:
+    var output = newJArray()
+    for entry in source.layers:
+      output.add(toJsonHook(entry))
+    output
+  result{"externalEnums"} = block:
+    var output = newJArray()
+    for entry in source.externalEnums:
+      output.add(toJsonHook(entry))
+    output
 
 proc fromJsonHook*(target: var LdtkGridPoint; source: JsonNode) =
   assert(hasKey(source, "cx"),
@@ -2404,8 +2685,8 @@ proc fromJsonHook*(target: var LdtkGridPoint; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkGridPoint): JsonNode =
   result = newJObject()
-  result{"cx"} = toJson(source.cx)
-  result{"cy"} = toJson(source.cy)
+  result{"cx"} = newJInt(source.cx)
+  result{"cy"} = newJInt(source.cy)
 
 proc fromJsonHook*(target: var Ldtk_FORCED_REFS; source: JsonNode) =
   if hasKey(source, "CustomCommand") and
@@ -2511,64 +2792,67 @@ proc fromJsonHook*(target: var Ldtk_FORCED_REFS; source: JsonNode) =
 proc toJsonHook*(source: Ldtk_FORCED_REFS): JsonNode =
   result = newJObject()
   if isSome(source.CustomCommand):
-    result{"CustomCommand"} = toJson(unsafeGet(source.CustomCommand))
+    result{"CustomCommand"} = toJsonHook(unsafeGet(source.CustomCommand))
   if isSome(source.IntGridValueDef):
-    result{"IntGridValueDef"} = toJson(unsafeGet(source.IntGridValueDef))
+    result{"IntGridValueDef"} = toJsonHook(unsafeGet(source.IntGridValueDef))
   if isSome(source.Level):
-    result{"Level"} = toJson(unsafeGet(source.Level))
+    result{"Level"} = toJsonHook(unsafeGet(source.Level))
   if isSome(source.Definitions):
-    result{"Definitions"} = toJson(unsafeGet(source.Definitions))
+    result{"Definitions"} = toJsonHook(unsafeGet(source.Definitions))
   if isSome(source.EnumDef):
-    result{"EnumDef"} = toJson(unsafeGet(source.EnumDef))
+    result{"EnumDef"} = toJsonHook(unsafeGet(source.EnumDef))
   if isSome(source.FieldDef):
-    result{"FieldDef"} = toJson(unsafeGet(source.FieldDef))
+    result{"FieldDef"} = toJsonHook(unsafeGet(source.FieldDef))
   if isSome(source.AutoLayerRuleGroup):
-    result{"AutoLayerRuleGroup"} = toJson(unsafeGet(source.AutoLayerRuleGroup))
+    result{"AutoLayerRuleGroup"} = toJsonHook(
+        unsafeGet(source.AutoLayerRuleGroup))
   if isSome(source.TilesetDef):
-    result{"TilesetDef"} = toJson(unsafeGet(source.TilesetDef))
+    result{"TilesetDef"} = toJsonHook(unsafeGet(source.TilesetDef))
   if isSome(source.TableOfContentEntry):
-    result{"TableOfContentEntry"} = toJson(unsafeGet(source.TableOfContentEntry))
+    result{"TableOfContentEntry"} = toJsonHook(
+        unsafeGet(source.TableOfContentEntry))
   if isSome(source.EntityDef):
-    result{"EntityDef"} = toJson(unsafeGet(source.EntityDef))
+    result{"EntityDef"} = toJsonHook(unsafeGet(source.EntityDef))
   if isSome(source.FieldInstance):
-    result{"FieldInstance"} = toJson(unsafeGet(source.FieldInstance))
+    result{"FieldInstance"} = toJsonHook(unsafeGet(source.FieldInstance))
   if isSome(source.EntityReferenceInfos):
-    result{"EntityReferenceInfos"} = toJson(
+    result{"EntityReferenceInfos"} = toJsonHook(
         unsafeGet(source.EntityReferenceInfos))
   if isSome(source.LevelBgPosInfos):
-    result{"LevelBgPosInfos"} = toJson(unsafeGet(source.LevelBgPosInfos))
+    result{"LevelBgPosInfos"} = toJsonHook(unsafeGet(source.LevelBgPosInfos))
   if isSome(source.TileCustomMetadata):
-    result{"TileCustomMetadata"} = toJson(unsafeGet(source.TileCustomMetadata))
+    result{"TileCustomMetadata"} = toJsonHook(
+        unsafeGet(source.TileCustomMetadata))
   if isSome(source.Tile):
-    result{"Tile"} = toJson(unsafeGet(source.Tile))
+    result{"Tile"} = toJsonHook(unsafeGet(source.Tile))
   if isSome(source.AutoRuleDef):
-    result{"AutoRuleDef"} = toJson(unsafeGet(source.AutoRuleDef))
+    result{"AutoRuleDef"} = toJsonHook(unsafeGet(source.AutoRuleDef))
   if isSome(source.NeighbourLevel):
-    result{"NeighbourLevel"} = toJson(unsafeGet(source.NeighbourLevel))
+    result{"NeighbourLevel"} = toJsonHook(unsafeGet(source.NeighbourLevel))
   if isSome(source.GridPoint):
-    result{"GridPoint"} = toJson(unsafeGet(source.GridPoint))
+    result{"GridPoint"} = toJsonHook(unsafeGet(source.GridPoint))
   if isSome(source.EntityInstance):
-    result{"EntityInstance"} = toJson(unsafeGet(source.EntityInstance))
+    result{"EntityInstance"} = toJsonHook(unsafeGet(source.EntityInstance))
   if isSome(source.TilesetRect):
-    result{"TilesetRect"} = toJson(unsafeGet(source.TilesetRect))
+    result{"TilesetRect"} = toJsonHook(unsafeGet(source.TilesetRect))
   if isSome(source.EnumTagValue):
-    result{"EnumTagValue"} = toJson(unsafeGet(source.EnumTagValue))
+    result{"EnumTagValue"} = toJsonHook(unsafeGet(source.EnumTagValue))
   if isSome(source.LayerInstance):
-    result{"LayerInstance"} = toJson(unsafeGet(source.LayerInstance))
+    result{"LayerInstance"} = toJsonHook(unsafeGet(source.LayerInstance))
   if isSome(source.IntGridValueInstance):
-    result{"IntGridValueInstance"} = toJson(
+    result{"IntGridValueInstance"} = toJsonHook(
         unsafeGet(source.IntGridValueInstance))
   if isSome(source.World):
-    result{"World"} = toJson(unsafeGet(source.World))
+    result{"World"} = toJsonHook(unsafeGet(source.World))
   if isSome(source.LayerDef):
-    result{"LayerDef"} = toJson(unsafeGet(source.LayerDef))
+    result{"LayerDef"} = toJsonHook(unsafeGet(source.LayerDef))
   if isSome(source.IntGridValueGroupDef):
-    result{"IntGridValueGroupDef"} = toJson(
+    result{"IntGridValueGroupDef"} = toJsonHook(
         unsafeGet(source.IntGridValueGroupDef))
   if isSome(source.TocInstanceData):
-    result{"TocInstanceData"} = toJson(unsafeGet(source.TocInstanceData))
+    result{"TocInstanceData"} = toJsonHook(unsafeGet(source.TocInstanceData))
   if isSome(source.EnumDefValues):
-    result{"EnumDefValues"} = toJson(unsafeGet(source.EnumDefValues))
+    result{"EnumDefValues"} = toJsonHook(unsafeGet(source.EnumDefValues))
 
 proc toJsonHook*(source: LdtkldtkWorldLayout): JsonNode =
   case source
@@ -2799,51 +3083,72 @@ proc fromJsonHook*(target: var LdtkLdtkJsonRoot; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode =
   result = newJObject()
-  result{"backupLimit"} = toJson(source.backupLimit)
-  result{"simplifiedExport"} = toJson(source.simplifiedExport)
-  result{"externalLevels"} = toJson(source.externalLevels)
+  result{"backupLimit"} = newJInt(source.backupLimit)
+  result{"simplifiedExport"} = newJBool(source.simplifiedExport)
+  result{"externalLevels"} = newJBool(source.externalLevels)
   if isSome(source.backupRelPath):
-    result{"backupRelPath"} = toJson(unsafeGet(source.backupRelPath))
-  result{"jsonVersion"} = toJson(source.jsonVersion)
-  result{"bgColor"} = toJson(source.bgColor)
-  result{"appBuildId"} = toJson(source.appBuildId)
-  result{"defaultEntityHeight"} = toJson(source.defaultEntityHeight)
+    result{"backupRelPath"} = newJString(unsafeGet(source.backupRelPath))
+  result{"jsonVersion"} = newJString(source.jsonVersion)
+  result{"bgColor"} = newJString(source.bgColor)
+  result{"appBuildId"} = newJFloat(source.appBuildId)
+  result{"defaultEntityHeight"} = newJInt(source.defaultEntityHeight)
   if isSome(source.pngFilePattern):
-    result{"pngFilePattern"} = toJson(unsafeGet(source.pngFilePattern))
-  result{"customCommands"} = toJson(source.customCommands)
-  result{"exportTiled"} = toJson(source.exportTiled)
+    result{"pngFilePattern"} = newJString(unsafeGet(source.pngFilePattern))
+  result{"customCommands"} = block:
+    var output = newJArray()
+    for entry in source.customCommands:
+      output.add(toJsonHook(entry))
+    output
+  result{"exportTiled"} = newJBool(source.exportTiled)
   if isSome(source.exportPng):
-    result{"exportPng"} = toJson(unsafeGet(source.exportPng))
+    result{"exportPng"} = newJBool(unsafeGet(source.exportPng))
   if isSome(source.worldGridWidth):
-    result{"worldGridWidth"} = toJson(unsafeGet(source.worldGridWidth))
+    result{"worldGridWidth"} = newJInt(unsafeGet(source.worldGridWidth))
   if isSome(source.defaultLevelHeight):
-    result{"defaultLevelHeight"} = toJson(unsafeGet(source.defaultLevelHeight))
-  result{"toc"} = toJson(source.toc)
-  result{"worlds"} = toJson(source.worlds)
-  result{"imageExportMode"} = toJson(source.imageExportMode)
-  result{"dummyWorldIid"} = toJson(source.dummyWorldIid)
+    result{"defaultLevelHeight"} = newJInt(unsafeGet(source.defaultLevelHeight))
+  result{"toc"} = block:
+    var output = newJArray()
+    for entry in source.toc:
+      output.add(toJsonHook(entry))
+    output
+  result{"worlds"} = block:
+    var output = newJArray()
+    for entry in source.worlds:
+      output.add(toJsonHook(entry))
+    output
+  result{"imageExportMode"} = toJsonHook(source.imageExportMode)
+  result{"dummyWorldIid"} = newJString(source.dummyWorldIid)
   if isSome(source.FORCED_REFS):
-    result{"__FORCED_REFS"} = toJson(unsafeGet(source.FORCED_REFS))
-  result{"defaultPivotY"} = toJson(source.defaultPivotY)
-  result{"exportLevelBg"} = toJson(source.exportLevelBg)
-  result{"nextUid"} = toJson(source.nextUid)
-  result{"levelNamePattern"} = toJson(source.levelNamePattern)
-  result{"defs"} = toJson(source.defs)
-  result{"defaultPivotX"} = toJson(source.defaultPivotX)
+    result{"__FORCED_REFS"} = toJsonHook(unsafeGet(source.FORCED_REFS))
+  result{"defaultPivotY"} = newJFloat(source.defaultPivotY)
+  result{"exportLevelBg"} = newJBool(source.exportLevelBg)
+  result{"nextUid"} = newJInt(source.nextUid)
+  result{"levelNamePattern"} = newJString(source.levelNamePattern)
+  result{"defs"} = toJsonHook(source.defs)
+  result{"defaultPivotX"} = newJFloat(source.defaultPivotX)
   if isSome(source.tutorialDesc):
-    result{"tutorialDesc"} = toJson(unsafeGet(source.tutorialDesc))
+    result{"tutorialDesc"} = newJString(unsafeGet(source.tutorialDesc))
   if isSome(source.worldLayout):
-    result{"worldLayout"} = toJson(unsafeGet(source.worldLayout))
-  result{"defaultEntityWidth"} = toJson(source.defaultEntityWidth)
-  result{"iid"} = toJson(source.iid)
-  result{"defaultGridSize"} = toJson(source.defaultGridSize)
+    result{"worldLayout"} = toJsonHook(unsafeGet(source.worldLayout))
+  result{"defaultEntityWidth"} = newJInt(source.defaultEntityWidth)
+  result{"iid"} = newJString(source.iid)
+  result{"defaultGridSize"} = newJInt(source.defaultGridSize)
   if isSome(source.defaultLevelWidth):
-    result{"defaultLevelWidth"} = toJson(unsafeGet(source.defaultLevelWidth))
-  result{"minifyJson"} = toJson(source.minifyJson)
-  result{"backupOnSave"} = toJson(source.backupOnSave)
-  result{"flags"} = toJson(source.flags)
-  result{"defaultLevelBgColor"} = toJson(source.defaultLevelBgColor)
-  result{"identifierStyle"} = toJson(source.identifierStyle)
+    result{"defaultLevelWidth"} = newJInt(unsafeGet(source.defaultLevelWidth))
+  result{"minifyJson"} = newJBool(source.minifyJson)
+  result{"backupOnSave"} = newJBool(source.backupOnSave)
+  result{"flags"} = block:
+    var output = newJArray()
+    for entry in source.flags:
+      output.add(toJsonHook(entry))
+    output
+  result{"defaultLevelBgColor"} = newJString(source.defaultLevelBgColor)
+  result{"identifierStyle"} = toJsonHook(source.identifierStyle)
   if isSome(source.worldGridHeight):
-    result{"worldGridHeight"} = toJson(unsafeGet(source.worldGridHeight))
-  result{"levels"} = toJson(source.levels)
+    result{"worldGridHeight"} = newJInt(unsafeGet(source.worldGridHeight))
+  result{"levels"} = block:
+    var output = newJArray()
+    for entry in source.levels:
+      output.add(toJsonHook(entry))
+    output
+{.pop.}

@@ -40,6 +40,17 @@ type
     readonly*: Option[bool]
     storage*: File_systemUnion
     fstype*: Option[File_systemFstype]
+proc toJsonHook*(source: File_systemType): JsonNode
+proc toJsonHook*(source: File_systemDiskDevice): JsonNode
+proc toJsonHook*(source: File_systemStorageType): JsonNode
+proc toJsonHook*(source: File_systemDiskUUID): JsonNode
+proc toJsonHook*(source: File_systemfile_systemStorageType): JsonNode
+proc toJsonHook*(source: File_systemNfs): JsonNode
+proc toJsonHook*(source: File_systemfile_systemStorageType2): JsonNode
+proc toJsonHook*(source: File_systemTmpfs): JsonNode
+proc toJsonHook*(source: File_systemUnion): JsonNode
+proc toJsonHook*(source: File_systemFstype): JsonNode
+proc toJsonHook*(source: File_systemfile_system): JsonNode
 proc toJsonHook*(source: File_systemType): JsonNode =
   case source
   of File_systemType.Disk:
@@ -62,8 +73,8 @@ proc fromJsonHook*(target: var File_systemDiskDevice; source: JsonNode) =
 
 proc toJsonHook*(source: File_systemDiskDevice): JsonNode =
   result = newJObject()
-  result{"type"} = toJson(source.`type`)
-  result{"device"} = toJson(source.device)
+  result{"type"} = toJsonHook(source.`type`)
+  result{"device"} = newJString(source.device)
 
 converter forFile_systemUnion*(value: File_systemDiskDevice): File_systemUnion =
   return File_systemUnion(kind: 0, key0: value)
@@ -90,8 +101,8 @@ proc fromJsonHook*(target: var File_systemDiskUUID; source: JsonNode) =
 
 proc toJsonHook*(source: File_systemDiskUUID): JsonNode =
   result = newJObject()
-  result{"type"} = toJson(source.`type`)
-  result{"label"} = toJson(source.label)
+  result{"type"} = toJsonHook(source.`type`)
+  result{"label"} = newJString(source.label)
 
 converter forFile_systemUnion*(value: File_systemDiskUUID): File_systemUnion =
   return File_systemUnion(kind: 1, key1: value)
@@ -122,9 +133,9 @@ proc fromJsonHook*(target: var File_systemNfs; source: JsonNode) =
 
 proc toJsonHook*(source: File_systemNfs): JsonNode =
   result = newJObject()
-  result{"type"} = toJson(source.`type`)
-  result{"server"} = toJson(source.server)
-  result{"remotePath"} = toJson(source.remotePath)
+  result{"type"} = toJsonHook(source.`type`)
+  result{"server"} = newJString(source.server)
+  result{"remotePath"} = newJString(source.remotePath)
 
 converter forFile_systemUnion*(value: File_systemNfs): File_systemUnion =
   return File_systemUnion(kind: 2, key2: value)
@@ -152,8 +163,8 @@ proc fromJsonHook*(target: var File_systemTmpfs; source: JsonNode) =
 
 proc toJsonHook*(source: File_systemTmpfs): JsonNode =
   result = newJObject()
-  result{"type"} = toJson(source.`type`)
-  result{"sizeInMB"} = toJson(source.sizeInMB)
+  result{"type"} = toJsonHook(source.`type`)
+  result{"sizeInMB"} = newJInt(source.sizeInMB)
 
 converter forFile_systemUnion*(value: File_systemTmpfs): File_systemUnion =
   return File_systemUnion(kind: 3, key3: value)
@@ -174,13 +185,13 @@ proc fromJsonHook*(target: var File_systemUnion; source: JsonNode) =
 proc toJsonHook*(source: File_systemUnion): JsonNode =
   case source.kind
   of 0:
-    toJson(source.key0)
+    toJsonHook(source.key0)
   of 1:
-    toJson(source.key1)
+    toJsonHook(source.key1)
   of 2:
-    toJson(source.key2)
+    toJsonHook(source.key2)
   of 3:
-    toJson(source.key3)
+    toJsonHook(source.key3)
   
 proc isDiskDevice*(value: File_systemUnion): bool =
   value.kind == 0
@@ -247,9 +258,14 @@ proc fromJsonHook*(target: var File_systemfile_system; source: JsonNode) =
 proc toJsonHook*(source: File_systemfile_system): JsonNode =
   result = newJObject()
   if isSome(source.options):
-    result{"options"} = toJson(unsafeGet(source.options))
+    result{"options"} = block:
+      var output = newJArray()
+      for entry in unsafeGet(source.options):
+        output.add(newJString(entry))
+      output
   if isSome(source.readonly):
-    result{"readonly"} = toJson(unsafeGet(source.readonly))
-  result{"storage"} = toJson(source.storage)
+    result{"readonly"} = newJBool(unsafeGet(source.readonly))
+  result{"storage"} = toJsonHook(source.storage)
   if isSome(source.fstype):
-    result{"fstype"} = toJson(unsafeGet(source.fstype))
+    result{"fstype"} = toJsonHook(unsafeGet(source.fstype))
+{.pop.}

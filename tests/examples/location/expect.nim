@@ -5,6 +5,7 @@ type
   Locationlocation* = object
     latitude*: BiggestFloat
     longitude*: BiggestFloat
+proc toJsonHook*(source: Locationlocation): JsonNode
 proc fromJsonHook*(target: var Locationlocation; source: JsonNode) =
   assert(hasKey(source, "latitude"),
          "latitude" & " is missing while decoding " & "Locationlocation")
@@ -15,5 +16,6 @@ proc fromJsonHook*(target: var Locationlocation; source: JsonNode) =
 
 proc toJsonHook*(source: Locationlocation): JsonNode =
   result = newJObject()
-  result{"latitude"} = toJson(source.latitude)
-  result{"longitude"} = toJson(source.longitude)
+  result{"latitude"} = newJFloat(source.latitude)
+  result{"longitude"} = newJFloat(source.longitude)
+{.pop.}
