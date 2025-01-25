@@ -90,3 +90,24 @@ suite "Interacting with unions":
         )
 
         check($people.toJson == """{"entries":{"a":{"age":41,"name":"Jack"},"b":{"age":42,"name":"Jill"}}}""")
+
+
+    test "Converter for creating a union":
+        let people = People(
+            entries: @[
+                Person(name: "Jack", age: 41),
+                Person(name: "Jill", age: 42)
+            ]
+        )
+
+        check($people.toJson == """{"entries":[{"age":41,"name":"Jack"},{"age":42,"name":"Jill"}]}""")
+
+    test "Creating a union of a map":
+        let people = People(
+            entries: toTable {
+                "a": Person(name: "Jack", age: 41),
+                "b": Person(name: "Jill", age: 42)
+            }
+        )
+
+        check($people.toJson == """{"entries":{"a":{"age":41,"name":"Jack"},"b":{"age":42,"name":"Jill"}}}""")

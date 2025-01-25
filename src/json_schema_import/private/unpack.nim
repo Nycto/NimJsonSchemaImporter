@@ -30,5 +30,5 @@ proc buildUnionPacker*(unionIndex: int, subtype, unionType: NimNode): NimNode =
     let baseName = ident("for" & unionType.strVal)
     let key = unionIndex.unionKey
     return quote:
-        proc `baseName`*(value: `subtype`): `unionType` =
+        converter `baseName`*(value: `subtype`): `unionType` =
             return `unionType`(kind: `unionIndex`, `key`: value)

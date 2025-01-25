@@ -141,7 +141,7 @@ proc toJsonHook*(source: AsepriteFrame): JsonNode =
   result{"spriteSourceSize"} = toJson(source.spriteSourceSize)
   result{"frame"} = toJson(source.frame)
 
-proc forAsepriteUnion*(value: Table[string, AsepriteFrame]): AsepriteUnion =
+converter forAsepriteUnion*(value: Table[string, AsepriteFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 0, key0: value)
 
 proc fromJsonHook*(target: var AsepriteArrayFrame; source: JsonNode) =
@@ -179,7 +179,7 @@ proc toJsonHook*(source: AsepriteArrayFrame): JsonNode =
   result{"filename"} = toJson(source.filename)
   result{"frame"} = toJson(source.frame)
 
-proc forAsepriteUnion*(value: seq[AsepriteArrayFrame]): AsepriteUnion =
+converter forAsepriteUnion*(value: seq[AsepriteArrayFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 1, key1: value)
 
 proc fromJsonHook*(target: var AsepriteUnion; source: JsonNode) =
@@ -194,9 +194,13 @@ proc fromJsonHook*(target: var AsepriteUnion; source: JsonNode) =
 proc toJsonHook*(source: AsepriteUnion): JsonNode =
   case source.kind
   of 0:
-    return toJson(source.key0)
+    toJson(source.key0)
   of 1:
-    return toJson(source.key1)
+    block:
+      var output = newJArray()
+      for entry in source.key1:
+        output.add(toJson(entry))
+      output
   
 proc isMap*(value: AsepriteUnion): bool =
   value.kind == 0

@@ -11,6 +11,21 @@ proc hasAllProps(base, value: NimNode, typ: TypeDef): NimNode =
         if required:
             result = infix(base, "and", newCall(bindSym("hasKey"), value, key.newLit))
 
+proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
+    ## Creates an expression that knows how to json encode a type
+    case typ.kind
+    of ArrayType:
+        let entry = genSym(nskForVar, "entry`gensym")
+        let encodeItem = entry.createEncodeExpr(typ.items)
+        return quote:
+            block:
+                var output = newJArray()
+                for entry in `input`:
+                    output.add(`encodeItem`)
+                output
+    else:
+        return newCall(bindSym("toJson"), input)
+
 proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
     case typ.kind
     of StringType, EnumType: return value.isJsonKind(JString)
@@ -59,9 +74,7 @@ proc buildUnionEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
 
     for i, subtype in typ.subtypes:
         let key = i.unionKey
-        let decode = quote:
-            return toJson(`source`.`key`)
-        cases.add(nnkOfBranch.newTree(i.newLit, decode))
+        cases.add(nnkOfBranch.newTree(i.newLit, newDotExpr(source, key).createEncodeExpr(subtype)))
 
     return quote:
         proc toJsonHook*(`source`: `typeName`): JsonNode =

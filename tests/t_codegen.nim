@@ -13,7 +13,7 @@ suite "Code generation snapshots":
             const parsed = slurp("examples" / name / "schema.json")
                 .parseJsonSchema(conf(name))
                 .repr
-                .replace(re2"\`gensym\d+", "")
+                .replace(re2"\`gensym_?\d+", "")
                 .addHeader
 
             const expectPath = "examples" / name / "expect.nim"

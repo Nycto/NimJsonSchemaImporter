@@ -32,16 +32,16 @@ type
     key1*: Option[UnionKey1Union]
     key2*: string
     key3*: Option[UnionKey3Union]
-proc forUnionKey1Union*(value: string): UnionKey1Union =
+converter forUnionKey1Union*(value: string): UnionKey1Union =
   return UnionKey1Union(kind: 0, key0: value)
 
-proc forUnionKey1Union*(value: BiggestInt): UnionKey1Union =
+converter forUnionKey1Union*(value: BiggestInt): UnionKey1Union =
   return UnionKey1Union(kind: 1, key1: value)
 
-proc forUnionKey1Union*(value: bool): UnionKey1Union =
+converter forUnionKey1Union*(value: bool): UnionKey1Union =
   return UnionKey1Union(kind: 2, key2: value)
 
-proc forUnionKey1Union*(value: BiggestFloat): UnionKey1Union =
+converter forUnionKey1Union*(value: BiggestFloat): UnionKey1Union =
   return UnionKey1Union(kind: 3, key3: value)
 
 proc fromJsonHook*(target: var UnionKey1Union; source: JsonNode) =
@@ -60,13 +60,13 @@ proc fromJsonHook*(target: var UnionKey1Union; source: JsonNode) =
 proc toJsonHook*(source: UnionKey1Union): JsonNode =
   case source.kind
   of 0:
-    return toJson(source.key0)
+    toJson(source.key0)
   of 1:
-    return toJson(source.key1)
+    toJson(source.key1)
   of 2:
-    return toJson(source.key2)
+    toJson(source.key2)
   of 3:
-    return toJson(source.key3)
+    toJson(source.key3)
   
 proc isStr*(value: UnionKey1Union): bool =
   value.kind == 0
@@ -105,13 +105,13 @@ proc toJsonHook*(source: UnionKey3): JsonNode =
   if isSome(source.foo):
     result{"foo"} = toJson(unsafeGet(source.foo))
 
-proc forUnionKey3Union*(value: UnionKey3): UnionKey3Union =
+converter forUnionKey3Union*(value: UnionKey3): UnionKey3Union =
   return UnionKey3Union(kind: 0, key0: value)
 
-proc forUnionKey3Union*(value: seq[string]): UnionKey3Union =
+converter forUnionKey3Union*(value: seq[string]): UnionKey3Union =
   return UnionKey3Union(kind: 1, key1: value)
 
-proc forUnionKey3Union*(value: Table[string, string]): UnionKey3Union =
+converter forUnionKey3Union*(value: Table[string, string]): UnionKey3Union =
   return UnionKey3Union(kind: 2, key2: value)
 
 proc toJsonHook*(source: UnionunionKey3): JsonNode =
@@ -134,10 +134,10 @@ proc fromJsonHook*(target: var UnionunionKey3; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
-proc forUnionKey3Union*(value: UnionunionKey3): UnionKey3Union =
+converter forUnionKey3Union*(value: UnionunionKey3): UnionKey3Union =
   return UnionKey3Union(kind: 3, key3: value)
 
-proc forUnionKey3Union*(value: string): UnionKey3Union =
+converter forUnionKey3Union*(value: string): UnionKey3Union =
   return UnionKey3Union(kind: 4, key4: value)
 
 proc fromJsonHook*(target: var UnionKey3Union; source: JsonNode) =
@@ -158,15 +158,19 @@ proc fromJsonHook*(target: var UnionKey3Union; source: JsonNode) =
 proc toJsonHook*(source: UnionKey3Union): JsonNode =
   case source.kind
   of 0:
-    return toJson(source.key0)
+    toJson(source.key0)
   of 1:
-    return toJson(source.key1)
+    block:
+      var output = newJArray()
+      for entry in source.key1:
+        output.add(toJson(entry))
+      output
   of 2:
-    return toJson(source.key2)
+    toJson(source.key2)
   of 3:
-    return toJson(source.key3)
+    toJson(source.key3)
   of 4:
-    return toJson(source.key4)
+    toJson(source.key4)
   
 proc isObject*(value: UnionKey3Union): bool =
   value.kind == 0

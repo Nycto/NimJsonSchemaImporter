@@ -65,7 +65,7 @@ proc toJsonHook*(source: File_systemDiskDevice): JsonNode =
   result{"type"} = toJson(source.`type`)
   result{"device"} = toJson(source.device)
 
-proc forFile_systemUnion*(value: File_systemDiskDevice): File_systemUnion =
+converter forFile_systemUnion*(value: File_systemDiskDevice): File_systemUnion =
   return File_systemUnion(kind: 0, key0: value)
 
 proc toJsonHook*(source: File_systemStorageType): JsonNode =
@@ -93,7 +93,7 @@ proc toJsonHook*(source: File_systemDiskUUID): JsonNode =
   result{"type"} = toJson(source.`type`)
   result{"label"} = toJson(source.label)
 
-proc forFile_systemUnion*(value: File_systemDiskUUID): File_systemUnion =
+converter forFile_systemUnion*(value: File_systemDiskUUID): File_systemUnion =
   return File_systemUnion(kind: 1, key1: value)
 
 proc toJsonHook*(source: File_systemfile_systemStorageType): JsonNode =
@@ -126,7 +126,7 @@ proc toJsonHook*(source: File_systemNfs): JsonNode =
   result{"server"} = toJson(source.server)
   result{"remotePath"} = toJson(source.remotePath)
 
-proc forFile_systemUnion*(value: File_systemNfs): File_systemUnion =
+converter forFile_systemUnion*(value: File_systemNfs): File_systemUnion =
   return File_systemUnion(kind: 2, key2: value)
 
 proc toJsonHook*(source: File_systemfile_systemStorageType2): JsonNode =
@@ -155,7 +155,7 @@ proc toJsonHook*(source: File_systemTmpfs): JsonNode =
   result{"type"} = toJson(source.`type`)
   result{"sizeInMB"} = toJson(source.sizeInMB)
 
-proc forFile_systemUnion*(value: File_systemTmpfs): File_systemUnion =
+converter forFile_systemUnion*(value: File_systemTmpfs): File_systemUnion =
   return File_systemUnion(kind: 3, key3: value)
 
 proc fromJsonHook*(target: var File_systemUnion; source: JsonNode) =
@@ -174,13 +174,13 @@ proc fromJsonHook*(target: var File_systemUnion; source: JsonNode) =
 proc toJsonHook*(source: File_systemUnion): JsonNode =
   case source.kind
   of 0:
-    return toJson(source.key0)
+    toJson(source.key0)
   of 1:
-    return toJson(source.key1)
+    toJson(source.key1)
   of 2:
-    return toJson(source.key2)
+    toJson(source.key2)
   of 3:
-    return toJson(source.key3)
+    toJson(source.key3)
   
 proc isDiskDevice*(value: File_systemUnion): bool =
   value.kind == 0
