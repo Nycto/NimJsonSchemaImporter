@@ -70,8 +70,11 @@ let address = MyAddress(
 
 Getters and builders are automatically generated to allow interactiction with union types:
 
-```json union.schema.json
-{
+```nim unions.nim
+import json_schema_import
+
+# Schemas can be loaded from inline json blocks
+jsonSchema %*{
   "$id": "/schemas/unionContainer",
   "required": [ "value" ],
   "properties": {
@@ -83,24 +86,19 @@ Getters and builders are automatically generated to allow interactiction with un
     }
   }
 }
-```
-
-```nim unions.nim
-import json_schema_import, std/macros
-
-importJsonSchema "union.schema.json"
-
-# Creating a union from a string
-block:
-  let unioned = UnionContainer(value: forUnion("foo"))
-  assert(unioned.value.isStr)
-  echo unioned.value.asStr
 
 # Creating a union from an integer
 block:
   let unioned = UnionContainer(value: forUnion(123))
   assert(unioned.value.isInt)
   echo unioned.value.asInt
+
+# Creating a union from a string. Notice the `forUnion` call above isn't required,
+# as converters are created to automatically wrap types in union objects when possible.
+block:
+  let unioned = UnionContainer(value: "foo")
+  assert(unioned.value.isStr)
+  echo unioned.value.asStr
 ```
 
 ## Showing the generated types
