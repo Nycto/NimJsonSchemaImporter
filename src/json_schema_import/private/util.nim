@@ -1,4 +1,4 @@
-import std/[macros, json, strutils, sets], regex
+import std/[macros, json, strutils, sets, strutils], regex
 
 proc unionKey*(i: int): NimNode = ident("key" & $i)
 
@@ -57,3 +57,7 @@ proc formatCodeDump*(code: NimNode): string =
     result &= "import std/[json, jsonutils, tables, options]\n"
     result &= code.repr.replace(re2"\`gensym_?\d+", "")
     result &= "{.pop.}\n"
+
+proc parentDir*(path: string): string =
+    let pos = path.rfind('/')
+    return if pos == -1: path else: path[0..pos]

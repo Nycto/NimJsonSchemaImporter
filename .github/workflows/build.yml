@@ -10,3 +10,4 @@ jobs:
     - run: git config --global --add safe.directory "$(pwd)"
     - run: nimble test
     - run: nimble readme
+    - run: nim e ./src/json_schema_import.nim

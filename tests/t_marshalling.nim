@@ -1,4 +1,4 @@
-import json_schema_import, util, std/macros
+import json_schema_import, util, std/[macros, os]
 
 importJsonSchema("examples/address/schema.json", conf("Address"))
 importJsonSchema("examples/blog/schema.json", conf("Blog"))
@@ -16,13 +16,13 @@ importJsonSchema("examples/ecommerce/schema.json", conf("Ecommerce"))
 importJsonSchema("examples/ldtk/schema.json", conf("Ldtk"))
 importJsonSchema("examples/aseprite/schema.json", conf("Aseprite"))
 
-import std/[unittest, json, os, paths, strformat, jsonutils]
+import std/[unittest, json, strformat, jsonutils]
 
 suite "Parsing example json schema":
 
     template buildTest(name: static string, rootType: typedesc) =
 
-        let sampleDir = currentSourcePath.parentDir() / "examples" / name / "samples"
+        let sampleDir = currentSourcePath.parentDir() & "/examples/" & name & "/samples"
         for (_, path) in walkDir(sampleDir):
             test name & " parsing: " & path:
                 let parsed = jsonTo(parseFile(path), rootType)

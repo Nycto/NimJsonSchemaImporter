@@ -1,4 +1,4 @@
-import std/[unittest, json, os, paths, strutils], json_schema_import, regex, util
+import std/[unittest, json, strutils], json_schema_import, regex, util
 
 {.push warning[UnusedImport]:off.}
 

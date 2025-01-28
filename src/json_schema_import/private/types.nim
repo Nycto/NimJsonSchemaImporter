@@ -1,4 +1,4 @@
-import std/[sets, tables, strformat, hashes, strutils, uri, paths], schemaRef, namechain
+import std/[sets, tables, strformat, hashes, strutils, uri], schemaRef, namechain
 
 type
     TypeDefKind* = enum
@@ -146,12 +146,17 @@ proc removeExt(value: string): string =
     let pos = value.find('.')
     return if pos == -1: value else: value[0..<pos]
 
+proc extractFilename(value: string): string =
+    for part in value.rsplit('/'):
+        return part
+    return value
+
 iterator proposeNames*(typ: TypeDef, prefix: string, name: NameChain): string =
     ## Proposes all possible names for a type
     for name in name.add(typ.sref.getName).nameOptions(prefix):
         yield name
 
-    var base = typ.id.path.Path.extractFilename.string.capitalizeAscii.removeExt
+    var base = typ.id.path.extractFilename.string.capitalizeAscii.removeExt
     if base == "":
         base = "Anon"
 
