@@ -1,12 +1,12 @@
 {
-  "duration": "2h 15m",
+  "title": "Sample Movie",
+  "director": "John Director",
   "releaseDate": "2023-07-01",
   "genre": "Action",
-  "title": "Sample Movie",
+  "duration": "2h 15m",
   "cast": [
     "Actor A",
     "Actress B",
     "Actor C"
-  ],
-  "director": "John Director"
+  ]
 }

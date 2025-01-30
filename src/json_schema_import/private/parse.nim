@@ -40,7 +40,7 @@ proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
         for key in node{"required"}:
             required.incl(key.getStr)
 
-    result = TypeDef(kind: ObjType, properties: initTable[string, PropDef](), id: id(node))
+    result = TypeDef(kind: ObjType, properties: initOrderedTable[string, PropDef](), id: id(node))
 
     var seen = initHashSet[string]()
 
@@ -129,7 +129,7 @@ proc parseUnion(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
 
 proc parseEnum(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     node.expectKind(JObject)
-    var values = initHashSet[string]()
+    var values = initOrderedSet[string]()
     var isOptional = false
     for value in node{"enum"}:
         case value.kind:

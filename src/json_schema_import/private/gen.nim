@@ -114,7 +114,7 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
 
 proc genMap(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     assert(typ.kind == MapType)
-    return nnkBracketExpr.newTree(bindSym("Table"), bindSym("string"), genType(typ.entries, name, ctx))
+    return nnkBracketExpr.newTree(bindSym("OrderedTable"), bindSym("string"), genType(typ.entries, name, ctx))
 
 proc genOptional(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     assert(typ.kind == OptionalType)

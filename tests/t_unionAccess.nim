@@ -79,18 +79,17 @@ suite "Interacting with unions":
             ]
         )
 
-        check($people.toJson == """{"entries":[{"age":41,"name":"Jack"},{"age":42,"name":"Jill"}]}""")
+        check($people.toJson == """{"entries":[{"name":"Jack","age":41},{"name":"Jill","age":42}]}""")
 
     test "Creating a union of a map":
         let people = People(
-            entries: forUnion(toTable {
+            entries: forUnion(toOrderedTable {
                 "a": Person(name: "Jack", age: 41),
                 "b": Person(name: "Jill", age: 42)
             })
         )
 
-        check($people.toJson == """{"entries":{"a":{"age":41,"name":"Jack"},"b":{"age":42,"name":"Jill"}}}""")
-
+        check($people.toJson == """{"entries":{"a":{"name":"Jack","age":41},"b":{"name":"Jill","age":42}}}""")
 
     test "Converter for creating a union":
         let people = People(
@@ -100,14 +99,14 @@ suite "Interacting with unions":
             ]
         )
 
-        check($people.toJson == """{"entries":[{"age":41,"name":"Jack"},{"age":42,"name":"Jill"}]}""")
+        check($people.toJson == """{"entries":[{"name":"Jack","age":41},{"name":"Jill","age":42}]}""")
 
     test "Creating a union of a map":
         let people = People(
-            entries: toTable {
+            entries: toOrderedTable {
                 "a": Person(name: "Jack", age: 41),
                 "b": Person(name: "Jill", age: 42)
             }
         )
 
-        check($people.toJson == """{"entries":{"a":{"age":41,"name":"Jack"},"b":{"age":42,"name":"Jill"}}}""")
+        check($people.toJson == """{"entries":{"a":{"name":"Jack","age":41},"b":{"name":"Jill","age":42}}}""")

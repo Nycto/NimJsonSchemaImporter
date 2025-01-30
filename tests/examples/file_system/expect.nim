@@ -16,8 +16,8 @@ type
     Nfs
   File_systemNfs* = object
     `type`*: File_systemfile_systemStorageType
-    server*: string
     remotePath*: string
+    server*: string
   File_systemfile_systemStorageType2* = enum
     Tmpfs
   File_systemTmpfs* = object
@@ -34,12 +34,12 @@ type
     of 3:
       key3*: File_systemTmpfs
   File_systemFstype* = enum
-    Ext4, Btrfs, Ext3
+    Ext3, Ext4, Btrfs
   File_systemfile_system* = object
-    options*: Option[seq[string]]
-    readonly*: Option[bool]
     storage*: File_systemUnion
     fstype*: Option[File_systemFstype]
+    options*: Option[seq[string]]
+    readonly*: Option[bool]
 proc toJsonHook*(source: File_systemType): JsonNode
 proc toJsonHook*(source: File_systemDiskDevice): JsonNode
 proc toJsonHook*(source: File_systemStorageType): JsonNode
@@ -124,18 +124,18 @@ proc fromJsonHook*(target: var File_systemNfs; source: JsonNode) =
   assert(hasKey(source, "type"),
          "type" & " is missing while decoding " & "File_systemNfs")
   target.`type` = jsonTo(source{"type"}, typeof(target.`type`))
-  assert(hasKey(source, "server"),
-         "server" & " is missing while decoding " & "File_systemNfs")
-  target.server = jsonTo(source{"server"}, typeof(target.server))
   assert(hasKey(source, "remotePath"),
          "remotePath" & " is missing while decoding " & "File_systemNfs")
   target.remotePath = jsonTo(source{"remotePath"}, typeof(target.remotePath))
+  assert(hasKey(source, "server"),
+         "server" & " is missing while decoding " & "File_systemNfs")
+  target.server = jsonTo(source{"server"}, typeof(target.server))
 
 proc toJsonHook*(source: File_systemNfs): JsonNode =
   result = newJObject()
   result{"type"} = toJsonHook(source.`type`)
-  result{"server"} = newJString(source.server)
   result{"remotePath"} = newJString(source.remotePath)
+  result{"server"} = newJString(source.server)
 
 converter forFile_systemUnion*(value: File_systemNfs): File_systemUnion =
   return File_systemUnion(kind: 2, key2: value)
@@ -174,7 +174,7 @@ proc fromJsonHook*(target: var File_systemUnion; source: JsonNode) =
     target = File_systemUnion(kind: 0, key0: jsonTo(source, typeof(target.key0)))
   elif source.kind == JObject and hasKey(source, "label"):
     target = File_systemUnion(kind: 1, key1: jsonTo(source, typeof(target.key1)))
-  elif source.kind == JObject and hasKey(source, "remotePath"):
+  elif source.kind == JObject and hasKey(source, "server"):
     target = File_systemUnion(kind: 2, key2: jsonTo(source, typeof(target.key2)))
   elif source.kind == JObject and hasKey(source, "sizeInMB"):
     target = File_systemUnion(kind: 3, key3: jsonTo(source, typeof(target.key3)))
@@ -223,40 +223,43 @@ proc asTmpfs*(value: File_systemUnion): auto =
 
 proc toJsonHook*(source: File_systemFstype): JsonNode =
   case source
+  of File_systemFstype.Ext3:
+    return newJString("ext3")
   of File_systemFstype.Ext4:
     return newJString("ext4")
   of File_systemFstype.Btrfs:
     return newJString("btrfs")
-  of File_systemFstype.Ext3:
-    return newJString("ext3")
   
 proc fromJsonHook*(target: var File_systemFstype; source: JsonNode) =
   target = case getStr(source)
+  of "ext3":
+    File_systemFstype.Ext3
   of "ext4":
     File_systemFstype.Ext4
   of "btrfs":
     File_systemFstype.Btrfs
-  of "ext3":
-    File_systemFstype.Ext3
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
 proc fromJsonHook*(target: var File_systemfile_system; source: JsonNode) =
-  if hasKey(source, "options") and source{"options"}.kind != JNull:
-    target.options = some(jsonTo(source{"options"},
-                                 typeof(unsafeGet(target.options))))
-  if hasKey(source, "readonly") and source{"readonly"}.kind != JNull:
-    target.readonly = some(jsonTo(source{"readonly"},
-                                  typeof(unsafeGet(target.readonly))))
   assert(hasKey(source, "storage"),
          "storage" & " is missing while decoding " & "File_systemfile_system")
   target.storage = jsonTo(source{"storage"}, typeof(target.storage))
   if hasKey(source, "fstype") and source{"fstype"}.kind != JNull:
     target.fstype = some(jsonTo(source{"fstype"},
                                 typeof(unsafeGet(target.fstype))))
+  if hasKey(source, "options") and source{"options"}.kind != JNull:
+    target.options = some(jsonTo(source{"options"},
+                                 typeof(unsafeGet(target.options))))
+  if hasKey(source, "readonly") and source{"readonly"}.kind != JNull:
+    target.readonly = some(jsonTo(source{"readonly"},
+                                  typeof(unsafeGet(target.readonly))))
 
 proc toJsonHook*(source: File_systemfile_system): JsonNode =
   result = newJObject()
+  result{"storage"} = toJsonHook(source.storage)
+  if isSome(source.fstype):
+    result{"fstype"} = toJsonHook(unsafeGet(source.fstype))
   if isSome(source.options):
     result{"options"} = block:
       var output = newJArray()
@@ -265,7 +268,4 @@ proc toJsonHook*(source: File_systemfile_system): JsonNode =
       output
   if isSome(source.readonly):
     result{"readonly"} = newJBool(unsafeGet(source.readonly))
-  result{"storage"} = toJsonHook(source.storage)
-  if isSome(source.fstype):
-    result{"fstype"} = toJsonHook(unsafeGet(source.fstype))
 {.pop.}

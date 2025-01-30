@@ -1,14 +1,14 @@
 {
-  "hobbies": [
-    "reading",
-    "running"
-  ],
+  "name": "John Doe",
+  "age": 25,
   "address": {
     "street": "123 Main St",
     "city": "New York",
-    "postalCode": "10001",
-    "state": "NY"
+    "state": "NY",
+    "postalCode": "10001"
   },
-  "age": 25,
-  "name": "John Doe"
+  "hobbies": [
+    "reading",
+    "running"
+  ]
 }

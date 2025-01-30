@@ -24,9 +24,9 @@ type
         id*: Uri
         case kind*: TypeDefKind
         of ObjType:
-            properties*: Table[string, PropDef]
+            properties*: OrderedTable[string, PropDef]
         of EnumType:
-            values*: HashSet[string]
+            values*: OrderedSet[string]
         of RefType:
             schemaRef*: SchemaRef
         of ArrayType:
@@ -42,7 +42,7 @@ type
 
     JsonSchema* = ref object
         rootType*: TypeDef
-        defs*: Table[string, TypeDef]
+        defs*: OrderedTable[string, TypeDef]
 
 proc hash*(typ: TypeDef): Hash {.noSideEffect.} =
     result = hash(typ.kind) !& hash(typ.sref)

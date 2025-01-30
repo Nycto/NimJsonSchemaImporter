@@ -1,4 +1,9 @@
 {
+  "fruits": [
+    "apple",
+    "orange",
+    "pear"
+  ],
   "vegetables": [
     {
       "veggieName": "potato",
@@ -8,10 +13,5 @@
       "veggieName": "broccoli",
       "veggieLike": false
     }
-  ],
-  "fruits": [
-    "apple",
-    "orange",
-    "pear"
   ]
 }

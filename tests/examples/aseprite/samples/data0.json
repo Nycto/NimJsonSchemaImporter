@@ -1,193 +1,172 @@
 {
   "frames": [
     {
-      "sourceSize": {
-        "w": 16.0,
-        "h": 32.0
-      },
       "duration": 250.0,
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0.0,
-        "w": 16.0,
-        "y": 0.0,
-        "h": 32.0
-      },
       "filename": "smoke 0.aseprite",
       "frame": {
-        "x": 0.0,
+        "h": 32.0,
         "w": 16.0,
-        "y": 0.0,
-        "h": 32.0
-      }
+        "x": 0.0,
+        "y": 0.0
+      },
+      "rotated": false,
+      "sourceSize": {
+        "h": 32.0,
+        "w": 16.0
+      },
+      "spriteSourceSize": {
+        "h": 32.0,
+        "w": 16.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      "trimmed": false
     },
     {
-      "sourceSize": {
-        "w": 16.0,
-        "h": 32.0
-      },
       "duration": 250.0,
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0.0,
-        "w": 16.0,
-        "y": 0.0,
-        "h": 32.0
-      },
       "filename": "smoke 1.aseprite",
       "frame": {
-        "x": 16.0,
+        "h": 32.0,
         "w": 16.0,
-        "y": 0.0,
-        "h": 32.0
-      }
+        "x": 16.0,
+        "y": 0.0
+      },
+      "rotated": false,
+      "sourceSize": {
+        "h": 32.0,
+        "w": 16.0
+      },
+      "spriteSourceSize": {
+        "h": 32.0,
+        "w": 16.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      "trimmed": false
     },
     {
-      "sourceSize": {
-        "w": 16.0,
-        "h": 32.0
-      },
       "duration": 250.0,
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0.0,
-        "w": 16.0,
-        "y": 0.0,
-        "h": 32.0
-      },
       "filename": "smoke 2.aseprite",
       "frame": {
-        "x": 32.0,
+        "h": 32.0,
         "w": 16.0,
-        "y": 0.0,
-        "h": 32.0
-      }
+        "x": 32.0,
+        "y": 0.0
+      },
+      "rotated": false,
+      "sourceSize": {
+        "h": 32.0,
+        "w": 16.0
+      },
+      "spriteSourceSize": {
+        "h": 32.0,
+        "w": 16.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      "trimmed": false
     },
     {
-      "sourceSize": {
-        "w": 16.0,
-        "h": 32.0
-      },
       "duration": 250.0,
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0.0,
-        "w": 16.0,
-        "y": 0.0,
-        "h": 32.0
-      },
       "filename": "smoke 3.aseprite",
       "frame": {
-        "x": 48.0,
+        "h": 32.0,
         "w": 16.0,
-        "y": 0.0,
-        "h": 32.0
-      }
+        "x": 48.0,
+        "y": 0.0
+      },
+      "rotated": false,
+      "sourceSize": {
+        "h": 32.0,
+        "w": 16.0
+      },
+      "spriteSourceSize": {
+        "h": 32.0,
+        "w": 16.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      "trimmed": false
     },
     {
-      "sourceSize": {
-        "w": 16.0,
-        "h": 32.0
-      },
       "duration": 250.0,
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0.0,
-        "w": 16.0,
-        "y": 0.0,
-        "h": 32.0
-      },
       "filename": "smoke 4.aseprite",
       "frame": {
-        "x": 64.0,
+        "h": 32.0,
         "w": 16.0,
-        "y": 0.0,
-        "h": 32.0
-      }
+        "x": 64.0,
+        "y": 0.0
+      },
+      "rotated": false,
+      "sourceSize": {
+        "h": 32.0,
+        "w": 16.0
+      },
+      "spriteSourceSize": {
+        "h": 32.0,
+        "w": 16.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      "trimmed": false
     },
     {
-      "sourceSize": {
-        "w": 16.0,
-        "h": 32.0
-      },
       "duration": 250.0,
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0.0,
-        "w": 16.0,
-        "y": 0.0,
-        "h": 32.0
-      },
       "filename": "smoke 5.aseprite",
       "frame": {
-        "x": 80.0,
+        "h": 32.0,
         "w": 16.0,
-        "y": 0.0,
-        "h": 32.0
-      }
+        "x": 80.0,
+        "y": 0.0
+      },
+      "rotated": false,
+      "sourceSize": {
+        "h": 32.0,
+        "w": 16.0
+      },
+      "spriteSourceSize": {
+        "h": 32.0,
+        "w": 16.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      "trimmed": false
     },
     {
-      "sourceSize": {
-        "w": 16.0,
-        "h": 32.0
-      },
       "duration": 250.0,
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0.0,
-        "w": 16.0,
-        "y": 0.0,
-        "h": 32.0
-      },
       "filename": "smoke 6.aseprite",
       "frame": {
-        "x": 96.0,
+        "h": 32.0,
         "w": 16.0,
-        "y": 0.0,
-        "h": 32.0
-      }
+        "x": 96.0,
+        "y": 0.0
+      },
+      "rotated": false,
+      "sourceSize": {
+        "h": 32.0,
+        "w": 16.0
+      },
+      "spriteSourceSize": {
+        "h": 32.0,
+        "w": 16.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      "trimmed": false
     }
   ],
   "meta": {
-    "scale": "1",
+    "app": "http://www.aseprite.org/",
+    "format": "RGBA8888",
     "frameTags": [
       {
         "direction": "forward",
         "from": 0.0,
-        "to": 6.0,
-        "name": "Main"
+        "name": "Main",
+        "to": 6.0
       }
     ],
-    "format": "RGBA8888",
-    "size": {
-      "w": 112.0,
-      "h": 32.0
-    },
-    "slices": [
-      {
-        "color": "#0000ffff",
-        "name": "Anchor",
-        "keys": [
-          {
-            "bounds": {
-              "x": 6.0,
-              "w": 4.0,
-              "y": 27.0,
-              "h": 5.0
-            },
-            "frame": 0.0
-          }
-        ]
-      }
-    ],
-    "version": "1.x-dev",
+    "image": "smoke-table-16-32.png",
     "layers": [
       {
         "blendMode": "normal",
@@ -200,7 +179,28 @@
         "opacity": 255.0
       }
     ],
-    "app": "http://www.aseprite.org/",
-    "image": "smoke-table-16-32.png"
+    "scale": "1",
+    "size": {
+      "h": 32.0,
+      "w": 112.0
+    },
+    "slices": [
+      {
+        "color": "#0000ffff",
+        "keys": [
+          {
+            "bounds": {
+              "h": 5.0,
+              "w": 4.0,
+              "x": 6.0,
+              "y": 27.0
+            },
+            "frame": 0.0
+          }
+        ],
+        "name": "Anchor"
+      }
+    ],
+    "version": "1.x-dev"
   }
 }

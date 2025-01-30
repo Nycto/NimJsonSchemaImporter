@@ -1,4 +1,4 @@
-import std/[macros, json, strutils, sets, strutils], regex
+import std/[macros, json, sets, strutils], regex
 
 proc unionKey*(i: int): NimNode = ident("key" & $i)
 
