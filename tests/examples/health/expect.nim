@@ -15,6 +15,9 @@ type
     emergencyContact*: Option[HealthEmergencyContact]
 proc toJsonHook*(source: HealthEmergencyContact): JsonNode
 proc toJsonHook*(source: Healthhealth): JsonNode
+proc `==`*(a, b: HealthEmergencyContact): bool =
+  true and a.username == b.username and a.email == b.email
+
 proc fromJsonHook*(target: var HealthEmergencyContact; source: JsonNode) =
   if hasKey(source, "username") and source{"username"}.kind != JNull:
     target.username = some(jsonTo(source{"username"},
@@ -28,6 +31,14 @@ proc toJsonHook*(source: HealthEmergencyContact): JsonNode =
     result{"username"} = newJString(unsafeGet(source.username))
   if isSome(source.email):
     result{"email"} = newJString(unsafeGet(source.email))
+
+proc `==`*(a, b: Healthhealth): bool =
+  true and a.patientName == b.patientName and a.dateOfBirth == b.dateOfBirth and
+      a.bloodType == b.bloodType and
+      a.allergies == b.allergies and
+      a.conditions == b.conditions and
+      a.medications == b.medications and
+      a.emergencyContact == b.emergencyContact
 
 proc fromJsonHook*(target: var Healthhealth; source: JsonNode) =
   assert(hasKey(source, "patientName"),

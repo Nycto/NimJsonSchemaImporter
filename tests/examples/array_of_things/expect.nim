@@ -10,6 +10,9 @@ type
     vegetables*: Option[seq[Array_of_thingsVeggie]]
 proc toJsonHook*(source: Array_of_thingsVeggie): JsonNode
 proc toJsonHook*(source: Array_of_thingsarray_of_things): JsonNode
+proc `==`*(a, b: Array_of_thingsVeggie): bool =
+  true and a.veggieName == b.veggieName and a.veggieLike == b.veggieLike
+
 proc fromJsonHook*(target: var Array_of_thingsVeggie; source: JsonNode) =
   assert(hasKey(source, "veggieName"),
          "veggieName" & " is missing while decoding " & "Array_of_thingsVeggie")
@@ -22,6 +25,9 @@ proc toJsonHook*(source: Array_of_thingsVeggie): JsonNode =
   result = newJObject()
   result{"veggieName"} = newJString(source.veggieName)
   result{"veggieLike"} = newJBool(source.veggieLike)
+
+proc `==`*(a, b: Array_of_thingsarray_of_things): bool =
+  true and a.fruits == b.fruits and a.vegetables == b.vegetables
 
 proc fromJsonHook*(target: var Array_of_thingsarray_of_things; source: JsonNode) =
   if hasKey(source, "fruits") and source{"fruits"}.kind != JNull:

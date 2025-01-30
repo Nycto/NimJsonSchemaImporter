@@ -1,4 +1,4 @@
-import types, schemaRef, marshalling, util, unpack, namechain
+import types, schemaRef, marshalling, util, unpack, namechain, equalsgen
 import std/[macros, tables, sets, json, options, hashes, strutils]
 
 type
@@ -56,7 +56,11 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
 
     ctx.add(result, nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), records))
 
-    ctx.procs.add(typ.buildObjectDecoder(result), typ.buildObjectEncoder(result))
+    ctx.procs.add(
+        typ.buildEquals(result),
+        typ.buildObjectDecoder(result),
+        typ.buildObjectEncoder(result),
+    )
 
 proc genArray(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     assert(typ.kind == ArrayType)
@@ -107,6 +111,7 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     ctx.add(result, nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), nnkRecList.newTree(cases)))
 
     ctx.procs.add(
+        typ.buildEquals(result),
         typ.buildUnionDecoder(result),
         typ.buildUnionEncoder(result),
         typ.buildUnionUnpacker(result),

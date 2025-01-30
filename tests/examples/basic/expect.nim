@@ -7,6 +7,10 @@ type
     lastName*: Option[string]
     age*: Option[BiggestInt]
 proc toJsonHook*(source: Basicbasic): JsonNode
+proc `==`*(a, b: Basicbasic): bool =
+  true and a.firstName == b.firstName and a.lastName == b.lastName and
+      a.age == b.age
+
 proc fromJsonHook*(target: var Basicbasic; source: JsonNode) =
   if hasKey(source, "firstName") and source{"firstName"}.kind != JNull:
     target.firstName = some(jsonTo(source{"firstName"},

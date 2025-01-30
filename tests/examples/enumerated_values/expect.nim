@@ -5,6 +5,9 @@ type
   Enumerated_valuesenumerated_values* = object
     data*: Option[JsonNode]
 proc toJsonHook*(source: Enumerated_valuesenumerated_values): JsonNode
+proc `==`*(a, b: Enumerated_valuesenumerated_values): bool =
+  true and a.data == b.data
+
 proc fromJsonHook*(target: var Enumerated_valuesenumerated_values;
                    source: JsonNode) =
   if hasKey(source, "data") and source{"data"}.kind != JNull:

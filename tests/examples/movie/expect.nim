@@ -37,6 +37,13 @@ proc fromJsonHook*(target: var MovieGenre; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: Moviemovie): bool =
+  true and a.title == b.title and a.director == b.director and
+      a.releaseDate == b.releaseDate and
+      a.genre == b.genre and
+      a.duration == b.duration and
+      a.`cast` == b.`cast`
+
 proc fromJsonHook*(target: var Moviemovie; source: JsonNode) =
   assert(hasKey(source, "title"),
          "title" & " is missing while decoding " & "Moviemovie")

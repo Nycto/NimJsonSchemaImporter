@@ -519,6 +519,10 @@ proc fromJsonHook*(target: var LdtkWorldLayout; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: LdtkNeighbourLevel): bool =
+  true and a.levelIid == b.levelIid and a.levelUid == b.levelUid and
+      a.dir == b.dir
+
 proc fromJsonHook*(target: var LdtkNeighbourLevel; source: JsonNode) =
   assert(hasKey(source, "levelIid"),
          "levelIid" & " is missing while decoding " & "LdtkNeighbourLevel")
@@ -565,6 +569,10 @@ proc fromJsonHook*(target: var LdtkBgPos; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: LdtkLevelBgPosInfos): bool =
+  true and a.cropRect == b.cropRect and a.scale == b.scale and
+      a.topLeftPx == b.topLeftPx
+
 proc fromJsonHook*(target: var LdtkLevelBgPosInfos; source: JsonNode) =
   assert(hasKey(source, "cropRect"),
          "cropRect" & " is missing while decoding " & "LdtkLevelBgPosInfos")
@@ -594,6 +602,11 @@ proc toJsonHook*(source: LdtkLevelBgPosInfos): JsonNode =
       output.add(newJInt(entry))
     output
 
+proc `==`*(a, b: LdtkTilesetRect): bool =
+  true and a.tilesetUid == b.tilesetUid and a.h == b.h and a.x == b.x and
+      a.y == b.y and
+      a.w == b.w
+
 proc fromJsonHook*(target: var LdtkTilesetRect; source: JsonNode) =
   assert(hasKey(source, "tilesetUid"),
          "tilesetUid" & " is missing while decoding " & "LdtkTilesetRect")
@@ -618,6 +631,13 @@ proc toJsonHook*(source: LdtkTilesetRect): JsonNode =
   result{"x"} = newJInt(source.x)
   result{"y"} = newJInt(source.y)
   result{"w"} = newJInt(source.w)
+
+proc `==`*(a, b: LdtkFieldInstance): bool =
+  true and a.`type` == b.`type` and a.defUid == b.defUid and
+      a.identifier == b.identifier and
+      a.tile == b.tile and
+      a.realEditorValues == b.realEditorValues and
+      a.value == b.value
 
 proc fromJsonHook*(target: var LdtkFieldInstance; source: JsonNode) =
   assert(hasKey(source, "__type"),
@@ -654,6 +674,11 @@ proc toJsonHook*(source: LdtkFieldInstance): JsonNode =
     output
   result{"__value"} = source.value
 
+proc `==`*(a, b: LdtkTile): bool =
+  true and a.t == b.t and a.d == b.d and a.px == b.px and a.a == b.a and
+      a.f == b.f and
+      a.src == b.src
+
 proc fromJsonHook*(target: var LdtkTile; source: JsonNode) =
   assert(hasKey(source, "t"), "t" & " is missing while decoding " & "LdtkTile")
   target.t = jsonTo(source{"t"}, typeof(target.t))
@@ -689,6 +714,21 @@ proc toJsonHook*(source: LdtkTile): JsonNode =
     for entry in source.src:
       output.add(newJInt(entry))
     output
+
+proc `==`*(a, b: LdtkEntityInstance): bool =
+  true and a.iid == b.iid and a.defUid == b.defUid and
+      a.identifier == b.identifier and
+      a.tile == b.tile and
+      a.px == b.px and
+      a.worldX == b.worldX and
+      a.worldY == b.worldY and
+      a.smartColor == b.smartColor and
+      a.grid == b.grid and
+      a.pivot == b.pivot and
+      a.fieldInstances == b.fieldInstances and
+      a.height == b.height and
+      a.tags == b.tags and
+      a.width == b.width
 
 proc fromJsonHook*(target: var LdtkEntityInstance; source: JsonNode) =
   assert(hasKey(source, "iid"),
@@ -775,6 +815,9 @@ proc toJsonHook*(source: LdtkEntityInstance): JsonNode =
     output
   result{"width"} = newJInt(source.width)
 
+proc `==`*(a, b: LdtkIntGridValueInstance): bool =
+  true and a.v == b.v and a.coordId == b.coordId
+
 proc fromJsonHook*(target: var LdtkIntGridValueInstance; source: JsonNode) =
   assert(hasKey(source, "v"),
          "v" & " is missing while decoding " & "LdtkIntGridValueInstance")
@@ -787,6 +830,31 @@ proc toJsonHook*(source: LdtkIntGridValueInstance): JsonNode =
   result = newJObject()
   result{"v"} = newJInt(source.v)
   result{"coordId"} = newJInt(source.coordId)
+
+proc `==`*(a, b: LdtkLayerInstance): bool =
+  true and a.cHei == b.cHei and a.pxOffsetX == b.pxOffsetX and
+      a.tilesetRelPath == b.tilesetRelPath and
+      a.iid == b.iid and
+      a.levelId == b.levelId and
+      a.`type` == b.`type` and
+      a.autoLayerTiles == b.autoLayerTiles and
+      a.optionalRules == b.optionalRules and
+      a.identifier == b.identifier and
+      a.gridSize == b.gridSize and
+      a.pxTotalOffsetY == b.pxTotalOffsetY and
+      a.intGridCsv == b.intGridCsv and
+      a.overrideTilesetUid == b.overrideTilesetUid and
+      a.visible == b.visible and
+      a.entityInstances == b.entityInstances and
+      a.opacity == b.opacity and
+      a.seed == b.seed and
+      a.layerDefUid == b.layerDefUid and
+      a.pxTotalOffsetX == b.pxTotalOffsetX and
+      a.cWid == b.cWid and
+      a.pxOffsetY == b.pxOffsetY and
+      a.tilesetDefUid == b.tilesetDefUid and
+      a.gridTiles == b.gridTiles and
+      a.intGrid == b.intGrid
 
 proc fromJsonHook*(target: var LdtkLayerInstance; source: JsonNode) =
   assert(hasKey(source, "__cHei"),
@@ -928,6 +996,28 @@ proc toJsonHook*(source: LdtkLayerInstance): JsonNode =
         output.add(toJsonHook(entry))
       output
 
+proc `==`*(a, b: LdtkLevel): bool =
+  true and a.neighbours == b.neighbours and a.bgColor == b.bgColor and
+      a.worldX == b.worldX and
+      a.externalRelPath == b.externalRelPath and
+      a.useAutoIdentifier == b.useAutoIdentifier and
+      a.iid == b.iid and
+      a.bgColor1 == b.bgColor1 and
+      a.bgPos == b.bgPos and
+      a.pxHei == b.pxHei and
+      a.worldY == b.worldY and
+      a.bgPos1 == b.bgPos1 and
+      a.uid == b.uid and
+      a.smartColor == b.smartColor and
+      a.fieldInstances == b.fieldInstances and
+      a.pxWid == b.pxWid and
+      a.identifier == b.identifier and
+      a.bgPivotY == b.bgPivotY and
+      a.bgPivotX == b.bgPivotX and
+      a.layerInstances == b.layerInstances and
+      a.bgRelPath == b.bgRelPath and
+      a.worldDepth == b.worldDepth
+
 proc fromJsonHook*(target: var LdtkLevel; source: JsonNode) =
   assert(hasKey(source, "__neighbours"),
          "__neighbours" & " is missing while decoding " & "LdtkLevel")
@@ -1038,6 +1128,15 @@ proc toJsonHook*(source: LdtkLevel): JsonNode =
     result{"bgRelPath"} = newJString(unsafeGet(source.bgRelPath))
   result{"worldDepth"} = newJInt(source.worldDepth)
 
+proc `==`*(a, b: LdtkWorld): bool =
+  true and a.worldGridWidth == b.worldGridWidth and a.iid == b.iid and
+      a.worldGridHeight == b.worldGridHeight and
+      a.worldLayout == b.worldLayout and
+      a.defaultLevelWidth == b.defaultLevelWidth and
+      a.levels == b.levels and
+      a.defaultLevelHeight == b.defaultLevelHeight and
+      a.identifier == b.identifier
+
 proc fromJsonHook*(target: var LdtkWorld; source: JsonNode) =
   assert(hasKey(source, "worldGridWidth"),
          "worldGridWidth" & " is missing while decoding " & "LdtkWorld")
@@ -1086,6 +1185,11 @@ proc toJsonHook*(source: LdtkWorld): JsonNode =
   result{"defaultLevelHeight"} = newJInt(source.defaultLevelHeight)
   result{"identifier"} = newJString(source.identifier)
 
+proc `==`*(a, b: LdtkEntityReferenceInfos): bool =
+  true and a.worldIid == b.worldIid and a.entityIid == b.entityIid and
+      a.layerIid == b.layerIid and
+      a.levelIid == b.levelIid
+
 proc fromJsonHook*(target: var LdtkEntityReferenceInfos; source: JsonNode) =
   assert(hasKey(source, "worldIid"), "worldIid" & " is missing while decoding " &
       "LdtkEntityReferenceInfos")
@@ -1107,6 +1211,12 @@ proc toJsonHook*(source: LdtkEntityReferenceInfos): JsonNode =
   result{"entityIid"} = newJString(source.entityIid)
   result{"layerIid"} = newJString(source.layerIid)
   result{"levelIid"} = newJString(source.levelIid)
+
+proc `==`*(a, b: LdtkTocInstanceData): bool =
+  true and a.worldX == b.worldX and a.widPx == b.widPx and a.worldY == b.worldY and
+      a.heiPx == b.heiPx and
+      a.fields == b.fields and
+      a.iids == b.iids
 
 proc fromJsonHook*(target: var LdtkTocInstanceData; source: JsonNode) =
   assert(hasKey(source, "worldX"),
@@ -1136,6 +1246,10 @@ proc toJsonHook*(source: LdtkTocInstanceData): JsonNode =
   result{"heiPx"} = newJInt(source.heiPx)
   result{"fields"} = source.fields
   result{"iids"} = toJsonHook(source.iids)
+
+proc `==`*(a, b: LdtkTableOfContentEntry): bool =
+  true and a.identifier == b.identifier and a.instancesData == b.instancesData and
+      a.instances == b.instances
 
 proc fromJsonHook*(target: var LdtkTableOfContentEntry; source: JsonNode) =
   assert(hasKey(source, "identifier"), "identifier" &
@@ -1238,6 +1352,9 @@ proc fromJsonHook*(target: var LdtkWhen; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: LdtkCustomCommand): bool =
+  true and a.`when` == b.`when` and a.command == b.command
+
 proc fromJsonHook*(target: var LdtkCustomCommand; source: JsonNode) =
   assert(hasKey(source, "when"),
          "when" & " is missing while decoding " & "LdtkCustomCommand")
@@ -1311,6 +1428,9 @@ proc fromJsonHook*(target: var LdtkFlags; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: LdtkTileCustomMetadata): bool =
+  true and a.tileId == b.tileId and a.data == b.data
+
 proc fromJsonHook*(target: var LdtkTileCustomMetadata; source: JsonNode) =
   assert(hasKey(source, "tileId"),
          "tileId" & " is missing while decoding " & "LdtkTileCustomMetadata")
@@ -1323,6 +1443,9 @@ proc toJsonHook*(source: LdtkTileCustomMetadata): JsonNode =
   result = newJObject()
   result{"tileId"} = newJInt(source.tileId)
   result{"data"} = newJString(source.data)
+
+proc `==`*(a, b: LdtkEnumTagValue): bool =
+  true and a.tileIds == b.tileIds and a.enumValueId == b.enumValueId
 
 proc fromJsonHook*(target: var LdtkEnumTagValue; source: JsonNode) =
   assert(hasKey(source, "tileIds"),
@@ -1353,6 +1476,24 @@ proc fromJsonHook*(target: var LdtkEmbedAtlas; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: LdtkTilesetDef): bool =
+  true and a.cachedPixelData == b.cachedPixelData and a.cHei == b.cHei and
+      a.pxHei == b.pxHei and
+      a.customData == b.customData and
+      a.tagsSourceEnumUid == b.tagsSourceEnumUid and
+      a.uid == b.uid and
+      a.padding == b.padding and
+      a.enumTags == b.enumTags and
+      a.pxWid == b.pxWid and
+      a.cWid == b.cWid and
+      a.spacing == b.spacing and
+      a.identifier == b.identifier and
+      a.savedSelections == b.savedSelections and
+      a.tags == b.tags and
+      a.embedAtlas == b.embedAtlas and
+      a.relPath == b.relPath and
+      a.tileGridSize == b.tileGridSize
+
 proc fromJsonHook*(target: var LdtkTilesetDef; source: JsonNode) =
   if hasKey(source, "cachedPixelData") and
       source{"cachedPixelData"}.kind != JNull:
@@ -1459,6 +1600,10 @@ proc toJsonHook*(source: LdtkTilesetDef): JsonNode =
     result{"relPath"} = newJString(unsafeGet(source.relPath))
   result{"tileGridSize"} = newJInt(source.tileGridSize)
 
+proc `==`*(a, b: LdtkIntGridValueGroupDef): bool =
+  true and a.color == b.color and a.uid == b.uid and
+      a.identifier == b.identifier
+
 proc fromJsonHook*(target: var LdtkIntGridValueGroupDef; source: JsonNode) =
   if hasKey(source, "color") and source{"color"}.kind != JNull:
     target.color = some(jsonTo(source{"color"}, typeof(unsafeGet(target.color))))
@@ -1476,6 +1621,12 @@ proc toJsonHook*(source: LdtkIntGridValueGroupDef): JsonNode =
   result{"uid"} = newJInt(source.uid)
   if isSome(source.identifier):
     result{"identifier"} = newJString(unsafeGet(source.identifier))
+
+proc `==`*(a, b: LdtkIntGridValueDef): bool =
+  true and a.tile == b.tile and a.color == b.color and
+      a.identifier == b.identifier and
+      a.value == b.value and
+      a.groupUid == b.groupUid
 
 proc fromJsonHook*(target: var LdtkIntGridValueDef; source: JsonNode) =
   if hasKey(source, "tile") and source{"tile"}.kind != JNull:
@@ -1539,6 +1690,38 @@ proc fromJsonHook*(target: var LdtkTileMode; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: LdtkAutoRuleDef): bool =
+  true and a.flipX == b.flipX and a.pivotX == b.pivotX and
+      a.perlinActive == b.perlinActive and
+      a.tileRectsIds == b.tileRectsIds and
+      a.perlinScale == b.perlinScale and
+      a.outOfBoundsValue == b.outOfBoundsValue and
+      a.pattern == b.pattern and
+      a.tileRandomXMin == b.tileRandomXMin and
+      a.checker == b.checker and
+      a.perlinOctaves == b.perlinOctaves and
+      a.tileIds == b.tileIds and
+      a.alpha == b.alpha and
+      a.tileXOffset == b.tileXOffset and
+      a.invalidated == b.invalidated and
+      a.xModulo == b.xModulo and
+      a.size == b.size and
+      a.chance == b.chance and
+      a.breakOnMatch == b.breakOnMatch and
+      a.tileYOffset == b.tileYOffset and
+      a.uid == b.uid and
+      a.perlinSeed == b.perlinSeed and
+      a.yOffset == b.yOffset and
+      a.tileRandomYMax == b.tileRandomYMax and
+      a.tileRandomYMin == b.tileRandomYMin and
+      a.tileMode == b.tileMode and
+      a.flipY == b.flipY and
+      a.tileRandomXMax == b.tileRandomXMax and
+      a.pivotY == b.pivotY and
+      a.yModulo == b.yModulo and
+      a.active == b.active and
+      a.xOffset == b.xOffset
+
 proc fromJsonHook*(target: var LdtkAutoRuleDef; source: JsonNode) =
   assert(hasKey(source, "flipX"),
          "flipX" & " is missing while decoding " & "LdtkAutoRuleDef")
@@ -1695,6 +1878,18 @@ proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode =
   result{"active"} = newJBool(source.active)
   result{"xOffset"} = newJInt(source.xOffset)
 
+proc `==`*(a, b: LdtkAutoLayerRuleGroup): bool =
+  true and a.name == b.name and a.collapsed == b.collapsed and
+      a.biomeRequirementMode == b.biomeRequirementMode and
+      a.color == b.color and
+      a.isOptional == b.isOptional and
+      a.icon == b.icon and
+      a.usesWizard == b.usesWizard and
+      a.uid == b.uid and
+      a.requiredBiomeValues == b.requiredBiomeValues and
+      a.active == b.active and
+      a.rules == b.rules
+
 proc fromJsonHook*(target: var LdtkAutoLayerRuleGroup; source: JsonNode) =
   assert(hasKey(source, "name"),
          "name" & " is missing while decoding " & "LdtkAutoLayerRuleGroup")
@@ -1783,6 +1978,41 @@ proc fromJsonHook*(target: var LdtkType; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: LdtkLayerDef): bool =
+  true and a.pxOffsetX == b.pxOffsetX and a.tilePivotX == b.tilePivotX and
+      a.uiFilterTags == b.uiFilterTags and
+      a.displayOpacity == b.displayOpacity and
+      a.parallaxFactorY == b.parallaxFactorY and
+      a.hideInList == b.hideInList and
+      a.`type` == b.`type` and
+      a.guideGridHei == b.guideGridHei and
+      a.uiColor == b.uiColor and
+      a.doc == b.doc and
+      a.tilesetDefUid == b.tilesetDefUid and
+      a.canSelectWhenInactive == b.canSelectWhenInactive and
+      a.useAsyncRender == b.useAsyncRender and
+      a.autoSourceLayerDefUid == b.autoSourceLayerDefUid and
+      a.autoTilesetDefUid == b.autoTilesetDefUid and
+      a.parallaxScaling == b.parallaxScaling and
+      a.renderInWorldView == b.renderInWorldView and
+      a.intGridValuesGroups == b.intGridValuesGroups and
+      a.inactiveOpacity == b.inactiveOpacity and
+      a.uid == b.uid and
+      a.excludedTags == b.excludedTags and
+      a.hideFieldsWhenInactive == b.hideFieldsWhenInactive and
+      a.intGridValues == b.intGridValues and
+      a.autoRuleGroups == b.autoRuleGroups and
+      a.type1 == b.type1 and
+      a.identifier == b.identifier and
+      a.guideGridWid == b.guideGridWid and
+      a.requiredTags == b.requiredTags and
+      a.pxOffsetY == b.pxOffsetY and
+      a.tilePivotY == b.tilePivotY and
+      a.biomeFieldUid == b.biomeFieldUid and
+      a.gridSize == b.gridSize and
+      a.parallaxFactorX == b.parallaxFactorX and
+      a.autoTilesKilledByOtherLayerUid == b.autoTilesKilledByOtherLayerUid
+
 proc fromJsonHook*(target: var LdtkLayerDef; source: JsonNode) =
   assert(hasKey(source, "pxOffsetX"),
          "pxOffsetX" & " is missing while decoding " & "LdtkLayerDef")
@@ -2170,6 +2400,43 @@ proc fromJsonHook*(target: var LdtkEditorLinkStyle; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: LdtkFieldDef): bool =
+  true and a.acceptFileTypes == b.acceptFileTypes and
+      a.editorDisplayScale == b.editorDisplayScale and
+      a.searchable == b.searchable and
+      a.useForSmartColor == b.useForSmartColor and
+      a.editorShowInWorld == b.editorShowInWorld and
+      a.allowedRefs == b.allowedRefs and
+      a.editorAlwaysShow == b.editorAlwaysShow and
+      a.arrayMinLength == b.arrayMinLength and
+      a.editorTextSuffix == b.editorTextSuffix and
+      a.min == b.min and
+      a.`type` == b.`type` and
+      a.editorDisplayMode == b.editorDisplayMode and
+      a.editorDisplayColor == b.editorDisplayColor and
+      a.canBeNull == b.canBeNull and
+      a.autoChainRef == b.autoChainRef and
+      a.doc == b.doc and
+      a.allowedRefsEntityUid == b.allowedRefsEntityUid and
+      a.tilesetUid == b.tilesetUid and
+      a.allowedRefTags == b.allowedRefTags and
+      a.symmetricalRef == b.symmetricalRef and
+      a.uid == b.uid and
+      a.editorTextPrefix == b.editorTextPrefix and
+      a.isArray == b.isArray and
+      a.exportToToc == b.exportToToc and
+      a.editorDisplayPos == b.editorDisplayPos and
+      a.textLanguageMode == b.textLanguageMode and
+      a.max == b.max and
+      a.allowOutOfLevelRef == b.allowOutOfLevelRef and
+      a.editorCutLongValues == b.editorCutLongValues and
+      a.defaultOverride == b.defaultOverride and
+      a.editorLinkStyle == b.editorLinkStyle and
+      a.regex == b.regex and
+      a.type1 == b.type1 and
+      a.identifier == b.identifier and
+      a.arrayMaxLength == b.arrayMaxLength
+
 proc fromJsonHook*(target: var LdtkFieldDef; source: JsonNode) =
   if hasKey(source, "acceptFileTypes") and
       source{"acceptFileTypes"}.kind != JNull:
@@ -2357,6 +2624,12 @@ proc toJsonHook*(source: LdtkFieldDef): JsonNode =
   if isSome(source.arrayMaxLength):
     result{"arrayMaxLength"} = newJInt(unsafeGet(source.arrayMaxLength))
 
+proc `==`*(a, b: LdtkEnumDefValues): bool =
+  true and a.tileId == b.tileId and a.color == b.color and
+      a.tileRect == b.tileRect and
+      a.id == b.id and
+      a.tileSrcRect == b.tileSrcRect
+
 proc fromJsonHook*(target: var LdtkEnumDefValues; source: JsonNode) =
   if hasKey(source, "tileId") and source{"tileId"}.kind != JNull:
     target.tileId = some(jsonTo(source{"tileId"},
@@ -2389,6 +2662,15 @@ proc toJsonHook*(source: LdtkEnumDefValues): JsonNode =
       for entry in unsafeGet(source.tileSrcRect):
         output.add(newJInt(entry))
       output
+
+proc `==`*(a, b: LdtkEnumDef): bool =
+  true and a.externalFileChecksum == b.externalFileChecksum and
+      a.externalRelPath == b.externalRelPath and
+      a.uid == b.uid and
+      a.values == b.values and
+      a.iconTilesetUid == b.iconTilesetUid and
+      a.identifier == b.identifier and
+      a.tags == b.tags
 
 proc fromJsonHook*(target: var LdtkEnumDef; source: JsonNode) =
   if hasKey(source, "externalFileChecksum") and
@@ -2539,6 +2821,41 @@ proc fromJsonHook*(target: var LdtkRenderMode; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: LdtkEntityDef): bool =
+  true and a.tileId == b.tileId and a.showName == b.showName and
+      a.tilesetId == b.tilesetId and
+      a.maxHeight == b.maxHeight and
+      a.limitScope == b.limitScope and
+      a.pivotX == b.pivotX and
+      a.maxCount == b.maxCount and
+      a.allowOutOfBounds == b.allowOutOfBounds and
+      a.hollow == b.hollow and
+      a.minHeight == b.minHeight and
+      a.keepAspectRatio == b.keepAspectRatio and
+      a.color == b.color and
+      a.minWidth == b.minWidth and
+      a.tileRect == b.tileRect and
+      a.doc == b.doc and
+      a.fieldDefs == b.fieldDefs and
+      a.tileRenderMode == b.tileRenderMode and
+      a.limitBehavior == b.limitBehavior and
+      a.tileOpacity == b.tileOpacity and
+      a.nineSliceBorders == b.nineSliceBorders and
+      a.resizableX == b.resizableX and
+      a.uiTileRect == b.uiTileRect and
+      a.uid == b.uid and
+      a.lineOpacity == b.lineOpacity and
+      a.maxWidth == b.maxWidth and
+      a.resizableY == b.resizableY and
+      a.exportToToc == b.exportToToc and
+      a.fillOpacity == b.fillOpacity and
+      a.height == b.height and
+      a.identifier == b.identifier and
+      a.pivotY == b.pivotY and
+      a.renderMode == b.renderMode and
+      a.tags == b.tags and
+      a.width == b.width
+
 proc fromJsonHook*(target: var LdtkEntityDef; source: JsonNode) =
   if hasKey(source, "tileId") and source{"tileId"}.kind != JNull:
     target.tileId = some(jsonTo(source{"tileId"},
@@ -2705,6 +3022,13 @@ proc toJsonHook*(source: LdtkEntityDef): JsonNode =
     output
   result{"width"} = newJInt(source.width)
 
+proc `==`*(a, b: LdtkDefinitions): bool =
+  true and a.tilesets == b.tilesets and a.layers == b.layers and
+      a.levelFields == b.levelFields and
+      a.enums == b.enums and
+      a.entities == b.entities and
+      a.externalEnums == b.externalEnums
+
 proc fromJsonHook*(target: var LdtkDefinitions; source: JsonNode) =
   assert(hasKey(source, "tilesets"),
          "tilesets" & " is missing while decoding " & "LdtkDefinitions")
@@ -2759,6 +3083,9 @@ proc toJsonHook*(source: LdtkDefinitions): JsonNode =
       output.add(toJsonHook(entry))
     output
 
+proc `==`*(a, b: LdtkGridPoint): bool =
+  true and a.cy == b.cy and a.cx == b.cx
+
 proc fromJsonHook*(target: var LdtkGridPoint; source: JsonNode) =
   assert(hasKey(source, "cy"),
          "cy" & " is missing while decoding " & "LdtkGridPoint")
@@ -2771,6 +3098,35 @@ proc toJsonHook*(source: LdtkGridPoint): JsonNode =
   result = newJObject()
   result{"cy"} = newJInt(source.cy)
   result{"cx"} = newJInt(source.cx)
+
+proc `==`*(a, b: Ldtk_FORCED_REFS): bool =
+  true and a.TilesetRect == b.TilesetRect and a.FieldInstance == b.FieldInstance and
+      a.EntityInstance == b.EntityInstance and
+      a.Definitions == b.Definitions and
+      a.EnumTagValue == b.EnumTagValue and
+      a.AutoRuleDef == b.AutoRuleDef and
+      a.FieldDef == b.FieldDef and
+      a.CustomCommand == b.CustomCommand and
+      a.EntityDef == b.EntityDef and
+      a.AutoLayerRuleGroup == b.AutoLayerRuleGroup and
+      a.IntGridValueGroupDef == b.IntGridValueGroupDef and
+      a.IntGridValueInstance == b.IntGridValueInstance and
+      a.TocInstanceData == b.TocInstanceData and
+      a.NeighbourLevel == b.NeighbourLevel and
+      a.LayerInstance == b.LayerInstance and
+      a.World == b.World and
+      a.EntityReferenceInfos == b.EntityReferenceInfos and
+      a.TileCustomMetadata == b.TileCustomMetadata and
+      a.TilesetDef == b.TilesetDef and
+      a.EnumDefValues == b.EnumDefValues and
+      a.Tile == b.Tile and
+      a.LayerDef == b.LayerDef and
+      a.LevelBgPosInfos == b.LevelBgPosInfos and
+      a.Level == b.Level and
+      a.TableOfContentEntry == b.TableOfContentEntry and
+      a.EnumDef == b.EnumDef and
+      a.GridPoint == b.GridPoint and
+      a.IntGridValueDef == b.IntGridValueDef
 
 proc fromJsonHook*(target: var Ldtk_FORCED_REFS; source: JsonNode) =
   if hasKey(source, "TilesetRect") and source{"TilesetRect"}.kind != JNull:
@@ -2937,6 +3293,46 @@ proc toJsonHook*(source: Ldtk_FORCED_REFS): JsonNode =
     result{"GridPoint"} = toJsonHook(unsafeGet(source.GridPoint))
   if isSome(source.IntGridValueDef):
     result{"IntGridValueDef"} = toJsonHook(unsafeGet(source.IntGridValueDef))
+
+proc `==`*(a, b: LdtkLdtkJsonRoot): bool =
+  true and a.backupLimit == b.backupLimit and
+      a.defaultEntityWidth == b.defaultEntityWidth and
+      a.backupOnSave == b.backupOnSave and
+      a.worldGridWidth == b.worldGridWidth and
+      a.iid == b.iid and
+      a.defaultLevelBgColor == b.defaultLevelBgColor and
+      a.bgColor == b.bgColor and
+      a.worlds == b.worlds and
+      a.toc == b.toc and
+      a.nextUid == b.nextUid and
+      a.imageExportMode == b.imageExportMode and
+      a.identifierStyle == b.identifierStyle and
+      a.defaultPivotY == b.defaultPivotY and
+      a.dummyWorldIid == b.dummyWorldIid and
+      a.customCommands == b.customCommands and
+      a.worldGridHeight == b.worldGridHeight and
+      a.appBuildId == b.appBuildId and
+      a.defaultGridSize == b.defaultGridSize and
+      a.worldLayout == b.worldLayout and
+      a.flags == b.flags and
+      a.levelNamePattern == b.levelNamePattern and
+      a.exportPng == b.exportPng and
+      a.defaultLevelWidth == b.defaultLevelWidth and
+      a.pngFilePattern == b.pngFilePattern and
+      a.FORCED_REFS == b.FORCED_REFS and
+      a.exportTiled == b.exportTiled and
+      a.defs == b.defs and
+      a.levels == b.levels and
+      a.jsonVersion == b.jsonVersion and
+      a.defaultEntityHeight == b.defaultEntityHeight and
+      a.defaultPivotX == b.defaultPivotX and
+      a.defaultLevelHeight == b.defaultLevelHeight and
+      a.simplifiedExport == b.simplifiedExport and
+      a.externalLevels == b.externalLevels and
+      a.tutorialDesc == b.tutorialDesc and
+      a.minifyJson == b.minifyJson and
+      a.exportLevelBg == b.exportLevelBg and
+      a.backupRelPath == b.backupRelPath
 
 proc fromJsonHook*(target: var LdtkLdtkJsonRoot; source: JsonNode) =
   assert(hasKey(source, "backupLimit"),

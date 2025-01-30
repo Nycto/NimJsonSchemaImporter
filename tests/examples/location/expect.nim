@@ -6,6 +6,9 @@ type
     latitude*: BiggestFloat
     longitude*: BiggestFloat
 proc toJsonHook*(source: Locationlocation): JsonNode
+proc `==`*(a, b: Locationlocation): bool =
+  true and a.latitude == b.latitude and a.longitude == b.longitude
+
 proc fromJsonHook*(target: var Locationlocation; source: JsonNode) =
   assert(hasKey(source, "latitude"),
          "latitude" & " is missing while decoding " & "Locationlocation")

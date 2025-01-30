@@ -13,6 +13,9 @@ type
     tags*: Option[seq[string]]
 proc toJsonHook*(source: BlogAuthor): JsonNode
 proc toJsonHook*(source: Blogblog): JsonNode
+proc `==`*(a, b: BlogAuthor): bool =
+  true and a.username == b.username and a.email == b.email
+
 proc fromJsonHook*(target: var BlogAuthor; source: JsonNode) =
   if hasKey(source, "username") and source{"username"}.kind != JNull:
     target.username = some(jsonTo(source{"username"},
@@ -26,6 +29,12 @@ proc toJsonHook*(source: BlogAuthor): JsonNode =
     result{"username"} = newJString(unsafeGet(source.username))
   if isSome(source.email):
     result{"email"} = newJString(unsafeGet(source.email))
+
+proc `==`*(a, b: Blogblog): bool =
+  true and a.title == b.title and a.content == b.content and
+      a.publishedDate == b.publishedDate and
+      a.author == b.author and
+      a.tags == b.tags
 
 proc fromJsonHook*(target: var Blogblog; source: JsonNode) =
   assert(hasKey(source, "title"),

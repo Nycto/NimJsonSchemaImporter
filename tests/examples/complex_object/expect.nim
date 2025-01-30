@@ -14,6 +14,10 @@ type
     hobbies*: Option[seq[string]]
 proc toJsonHook*(source: Complex_objectAddress): JsonNode
 proc toJsonHook*(source: Complex_objectcomplex_object): JsonNode
+proc `==`*(a, b: Complex_objectAddress): bool =
+  true and a.street == b.street and a.city == b.city and a.state == b.state and
+      a.postalCode == b.postalCode
+
 proc fromJsonHook*(target: var Complex_objectAddress; source: JsonNode) =
   assert(hasKey(source, "street"),
          "street" & " is missing while decoding " & "Complex_objectAddress")
@@ -34,6 +38,10 @@ proc toJsonHook*(source: Complex_objectAddress): JsonNode =
   result{"city"} = newJString(source.city)
   result{"state"} = newJString(source.state)
   result{"postalCode"} = newJString(source.postalCode)
+
+proc `==`*(a, b: Complex_objectcomplex_object): bool =
+  true and a.name == b.name and a.age == b.age and a.address == b.address and
+      a.hobbies == b.hobbies
 
 proc fromJsonHook*(target: var Complex_objectcomplex_object; source: JsonNode) =
   assert(hasKey(source, "name"), "name" & " is missing while decoding " &

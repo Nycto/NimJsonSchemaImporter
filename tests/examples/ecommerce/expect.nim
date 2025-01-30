@@ -10,6 +10,9 @@ type
     items*: Option[seq[EcommerceProductSchema]]
 proc toJsonHook*(source: EcommerceProductSchema): JsonNode
 proc toJsonHook*(source: EcommerceOrderSchema): JsonNode
+proc `==`*(a, b: EcommerceProductSchema): bool =
+  true and a.name == b.name and a.price == b.price
+
 proc fromJsonHook*(target: var EcommerceProductSchema; source: JsonNode) =
   if hasKey(source, "name") and source{"name"}.kind != JNull:
     target.name = some(jsonTo(source{"name"}, typeof(unsafeGet(target.name))))
@@ -22,6 +25,9 @@ proc toJsonHook*(source: EcommerceProductSchema): JsonNode =
     result{"name"} = newJString(unsafeGet(source.name))
   if isSome(source.price):
     result{"price"} = newJFloat(unsafeGet(source.price))
+
+proc `==`*(a, b: EcommerceOrderSchema): bool =
+  true and a.orderId == b.orderId and a.items == b.items
 
 proc fromJsonHook*(target: var EcommerceOrderSchema; source: JsonNode) =
   if hasKey(source, "orderId") and source{"orderId"}.kind != JNull:

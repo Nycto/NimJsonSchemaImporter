@@ -11,6 +11,15 @@ type
     postalCode*: Option[string]
     countryName*: string
 proc toJsonHook*(source: Addressaddress): JsonNode
+proc `==`*(a, b: Addressaddress): bool =
+  true and a.postOfficeBox == b.postOfficeBox and
+      a.extendedAddress == b.extendedAddress and
+      a.streetAddress == b.streetAddress and
+      a.locality == b.locality and
+      a.region == b.region and
+      a.postalCode == b.postalCode and
+      a.countryName == b.countryName
+
 proc fromJsonHook*(target: var Addressaddress; source: JsonNode) =
   if hasKey(source, "postOfficeBox") and
       source{"postOfficeBox"}.kind != JNull:

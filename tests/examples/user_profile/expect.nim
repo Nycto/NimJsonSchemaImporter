@@ -10,6 +10,13 @@ type
     location*: Option[string]
     interests*: Option[seq[string]]
 proc toJsonHook*(source: User_profileuser_profile): JsonNode
+proc `==`*(a, b: User_profileuser_profile): bool =
+  true and a.username == b.username and a.email == b.email and
+      a.fullName == b.fullName and
+      a.age == b.age and
+      a.location == b.location and
+      a.interests == b.interests
+
 proc fromJsonHook*(target: var User_profileuser_profile; source: JsonNode) =
   assert(hasKey(source, "username"), "username" & " is missing while decoding " &
       "User_profileuser_profile")

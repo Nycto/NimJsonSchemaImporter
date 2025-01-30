@@ -92,6 +92,9 @@ proc toJsonHook*(source: AsepriteSliceKey): JsonNode
 proc toJsonHook*(source: AsepriteSlice): JsonNode
 proc toJsonHook*(source: AsepriteMeta): JsonNode
 proc toJsonHook*(source: AsepriteSpriteSheet): JsonNode
+proc `==`*(a, b: AsepriteRectangle): bool =
+  true and a.h == b.h and a.w == b.w and a.x == b.x and a.y == b.y
+
 proc fromJsonHook*(target: var AsepriteRectangle; source: JsonNode) =
   assert(hasKey(source, "h"),
          "h" & " is missing while decoding " & "AsepriteRectangle")
@@ -113,6 +116,9 @@ proc toJsonHook*(source: AsepriteRectangle): JsonNode =
   result{"x"} = newJFloat(source.x)
   result{"y"} = newJFloat(source.y)
 
+proc `==`*(a, b: AsepriteSize): bool =
+  true and a.h == b.h and a.w == b.w
+
 proc fromJsonHook*(target: var AsepriteSize; source: JsonNode) =
   assert(hasKey(source, "h"),
          "h" & " is missing while decoding " & "AsepriteSize")
@@ -125,6 +131,13 @@ proc toJsonHook*(source: AsepriteSize): JsonNode =
   result = newJObject()
   result{"h"} = newJFloat(source.h)
   result{"w"} = newJFloat(source.w)
+
+proc `==`*(a, b: AsepriteFrame): bool =
+  true and a.duration == b.duration and a.frame == b.frame and
+      a.rotated == b.rotated and
+      a.sourceSize == b.sourceSize and
+      a.spriteSourceSize == b.spriteSourceSize and
+      a.trimmed == b.trimmed
 
 proc fromJsonHook*(target: var AsepriteFrame; source: JsonNode) =
   assert(hasKey(source, "duration"),
@@ -158,6 +171,14 @@ proc toJsonHook*(source: AsepriteFrame): JsonNode =
 
 converter forAsepriteUnion*(value: OrderedTable[string, AsepriteFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 0, key0: value)
+
+proc `==`*(a, b: AsepriteArrayFrame): bool =
+  true and a.duration == b.duration and a.filename == b.filename and
+      a.frame == b.frame and
+      a.rotated == b.rotated and
+      a.sourceSize == b.sourceSize and
+      a.spriteSourceSize == b.spriteSourceSize and
+      a.trimmed == b.trimmed
 
 proc fromJsonHook*(target: var AsepriteArrayFrame; source: JsonNode) =
   assert(hasKey(source, "duration"),
@@ -197,6 +218,15 @@ proc toJsonHook*(source: AsepriteArrayFrame): JsonNode =
 converter forAsepriteUnion*(value: seq[AsepriteArrayFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 1, key1: value)
 
+proc `==`*(a, b: AsepriteUnion): bool =
+  if a.kind != b.kind:
+    return false
+  case a.kind
+  of 0:
+    return a.key0 == b.key0
+  of 1:
+    return a.key1 == b.key1
+  
 proc fromJsonHook*(target: var AsepriteUnion; source: JsonNode) =
   if source.kind == JObject:
     target = AsepriteUnion(kind: 0, key0: jsonTo(source, typeof(target.key0)))
@@ -285,6 +315,11 @@ proc fromJsonHook*(target: var AsepriteDirection; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: AsepriteFrameTag): bool =
+  true and a.direction == b.direction and a.`from` == b.`from` and
+      a.name == b.name and
+      a.to == b.to
+
 proc fromJsonHook*(target: var AsepriteFrameTag; source: JsonNode) =
   assert(hasKey(source, "direction"),
          "direction" & " is missing while decoding " & "AsepriteFrameTag")
@@ -390,6 +425,13 @@ proc fromJsonHook*(target: var AsepriteBlendMode; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: AsepriteLayer): bool =
+  true and a.blendMode == b.blendMode and a.color == b.color and
+      a.data == b.data and
+      a.group == b.group and
+      a.name == b.name and
+      a.opacity == b.opacity
+
 proc fromJsonHook*(target: var AsepriteLayer; source: JsonNode) =
   if hasKey(source, "blendMode") and source{"blendMode"}.kind != JNull:
     target.blendMode = some(jsonTo(source{"blendMode"},
@@ -421,6 +463,9 @@ proc toJsonHook*(source: AsepriteLayer): JsonNode =
   if isSome(source.opacity):
     result{"opacity"} = newJFloat(unsafeGet(source.opacity))
 
+proc `==`*(a, b: AsepritePoint): bool =
+  true and a.x == b.x and a.y == b.y
+
 proc fromJsonHook*(target: var AsepritePoint; source: JsonNode) =
   assert(hasKey(source, "x"),
          "x" & " is missing while decoding " & "AsepritePoint")
@@ -433,6 +478,10 @@ proc toJsonHook*(source: AsepritePoint): JsonNode =
   result = newJObject()
   result{"x"} = newJFloat(source.x)
   result{"y"} = newJFloat(source.y)
+
+proc `==`*(a, b: AsepriteSliceKey): bool =
+  true and a.bounds == b.bounds and a.center == b.center and a.frame == b.frame and
+      a.pivot == b.pivot
 
 proc fromJsonHook*(target: var AsepriteSliceKey; source: JsonNode) =
   assert(hasKey(source, "bounds"),
@@ -455,6 +504,10 @@ proc toJsonHook*(source: AsepriteSliceKey): JsonNode =
   result{"frame"} = newJFloat(source.frame)
   if isSome(source.pivot):
     result{"pivot"} = toJsonHook(unsafeGet(source.pivot))
+
+proc `==`*(a, b: AsepriteSlice): bool =
+  true and a.color == b.color and a.data == b.data and a.keys == b.keys and
+      a.name == b.name
 
 proc fromJsonHook*(target: var AsepriteSlice; source: JsonNode) =
   if hasKey(source, "color") and source{"color"}.kind != JNull:
@@ -480,6 +533,16 @@ proc toJsonHook*(source: AsepriteSlice): JsonNode =
       output.add(toJsonHook(entry))
     output
   result{"name"} = newJString(source.name)
+
+proc `==`*(a, b: AsepriteMeta): bool =
+  true and a.app == b.app and a.format == b.format and
+      a.frameTags == b.frameTags and
+      a.image == b.image and
+      a.layers == b.layers and
+      a.scale == b.scale and
+      a.size == b.size and
+      a.slices == b.slices and
+      a.version == b.version
 
 proc fromJsonHook*(target: var AsepriteMeta; source: JsonNode) =
   assert(hasKey(source, "app"),
@@ -536,6 +599,9 @@ proc toJsonHook*(source: AsepriteMeta): JsonNode =
         output.add(toJsonHook(entry))
       output
   result{"version"} = newJString(source.version)
+
+proc `==`*(a, b: AsepriteSpriteSheet): bool =
+  true and a.frames == b.frames and a.meta == b.meta
 
 proc fromJsonHook*(target: var AsepriteSpriteSheet; source: JsonNode) =
   assert(hasKey(source, "frames"),

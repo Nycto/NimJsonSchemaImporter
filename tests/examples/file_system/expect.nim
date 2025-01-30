@@ -63,6 +63,9 @@ proc fromJsonHook*(target: var File_systemType; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: File_systemDiskDevice): bool =
+  true and a.`type` == b.`type` and a.device == b.device
+
 proc fromJsonHook*(target: var File_systemDiskDevice; source: JsonNode) =
   assert(hasKey(source, "type"),
          "type" & " is missing while decoding " & "File_systemDiskDevice")
@@ -91,6 +94,9 @@ proc fromJsonHook*(target: var File_systemStorageType; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: File_systemDiskUUID): bool =
+  true and a.`type` == b.`type` and a.label == b.label
+
 proc fromJsonHook*(target: var File_systemDiskUUID; source: JsonNode) =
   assert(hasKey(source, "type"),
          "type" & " is missing while decoding " & "File_systemDiskUUID")
@@ -120,6 +126,10 @@ proc fromJsonHook*(target: var File_systemfile_systemStorageType;
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: File_systemNfs): bool =
+  true and a.`type` == b.`type` and a.remotePath == b.remotePath and
+      a.server == b.server
+
 proc fromJsonHook*(target: var File_systemNfs; source: JsonNode) =
   assert(hasKey(source, "type"),
          "type" & " is missing while decoding " & "File_systemNfs")
@@ -153,6 +163,9 @@ proc fromJsonHook*(target: var File_systemfile_systemStorageType2;
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: File_systemTmpfs): bool =
+  true and a.`type` == b.`type` and a.sizeInMB == b.sizeInMB
+
 proc fromJsonHook*(target: var File_systemTmpfs; source: JsonNode) =
   assert(hasKey(source, "type"),
          "type" & " is missing while decoding " & "File_systemTmpfs")
@@ -169,6 +182,19 @@ proc toJsonHook*(source: File_systemTmpfs): JsonNode =
 converter forFile_systemUnion*(value: File_systemTmpfs): File_systemUnion =
   return File_systemUnion(kind: 3, key3: value)
 
+proc `==`*(a, b: File_systemUnion): bool =
+  if a.kind != b.kind:
+    return false
+  case a.kind
+  of 0:
+    return a.key0 == b.key0
+  of 1:
+    return a.key1 == b.key1
+  of 2:
+    return a.key2 == b.key2
+  of 3:
+    return a.key3 == b.key3
+  
 proc fromJsonHook*(target: var File_systemUnion; source: JsonNode) =
   if source.kind == JObject and hasKey(source, "device"):
     target = File_systemUnion(kind: 0, key0: jsonTo(source, typeof(target.key0)))
@@ -241,6 +267,11 @@ proc fromJsonHook*(target: var File_systemFstype; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc `==`*(a, b: File_systemfile_system): bool =
+  true and a.storage == b.storage and a.fstype == b.fstype and
+      a.options == b.options and
+      a.readonly == b.readonly
+
 proc fromJsonHook*(target: var File_systemfile_system; source: JsonNode) =
   assert(hasKey(source, "storage"),
          "storage" & " is missing while decoding " & "File_systemfile_system")

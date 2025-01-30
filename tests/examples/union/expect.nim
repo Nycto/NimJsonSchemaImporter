@@ -49,6 +49,19 @@ converter forUnionKey1Union*(value: bool): UnionKey1Union =
 converter forUnionKey1Union*(value: BiggestFloat): UnionKey1Union =
   return UnionKey1Union(kind: 3, key3: value)
 
+proc `==`*(a, b: UnionKey1Union): bool =
+  if a.kind != b.kind:
+    return false
+  case a.kind
+  of 0:
+    return a.key0 == b.key0
+  of 1:
+    return a.key1 == b.key1
+  of 2:
+    return a.key2 == b.key2
+  of 3:
+    return a.key3 == b.key3
+  
 proc fromJsonHook*(target: var UnionKey1Union; source: JsonNode) =
   if source.kind == JString:
     target = UnionKey1Union(kind: 0, key0: jsonTo(source, typeof(target.key0)))
@@ -101,6 +114,9 @@ proc asFloat*(value: UnionKey1Union): auto =
   assert(value.kind == 3)
   return value.key3
 
+proc `==`*(a, b: UnionKey3): bool =
+  true and a.foo == b.foo
+
 proc fromJsonHook*(target: var UnionKey3; source: JsonNode) =
   if hasKey(source, "foo") and source{"foo"}.kind != JNull:
     target.foo = some(jsonTo(source{"foo"}, typeof(unsafeGet(target.foo))))
@@ -145,6 +161,21 @@ converter forUnionKey3Union*(value: UnionunionKey3): UnionKey3Union =
 converter forUnionKey3Union*(value: string): UnionKey3Union =
   return UnionKey3Union(kind: 4, key4: value)
 
+proc `==`*(a, b: UnionKey3Union): bool =
+  if a.kind != b.kind:
+    return false
+  case a.kind
+  of 0:
+    return a.key0 == b.key0
+  of 1:
+    return a.key1 == b.key1
+  of 2:
+    return a.key2 == b.key2
+  of 3:
+    return a.key3 == b.key3
+  of 4:
+    return a.key4 == b.key4
+  
 proc fromJsonHook*(target: var UnionKey3Union; source: JsonNode) =
   if source.kind == JObject:
     target = UnionKey3Union(kind: 0, key0: jsonTo(source, typeof(target.key0)))
@@ -229,6 +260,9 @@ proc isStr*(value: UnionKey3Union): bool =
 proc asStr*(value: UnionKey3Union): auto =
   assert(value.kind == 4)
   return value.key4
+
+proc `==`*(a, b: Unionunion): bool =
+  true and a.key1 == b.key1 and a.key2 == b.key2 and a.key3 == b.key3
 
 proc fromJsonHook*(target: var Unionunion; source: JsonNode) =
   assert(hasKey(source, "key1"),
