@@ -1,3 +1,4 @@
 {
+    "nim.useNimCheck": true,
     "nim.project": ["src/json_schema_import.nim"],
 }
