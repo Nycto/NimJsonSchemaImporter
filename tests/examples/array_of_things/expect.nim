@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/stringify
+import json_schema_import/private/[stringify, equality]
 
 type
   Array_of_thingsVeggie* = object
@@ -11,8 +11,12 @@ type
     vegetables*: Option[seq[Array_of_thingsVeggie]]
 proc toJsonHook*(source: Array_of_thingsVeggie): JsonNode
 proc toJsonHook*(source: Array_of_thingsarray_of_things): JsonNode
+proc equals(_: typedesc[Array_of_thingsVeggie]; a, b: Array_of_thingsVeggie): bool =
+  equals(typeof(a.veggieName), a.veggieName, b.veggieName) and
+      equals(typeof(a.veggieLike), a.veggieLike, b.veggieLike)
+
 proc `==`*(a, b: Array_of_thingsVeggie): bool =
-  true and a.veggieName == b.veggieName and a.veggieLike == b.veggieLike
+  return equals(Array_of_thingsVeggie, a, b)
 
 proc stringify(_: typedesc[Array_of_thingsVeggie]; value: Array_of_thingsVeggie): string =
   stringifyObj("Array_of_thingsVeggie", ("veggieName",
@@ -35,8 +39,13 @@ proc toJsonHook*(source: Array_of_thingsVeggie): JsonNode =
   result{"veggieName"} = newJString(source.veggieName)
   result{"veggieLike"} = newJBool(source.veggieLike)
 
+proc equals(_: typedesc[Array_of_thingsarray_of_things];
+            a, b: Array_of_thingsarray_of_things): bool =
+  equals(typeof(a.fruits), a.fruits, b.fruits) and
+      equals(typeof(a.vegetables), a.vegetables, b.vegetables)
+
 proc `==`*(a, b: Array_of_thingsarray_of_things): bool =
-  true and a.fruits == b.fruits and a.vegetables == b.vegetables
+  return equals(Array_of_thingsarray_of_things, a, b)
 
 proc stringify(_: typedesc[Array_of_thingsarray_of_things];
                value: Array_of_thingsarray_of_things): string =

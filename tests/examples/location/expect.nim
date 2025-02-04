@@ -1,14 +1,18 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/stringify
+import json_schema_import/private/[stringify, equality]
 
 type
   Locationlocation* = object
     latitude*: BiggestFloat
     longitude*: BiggestFloat
 proc toJsonHook*(source: Locationlocation): JsonNode
+proc equals(_: typedesc[Locationlocation]; a, b: Locationlocation): bool =
+  equals(typeof(a.latitude), a.latitude, b.latitude) and
+      equals(typeof(a.longitude), a.longitude, b.longitude)
+
 proc `==`*(a, b: Locationlocation): bool =
-  true and a.latitude == b.latitude and a.longitude == b.longitude
+  return equals(Locationlocation, a, b)
 
 proc stringify(_: typedesc[Locationlocation]; value: Locationlocation): string =
   stringifyObj("Locationlocation", ("latitude", stringify(

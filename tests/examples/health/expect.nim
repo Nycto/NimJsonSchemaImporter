@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/stringify
+import json_schema_import/private/[stringify, equality]
 
 type
   HealthEmergencyContact* = object
@@ -16,8 +16,12 @@ type
     emergencyContact*: Option[HealthEmergencyContact]
 proc toJsonHook*(source: HealthEmergencyContact): JsonNode
 proc toJsonHook*(source: Healthhealth): JsonNode
+proc equals(_: typedesc[HealthEmergencyContact]; a, b: HealthEmergencyContact): bool =
+  equals(typeof(a.username), a.username, b.username) and
+      equals(typeof(a.email), a.email, b.email)
+
 proc `==`*(a, b: HealthEmergencyContact): bool =
-  true and a.username == b.username and a.email == b.email
+  return equals(HealthEmergencyContact, a, b)
 
 proc stringify(_: typedesc[HealthEmergencyContact];
                value: HealthEmergencyContact): string =
@@ -42,13 +46,17 @@ proc toJsonHook*(source: HealthEmergencyContact): JsonNode =
   if isSome(source.email):
     result{"email"} = newJString(unsafeGet(source.email))
 
+proc equals(_: typedesc[Healthhealth]; a, b: Healthhealth): bool =
+  equals(typeof(a.patientName), a.patientName, b.patientName) and
+      equals(typeof(a.dateOfBirth), a.dateOfBirth, b.dateOfBirth) and
+      equals(typeof(a.bloodType), a.bloodType, b.bloodType) and
+      equals(typeof(a.allergies), a.allergies, b.allergies) and
+      equals(typeof(a.conditions), a.conditions, b.conditions) and
+      equals(typeof(a.medications), a.medications, b.medications) and
+      equals(typeof(a.emergencyContact), a.emergencyContact, b.emergencyContact)
+
 proc `==`*(a, b: Healthhealth): bool =
-  true and a.patientName == b.patientName and a.dateOfBirth == b.dateOfBirth and
-      a.bloodType == b.bloodType and
-      a.allergies == b.allergies and
-      a.conditions == b.conditions and
-      a.medications == b.medications and
-      a.emergencyContact == b.emergencyContact
+  return equals(Healthhealth, a, b)
 
 proc stringify(_: typedesc[Healthhealth]; value: Healthhealth): string =
   stringifyObj("Healthhealth", ("patientName", stringify(

@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/stringify
+import json_schema_import/private/[stringify, equality]
 
 type
   BlogAuthor* = object
@@ -14,8 +14,12 @@ type
     tags*: Option[seq[string]]
 proc toJsonHook*(source: BlogAuthor): JsonNode
 proc toJsonHook*(source: Blogblog): JsonNode
+proc equals(_: typedesc[BlogAuthor]; a, b: BlogAuthor): bool =
+  equals(typeof(a.username), a.username, b.username) and
+      equals(typeof(a.email), a.email, b.email)
+
 proc `==`*(a, b: BlogAuthor): bool =
-  true and a.username == b.username and a.email == b.email
+  return equals(BlogAuthor, a, b)
 
 proc stringify(_: typedesc[BlogAuthor]; value: BlogAuthor): string =
   stringifyObj("BlogAuthor", ("username",
@@ -39,11 +43,15 @@ proc toJsonHook*(source: BlogAuthor): JsonNode =
   if isSome(source.email):
     result{"email"} = newJString(unsafeGet(source.email))
 
+proc equals(_: typedesc[Blogblog]; a, b: Blogblog): bool =
+  equals(typeof(a.title), a.title, b.title) and
+      equals(typeof(a.content), a.content, b.content) and
+      equals(typeof(a.publishedDate), a.publishedDate, b.publishedDate) and
+      equals(typeof(a.author), a.author, b.author) and
+      equals(typeof(a.tags), a.tags, b.tags)
+
 proc `==`*(a, b: Blogblog): bool =
-  true and a.title == b.title and a.content == b.content and
-      a.publishedDate == b.publishedDate and
-      a.author == b.author and
-      a.tags == b.tags
+  return equals(Blogblog, a, b)
 
 proc stringify(_: typedesc[Blogblog]; value: Blogblog): string =
   stringifyObj("Blogblog",

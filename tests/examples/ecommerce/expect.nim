@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/stringify
+import json_schema_import/private/[stringify, equality]
 
 type
   EcommerceProductSchema* = object
@@ -11,8 +11,12 @@ type
     items*: Option[seq[EcommerceProductSchema]]
 proc toJsonHook*(source: EcommerceProductSchema): JsonNode
 proc toJsonHook*(source: EcommerceOrderSchema): JsonNode
+proc equals(_: typedesc[EcommerceProductSchema]; a, b: EcommerceProductSchema): bool =
+  equals(typeof(a.name), a.name, b.name) and
+      equals(typeof(a.price), a.price, b.price)
+
 proc `==`*(a, b: EcommerceProductSchema): bool =
-  true and a.name == b.name and a.price == b.price
+  return equals(EcommerceProductSchema, a, b)
 
 proc stringify(_: typedesc[EcommerceProductSchema];
                value: EcommerceProductSchema): string =
@@ -36,8 +40,12 @@ proc toJsonHook*(source: EcommerceProductSchema): JsonNode =
   if isSome(source.price):
     result{"price"} = newJFloat(unsafeGet(source.price))
 
+proc equals(_: typedesc[EcommerceOrderSchema]; a, b: EcommerceOrderSchema): bool =
+  equals(typeof(a.orderId), a.orderId, b.orderId) and
+      equals(typeof(a.items), a.items, b.items)
+
 proc `==`*(a, b: EcommerceOrderSchema): bool =
-  true and a.orderId == b.orderId and a.items == b.items
+  return equals(EcommerceOrderSchema, a, b)
 
 proc stringify(_: typedesc[EcommerceOrderSchema]; value: EcommerceOrderSchema): string =
   stringifyObj("EcommerceOrderSchema",

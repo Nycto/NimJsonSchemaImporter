@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/stringify
+import json_schema_import/private/[stringify, equality]
 
 type
   UnionKey1Union* = object
@@ -50,19 +50,22 @@ converter forUnionKey1Union*(value: bool): UnionKey1Union =
 converter forUnionKey1Union*(value: BiggestFloat): UnionKey1Union =
   return UnionKey1Union(kind: 3, key3: value)
 
-proc `==`*(a, b: UnionKey1Union): bool =
+proc equals(_: typedesc[UnionKey1Union]; a, b: UnionKey1Union): bool =
   if a.kind != b.kind:
     return false
   case a.kind
   of 0:
-    return a.key0 == b.key0
+    return equals(typeof(a.key0), a.key0, b.key0)
   of 1:
-    return a.key1 == b.key1
+    return equals(typeof(a.key1), a.key1, b.key1)
   of 2:
-    return a.key2 == b.key2
+    return equals(typeof(a.key2), a.key2, b.key2)
   of 3:
-    return a.key3 == b.key3
+    return equals(typeof(a.key3), a.key3, b.key3)
   
+proc `==`*(a, b: UnionKey1Union): bool =
+  return equals(UnionKey1Union, a, b)
+
 proc stringify(_: typedesc[UnionKey1Union]; value: UnionKey1Union): string =
   case value.kind
   of 0:
@@ -129,8 +132,11 @@ proc asFloat*(value: UnionKey1Union): auto =
   assert(value.kind == 3)
   return value.key3
 
+proc equals(_: typedesc[UnionKey3]; a, b: UnionKey3): bool =
+  equals(typeof(a.foo), a.foo, b.foo)
+
 proc `==`*(a, b: UnionKey3): bool =
-  true and a.foo == b.foo
+  return equals(UnionKey3, a, b)
 
 proc stringify(_: typedesc[UnionKey3]; value: UnionKey3): string =
   stringifyObj("UnionKey3", ("foo", stringify(typeof(value.foo), value.foo)))
@@ -182,21 +188,24 @@ converter forUnionKey3Union*(value: UnionunionKey3): UnionKey3Union =
 converter forUnionKey3Union*(value: string): UnionKey3Union =
   return UnionKey3Union(kind: 4, key4: value)
 
-proc `==`*(a, b: UnionKey3Union): bool =
+proc equals(_: typedesc[UnionKey3Union]; a, b: UnionKey3Union): bool =
   if a.kind != b.kind:
     return false
   case a.kind
   of 0:
-    return a.key0 == b.key0
+    return equals(typeof(a.key0), a.key0, b.key0)
   of 1:
-    return a.key1 == b.key1
+    return equals(typeof(a.key1), a.key1, b.key1)
   of 2:
-    return a.key2 == b.key2
+    return equals(typeof(a.key2), a.key2, b.key2)
   of 3:
-    return a.key3 == b.key3
+    return equals(typeof(a.key3), a.key3, b.key3)
   of 4:
-    return a.key4 == b.key4
+    return equals(typeof(a.key4), a.key4, b.key4)
   
+proc `==`*(a, b: UnionKey3Union): bool =
+  return equals(UnionKey3Union, a, b)
+
 proc stringify(_: typedesc[UnionKey3Union]; value: UnionKey3Union): string =
   case value.kind
   of 0:
@@ -298,8 +307,13 @@ proc asStr*(value: UnionKey3Union): auto =
   assert(value.kind == 4)
   return value.key4
 
+proc equals(_: typedesc[Unionunion]; a, b: Unionunion): bool =
+  equals(typeof(a.key1), a.key1, b.key1) and
+      equals(typeof(a.key2), a.key2, b.key2) and
+      equals(typeof(a.key3), a.key3, b.key3)
+
 proc `==`*(a, b: Unionunion): bool =
-  true and a.key1 == b.key1 and a.key2 == b.key2 and a.key3 == b.key3
+  return equals(Unionunion, a, b)
 
 proc stringify(_: typedesc[Unionunion]; value: Unionunion): string =
   stringifyObj("Unionunion",

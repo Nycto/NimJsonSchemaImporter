@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/stringify
+import json_schema_import/private/[stringify, equality]
 
 type
   LdtkWorldLayout* = enum
@@ -520,9 +520,13 @@ proc fromJsonHook*(target: var LdtkWorldLayout; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[LdtkNeighbourLevel]; a, b: LdtkNeighbourLevel): bool =
+  equals(typeof(a.levelIid), a.levelIid, b.levelIid) and
+      equals(typeof(a.levelUid), a.levelUid, b.levelUid) and
+      equals(typeof(a.dir), a.dir, b.dir)
+
 proc `==`*(a, b: LdtkNeighbourLevel): bool =
-  true and a.levelIid == b.levelIid and a.levelUid == b.levelUid and
-      a.dir == b.dir
+  return equals(LdtkNeighbourLevel, a, b)
 
 proc stringify(_: typedesc[LdtkNeighbourLevel]; value: LdtkNeighbourLevel): string =
   stringifyObj("LdtkNeighbourLevel", ("levelIid", stringify(
@@ -579,9 +583,13 @@ proc fromJsonHook*(target: var LdtkBgPos; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[LdtkLevelBgPosInfos]; a, b: LdtkLevelBgPosInfos): bool =
+  equals(typeof(a.cropRect), a.cropRect, b.cropRect) and
+      equals(typeof(a.scale), a.scale, b.scale) and
+      equals(typeof(a.topLeftPx), a.topLeftPx, b.topLeftPx)
+
 proc `==`*(a, b: LdtkLevelBgPosInfos): bool =
-  true and a.cropRect == b.cropRect and a.scale == b.scale and
-      a.topLeftPx == b.topLeftPx
+  return equals(LdtkLevelBgPosInfos, a, b)
 
 proc stringify(_: typedesc[LdtkLevelBgPosInfos]; value: LdtkLevelBgPosInfos): string =
   stringifyObj("LdtkLevelBgPosInfos", ("cropRect", stringify(
@@ -621,10 +629,15 @@ proc toJsonHook*(source: LdtkLevelBgPosInfos): JsonNode =
       output.add(newJInt(entry))
     output
 
+proc equals(_: typedesc[LdtkTilesetRect]; a, b: LdtkTilesetRect): bool =
+  equals(typeof(a.tilesetUid), a.tilesetUid, b.tilesetUid) and
+      equals(typeof(a.h), a.h, b.h) and
+      equals(typeof(a.x), a.x, b.x) and
+      equals(typeof(a.y), a.y, b.y) and
+      equals(typeof(a.w), a.w, b.w)
+
 proc `==`*(a, b: LdtkTilesetRect): bool =
-  true and a.tilesetUid == b.tilesetUid and a.h == b.h and a.x == b.x and
-      a.y == b.y and
-      a.w == b.w
+  return equals(LdtkTilesetRect, a, b)
 
 proc stringify(_: typedesc[LdtkTilesetRect]; value: LdtkTilesetRect): string =
   stringifyObj("LdtkTilesetRect", ("tilesetUid", stringify(
@@ -662,12 +675,16 @@ proc toJsonHook*(source: LdtkTilesetRect): JsonNode =
   result{"y"} = newJInt(source.y)
   result{"w"} = newJInt(source.w)
 
+proc equals(_: typedesc[LdtkFieldInstance]; a, b: LdtkFieldInstance): bool =
+  equals(typeof(a.`type`), a.`type`, b.`type`) and
+      equals(typeof(a.defUid), a.defUid, b.defUid) and
+      equals(typeof(a.identifier), a.identifier, b.identifier) and
+      equals(typeof(a.tile), a.tile, b.tile) and
+      equals(typeof(a.realEditorValues), a.realEditorValues, b.realEditorValues) and
+      equals(typeof(a.value), a.value, b.value)
+
 proc `==`*(a, b: LdtkFieldInstance): bool =
-  true and a.`type` == b.`type` and a.defUid == b.defUid and
-      a.identifier == b.identifier and
-      a.tile == b.tile and
-      a.realEditorValues == b.realEditorValues and
-      a.value == b.value
+  return equals(LdtkFieldInstance, a, b)
 
 proc stringify(_: typedesc[LdtkFieldInstance]; value: LdtkFieldInstance): string =
   stringifyObj("LdtkFieldInstance",
@@ -717,10 +734,15 @@ proc toJsonHook*(source: LdtkFieldInstance): JsonNode =
     output
   result{"__value"} = source.value
 
+proc equals(_: typedesc[LdtkTile]; a, b: LdtkTile): bool =
+  equals(typeof(a.t), a.t, b.t) and equals(typeof(a.d), a.d, b.d) and
+      equals(typeof(a.px), a.px, b.px) and
+      equals(typeof(a.a), a.a, b.a) and
+      equals(typeof(a.f), a.f, b.f) and
+      equals(typeof(a.src), a.src, b.src)
+
 proc `==`*(a, b: LdtkTile): bool =
-  true and a.t == b.t and a.d == b.d and a.px == b.px and a.a == b.a and
-      a.f == b.f and
-      a.src == b.src
+  return equals(LdtkTile, a, b)
 
 proc stringify(_: typedesc[LdtkTile]; value: LdtkTile): string =
   stringifyObj("LdtkTile", ("t", stringify(typeof(value.t), value.t)),
@@ -769,20 +791,24 @@ proc toJsonHook*(source: LdtkTile): JsonNode =
       output.add(newJInt(entry))
     output
 
+proc equals(_: typedesc[LdtkEntityInstance]; a, b: LdtkEntityInstance): bool =
+  equals(typeof(a.iid), a.iid, b.iid) and
+      equals(typeof(a.defUid), a.defUid, b.defUid) and
+      equals(typeof(a.identifier), a.identifier, b.identifier) and
+      equals(typeof(a.tile), a.tile, b.tile) and
+      equals(typeof(a.px), a.px, b.px) and
+      equals(typeof(a.worldX), a.worldX, b.worldX) and
+      equals(typeof(a.worldY), a.worldY, b.worldY) and
+      equals(typeof(a.smartColor), a.smartColor, b.smartColor) and
+      equals(typeof(a.grid), a.grid, b.grid) and
+      equals(typeof(a.pivot), a.pivot, b.pivot) and
+      equals(typeof(a.fieldInstances), a.fieldInstances, b.fieldInstances) and
+      equals(typeof(a.height), a.height, b.height) and
+      equals(typeof(a.tags), a.tags, b.tags) and
+      equals(typeof(a.width), a.width, b.width)
+
 proc `==`*(a, b: LdtkEntityInstance): bool =
-  true and a.iid == b.iid and a.defUid == b.defUid and
-      a.identifier == b.identifier and
-      a.tile == b.tile and
-      a.px == b.px and
-      a.worldX == b.worldX and
-      a.worldY == b.worldY and
-      a.smartColor == b.smartColor and
-      a.grid == b.grid and
-      a.pivot == b.pivot and
-      a.fieldInstances == b.fieldInstances and
-      a.height == b.height and
-      a.tags == b.tags and
-      a.width == b.width
+  return equals(LdtkEntityInstance, a, b)
 
 proc stringify(_: typedesc[LdtkEntityInstance]; value: LdtkEntityInstance): string =
   stringifyObj("LdtkEntityInstance",
@@ -890,8 +916,13 @@ proc toJsonHook*(source: LdtkEntityInstance): JsonNode =
     output
   result{"width"} = newJInt(source.width)
 
+proc equals(_: typedesc[LdtkIntGridValueInstance];
+            a, b: LdtkIntGridValueInstance): bool =
+  equals(typeof(a.v), a.v, b.v) and
+      equals(typeof(a.coordId), a.coordId, b.coordId)
+
 proc `==`*(a, b: LdtkIntGridValueInstance): bool =
-  true and a.v == b.v and a.coordId == b.coordId
+  return equals(LdtkIntGridValueInstance, a, b)
 
 proc stringify(_: typedesc[LdtkIntGridValueInstance];
                value: LdtkIntGridValueInstance): string =
@@ -915,30 +946,35 @@ proc toJsonHook*(source: LdtkIntGridValueInstance): JsonNode =
   result{"v"} = newJInt(source.v)
   result{"coordId"} = newJInt(source.coordId)
 
+proc equals(_: typedesc[LdtkLayerInstance]; a, b: LdtkLayerInstance): bool =
+  equals(typeof(a.cHei), a.cHei, b.cHei) and
+      equals(typeof(a.pxOffsetX), a.pxOffsetX, b.pxOffsetX) and
+      equals(typeof(a.tilesetRelPath), a.tilesetRelPath, b.tilesetRelPath) and
+      equals(typeof(a.iid), a.iid, b.iid) and
+      equals(typeof(a.levelId), a.levelId, b.levelId) and
+      equals(typeof(a.`type`), a.`type`, b.`type`) and
+      equals(typeof(a.autoLayerTiles), a.autoLayerTiles, b.autoLayerTiles) and
+      equals(typeof(a.optionalRules), a.optionalRules, b.optionalRules) and
+      equals(typeof(a.identifier), a.identifier, b.identifier) and
+      equals(typeof(a.gridSize), a.gridSize, b.gridSize) and
+      equals(typeof(a.pxTotalOffsetY), a.pxTotalOffsetY, b.pxTotalOffsetY) and
+      equals(typeof(a.intGridCsv), a.intGridCsv, b.intGridCsv) and
+      equals(typeof(a.overrideTilesetUid), a.overrideTilesetUid,
+             b.overrideTilesetUid) and
+      equals(typeof(a.visible), a.visible, b.visible) and
+      equals(typeof(a.entityInstances), a.entityInstances, b.entityInstances) and
+      equals(typeof(a.opacity), a.opacity, b.opacity) and
+      equals(typeof(a.seed), a.seed, b.seed) and
+      equals(typeof(a.layerDefUid), a.layerDefUid, b.layerDefUid) and
+      equals(typeof(a.pxTotalOffsetX), a.pxTotalOffsetX, b.pxTotalOffsetX) and
+      equals(typeof(a.cWid), a.cWid, b.cWid) and
+      equals(typeof(a.pxOffsetY), a.pxOffsetY, b.pxOffsetY) and
+      equals(typeof(a.tilesetDefUid), a.tilesetDefUid, b.tilesetDefUid) and
+      equals(typeof(a.gridTiles), a.gridTiles, b.gridTiles) and
+      equals(typeof(a.intGrid), a.intGrid, b.intGrid)
+
 proc `==`*(a, b: LdtkLayerInstance): bool =
-  true and a.cHei == b.cHei and a.pxOffsetX == b.pxOffsetX and
-      a.tilesetRelPath == b.tilesetRelPath and
-      a.iid == b.iid and
-      a.levelId == b.levelId and
-      a.`type` == b.`type` and
-      a.autoLayerTiles == b.autoLayerTiles and
-      a.optionalRules == b.optionalRules and
-      a.identifier == b.identifier and
-      a.gridSize == b.gridSize and
-      a.pxTotalOffsetY == b.pxTotalOffsetY and
-      a.intGridCsv == b.intGridCsv and
-      a.overrideTilesetUid == b.overrideTilesetUid and
-      a.visible == b.visible and
-      a.entityInstances == b.entityInstances and
-      a.opacity == b.opacity and
-      a.seed == b.seed and
-      a.layerDefUid == b.layerDefUid and
-      a.pxTotalOffsetX == b.pxTotalOffsetX and
-      a.cWid == b.cWid and
-      a.pxOffsetY == b.pxOffsetY and
-      a.tilesetDefUid == b.tilesetDefUid and
-      a.gridTiles == b.gridTiles and
-      a.intGrid == b.intGrid
+  return equals(LdtkLayerInstance, a, b)
 
 proc stringify(_: typedesc[LdtkLayerInstance]; value: LdtkLayerInstance): string =
   stringifyObj("LdtkLayerInstance",
@@ -1118,27 +1154,32 @@ proc toJsonHook*(source: LdtkLayerInstance): JsonNode =
         output.add(toJsonHook(entry))
       output
 
+proc equals(_: typedesc[LdtkLevel]; a, b: LdtkLevel): bool =
+  equals(typeof(a.neighbours), a.neighbours, b.neighbours) and
+      equals(typeof(a.bgColor), a.bgColor, b.bgColor) and
+      equals(typeof(a.worldX), a.worldX, b.worldX) and
+      equals(typeof(a.externalRelPath), a.externalRelPath, b.externalRelPath) and
+      equals(typeof(a.useAutoIdentifier), a.useAutoIdentifier,
+             b.useAutoIdentifier) and
+      equals(typeof(a.iid), a.iid, b.iid) and
+      equals(typeof(a.bgColor1), a.bgColor1, b.bgColor1) and
+      equals(typeof(a.bgPos), a.bgPos, b.bgPos) and
+      equals(typeof(a.pxHei), a.pxHei, b.pxHei) and
+      equals(typeof(a.worldY), a.worldY, b.worldY) and
+      equals(typeof(a.bgPos1), a.bgPos1, b.bgPos1) and
+      equals(typeof(a.uid), a.uid, b.uid) and
+      equals(typeof(a.smartColor), a.smartColor, b.smartColor) and
+      equals(typeof(a.fieldInstances), a.fieldInstances, b.fieldInstances) and
+      equals(typeof(a.pxWid), a.pxWid, b.pxWid) and
+      equals(typeof(a.identifier), a.identifier, b.identifier) and
+      equals(typeof(a.bgPivotY), a.bgPivotY, b.bgPivotY) and
+      equals(typeof(a.bgPivotX), a.bgPivotX, b.bgPivotX) and
+      equals(typeof(a.layerInstances), a.layerInstances, b.layerInstances) and
+      equals(typeof(a.bgRelPath), a.bgRelPath, b.bgRelPath) and
+      equals(typeof(a.worldDepth), a.worldDepth, b.worldDepth)
+
 proc `==`*(a, b: LdtkLevel): bool =
-  true and a.neighbours == b.neighbours and a.bgColor == b.bgColor and
-      a.worldX == b.worldX and
-      a.externalRelPath == b.externalRelPath and
-      a.useAutoIdentifier == b.useAutoIdentifier and
-      a.iid == b.iid and
-      a.bgColor1 == b.bgColor1 and
-      a.bgPos == b.bgPos and
-      a.pxHei == b.pxHei and
-      a.worldY == b.worldY and
-      a.bgPos1 == b.bgPos1 and
-      a.uid == b.uid and
-      a.smartColor == b.smartColor and
-      a.fieldInstances == b.fieldInstances and
-      a.pxWid == b.pxWid and
-      a.identifier == b.identifier and
-      a.bgPivotY == b.bgPivotY and
-      a.bgPivotX == b.bgPivotX and
-      a.layerInstances == b.layerInstances and
-      a.bgRelPath == b.bgRelPath and
-      a.worldDepth == b.worldDepth
+  return equals(LdtkLevel, a, b)
 
 proc stringify(_: typedesc[LdtkLevel]; value: LdtkLevel): string =
   stringifyObj("LdtkLevel", ("neighbours", stringify(typeof(value.neighbours),
@@ -1280,14 +1321,20 @@ proc toJsonHook*(source: LdtkLevel): JsonNode =
     result{"bgRelPath"} = newJString(unsafeGet(source.bgRelPath))
   result{"worldDepth"} = newJInt(source.worldDepth)
 
+proc equals(_: typedesc[LdtkWorld]; a, b: LdtkWorld): bool =
+  equals(typeof(a.worldGridWidth), a.worldGridWidth, b.worldGridWidth) and
+      equals(typeof(a.iid), a.iid, b.iid) and
+      equals(typeof(a.worldGridHeight), a.worldGridHeight, b.worldGridHeight) and
+      equals(typeof(a.worldLayout), a.worldLayout, b.worldLayout) and
+      equals(typeof(a.defaultLevelWidth), a.defaultLevelWidth,
+             b.defaultLevelWidth) and
+      equals(typeof(a.levels), a.levels, b.levels) and
+      equals(typeof(a.defaultLevelHeight), a.defaultLevelHeight,
+             b.defaultLevelHeight) and
+      equals(typeof(a.identifier), a.identifier, b.identifier)
+
 proc `==`*(a, b: LdtkWorld): bool =
-  true and a.worldGridWidth == b.worldGridWidth and a.iid == b.iid and
-      a.worldGridHeight == b.worldGridHeight and
-      a.worldLayout == b.worldLayout and
-      a.defaultLevelWidth == b.defaultLevelWidth and
-      a.levels == b.levels and
-      a.defaultLevelHeight == b.defaultLevelHeight and
-      a.identifier == b.identifier
+  return equals(LdtkWorld, a, b)
 
 proc stringify(_: typedesc[LdtkWorld]; value: LdtkWorld): string =
   stringifyObj("LdtkWorld", ("worldGridWidth", stringify(
@@ -1354,10 +1401,15 @@ proc toJsonHook*(source: LdtkWorld): JsonNode =
   result{"defaultLevelHeight"} = newJInt(source.defaultLevelHeight)
   result{"identifier"} = newJString(source.identifier)
 
+proc equals(_: typedesc[LdtkEntityReferenceInfos];
+            a, b: LdtkEntityReferenceInfos): bool =
+  equals(typeof(a.worldIid), a.worldIid, b.worldIid) and
+      equals(typeof(a.entityIid), a.entityIid, b.entityIid) and
+      equals(typeof(a.layerIid), a.layerIid, b.layerIid) and
+      equals(typeof(a.levelIid), a.levelIid, b.levelIid)
+
 proc `==`*(a, b: LdtkEntityReferenceInfos): bool =
-  true and a.worldIid == b.worldIid and a.entityIid == b.entityIid and
-      a.layerIid == b.layerIid and
-      a.levelIid == b.levelIid
+  return equals(LdtkEntityReferenceInfos, a, b)
 
 proc stringify(_: typedesc[LdtkEntityReferenceInfos];
                value: LdtkEntityReferenceInfos): string =
@@ -1392,11 +1444,16 @@ proc toJsonHook*(source: LdtkEntityReferenceInfos): JsonNode =
   result{"layerIid"} = newJString(source.layerIid)
   result{"levelIid"} = newJString(source.levelIid)
 
+proc equals(_: typedesc[LdtkTocInstanceData]; a, b: LdtkTocInstanceData): bool =
+  equals(typeof(a.worldX), a.worldX, b.worldX) and
+      equals(typeof(a.widPx), a.widPx, b.widPx) and
+      equals(typeof(a.worldY), a.worldY, b.worldY) and
+      equals(typeof(a.heiPx), a.heiPx, b.heiPx) and
+      equals(typeof(a.fields), a.fields, b.fields) and
+      equals(typeof(a.iids), a.iids, b.iids)
+
 proc `==`*(a, b: LdtkTocInstanceData): bool =
-  true and a.worldX == b.worldX and a.widPx == b.widPx and a.worldY == b.worldY and
-      a.heiPx == b.heiPx and
-      a.fields == b.fields and
-      a.iids == b.iids
+  return equals(LdtkTocInstanceData, a, b)
 
 proc stringify(_: typedesc[LdtkTocInstanceData]; value: LdtkTocInstanceData): string =
   stringifyObj("LdtkTocInstanceData",
@@ -1439,9 +1496,13 @@ proc toJsonHook*(source: LdtkTocInstanceData): JsonNode =
   result{"fields"} = source.fields
   result{"iids"} = toJsonHook(source.iids)
 
+proc equals(_: typedesc[LdtkTableOfContentEntry]; a, b: LdtkTableOfContentEntry): bool =
+  equals(typeof(a.identifier), a.identifier, b.identifier) and
+      equals(typeof(a.instancesData), a.instancesData, b.instancesData) and
+      equals(typeof(a.instances), a.instances, b.instances)
+
 proc `==`*(a, b: LdtkTableOfContentEntry): bool =
-  true and a.identifier == b.identifier and a.instancesData == b.instancesData and
-      a.instances == b.instances
+  return equals(LdtkTableOfContentEntry, a, b)
 
 proc stringify(_: typedesc[LdtkTableOfContentEntry];
                value: LdtkTableOfContentEntry): string =
@@ -1554,8 +1615,12 @@ proc fromJsonHook*(target: var LdtkWhen; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[LdtkCustomCommand]; a, b: LdtkCustomCommand): bool =
+  equals(typeof(a.`when`), a.`when`, b.`when`) and
+      equals(typeof(a.command), a.command, b.command)
+
 proc `==`*(a, b: LdtkCustomCommand): bool =
-  true and a.`when` == b.`when` and a.command == b.command
+  return equals(LdtkCustomCommand, a, b)
 
 proc stringify(_: typedesc[LdtkCustomCommand]; value: LdtkCustomCommand): string =
   stringifyObj("LdtkCustomCommand",
@@ -1638,8 +1703,12 @@ proc fromJsonHook*(target: var LdtkFlags; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[LdtkTileCustomMetadata]; a, b: LdtkTileCustomMetadata): bool =
+  equals(typeof(a.tileId), a.tileId, b.tileId) and
+      equals(typeof(a.data), a.data, b.data)
+
 proc `==`*(a, b: LdtkTileCustomMetadata): bool =
-  true and a.tileId == b.tileId and a.data == b.data
+  return equals(LdtkTileCustomMetadata, a, b)
 
 proc stringify(_: typedesc[LdtkTileCustomMetadata];
                value: LdtkTileCustomMetadata): string =
@@ -1663,8 +1732,12 @@ proc toJsonHook*(source: LdtkTileCustomMetadata): JsonNode =
   result{"tileId"} = newJInt(source.tileId)
   result{"data"} = newJString(source.data)
 
+proc equals(_: typedesc[LdtkEnumTagValue]; a, b: LdtkEnumTagValue): bool =
+  equals(typeof(a.tileIds), a.tileIds, b.tileIds) and
+      equals(typeof(a.enumValueId), a.enumValueId, b.enumValueId)
+
 proc `==`*(a, b: LdtkEnumTagValue): bool =
-  true and a.tileIds == b.tileIds and a.enumValueId == b.enumValueId
+  return equals(LdtkEnumTagValue, a, b)
 
 proc stringify(_: typedesc[LdtkEnumTagValue]; value: LdtkEnumTagValue): string =
   stringifyObj("LdtkEnumTagValue",
@@ -1703,23 +1776,28 @@ proc fromJsonHook*(target: var LdtkEmbedAtlas; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[LdtkTilesetDef]; a, b: LdtkTilesetDef): bool =
+  equals(typeof(a.cachedPixelData), a.cachedPixelData, b.cachedPixelData) and
+      equals(typeof(a.cHei), a.cHei, b.cHei) and
+      equals(typeof(a.pxHei), a.pxHei, b.pxHei) and
+      equals(typeof(a.customData), a.customData, b.customData) and
+      equals(typeof(a.tagsSourceEnumUid), a.tagsSourceEnumUid,
+             b.tagsSourceEnumUid) and
+      equals(typeof(a.uid), a.uid, b.uid) and
+      equals(typeof(a.padding), a.padding, b.padding) and
+      equals(typeof(a.enumTags), a.enumTags, b.enumTags) and
+      equals(typeof(a.pxWid), a.pxWid, b.pxWid) and
+      equals(typeof(a.cWid), a.cWid, b.cWid) and
+      equals(typeof(a.spacing), a.spacing, b.spacing) and
+      equals(typeof(a.identifier), a.identifier, b.identifier) and
+      equals(typeof(a.savedSelections), a.savedSelections, b.savedSelections) and
+      equals(typeof(a.tags), a.tags, b.tags) and
+      equals(typeof(a.embedAtlas), a.embedAtlas, b.embedAtlas) and
+      equals(typeof(a.relPath), a.relPath, b.relPath) and
+      equals(typeof(a.tileGridSize), a.tileGridSize, b.tileGridSize)
+
 proc `==`*(a, b: LdtkTilesetDef): bool =
-  true and a.cachedPixelData == b.cachedPixelData and a.cHei == b.cHei and
-      a.pxHei == b.pxHei and
-      a.customData == b.customData and
-      a.tagsSourceEnumUid == b.tagsSourceEnumUid and
-      a.uid == b.uid and
-      a.padding == b.padding and
-      a.enumTags == b.enumTags and
-      a.pxWid == b.pxWid and
-      a.cWid == b.cWid and
-      a.spacing == b.spacing and
-      a.identifier == b.identifier and
-      a.savedSelections == b.savedSelections and
-      a.tags == b.tags and
-      a.embedAtlas == b.embedAtlas and
-      a.relPath == b.relPath and
-      a.tileGridSize == b.tileGridSize
+  return equals(LdtkTilesetDef, a, b)
 
 proc stringify(_: typedesc[LdtkTilesetDef]; value: LdtkTilesetDef): string =
   stringifyObj("LdtkTilesetDef", ("cachedPixelData", stringify(
@@ -1852,9 +1930,14 @@ proc toJsonHook*(source: LdtkTilesetDef): JsonNode =
     result{"relPath"} = newJString(unsafeGet(source.relPath))
   result{"tileGridSize"} = newJInt(source.tileGridSize)
 
+proc equals(_: typedesc[LdtkIntGridValueGroupDef];
+            a, b: LdtkIntGridValueGroupDef): bool =
+  equals(typeof(a.color), a.color, b.color) and
+      equals(typeof(a.uid), a.uid, b.uid) and
+      equals(typeof(a.identifier), a.identifier, b.identifier)
+
 proc `==`*(a, b: LdtkIntGridValueGroupDef): bool =
-  true and a.color == b.color and a.uid == b.uid and
-      a.identifier == b.identifier
+  return equals(LdtkIntGridValueGroupDef, a, b)
 
 proc stringify(_: typedesc[LdtkIntGridValueGroupDef];
                value: LdtkIntGridValueGroupDef): string =
@@ -1884,11 +1967,15 @@ proc toJsonHook*(source: LdtkIntGridValueGroupDef): JsonNode =
   if isSome(source.identifier):
     result{"identifier"} = newJString(unsafeGet(source.identifier))
 
+proc equals(_: typedesc[LdtkIntGridValueDef]; a, b: LdtkIntGridValueDef): bool =
+  equals(typeof(a.tile), a.tile, b.tile) and
+      equals(typeof(a.color), a.color, b.color) and
+      equals(typeof(a.identifier), a.identifier, b.identifier) and
+      equals(typeof(a.value), a.value, b.value) and
+      equals(typeof(a.groupUid), a.groupUid, b.groupUid)
+
 proc `==`*(a, b: LdtkIntGridValueDef): bool =
-  true and a.tile == b.tile and a.color == b.color and
-      a.identifier == b.identifier and
-      a.value == b.value and
-      a.groupUid == b.groupUid
+  return equals(LdtkIntGridValueDef, a, b)
 
 proc stringify(_: typedesc[LdtkIntGridValueDef]; value: LdtkIntGridValueDef): string =
   stringifyObj("LdtkIntGridValueDef",
@@ -1963,37 +2050,41 @@ proc fromJsonHook*(target: var LdtkTileMode; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[LdtkAutoRuleDef]; a, b: LdtkAutoRuleDef): bool =
+  equals(typeof(a.flipX), a.flipX, b.flipX) and
+      equals(typeof(a.pivotX), a.pivotX, b.pivotX) and
+      equals(typeof(a.perlinActive), a.perlinActive, b.perlinActive) and
+      equals(typeof(a.tileRectsIds), a.tileRectsIds, b.tileRectsIds) and
+      equals(typeof(a.perlinScale), a.perlinScale, b.perlinScale) and
+      equals(typeof(a.outOfBoundsValue), a.outOfBoundsValue, b.outOfBoundsValue) and
+      equals(typeof(a.pattern), a.pattern, b.pattern) and
+      equals(typeof(a.tileRandomXMin), a.tileRandomXMin, b.tileRandomXMin) and
+      equals(typeof(a.checker), a.checker, b.checker) and
+      equals(typeof(a.perlinOctaves), a.perlinOctaves, b.perlinOctaves) and
+      equals(typeof(a.tileIds), a.tileIds, b.tileIds) and
+      equals(typeof(a.alpha), a.alpha, b.alpha) and
+      equals(typeof(a.tileXOffset), a.tileXOffset, b.tileXOffset) and
+      equals(typeof(a.invalidated), a.invalidated, b.invalidated) and
+      equals(typeof(a.xModulo), a.xModulo, b.xModulo) and
+      equals(typeof(a.size), a.size, b.size) and
+      equals(typeof(a.chance), a.chance, b.chance) and
+      equals(typeof(a.breakOnMatch), a.breakOnMatch, b.breakOnMatch) and
+      equals(typeof(a.tileYOffset), a.tileYOffset, b.tileYOffset) and
+      equals(typeof(a.uid), a.uid, b.uid) and
+      equals(typeof(a.perlinSeed), a.perlinSeed, b.perlinSeed) and
+      equals(typeof(a.yOffset), a.yOffset, b.yOffset) and
+      equals(typeof(a.tileRandomYMax), a.tileRandomYMax, b.tileRandomYMax) and
+      equals(typeof(a.tileRandomYMin), a.tileRandomYMin, b.tileRandomYMin) and
+      equals(typeof(a.tileMode), a.tileMode, b.tileMode) and
+      equals(typeof(a.flipY), a.flipY, b.flipY) and
+      equals(typeof(a.tileRandomXMax), a.tileRandomXMax, b.tileRandomXMax) and
+      equals(typeof(a.pivotY), a.pivotY, b.pivotY) and
+      equals(typeof(a.yModulo), a.yModulo, b.yModulo) and
+      equals(typeof(a.active), a.active, b.active) and
+      equals(typeof(a.xOffset), a.xOffset, b.xOffset)
+
 proc `==`*(a, b: LdtkAutoRuleDef): bool =
-  true and a.flipX == b.flipX and a.pivotX == b.pivotX and
-      a.perlinActive == b.perlinActive and
-      a.tileRectsIds == b.tileRectsIds and
-      a.perlinScale == b.perlinScale and
-      a.outOfBoundsValue == b.outOfBoundsValue and
-      a.pattern == b.pattern and
-      a.tileRandomXMin == b.tileRandomXMin and
-      a.checker == b.checker and
-      a.perlinOctaves == b.perlinOctaves and
-      a.tileIds == b.tileIds and
-      a.alpha == b.alpha and
-      a.tileXOffset == b.tileXOffset and
-      a.invalidated == b.invalidated and
-      a.xModulo == b.xModulo and
-      a.size == b.size and
-      a.chance == b.chance and
-      a.breakOnMatch == b.breakOnMatch and
-      a.tileYOffset == b.tileYOffset and
-      a.uid == b.uid and
-      a.perlinSeed == b.perlinSeed and
-      a.yOffset == b.yOffset and
-      a.tileRandomYMax == b.tileRandomYMax and
-      a.tileRandomYMin == b.tileRandomYMin and
-      a.tileMode == b.tileMode and
-      a.flipY == b.flipY and
-      a.tileRandomXMax == b.tileRandomXMax and
-      a.pivotY == b.pivotY and
-      a.yModulo == b.yModulo and
-      a.active == b.active and
-      a.xOffset == b.xOffset
+  return equals(LdtkAutoRuleDef, a, b)
 
 proc stringify(_: typedesc[LdtkAutoRuleDef]; value: LdtkAutoRuleDef): string =
   stringifyObj("LdtkAutoRuleDef",
@@ -2194,17 +2285,23 @@ proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode =
   result{"active"} = newJBool(source.active)
   result{"xOffset"} = newJInt(source.xOffset)
 
+proc equals(_: typedesc[LdtkAutoLayerRuleGroup]; a, b: LdtkAutoLayerRuleGroup): bool =
+  equals(typeof(a.name), a.name, b.name) and
+      equals(typeof(a.collapsed), a.collapsed, b.collapsed) and
+      equals(typeof(a.biomeRequirementMode), a.biomeRequirementMode,
+             b.biomeRequirementMode) and
+      equals(typeof(a.color), a.color, b.color) and
+      equals(typeof(a.isOptional), a.isOptional, b.isOptional) and
+      equals(typeof(a.icon), a.icon, b.icon) and
+      equals(typeof(a.usesWizard), a.usesWizard, b.usesWizard) and
+      equals(typeof(a.uid), a.uid, b.uid) and
+      equals(typeof(a.requiredBiomeValues), a.requiredBiomeValues,
+             b.requiredBiomeValues) and
+      equals(typeof(a.active), a.active, b.active) and
+      equals(typeof(a.rules), a.rules, b.rules)
+
 proc `==`*(a, b: LdtkAutoLayerRuleGroup): bool =
-  true and a.name == b.name and a.collapsed == b.collapsed and
-      a.biomeRequirementMode == b.biomeRequirementMode and
-      a.color == b.color and
-      a.isOptional == b.isOptional and
-      a.icon == b.icon and
-      a.usesWizard == b.usesWizard and
-      a.uid == b.uid and
-      a.requiredBiomeValues == b.requiredBiomeValues and
-      a.active == b.active and
-      a.rules == b.rules
+  return equals(LdtkAutoLayerRuleGroup, a, b)
 
 proc stringify(_: typedesc[LdtkAutoLayerRuleGroup];
                value: LdtkAutoLayerRuleGroup): string =
@@ -2314,40 +2411,51 @@ proc fromJsonHook*(target: var LdtkType; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[LdtkLayerDef]; a, b: LdtkLayerDef): bool =
+  equals(typeof(a.pxOffsetX), a.pxOffsetX, b.pxOffsetX) and
+      equals(typeof(a.tilePivotX), a.tilePivotX, b.tilePivotX) and
+      equals(typeof(a.uiFilterTags), a.uiFilterTags, b.uiFilterTags) and
+      equals(typeof(a.displayOpacity), a.displayOpacity, b.displayOpacity) and
+      equals(typeof(a.parallaxFactorY), a.parallaxFactorY, b.parallaxFactorY) and
+      equals(typeof(a.hideInList), a.hideInList, b.hideInList) and
+      equals(typeof(a.`type`), a.`type`, b.`type`) and
+      equals(typeof(a.guideGridHei), a.guideGridHei, b.guideGridHei) and
+      equals(typeof(a.uiColor), a.uiColor, b.uiColor) and
+      equals(typeof(a.doc), a.doc, b.doc) and
+      equals(typeof(a.tilesetDefUid), a.tilesetDefUid, b.tilesetDefUid) and
+      equals(typeof(a.canSelectWhenInactive), a.canSelectWhenInactive,
+             b.canSelectWhenInactive) and
+      equals(typeof(a.useAsyncRender), a.useAsyncRender, b.useAsyncRender) and
+      equals(typeof(a.autoSourceLayerDefUid), a.autoSourceLayerDefUid,
+             b.autoSourceLayerDefUid) and
+      equals(typeof(a.autoTilesetDefUid), a.autoTilesetDefUid,
+             b.autoTilesetDefUid) and
+      equals(typeof(a.parallaxScaling), a.parallaxScaling, b.parallaxScaling) and
+      equals(typeof(a.renderInWorldView), a.renderInWorldView,
+             b.renderInWorldView) and
+      equals(typeof(a.intGridValuesGroups), a.intGridValuesGroups,
+             b.intGridValuesGroups) and
+      equals(typeof(a.inactiveOpacity), a.inactiveOpacity, b.inactiveOpacity) and
+      equals(typeof(a.uid), a.uid, b.uid) and
+      equals(typeof(a.excludedTags), a.excludedTags, b.excludedTags) and
+      equals(typeof(a.hideFieldsWhenInactive), a.hideFieldsWhenInactive,
+             b.hideFieldsWhenInactive) and
+      equals(typeof(a.intGridValues), a.intGridValues, b.intGridValues) and
+      equals(typeof(a.autoRuleGroups), a.autoRuleGroups, b.autoRuleGroups) and
+      equals(typeof(a.type1), a.type1, b.type1) and
+      equals(typeof(a.identifier), a.identifier, b.identifier) and
+      equals(typeof(a.guideGridWid), a.guideGridWid, b.guideGridWid) and
+      equals(typeof(a.requiredTags), a.requiredTags, b.requiredTags) and
+      equals(typeof(a.pxOffsetY), a.pxOffsetY, b.pxOffsetY) and
+      equals(typeof(a.tilePivotY), a.tilePivotY, b.tilePivotY) and
+      equals(typeof(a.biomeFieldUid), a.biomeFieldUid, b.biomeFieldUid) and
+      equals(typeof(a.gridSize), a.gridSize, b.gridSize) and
+      equals(typeof(a.parallaxFactorX), a.parallaxFactorX, b.parallaxFactorX) and
+      equals(typeof(a.autoTilesKilledByOtherLayerUid),
+             a.autoTilesKilledByOtherLayerUid, b.autoTilesKilledByOtherLayerUid)
+
 proc `==`*(a, b: LdtkLayerDef): bool =
-  true and a.pxOffsetX == b.pxOffsetX and a.tilePivotX == b.tilePivotX and
-      a.uiFilterTags == b.uiFilterTags and
-      a.displayOpacity == b.displayOpacity and
-      a.parallaxFactorY == b.parallaxFactorY and
-      a.hideInList == b.hideInList and
-      a.`type` == b.`type` and
-      a.guideGridHei == b.guideGridHei and
-      a.uiColor == b.uiColor and
-      a.doc == b.doc and
-      a.tilesetDefUid == b.tilesetDefUid and
-      a.canSelectWhenInactive == b.canSelectWhenInactive and
-      a.useAsyncRender == b.useAsyncRender and
-      a.autoSourceLayerDefUid == b.autoSourceLayerDefUid and
-      a.autoTilesetDefUid == b.autoTilesetDefUid and
-      a.parallaxScaling == b.parallaxScaling and
-      a.renderInWorldView == b.renderInWorldView and
-      a.intGridValuesGroups == b.intGridValuesGroups and
-      a.inactiveOpacity == b.inactiveOpacity and
-      a.uid == b.uid and
-      a.excludedTags == b.excludedTags and
-      a.hideFieldsWhenInactive == b.hideFieldsWhenInactive and
-      a.intGridValues == b.intGridValues and
-      a.autoRuleGroups == b.autoRuleGroups and
-      a.type1 == b.type1 and
-      a.identifier == b.identifier and
-      a.guideGridWid == b.guideGridWid and
-      a.requiredTags == b.requiredTags and
-      a.pxOffsetY == b.pxOffsetY and
-      a.tilePivotY == b.tilePivotY and
-      a.biomeFieldUid == b.biomeFieldUid and
-      a.gridSize == b.gridSize and
-      a.parallaxFactorX == b.parallaxFactorX and
-      a.autoTilesKilledByOtherLayerUid == b.autoTilesKilledByOtherLayerUid
+  return equals(LdtkLayerDef, a, b)
 
 proc stringify(_: typedesc[LdtkLayerDef]; value: LdtkLayerDef): string =
   stringifyObj("LdtkLayerDef", ("pxOffsetX", stringify(typeof(value.pxOffsetX),
@@ -2789,42 +2897,52 @@ proc fromJsonHook*(target: var LdtkEditorLinkStyle; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[LdtkFieldDef]; a, b: LdtkFieldDef): bool =
+  equals(typeof(a.acceptFileTypes), a.acceptFileTypes, b.acceptFileTypes) and
+      equals(typeof(a.editorDisplayScale), a.editorDisplayScale,
+             b.editorDisplayScale) and
+      equals(typeof(a.searchable), a.searchable, b.searchable) and
+      equals(typeof(a.useForSmartColor), a.useForSmartColor, b.useForSmartColor) and
+      equals(typeof(a.editorShowInWorld), a.editorShowInWorld,
+             b.editorShowInWorld) and
+      equals(typeof(a.allowedRefs), a.allowedRefs, b.allowedRefs) and
+      equals(typeof(a.editorAlwaysShow), a.editorAlwaysShow, b.editorAlwaysShow) and
+      equals(typeof(a.arrayMinLength), a.arrayMinLength, b.arrayMinLength) and
+      equals(typeof(a.editorTextSuffix), a.editorTextSuffix, b.editorTextSuffix) and
+      equals(typeof(a.min), a.min, b.min) and
+      equals(typeof(a.`type`), a.`type`, b.`type`) and
+      equals(typeof(a.editorDisplayMode), a.editorDisplayMode,
+             b.editorDisplayMode) and
+      equals(typeof(a.editorDisplayColor), a.editorDisplayColor,
+             b.editorDisplayColor) and
+      equals(typeof(a.canBeNull), a.canBeNull, b.canBeNull) and
+      equals(typeof(a.autoChainRef), a.autoChainRef, b.autoChainRef) and
+      equals(typeof(a.doc), a.doc, b.doc) and
+      equals(typeof(a.allowedRefsEntityUid), a.allowedRefsEntityUid,
+             b.allowedRefsEntityUid) and
+      equals(typeof(a.tilesetUid), a.tilesetUid, b.tilesetUid) and
+      equals(typeof(a.allowedRefTags), a.allowedRefTags, b.allowedRefTags) and
+      equals(typeof(a.symmetricalRef), a.symmetricalRef, b.symmetricalRef) and
+      equals(typeof(a.uid), a.uid, b.uid) and
+      equals(typeof(a.editorTextPrefix), a.editorTextPrefix, b.editorTextPrefix) and
+      equals(typeof(a.isArray), a.isArray, b.isArray) and
+      equals(typeof(a.exportToToc), a.exportToToc, b.exportToToc) and
+      equals(typeof(a.editorDisplayPos), a.editorDisplayPos, b.editorDisplayPos) and
+      equals(typeof(a.textLanguageMode), a.textLanguageMode, b.textLanguageMode) and
+      equals(typeof(a.max), a.max, b.max) and
+      equals(typeof(a.allowOutOfLevelRef), a.allowOutOfLevelRef,
+             b.allowOutOfLevelRef) and
+      equals(typeof(a.editorCutLongValues), a.editorCutLongValues,
+             b.editorCutLongValues) and
+      equals(typeof(a.defaultOverride), a.defaultOverride, b.defaultOverride) and
+      equals(typeof(a.editorLinkStyle), a.editorLinkStyle, b.editorLinkStyle) and
+      equals(typeof(a.regex), a.regex, b.regex) and
+      equals(typeof(a.type1), a.type1, b.type1) and
+      equals(typeof(a.identifier), a.identifier, b.identifier) and
+      equals(typeof(a.arrayMaxLength), a.arrayMaxLength, b.arrayMaxLength)
+
 proc `==`*(a, b: LdtkFieldDef): bool =
-  true and a.acceptFileTypes == b.acceptFileTypes and
-      a.editorDisplayScale == b.editorDisplayScale and
-      a.searchable == b.searchable and
-      a.useForSmartColor == b.useForSmartColor and
-      a.editorShowInWorld == b.editorShowInWorld and
-      a.allowedRefs == b.allowedRefs and
-      a.editorAlwaysShow == b.editorAlwaysShow and
-      a.arrayMinLength == b.arrayMinLength and
-      a.editorTextSuffix == b.editorTextSuffix and
-      a.min == b.min and
-      a.`type` == b.`type` and
-      a.editorDisplayMode == b.editorDisplayMode and
-      a.editorDisplayColor == b.editorDisplayColor and
-      a.canBeNull == b.canBeNull and
-      a.autoChainRef == b.autoChainRef and
-      a.doc == b.doc and
-      a.allowedRefsEntityUid == b.allowedRefsEntityUid and
-      a.tilesetUid == b.tilesetUid and
-      a.allowedRefTags == b.allowedRefTags and
-      a.symmetricalRef == b.symmetricalRef and
-      a.uid == b.uid and
-      a.editorTextPrefix == b.editorTextPrefix and
-      a.isArray == b.isArray and
-      a.exportToToc == b.exportToToc and
-      a.editorDisplayPos == b.editorDisplayPos and
-      a.textLanguageMode == b.textLanguageMode and
-      a.max == b.max and
-      a.allowOutOfLevelRef == b.allowOutOfLevelRef and
-      a.editorCutLongValues == b.editorCutLongValues and
-      a.defaultOverride == b.defaultOverride and
-      a.editorLinkStyle == b.editorLinkStyle and
-      a.regex == b.regex and
-      a.type1 == b.type1 and
-      a.identifier == b.identifier and
-      a.arrayMaxLength == b.arrayMaxLength
+  return equals(LdtkFieldDef, a, b)
 
 proc stringify(_: typedesc[LdtkFieldDef]; value: LdtkFieldDef): string =
   stringifyObj("LdtkFieldDef", ("acceptFileTypes", stringify(
@@ -3073,11 +3191,15 @@ proc toJsonHook*(source: LdtkFieldDef): JsonNode =
   if isSome(source.arrayMaxLength):
     result{"arrayMaxLength"} = newJInt(unsafeGet(source.arrayMaxLength))
 
+proc equals(_: typedesc[LdtkEnumDefValues]; a, b: LdtkEnumDefValues): bool =
+  equals(typeof(a.tileId), a.tileId, b.tileId) and
+      equals(typeof(a.color), a.color, b.color) and
+      equals(typeof(a.tileRect), a.tileRect, b.tileRect) and
+      equals(typeof(a.id), a.id, b.id) and
+      equals(typeof(a.tileSrcRect), a.tileSrcRect, b.tileSrcRect)
+
 proc `==`*(a, b: LdtkEnumDefValues): bool =
-  true and a.tileId == b.tileId and a.color == b.color and
-      a.tileRect == b.tileRect and
-      a.id == b.id and
-      a.tileSrcRect == b.tileSrcRect
+  return equals(LdtkEnumDefValues, a, b)
 
 proc stringify(_: typedesc[LdtkEnumDefValues]; value: LdtkEnumDefValues): string =
   stringifyObj("LdtkEnumDefValues",
@@ -3123,14 +3245,18 @@ proc toJsonHook*(source: LdtkEnumDefValues): JsonNode =
         output.add(newJInt(entry))
       output
 
+proc equals(_: typedesc[LdtkEnumDef]; a, b: LdtkEnumDef): bool =
+  equals(typeof(a.externalFileChecksum), a.externalFileChecksum,
+         b.externalFileChecksum) and
+      equals(typeof(a.externalRelPath), a.externalRelPath, b.externalRelPath) and
+      equals(typeof(a.uid), a.uid, b.uid) and
+      equals(typeof(a.values), a.values, b.values) and
+      equals(typeof(a.iconTilesetUid), a.iconTilesetUid, b.iconTilesetUid) and
+      equals(typeof(a.identifier), a.identifier, b.identifier) and
+      equals(typeof(a.tags), a.tags, b.tags)
+
 proc `==`*(a, b: LdtkEnumDef): bool =
-  true and a.externalFileChecksum == b.externalFileChecksum and
-      a.externalRelPath == b.externalRelPath and
-      a.uid == b.uid and
-      a.values == b.values and
-      a.iconTilesetUid == b.iconTilesetUid and
-      a.identifier == b.identifier and
-      a.tags == b.tags
+  return equals(LdtkEnumDef, a, b)
 
 proc stringify(_: typedesc[LdtkEnumDef]; value: LdtkEnumDef): string =
   stringifyObj("LdtkEnumDef", ("externalFileChecksum", stringify(
@@ -3296,40 +3422,44 @@ proc fromJsonHook*(target: var LdtkRenderMode; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[LdtkEntityDef]; a, b: LdtkEntityDef): bool =
+  equals(typeof(a.tileId), a.tileId, b.tileId) and
+      equals(typeof(a.showName), a.showName, b.showName) and
+      equals(typeof(a.tilesetId), a.tilesetId, b.tilesetId) and
+      equals(typeof(a.maxHeight), a.maxHeight, b.maxHeight) and
+      equals(typeof(a.limitScope), a.limitScope, b.limitScope) and
+      equals(typeof(a.pivotX), a.pivotX, b.pivotX) and
+      equals(typeof(a.maxCount), a.maxCount, b.maxCount) and
+      equals(typeof(a.allowOutOfBounds), a.allowOutOfBounds, b.allowOutOfBounds) and
+      equals(typeof(a.hollow), a.hollow, b.hollow) and
+      equals(typeof(a.minHeight), a.minHeight, b.minHeight) and
+      equals(typeof(a.keepAspectRatio), a.keepAspectRatio, b.keepAspectRatio) and
+      equals(typeof(a.color), a.color, b.color) and
+      equals(typeof(a.minWidth), a.minWidth, b.minWidth) and
+      equals(typeof(a.tileRect), a.tileRect, b.tileRect) and
+      equals(typeof(a.doc), a.doc, b.doc) and
+      equals(typeof(a.fieldDefs), a.fieldDefs, b.fieldDefs) and
+      equals(typeof(a.tileRenderMode), a.tileRenderMode, b.tileRenderMode) and
+      equals(typeof(a.limitBehavior), a.limitBehavior, b.limitBehavior) and
+      equals(typeof(a.tileOpacity), a.tileOpacity, b.tileOpacity) and
+      equals(typeof(a.nineSliceBorders), a.nineSliceBorders, b.nineSliceBorders) and
+      equals(typeof(a.resizableX), a.resizableX, b.resizableX) and
+      equals(typeof(a.uiTileRect), a.uiTileRect, b.uiTileRect) and
+      equals(typeof(a.uid), a.uid, b.uid) and
+      equals(typeof(a.lineOpacity), a.lineOpacity, b.lineOpacity) and
+      equals(typeof(a.maxWidth), a.maxWidth, b.maxWidth) and
+      equals(typeof(a.resizableY), a.resizableY, b.resizableY) and
+      equals(typeof(a.exportToToc), a.exportToToc, b.exportToToc) and
+      equals(typeof(a.fillOpacity), a.fillOpacity, b.fillOpacity) and
+      equals(typeof(a.height), a.height, b.height) and
+      equals(typeof(a.identifier), a.identifier, b.identifier) and
+      equals(typeof(a.pivotY), a.pivotY, b.pivotY) and
+      equals(typeof(a.renderMode), a.renderMode, b.renderMode) and
+      equals(typeof(a.tags), a.tags, b.tags) and
+      equals(typeof(a.width), a.width, b.width)
+
 proc `==`*(a, b: LdtkEntityDef): bool =
-  true and a.tileId == b.tileId and a.showName == b.showName and
-      a.tilesetId == b.tilesetId and
-      a.maxHeight == b.maxHeight and
-      a.limitScope == b.limitScope and
-      a.pivotX == b.pivotX and
-      a.maxCount == b.maxCount and
-      a.allowOutOfBounds == b.allowOutOfBounds and
-      a.hollow == b.hollow and
-      a.minHeight == b.minHeight and
-      a.keepAspectRatio == b.keepAspectRatio and
-      a.color == b.color and
-      a.minWidth == b.minWidth and
-      a.tileRect == b.tileRect and
-      a.doc == b.doc and
-      a.fieldDefs == b.fieldDefs and
-      a.tileRenderMode == b.tileRenderMode and
-      a.limitBehavior == b.limitBehavior and
-      a.tileOpacity == b.tileOpacity and
-      a.nineSliceBorders == b.nineSliceBorders and
-      a.resizableX == b.resizableX and
-      a.uiTileRect == b.uiTileRect and
-      a.uid == b.uid and
-      a.lineOpacity == b.lineOpacity and
-      a.maxWidth == b.maxWidth and
-      a.resizableY == b.resizableY and
-      a.exportToToc == b.exportToToc and
-      a.fillOpacity == b.fillOpacity and
-      a.height == b.height and
-      a.identifier == b.identifier and
-      a.pivotY == b.pivotY and
-      a.renderMode == b.renderMode and
-      a.tags == b.tags and
-      a.width == b.width
+  return equals(LdtkEntityDef, a, b)
 
 proc stringify(_: typedesc[LdtkEntityDef]; value: LdtkEntityDef): string =
   stringifyObj("LdtkEntityDef",
@@ -3541,12 +3671,16 @@ proc toJsonHook*(source: LdtkEntityDef): JsonNode =
     output
   result{"width"} = newJInt(source.width)
 
+proc equals(_: typedesc[LdtkDefinitions]; a, b: LdtkDefinitions): bool =
+  equals(typeof(a.tilesets), a.tilesets, b.tilesets) and
+      equals(typeof(a.layers), a.layers, b.layers) and
+      equals(typeof(a.levelFields), a.levelFields, b.levelFields) and
+      equals(typeof(a.enums), a.enums, b.enums) and
+      equals(typeof(a.entities), a.entities, b.entities) and
+      equals(typeof(a.externalEnums), a.externalEnums, b.externalEnums)
+
 proc `==`*(a, b: LdtkDefinitions): bool =
-  true and a.tilesets == b.tilesets and a.layers == b.layers and
-      a.levelFields == b.levelFields and
-      a.enums == b.enums and
-      a.entities == b.entities and
-      a.externalEnums == b.externalEnums
+  return equals(LdtkDefinitions, a, b)
 
 proc stringify(_: typedesc[LdtkDefinitions]; value: LdtkDefinitions): string =
   stringifyObj("LdtkDefinitions", ("tilesets", stringify(typeof(value.tilesets),
@@ -3615,8 +3749,11 @@ proc toJsonHook*(source: LdtkDefinitions): JsonNode =
       output.add(toJsonHook(entry))
     output
 
+proc equals(_: typedesc[LdtkGridPoint]; a, b: LdtkGridPoint): bool =
+  equals(typeof(a.cy), a.cy, b.cy) and equals(typeof(a.cx), a.cx, b.cx)
+
 proc `==`*(a, b: LdtkGridPoint): bool =
-  true and a.cy == b.cy and a.cx == b.cx
+  return equals(LdtkGridPoint, a, b)
 
 proc stringify(_: typedesc[LdtkGridPoint]; value: LdtkGridPoint): string =
   stringifyObj("LdtkGridPoint", ("cy", stringify(typeof(value.cy), value.cy)),
@@ -3638,34 +3775,44 @@ proc toJsonHook*(source: LdtkGridPoint): JsonNode =
   result{"cy"} = newJInt(source.cy)
   result{"cx"} = newJInt(source.cx)
 
+proc equals(_: typedesc[Ldtk_FORCED_REFS]; a, b: Ldtk_FORCED_REFS): bool =
+  equals(typeof(a.TilesetRect), a.TilesetRect, b.TilesetRect) and
+      equals(typeof(a.FieldInstance), a.FieldInstance, b.FieldInstance) and
+      equals(typeof(a.EntityInstance), a.EntityInstance, b.EntityInstance) and
+      equals(typeof(a.Definitions), a.Definitions, b.Definitions) and
+      equals(typeof(a.EnumTagValue), a.EnumTagValue, b.EnumTagValue) and
+      equals(typeof(a.AutoRuleDef), a.AutoRuleDef, b.AutoRuleDef) and
+      equals(typeof(a.FieldDef), a.FieldDef, b.FieldDef) and
+      equals(typeof(a.CustomCommand), a.CustomCommand, b.CustomCommand) and
+      equals(typeof(a.EntityDef), a.EntityDef, b.EntityDef) and
+      equals(typeof(a.AutoLayerRuleGroup), a.AutoLayerRuleGroup,
+             b.AutoLayerRuleGroup) and
+      equals(typeof(a.IntGridValueGroupDef), a.IntGridValueGroupDef,
+             b.IntGridValueGroupDef) and
+      equals(typeof(a.IntGridValueInstance), a.IntGridValueInstance,
+             b.IntGridValueInstance) and
+      equals(typeof(a.TocInstanceData), a.TocInstanceData, b.TocInstanceData) and
+      equals(typeof(a.NeighbourLevel), a.NeighbourLevel, b.NeighbourLevel) and
+      equals(typeof(a.LayerInstance), a.LayerInstance, b.LayerInstance) and
+      equals(typeof(a.World), a.World, b.World) and
+      equals(typeof(a.EntityReferenceInfos), a.EntityReferenceInfos,
+             b.EntityReferenceInfos) and
+      equals(typeof(a.TileCustomMetadata), a.TileCustomMetadata,
+             b.TileCustomMetadata) and
+      equals(typeof(a.TilesetDef), a.TilesetDef, b.TilesetDef) and
+      equals(typeof(a.EnumDefValues), a.EnumDefValues, b.EnumDefValues) and
+      equals(typeof(a.Tile), a.Tile, b.Tile) and
+      equals(typeof(a.LayerDef), a.LayerDef, b.LayerDef) and
+      equals(typeof(a.LevelBgPosInfos), a.LevelBgPosInfos, b.LevelBgPosInfos) and
+      equals(typeof(a.Level), a.Level, b.Level) and
+      equals(typeof(a.TableOfContentEntry), a.TableOfContentEntry,
+             b.TableOfContentEntry) and
+      equals(typeof(a.EnumDef), a.EnumDef, b.EnumDef) and
+      equals(typeof(a.GridPoint), a.GridPoint, b.GridPoint) and
+      equals(typeof(a.IntGridValueDef), a.IntGridValueDef, b.IntGridValueDef)
+
 proc `==`*(a, b: Ldtk_FORCED_REFS): bool =
-  true and a.TilesetRect == b.TilesetRect and a.FieldInstance == b.FieldInstance and
-      a.EntityInstance == b.EntityInstance and
-      a.Definitions == b.Definitions and
-      a.EnumTagValue == b.EnumTagValue and
-      a.AutoRuleDef == b.AutoRuleDef and
-      a.FieldDef == b.FieldDef and
-      a.CustomCommand == b.CustomCommand and
-      a.EntityDef == b.EntityDef and
-      a.AutoLayerRuleGroup == b.AutoLayerRuleGroup and
-      a.IntGridValueGroupDef == b.IntGridValueGroupDef and
-      a.IntGridValueInstance == b.IntGridValueInstance and
-      a.TocInstanceData == b.TocInstanceData and
-      a.NeighbourLevel == b.NeighbourLevel and
-      a.LayerInstance == b.LayerInstance and
-      a.World == b.World and
-      a.EntityReferenceInfos == b.EntityReferenceInfos and
-      a.TileCustomMetadata == b.TileCustomMetadata and
-      a.TilesetDef == b.TilesetDef and
-      a.EnumDefValues == b.EnumDefValues and
-      a.Tile == b.Tile and
-      a.LayerDef == b.LayerDef and
-      a.LevelBgPosInfos == b.LevelBgPosInfos and
-      a.Level == b.Level and
-      a.TableOfContentEntry == b.TableOfContentEntry and
-      a.EnumDef == b.EnumDef and
-      a.GridPoint == b.GridPoint and
-      a.IntGridValueDef == b.IntGridValueDef
+  return equals(Ldtk_FORCED_REFS, a, b)
 
 proc stringify(_: typedesc[Ldtk_FORCED_REFS]; value: Ldtk_FORCED_REFS): string =
   stringifyObj("Ldtk_FORCED_REFS", ("TilesetRect", stringify(
@@ -3880,45 +4027,53 @@ proc toJsonHook*(source: Ldtk_FORCED_REFS): JsonNode =
   if isSome(source.IntGridValueDef):
     result{"IntGridValueDef"} = toJsonHook(unsafeGet(source.IntGridValueDef))
 
+proc equals(_: typedesc[LdtkLdtkJsonRoot]; a, b: LdtkLdtkJsonRoot): bool =
+  equals(typeof(a.backupLimit), a.backupLimit, b.backupLimit) and
+      equals(typeof(a.defaultEntityWidth), a.defaultEntityWidth,
+             b.defaultEntityWidth) and
+      equals(typeof(a.backupOnSave), a.backupOnSave, b.backupOnSave) and
+      equals(typeof(a.worldGridWidth), a.worldGridWidth, b.worldGridWidth) and
+      equals(typeof(a.iid), a.iid, b.iid) and
+      equals(typeof(a.defaultLevelBgColor), a.defaultLevelBgColor,
+             b.defaultLevelBgColor) and
+      equals(typeof(a.bgColor), a.bgColor, b.bgColor) and
+      equals(typeof(a.worlds), a.worlds, b.worlds) and
+      equals(typeof(a.toc), a.toc, b.toc) and
+      equals(typeof(a.nextUid), a.nextUid, b.nextUid) and
+      equals(typeof(a.imageExportMode), a.imageExportMode, b.imageExportMode) and
+      equals(typeof(a.identifierStyle), a.identifierStyle, b.identifierStyle) and
+      equals(typeof(a.defaultPivotY), a.defaultPivotY, b.defaultPivotY) and
+      equals(typeof(a.dummyWorldIid), a.dummyWorldIid, b.dummyWorldIid) and
+      equals(typeof(a.customCommands), a.customCommands, b.customCommands) and
+      equals(typeof(a.worldGridHeight), a.worldGridHeight, b.worldGridHeight) and
+      equals(typeof(a.appBuildId), a.appBuildId, b.appBuildId) and
+      equals(typeof(a.defaultGridSize), a.defaultGridSize, b.defaultGridSize) and
+      equals(typeof(a.worldLayout), a.worldLayout, b.worldLayout) and
+      equals(typeof(a.flags), a.flags, b.flags) and
+      equals(typeof(a.levelNamePattern), a.levelNamePattern, b.levelNamePattern) and
+      equals(typeof(a.exportPng), a.exportPng, b.exportPng) and
+      equals(typeof(a.defaultLevelWidth), a.defaultLevelWidth,
+             b.defaultLevelWidth) and
+      equals(typeof(a.pngFilePattern), a.pngFilePattern, b.pngFilePattern) and
+      equals(typeof(a.FORCED_REFS), a.FORCED_REFS, b.FORCED_REFS) and
+      equals(typeof(a.exportTiled), a.exportTiled, b.exportTiled) and
+      equals(typeof(a.defs), a.defs, b.defs) and
+      equals(typeof(a.levels), a.levels, b.levels) and
+      equals(typeof(a.jsonVersion), a.jsonVersion, b.jsonVersion) and
+      equals(typeof(a.defaultEntityHeight), a.defaultEntityHeight,
+             b.defaultEntityHeight) and
+      equals(typeof(a.defaultPivotX), a.defaultPivotX, b.defaultPivotX) and
+      equals(typeof(a.defaultLevelHeight), a.defaultLevelHeight,
+             b.defaultLevelHeight) and
+      equals(typeof(a.simplifiedExport), a.simplifiedExport, b.simplifiedExport) and
+      equals(typeof(a.externalLevels), a.externalLevels, b.externalLevels) and
+      equals(typeof(a.tutorialDesc), a.tutorialDesc, b.tutorialDesc) and
+      equals(typeof(a.minifyJson), a.minifyJson, b.minifyJson) and
+      equals(typeof(a.exportLevelBg), a.exportLevelBg, b.exportLevelBg) and
+      equals(typeof(a.backupRelPath), a.backupRelPath, b.backupRelPath)
+
 proc `==`*(a, b: LdtkLdtkJsonRoot): bool =
-  true and a.backupLimit == b.backupLimit and
-      a.defaultEntityWidth == b.defaultEntityWidth and
-      a.backupOnSave == b.backupOnSave and
-      a.worldGridWidth == b.worldGridWidth and
-      a.iid == b.iid and
-      a.defaultLevelBgColor == b.defaultLevelBgColor and
-      a.bgColor == b.bgColor and
-      a.worlds == b.worlds and
-      a.toc == b.toc and
-      a.nextUid == b.nextUid and
-      a.imageExportMode == b.imageExportMode and
-      a.identifierStyle == b.identifierStyle and
-      a.defaultPivotY == b.defaultPivotY and
-      a.dummyWorldIid == b.dummyWorldIid and
-      a.customCommands == b.customCommands and
-      a.worldGridHeight == b.worldGridHeight and
-      a.appBuildId == b.appBuildId and
-      a.defaultGridSize == b.defaultGridSize and
-      a.worldLayout == b.worldLayout and
-      a.flags == b.flags and
-      a.levelNamePattern == b.levelNamePattern and
-      a.exportPng == b.exportPng and
-      a.defaultLevelWidth == b.defaultLevelWidth and
-      a.pngFilePattern == b.pngFilePattern and
-      a.FORCED_REFS == b.FORCED_REFS and
-      a.exportTiled == b.exportTiled and
-      a.defs == b.defs and
-      a.levels == b.levels and
-      a.jsonVersion == b.jsonVersion and
-      a.defaultEntityHeight == b.defaultEntityHeight and
-      a.defaultPivotX == b.defaultPivotX and
-      a.defaultLevelHeight == b.defaultLevelHeight and
-      a.simplifiedExport == b.simplifiedExport and
-      a.externalLevels == b.externalLevels and
-      a.tutorialDesc == b.tutorialDesc and
-      a.minifyJson == b.minifyJson and
-      a.exportLevelBg == b.exportLevelBg and
-      a.backupRelPath == b.backupRelPath
+  return equals(LdtkLdtkJsonRoot, a, b)
 
 proc stringify(_: typedesc[LdtkLdtkJsonRoot]; value: LdtkLdtkJsonRoot): string =
   stringifyObj("LdtkLdtkJsonRoot", ("backupLimit", stringify(

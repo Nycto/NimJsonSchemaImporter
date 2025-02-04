@@ -1,13 +1,17 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/stringify
+import json_schema_import/private/[stringify, equality]
 
 type
   Enumerated_valuesenumerated_values* = object
     data*: Option[JsonNode]
 proc toJsonHook*(source: Enumerated_valuesenumerated_values): JsonNode
+proc equals(_: typedesc[Enumerated_valuesenumerated_values];
+            a, b: Enumerated_valuesenumerated_values): bool =
+  equals(typeof(a.data), a.data, b.data)
+
 proc `==`*(a, b: Enumerated_valuesenumerated_values): bool =
-  true and a.data == b.data
+  return equals(Enumerated_valuesenumerated_values, a, b)
 
 proc stringify(_: typedesc[Enumerated_valuesenumerated_values];
                value: Enumerated_valuesenumerated_values): string =

@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/stringify
+import json_schema_import/private/[stringify, equality]
 
 type
   Basicbasic* = object
@@ -8,9 +8,13 @@ type
     lastName*: Option[string]
     age*: Option[BiggestInt]
 proc toJsonHook*(source: Basicbasic): JsonNode
+proc equals(_: typedesc[Basicbasic]; a, b: Basicbasic): bool =
+  equals(typeof(a.firstName), a.firstName, b.firstName) and
+      equals(typeof(a.lastName), a.lastName, b.lastName) and
+      equals(typeof(a.age), a.age, b.age)
+
 proc `==`*(a, b: Basicbasic): bool =
-  true and a.firstName == b.firstName and a.lastName == b.lastName and
-      a.age == b.age
+  return equals(Basicbasic, a, b)
 
 proc stringify(_: typedesc[Basicbasic]; value: Basicbasic): string =
   stringifyObj("Basicbasic", ("firstName", stringify(typeof(value.firstName),

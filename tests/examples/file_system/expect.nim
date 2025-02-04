@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/stringify
+import json_schema_import/private/[stringify, equality]
 
 type
   File_systemType* = enum
@@ -64,8 +64,12 @@ proc fromJsonHook*(target: var File_systemType; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[File_systemDiskDevice]; a, b: File_systemDiskDevice): bool =
+  equals(typeof(a.`type`), a.`type`, b.`type`) and
+      equals(typeof(a.device), a.device, b.device)
+
 proc `==`*(a, b: File_systemDiskDevice): bool =
-  true and a.`type` == b.`type` and a.device == b.device
+  return equals(File_systemDiskDevice, a, b)
 
 proc stringify(_: typedesc[File_systemDiskDevice]; value: File_systemDiskDevice): string =
   stringifyObj("File_systemDiskDevice",
@@ -103,8 +107,12 @@ proc fromJsonHook*(target: var File_systemStorageType; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[File_systemDiskUUID]; a, b: File_systemDiskUUID): bool =
+  equals(typeof(a.`type`), a.`type`, b.`type`) and
+      equals(typeof(a.label), a.label, b.label)
+
 proc `==`*(a, b: File_systemDiskUUID): bool =
-  true and a.`type` == b.`type` and a.label == b.label
+  return equals(File_systemDiskUUID, a, b)
 
 proc stringify(_: typedesc[File_systemDiskUUID]; value: File_systemDiskUUID): string =
   stringifyObj("File_systemDiskUUID",
@@ -143,9 +151,13 @@ proc fromJsonHook*(target: var File_systemfile_systemStorageType;
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[File_systemNfs]; a, b: File_systemNfs): bool =
+  equals(typeof(a.`type`), a.`type`, b.`type`) and
+      equals(typeof(a.remotePath), a.remotePath, b.remotePath) and
+      equals(typeof(a.server), a.server, b.server)
+
 proc `==`*(a, b: File_systemNfs): bool =
-  true and a.`type` == b.`type` and a.remotePath == b.remotePath and
-      a.server == b.server
+  return equals(File_systemNfs, a, b)
 
 proc stringify(_: typedesc[File_systemNfs]; value: File_systemNfs): string =
   stringifyObj("File_systemNfs",
@@ -189,8 +201,12 @@ proc fromJsonHook*(target: var File_systemfile_systemStorageType2;
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[File_systemTmpfs]; a, b: File_systemTmpfs): bool =
+  equals(typeof(a.`type`), a.`type`, b.`type`) and
+      equals(typeof(a.sizeInMB), a.sizeInMB, b.sizeInMB)
+
 proc `==`*(a, b: File_systemTmpfs): bool =
-  true and a.`type` == b.`type` and a.sizeInMB == b.sizeInMB
+  return equals(File_systemTmpfs, a, b)
 
 proc stringify(_: typedesc[File_systemTmpfs]; value: File_systemTmpfs): string =
   stringifyObj("File_systemTmpfs",
@@ -216,19 +232,22 @@ proc toJsonHook*(source: File_systemTmpfs): JsonNode =
 converter forFile_systemUnion*(value: File_systemTmpfs): File_systemUnion =
   return File_systemUnion(kind: 3, key3: value)
 
-proc `==`*(a, b: File_systemUnion): bool =
+proc equals(_: typedesc[File_systemUnion]; a, b: File_systemUnion): bool =
   if a.kind != b.kind:
     return false
   case a.kind
   of 0:
-    return a.key0 == b.key0
+    return equals(typeof(a.key0), a.key0, b.key0)
   of 1:
-    return a.key1 == b.key1
+    return equals(typeof(a.key1), a.key1, b.key1)
   of 2:
-    return a.key2 == b.key2
+    return equals(typeof(a.key2), a.key2, b.key2)
   of 3:
-    return a.key3 == b.key3
+    return equals(typeof(a.key3), a.key3, b.key3)
   
+proc `==`*(a, b: File_systemUnion): bool =
+  return equals(File_systemUnion, a, b)
+
 proc stringify(_: typedesc[File_systemUnion]; value: File_systemUnion): string =
   case value.kind
   of 0:
@@ -315,10 +334,14 @@ proc fromJsonHook*(target: var File_systemFstype; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[File_systemfile_system]; a, b: File_systemfile_system): bool =
+  equals(typeof(a.storage), a.storage, b.storage) and
+      equals(typeof(a.fstype), a.fstype, b.fstype) and
+      equals(typeof(a.options), a.options, b.options) and
+      equals(typeof(a.readonly), a.readonly, b.readonly)
+
 proc `==`*(a, b: File_systemfile_system): bool =
-  true and a.storage == b.storage and a.fstype == b.fstype and
-      a.options == b.options and
-      a.readonly == b.readonly
+  return equals(File_systemfile_system, a, b)
 
 proc stringify(_: typedesc[File_systemfile_system];
                value: File_systemfile_system): string =

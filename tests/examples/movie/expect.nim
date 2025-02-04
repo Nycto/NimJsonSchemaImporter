@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/stringify
+import json_schema_import/private/[stringify, equality]
 
 type
   MovieGenre* = enum
@@ -38,12 +38,16 @@ proc fromJsonHook*(target: var MovieGenre; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[Moviemovie]; a, b: Moviemovie): bool =
+  equals(typeof(a.title), a.title, b.title) and
+      equals(typeof(a.director), a.director, b.director) and
+      equals(typeof(a.releaseDate), a.releaseDate, b.releaseDate) and
+      equals(typeof(a.genre), a.genre, b.genre) and
+      equals(typeof(a.duration), a.duration, b.duration) and
+      equals(typeof(a.`cast`), a.`cast`, b.`cast`)
+
 proc `==`*(a, b: Moviemovie): bool =
-  true and a.title == b.title and a.director == b.director and
-      a.releaseDate == b.releaseDate and
-      a.genre == b.genre and
-      a.duration == b.duration and
-      a.`cast` == b.`cast`
+  return equals(Moviemovie, a, b)
 
 proc stringify(_: typedesc[Moviemovie]; value: Moviemovie): string =
   stringifyObj("Moviemovie",

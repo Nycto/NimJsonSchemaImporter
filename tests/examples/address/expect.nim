@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/stringify
+import json_schema_import/private/[stringify, equality]
 
 type
   Addressaddress* = object
@@ -12,14 +12,17 @@ type
     postalCode*: Option[string]
     countryName*: string
 proc toJsonHook*(source: Addressaddress): JsonNode
+proc equals(_: typedesc[Addressaddress]; a, b: Addressaddress): bool =
+  equals(typeof(a.postOfficeBox), a.postOfficeBox, b.postOfficeBox) and
+      equals(typeof(a.extendedAddress), a.extendedAddress, b.extendedAddress) and
+      equals(typeof(a.streetAddress), a.streetAddress, b.streetAddress) and
+      equals(typeof(a.locality), a.locality, b.locality) and
+      equals(typeof(a.region), a.region, b.region) and
+      equals(typeof(a.postalCode), a.postalCode, b.postalCode) and
+      equals(typeof(a.countryName), a.countryName, b.countryName)
+
 proc `==`*(a, b: Addressaddress): bool =
-  true and a.postOfficeBox == b.postOfficeBox and
-      a.extendedAddress == b.extendedAddress and
-      a.streetAddress == b.streetAddress and
-      a.locality == b.locality and
-      a.region == b.region and
-      a.postalCode == b.postalCode and
-      a.countryName == b.countryName
+  return equals(Addressaddress, a, b)
 
 proc stringify(_: typedesc[Addressaddress]; value: Addressaddress): string =
   stringifyObj("Addressaddress", ("postOfficeBox", stringify(

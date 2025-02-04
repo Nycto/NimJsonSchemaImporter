@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/stringify
+import json_schema_import/private/[stringify, equality]
 
 type
   AsepriteRectangle* = object
@@ -93,8 +93,13 @@ proc toJsonHook*(source: AsepriteSliceKey): JsonNode
 proc toJsonHook*(source: AsepriteSlice): JsonNode
 proc toJsonHook*(source: AsepriteMeta): JsonNode
 proc toJsonHook*(source: AsepriteSpriteSheet): JsonNode
+proc equals(_: typedesc[AsepriteRectangle]; a, b: AsepriteRectangle): bool =
+  equals(typeof(a.h), a.h, b.h) and equals(typeof(a.w), a.w, b.w) and
+      equals(typeof(a.x), a.x, b.x) and
+      equals(typeof(a.y), a.y, b.y)
+
 proc `==`*(a, b: AsepriteRectangle): bool =
-  true and a.h == b.h and a.w == b.w and a.x == b.x and a.y == b.y
+  return equals(AsepriteRectangle, a, b)
 
 proc stringify(_: typedesc[AsepriteRectangle]; value: AsepriteRectangle): string =
   stringifyObj("AsepriteRectangle", ("h", stringify(typeof(value.h), value.h)),
@@ -126,8 +131,11 @@ proc toJsonHook*(source: AsepriteRectangle): JsonNode =
   result{"x"} = newJFloat(source.x)
   result{"y"} = newJFloat(source.y)
 
+proc equals(_: typedesc[AsepriteSize]; a, b: AsepriteSize): bool =
+  equals(typeof(a.h), a.h, b.h) and equals(typeof(a.w), a.w, b.w)
+
 proc `==`*(a, b: AsepriteSize): bool =
-  true and a.h == b.h and a.w == b.w
+  return equals(AsepriteSize, a, b)
 
 proc stringify(_: typedesc[AsepriteSize]; value: AsepriteSize): string =
   stringifyObj("AsepriteSize", ("h", stringify(typeof(value.h), value.h)),
@@ -149,12 +157,16 @@ proc toJsonHook*(source: AsepriteSize): JsonNode =
   result{"h"} = newJFloat(source.h)
   result{"w"} = newJFloat(source.w)
 
+proc equals(_: typedesc[AsepriteFrame]; a, b: AsepriteFrame): bool =
+  equals(typeof(a.duration), a.duration, b.duration) and
+      equals(typeof(a.frame), a.frame, b.frame) and
+      equals(typeof(a.rotated), a.rotated, b.rotated) and
+      equals(typeof(a.sourceSize), a.sourceSize, b.sourceSize) and
+      equals(typeof(a.spriteSourceSize), a.spriteSourceSize, b.spriteSourceSize) and
+      equals(typeof(a.trimmed), a.trimmed, b.trimmed)
+
 proc `==`*(a, b: AsepriteFrame): bool =
-  true and a.duration == b.duration and a.frame == b.frame and
-      a.rotated == b.rotated and
-      a.sourceSize == b.sourceSize and
-      a.spriteSourceSize == b.spriteSourceSize and
-      a.trimmed == b.trimmed
+  return equals(AsepriteFrame, a, b)
 
 proc stringify(_: typedesc[AsepriteFrame]; value: AsepriteFrame): string =
   stringifyObj("AsepriteFrame", ("duration", stringify(typeof(value.duration),
@@ -201,13 +213,17 @@ proc toJsonHook*(source: AsepriteFrame): JsonNode =
 converter forAsepriteUnion*(value: OrderedTable[string, AsepriteFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 0, key0: value)
 
+proc equals(_: typedesc[AsepriteArrayFrame]; a, b: AsepriteArrayFrame): bool =
+  equals(typeof(a.duration), a.duration, b.duration) and
+      equals(typeof(a.filename), a.filename, b.filename) and
+      equals(typeof(a.frame), a.frame, b.frame) and
+      equals(typeof(a.rotated), a.rotated, b.rotated) and
+      equals(typeof(a.sourceSize), a.sourceSize, b.sourceSize) and
+      equals(typeof(a.spriteSourceSize), a.spriteSourceSize, b.spriteSourceSize) and
+      equals(typeof(a.trimmed), a.trimmed, b.trimmed)
+
 proc `==`*(a, b: AsepriteArrayFrame): bool =
-  true and a.duration == b.duration and a.filename == b.filename and
-      a.frame == b.frame and
-      a.rotated == b.rotated and
-      a.sourceSize == b.sourceSize and
-      a.spriteSourceSize == b.spriteSourceSize and
-      a.trimmed == b.trimmed
+  return equals(AsepriteArrayFrame, a, b)
 
 proc stringify(_: typedesc[AsepriteArrayFrame]; value: AsepriteArrayFrame): string =
   stringifyObj("AsepriteArrayFrame", ("duration", stringify(
@@ -261,15 +277,18 @@ proc toJsonHook*(source: AsepriteArrayFrame): JsonNode =
 converter forAsepriteUnion*(value: seq[AsepriteArrayFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 1, key1: value)
 
-proc `==`*(a, b: AsepriteUnion): bool =
+proc equals(_: typedesc[AsepriteUnion]; a, b: AsepriteUnion): bool =
   if a.kind != b.kind:
     return false
   case a.kind
   of 0:
-    return a.key0 == b.key0
+    return equals(typeof(a.key0), a.key0, b.key0)
   of 1:
-    return a.key1 == b.key1
+    return equals(typeof(a.key1), a.key1, b.key1)
   
+proc `==`*(a, b: AsepriteUnion): bool =
+  return equals(AsepriteUnion, a, b)
+
 proc stringify(_: typedesc[AsepriteUnion]; value: AsepriteUnion): string =
   case value.kind
   of 0:
@@ -368,10 +387,14 @@ proc fromJsonHook*(target: var AsepriteDirection; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[AsepriteFrameTag]; a, b: AsepriteFrameTag): bool =
+  equals(typeof(a.direction), a.direction, b.direction) and
+      equals(typeof(a.`from`), a.`from`, b.`from`) and
+      equals(typeof(a.name), a.name, b.name) and
+      equals(typeof(a.to), a.to, b.to)
+
 proc `==`*(a, b: AsepriteFrameTag): bool =
-  true and a.direction == b.direction and a.`from` == b.`from` and
-      a.name == b.name and
-      a.to == b.to
+  return equals(AsepriteFrameTag, a, b)
 
 proc stringify(_: typedesc[AsepriteFrameTag]; value: AsepriteFrameTag): string =
   stringifyObj("AsepriteFrameTag", ("direction", stringify(
@@ -488,12 +511,16 @@ proc fromJsonHook*(target: var AsepriteBlendMode; source: JsonNode) =
   else:
     raise newException(ValueError, "Unable to decode enum: " & $source)
   
+proc equals(_: typedesc[AsepriteLayer]; a, b: AsepriteLayer): bool =
+  equals(typeof(a.blendMode), a.blendMode, b.blendMode) and
+      equals(typeof(a.color), a.color, b.color) and
+      equals(typeof(a.data), a.data, b.data) and
+      equals(typeof(a.group), a.group, b.group) and
+      equals(typeof(a.name), a.name, b.name) and
+      equals(typeof(a.opacity), a.opacity, b.opacity)
+
 proc `==`*(a, b: AsepriteLayer): bool =
-  true and a.blendMode == b.blendMode and a.color == b.color and
-      a.data == b.data and
-      a.group == b.group and
-      a.name == b.name and
-      a.opacity == b.opacity
+  return equals(AsepriteLayer, a, b)
 
 proc stringify(_: typedesc[AsepriteLayer]; value: AsepriteLayer): string =
   stringifyObj("AsepriteLayer", ("blendMode", stringify(typeof(value.blendMode),
@@ -538,8 +565,11 @@ proc toJsonHook*(source: AsepriteLayer): JsonNode =
   if isSome(source.opacity):
     result{"opacity"} = newJFloat(unsafeGet(source.opacity))
 
+proc equals(_: typedesc[AsepritePoint]; a, b: AsepritePoint): bool =
+  equals(typeof(a.x), a.x, b.x) and equals(typeof(a.y), a.y, b.y)
+
 proc `==`*(a, b: AsepritePoint): bool =
-  true and a.x == b.x and a.y == b.y
+  return equals(AsepritePoint, a, b)
 
 proc stringify(_: typedesc[AsepritePoint]; value: AsepritePoint): string =
   stringifyObj("AsepritePoint", ("x", stringify(typeof(value.x), value.x)),
@@ -561,9 +591,14 @@ proc toJsonHook*(source: AsepritePoint): JsonNode =
   result{"x"} = newJFloat(source.x)
   result{"y"} = newJFloat(source.y)
 
+proc equals(_: typedesc[AsepriteSliceKey]; a, b: AsepriteSliceKey): bool =
+  equals(typeof(a.bounds), a.bounds, b.bounds) and
+      equals(typeof(a.center), a.center, b.center) and
+      equals(typeof(a.frame), a.frame, b.frame) and
+      equals(typeof(a.pivot), a.pivot, b.pivot)
+
 proc `==`*(a, b: AsepriteSliceKey): bool =
-  true and a.bounds == b.bounds and a.center == b.center and a.frame == b.frame and
-      a.pivot == b.pivot
+  return equals(AsepriteSliceKey, a, b)
 
 proc stringify(_: typedesc[AsepriteSliceKey]; value: AsepriteSliceKey): string =
   stringifyObj("AsepriteSliceKey",
@@ -597,9 +632,14 @@ proc toJsonHook*(source: AsepriteSliceKey): JsonNode =
   if isSome(source.pivot):
     result{"pivot"} = toJsonHook(unsafeGet(source.pivot))
 
+proc equals(_: typedesc[AsepriteSlice]; a, b: AsepriteSlice): bool =
+  equals(typeof(a.color), a.color, b.color) and
+      equals(typeof(a.data), a.data, b.data) and
+      equals(typeof(a.keys), a.keys, b.keys) and
+      equals(typeof(a.name), a.name, b.name)
+
 proc `==`*(a, b: AsepriteSlice): bool =
-  true and a.color == b.color and a.data == b.data and a.keys == b.keys and
-      a.name == b.name
+  return equals(AsepriteSlice, a, b)
 
 proc stringify(_: typedesc[AsepriteSlice]; value: AsepriteSlice): string =
   stringifyObj("AsepriteSlice",
@@ -636,15 +676,19 @@ proc toJsonHook*(source: AsepriteSlice): JsonNode =
     output
   result{"name"} = newJString(source.name)
 
+proc equals(_: typedesc[AsepriteMeta]; a, b: AsepriteMeta): bool =
+  equals(typeof(a.app), a.app, b.app) and
+      equals(typeof(a.format), a.format, b.format) and
+      equals(typeof(a.frameTags), a.frameTags, b.frameTags) and
+      equals(typeof(a.image), a.image, b.image) and
+      equals(typeof(a.layers), a.layers, b.layers) and
+      equals(typeof(a.scale), a.scale, b.scale) and
+      equals(typeof(a.size), a.size, b.size) and
+      equals(typeof(a.slices), a.slices, b.slices) and
+      equals(typeof(a.version), a.version, b.version)
+
 proc `==`*(a, b: AsepriteMeta): bool =
-  true and a.app == b.app and a.format == b.format and
-      a.frameTags == b.frameTags and
-      a.image == b.image and
-      a.layers == b.layers and
-      a.scale == b.scale and
-      a.size == b.size and
-      a.slices == b.slices and
-      a.version == b.version
+  return equals(AsepriteMeta, a, b)
 
 proc stringify(_: typedesc[AsepriteMeta]; value: AsepriteMeta): string =
   stringifyObj("AsepriteMeta",
@@ -717,8 +761,12 @@ proc toJsonHook*(source: AsepriteMeta): JsonNode =
       output
   result{"version"} = newJString(source.version)
 
+proc equals(_: typedesc[AsepriteSpriteSheet]; a, b: AsepriteSpriteSheet): bool =
+  equals(typeof(a.frames), a.frames, b.frames) and
+      equals(typeof(a.meta), a.meta, b.meta)
+
 proc `==`*(a, b: AsepriteSpriteSheet): bool =
-  true and a.frames == b.frames and a.meta == b.meta
+  return equals(AsepriteSpriteSheet, a, b)
 
 proc stringify(_: typedesc[AsepriteSpriteSheet]; value: AsepriteSpriteSheet): string =
   stringifyObj("AsepriteSpriteSheet",

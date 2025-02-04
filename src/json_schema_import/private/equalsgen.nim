@@ -4,13 +4,16 @@ let a {.compileTime.} = ident("a")
 let b {.compileTime.} = ident("b")
 
 proc keysEqual(key: NimNode): NimNode =
-    infix(newDotExpr(a, key), "==", newDotExpr(b, key))
+    return quote:
+        equals(typeof(`a`.`key`), `a`.`key`, `b`.`key`)
 
 proc buildObjEquals(typ: TypeDef, typeName: NimNode): NimNode =
     assert(typ.kind == ObjType)
-    result = true.newLit
+    var output = newEmptyNode()
     for _, (propName, _, _) in typ.properties:
-        result = infix(result, "and", keysEqual(safePropName(propName)))
+        let compare = keysEqual(safePropName(propName))
+        output = if output.kind == nnkEmpty: compare else: infix(output, "and", compare)
+    return output or newLit(false)
 
 proc buildUnionEquals(typ: TypeDef, typeName: NimNode): NimNode =
     assert(typ.kind == UnionType)
@@ -31,5 +34,8 @@ proc buildEquals*(typ: TypeDef, typeName: NimNode): NimNode =
     else: return newStmtList()
 
     return genAst(typeName, body, a, b):
-        proc `==`*(a, b: typeName): bool =
+        proc equals(_: typedesc[typeName], a, b: typeName): bool =
             body
+
+        proc `==`*(a, b: typeName): bool =
+            return equals(typeName, a, b)

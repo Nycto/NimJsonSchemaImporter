@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/stringify
+import json_schema_import/private/[stringify, equality]
 
 type
   User_profileuser_profile* = object
@@ -11,12 +11,17 @@ type
     location*: Option[string]
     interests*: Option[seq[string]]
 proc toJsonHook*(source: User_profileuser_profile): JsonNode
+proc equals(_: typedesc[User_profileuser_profile];
+            a, b: User_profileuser_profile): bool =
+  equals(typeof(a.username), a.username, b.username) and
+      equals(typeof(a.email), a.email, b.email) and
+      equals(typeof(a.fullName), a.fullName, b.fullName) and
+      equals(typeof(a.age), a.age, b.age) and
+      equals(typeof(a.location), a.location, b.location) and
+      equals(typeof(a.interests), a.interests, b.interests)
+
 proc `==`*(a, b: User_profileuser_profile): bool =
-  true and a.username == b.username and a.email == b.email and
-      a.fullName == b.fullName and
-      a.age == b.age and
-      a.location == b.location and
-      a.interests == b.interests
+  return equals(User_profileuser_profile, a, b)
 
 proc stringify(_: typedesc[User_profileuser_profile];
                value: User_profileuser_profile): string =
