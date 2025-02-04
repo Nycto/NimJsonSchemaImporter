@@ -9,14 +9,14 @@ export JsonSchemaConfig, UrlResolver, json, jsonutils, equality, bin
 
 proc defaultUrlResolver(uri: string): JsonNode = nil
 
-proc parseJsonSchema(schema: JsonNode, conf: JsonSchemaConfig): NimNode {.compileTime.} =
+proc parseJsonSchema(schema: JsonNode, conf: JsonSchemaConfig): GeneratedOutput {.compileTime.} =
     ## Parses a json schema
     let resolver = if conf.urlResolver == nil: defaultUrlResolver else: conf.urlResolver
     result = parseSchema(schema, resolver).genDeclarations(conf.rootTypeName, conf.typePrefix)
     when defined(dump):
-        echo result.formatCodeDump
+        echo result.code.formatCodeDump
 
-proc parseJsonSchema(schema: string, conf: JsonSchemaConfig): NimNode {.compileTime.} =
+proc parseJsonSchema(schema: string, conf: JsonSchemaConfig): GeneratedOutput {.compileTime.} =
     ## Parses a json schema from a string
     parseJsonSchema(schema.parseJson, conf)
 
@@ -24,7 +24,7 @@ macro realImportJsonSchema(rootDir, path: static string, conf: static JsonSchema
     ## Underlying macro for parsing the actual file. This is separated into a different
     ## macro to allow collection of a path relative to the importing file
     let resolvedPath = if path.startsWith("/"): path else: rootDir & "/" & path
-    parseJsonSchema(slurp($resolvedPath), conf)
+    parseJsonSchema(slurp($resolvedPath), conf).code
 
 proc getRootDir(node: NimNode): NimNode =
     newLit($(lineInfoObj(node).filename.parentDir))
@@ -49,4 +49,4 @@ macro importJsonSchema*(path, prefix: string) =
 
 macro jsonSchema*(schema: static JsonNode) =
     ## Converts a direct json reference to nim as if it were a json schema
-    parseJsonSchema(schema, JsonSchemaConfig())
+    parseJsonSchema(schema, JsonSchemaConfig()).code

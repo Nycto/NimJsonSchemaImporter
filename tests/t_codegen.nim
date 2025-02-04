@@ -7,6 +7,7 @@ suite "Code generation snapshots":
         test name:
             const parsed = slurp("examples/" & name & "/schema.json")
                 .parseJsonSchema(conf(name))
+                .code
                 .formatCodeDump
 
             const expectPath = "examples/" & name & "/expect.nim"

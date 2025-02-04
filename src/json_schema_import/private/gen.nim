@@ -11,6 +11,8 @@ type
         cache: Table[SchemaRef, NimNode]
         usedNames: HashSet[string]
 
+    GeneratedOutput* = tuple[rootType, code: NimNode]
+
 proc hash(node: NimNode): Hash =
     result = hash(node.kind)
     if node.kind in { nnkSym, nnkIdent }:
@@ -153,7 +155,7 @@ proc genType(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     if not typ.sref.isNil:
         ctx.cache[typ.sref] = result
 
-proc genDeclarations*(schema: JsonSchema, name, namePrefix: string): NimNode =
+proc genDeclarations*(schema: JsonSchema, name, namePrefix: string): GeneratedOutput =
     let ctx = GenContext(
         types: initOrderedSet[NimNode](),
         prefix: namePrefix,
@@ -162,11 +164,11 @@ proc genDeclarations*(schema: JsonSchema, name, namePrefix: string): NimNode =
         procs: newStmtList(),
     )
 
-    discard schema.rootType.genType(rootName(name), ctx)
+    result.rootType = schema.rootType.genType(rootName(name), ctx)
 
     var types = nnkTypeSection.newTree()
     for typ in ctx.types:
         types.add(typ)
 
-    return newStmtList(types, ctx.declarations, ctx.procs)
+    result.code = newStmtList(types, ctx.declarations, ctx.procs)
 
