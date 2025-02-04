@@ -1,4 +1,4 @@
-import std/[unittest, json], util
+import std/unittest, util
 import json_schema_import {.all.}, json_schema_import/private/util
 
 suite "Code generation snapshots":
@@ -15,6 +15,6 @@ suite "Code generation snapshots":
                 writeFile(currentSourcePath.parentDir() & "/" & expectPath, parsed)
             else:
                 const expect = slurp(expectPath)
-                check(parsed == expect)
+                compareLines(expect, parsed, expectPath)
 
     include defs

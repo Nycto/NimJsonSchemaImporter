@@ -1,4 +1,4 @@
-import types, schemaRef, marshalling, util, unpack, namechain, equalsgen, dollargen
+import types, schemaRef, marshalling, util, unpack, namechain, equalsgen, dollargen, bingen
 import std/[macros, tables, sets, json, options, hashes, strutils]
 
 type
@@ -18,12 +18,13 @@ proc hash(node: NimNode): Hash =
     for child in node:
         result = result !& hash(child)
 
+let source {.compileTime.} = ident("source")
+
 proc add(ctx: GenContext, name, typ: NimNode) =
     name.expectKind({ nnkIdent, nnkAccQuoted })
     ctx.usedNames.incl(name.getName.toUpperAscii)
     ctx.types.incl(nnkTypeDef.newTree(postfix(name, "*"), newEmptyNode(), typ))
 
-    let source = ident("source")
     ctx.declarations.add quote do:
         proc toJsonHook*(`source`: `name`): JsonNode
 
@@ -61,6 +62,7 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
         typ.buildDollars(result),
         typ.buildObjectDecoder(result),
         typ.buildObjectEncoder(result),
+        typ.buildBinarySerde(result),
     )
 
 proc genArray(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
@@ -117,6 +119,7 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
         typ.buildUnionDecoder(result),
         typ.buildUnionEncoder(result),
         typ.buildUnionUnpacker(result),
+        typ.buildBinarySerde(result),
     )
 
 proc genMap(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =

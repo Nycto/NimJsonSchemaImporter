@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality]
+import json_schema_import/private/[stringify, equality, bin]
 
 type
   UnionKey1Union* = object
@@ -132,6 +132,40 @@ proc asFloat*(value: UnionKey1Union): auto =
   assert(value.kind == 3)
   return value.key3
 
+proc toBinary*(target: var string; source: UnionKey1Union) =
+  toBinary(target, source.kind)
+  case source.kind
+  of 0:
+    toBinary(target, source.key0)
+  of 1:
+    toBinary(target, source.key1)
+  of 2:
+    toBinary(target, source.key2)
+  of 3:
+    toBinary(target, source.key3)
+  
+proc toBinary*(source: UnionKey1Union): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[UnionKey1Union]; source: string; idx: var int): UnionKey1Union =
+  case fromBinary(range[0 .. 3], source, idx)
+  of 0:
+    return UnionKey1Union(kind: 0,
+                          key0: fromBinary(typeof(result.key0), source, idx))
+  of 1:
+    return UnionKey1Union(kind: 1,
+                          key1: fromBinary(typeof(result.key1), source, idx))
+  of 2:
+    return UnionKey1Union(kind: 2,
+                          key2: fromBinary(typeof(result.key2), source, idx))
+  of 3:
+    return UnionKey1Union(kind: 3,
+                          key3: fromBinary(typeof(result.key3), source, idx))
+  
+proc fromBinary*(_: typedesc[UnionKey1Union]; source: string): UnionKey1Union =
+  var idx = 0
+  return fromBinary(UnionKey1Union, source, idx)
+
 proc equals(_: typedesc[UnionKey3]; a, b: UnionKey3): bool =
   equals(typeof(a.foo), a.foo, b.foo)
 
@@ -152,6 +186,19 @@ proc toJsonHook*(source: UnionKey3): JsonNode =
   result = newJObject()
   if isSome(source.foo):
     result{"foo"} = newJString(unsafeGet(source.foo))
+
+proc toBinary*(target: var string; source: UnionKey3) =
+  toBinary(target, source.foo)
+
+proc toBinary*(source: UnionKey3): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[UnionKey3]; source: string; idx: var int): UnionKey3 =
+  result.foo = fromBinary(typeof(result.foo), source, idx)
+
+proc fromBinary*(_: typedesc[UnionKey3]; source: string): UnionKey3 =
+  var idx = 0
+  return fromBinary(UnionKey3, source, idx)
 
 converter forUnionKey3Union*(value: UnionKey3): UnionKey3Union =
   return UnionKey3Union(kind: 0, key0: value)
@@ -307,6 +354,45 @@ proc asStr*(value: UnionKey3Union): auto =
   assert(value.kind == 4)
   return value.key4
 
+proc toBinary*(target: var string; source: UnionKey3Union) =
+  toBinary(target, source.kind)
+  case source.kind
+  of 0:
+    toBinary(target, source.key0)
+  of 1:
+    toBinary(target, source.key1)
+  of 2:
+    toBinary(target, source.key2)
+  of 3:
+    toBinary(target, source.key3)
+  of 4:
+    toBinary(target, source.key4)
+  
+proc toBinary*(source: UnionKey3Union): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[UnionKey3Union]; source: string; idx: var int): UnionKey3Union =
+  case fromBinary(range[0 .. 4], source, idx)
+  of 0:
+    return UnionKey3Union(kind: 0,
+                          key0: fromBinary(typeof(result.key0), source, idx))
+  of 1:
+    return UnionKey3Union(kind: 1,
+                          key1: fromBinary(typeof(result.key1), source, idx))
+  of 2:
+    return UnionKey3Union(kind: 2,
+                          key2: fromBinary(typeof(result.key2), source, idx))
+  of 3:
+    return UnionKey3Union(kind: 3,
+                          key3: fromBinary(typeof(result.key3), source, idx))
+  of 4:
+    return UnionKey3Union(kind: 4,
+                          key4: fromBinary(typeof(result.key4), source, idx))
+  
+proc fromBinary*(_: typedesc[UnionKey3Union]; source: string): UnionKey3Union =
+  var idx = 0
+  return fromBinary(UnionKey3Union, source, idx)
+
 proc equals(_: typedesc[Unionunion]; a, b: Unionunion): bool =
   equals(typeof(a.key1), a.key1, b.key1) and
       equals(typeof(a.key2), a.key2, b.key2) and
@@ -346,4 +432,21 @@ proc toJsonHook*(source: Unionunion): JsonNode =
     toJsonHook(unsafeGet(source.key3))
   else:
     newJNull()
+
+proc toBinary*(target: var string; source: Unionunion) =
+  toBinary(target, source.key1)
+  toBinary(target, source.key2)
+  toBinary(target, source.key3)
+
+proc toBinary*(source: Unionunion): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[Unionunion]; source: string; idx: var int): Unionunion =
+  result.key1 = fromBinary(typeof(result.key1), source, idx)
+  result.key2 = fromBinary(typeof(result.key2), source, idx)
+  result.key3 = fromBinary(typeof(result.key3), source, idx)
+
+proc fromBinary*(_: typedesc[Unionunion]; source: string): Unionunion =
+  var idx = 0
+  return fromBinary(Unionunion, source, idx)
 {.pop.}

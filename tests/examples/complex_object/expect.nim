@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality]
+import json_schema_import/private/[stringify, equality, bin]
 
 type
   Complex_objectAddress* = object
@@ -55,6 +55,25 @@ proc toJsonHook*(source: Complex_objectAddress): JsonNode =
   result{"state"} = newJString(source.state)
   result{"postalCode"} = newJString(source.postalCode)
 
+proc toBinary*(target: var string; source: Complex_objectAddress) =
+  toBinary(target, source.street)
+  toBinary(target, source.city)
+  toBinary(target, source.state)
+  toBinary(target, source.postalCode)
+
+proc toBinary*(source: Complex_objectAddress): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[Complex_objectAddress]; source: string; idx: var int): Complex_objectAddress =
+  result.street = fromBinary(typeof(result.street), source, idx)
+  result.city = fromBinary(typeof(result.city), source, idx)
+  result.state = fromBinary(typeof(result.state), source, idx)
+  result.postalCode = fromBinary(typeof(result.postalCode), source, idx)
+
+proc fromBinary*(_: typedesc[Complex_objectAddress]; source: string): Complex_objectAddress =
+  var idx = 0
+  return fromBinary(Complex_objectAddress, source, idx)
+
 proc equals(_: typedesc[Complex_objectcomplex_object];
             a, b: Complex_objectcomplex_object): bool =
   equals(typeof(a.name), a.name, b.name) and equals(typeof(a.age), a.age, b.age) and
@@ -101,4 +120,24 @@ proc toJsonHook*(source: Complex_objectcomplex_object): JsonNode =
       for entry in unsafeGet(source.hobbies):
         output.add(newJString(entry))
       output
+
+proc toBinary*(target: var string; source: Complex_objectcomplex_object) =
+  toBinary(target, source.name)
+  toBinary(target, source.age)
+  toBinary(target, source.address)
+  toBinary(target, source.hobbies)
+
+proc toBinary*(source: Complex_objectcomplex_object): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[Complex_objectcomplex_object]; source: string;
+                idx: var int): Complex_objectcomplex_object =
+  result.name = fromBinary(typeof(result.name), source, idx)
+  result.age = fromBinary(typeof(result.age), source, idx)
+  result.address = fromBinary(typeof(result.address), source, idx)
+  result.hobbies = fromBinary(typeof(result.hobbies), source, idx)
+
+proc fromBinary*(_: typedesc[Complex_objectcomplex_object]; source: string): Complex_objectcomplex_object =
+  var idx = 0
+  return fromBinary(Complex_objectcomplex_object, source, idx)
 {.pop.}

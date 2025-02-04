@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality]
+import json_schema_import/private/[stringify, equality, bin]
 
 type
   AsepriteRectangle* = object
@@ -131,6 +131,25 @@ proc toJsonHook*(source: AsepriteRectangle): JsonNode =
   result{"x"} = newJFloat(source.x)
   result{"y"} = newJFloat(source.y)
 
+proc toBinary*(target: var string; source: AsepriteRectangle) =
+  toBinary(target, source.h)
+  toBinary(target, source.w)
+  toBinary(target, source.x)
+  toBinary(target, source.y)
+
+proc toBinary*(source: AsepriteRectangle): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[AsepriteRectangle]; source: string; idx: var int): AsepriteRectangle =
+  result.h = fromBinary(typeof(result.h), source, idx)
+  result.w = fromBinary(typeof(result.w), source, idx)
+  result.x = fromBinary(typeof(result.x), source, idx)
+  result.y = fromBinary(typeof(result.y), source, idx)
+
+proc fromBinary*(_: typedesc[AsepriteRectangle]; source: string): AsepriteRectangle =
+  var idx = 0
+  return fromBinary(AsepriteRectangle, source, idx)
+
 proc equals(_: typedesc[AsepriteSize]; a, b: AsepriteSize): bool =
   equals(typeof(a.h), a.h, b.h) and equals(typeof(a.w), a.w, b.w)
 
@@ -156,6 +175,21 @@ proc toJsonHook*(source: AsepriteSize): JsonNode =
   result = newJObject()
   result{"h"} = newJFloat(source.h)
   result{"w"} = newJFloat(source.w)
+
+proc toBinary*(target: var string; source: AsepriteSize) =
+  toBinary(target, source.h)
+  toBinary(target, source.w)
+
+proc toBinary*(source: AsepriteSize): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[AsepriteSize]; source: string; idx: var int): AsepriteSize =
+  result.h = fromBinary(typeof(result.h), source, idx)
+  result.w = fromBinary(typeof(result.w), source, idx)
+
+proc fromBinary*(_: typedesc[AsepriteSize]; source: string): AsepriteSize =
+  var idx = 0
+  return fromBinary(AsepriteSize, source, idx)
 
 proc equals(_: typedesc[AsepriteFrame]; a, b: AsepriteFrame): bool =
   equals(typeof(a.duration), a.duration, b.duration) and
@@ -209,6 +243,30 @@ proc toJsonHook*(source: AsepriteFrame): JsonNode =
   result{"sourceSize"} = toJsonHook(source.sourceSize)
   result{"spriteSourceSize"} = toJsonHook(source.spriteSourceSize)
   result{"trimmed"} = newJBool(source.trimmed)
+
+proc toBinary*(target: var string; source: AsepriteFrame) =
+  toBinary(target, source.duration)
+  toBinary(target, source.frame)
+  toBinary(target, source.rotated)
+  toBinary(target, source.sourceSize)
+  toBinary(target, source.spriteSourceSize)
+  toBinary(target, source.trimmed)
+
+proc toBinary*(source: AsepriteFrame): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[AsepriteFrame]; source: string; idx: var int): AsepriteFrame =
+  result.duration = fromBinary(typeof(result.duration), source, idx)
+  result.frame = fromBinary(typeof(result.frame), source, idx)
+  result.rotated = fromBinary(typeof(result.rotated), source, idx)
+  result.sourceSize = fromBinary(typeof(result.sourceSize), source, idx)
+  result.spriteSourceSize = fromBinary(typeof(result.spriteSourceSize), source,
+                                       idx)
+  result.trimmed = fromBinary(typeof(result.trimmed), source, idx)
+
+proc fromBinary*(_: typedesc[AsepriteFrame]; source: string): AsepriteFrame =
+  var idx = 0
+  return fromBinary(AsepriteFrame, source, idx)
 
 converter forAsepriteUnion*(value: OrderedTable[string, AsepriteFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 0, key0: value)
@@ -273,6 +331,32 @@ proc toJsonHook*(source: AsepriteArrayFrame): JsonNode =
   result{"sourceSize"} = toJsonHook(source.sourceSize)
   result{"spriteSourceSize"} = toJsonHook(source.spriteSourceSize)
   result{"trimmed"} = newJBool(source.trimmed)
+
+proc toBinary*(target: var string; source: AsepriteArrayFrame) =
+  toBinary(target, source.duration)
+  toBinary(target, source.filename)
+  toBinary(target, source.frame)
+  toBinary(target, source.rotated)
+  toBinary(target, source.sourceSize)
+  toBinary(target, source.spriteSourceSize)
+  toBinary(target, source.trimmed)
+
+proc toBinary*(source: AsepriteArrayFrame): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[AsepriteArrayFrame]; source: string; idx: var int): AsepriteArrayFrame =
+  result.duration = fromBinary(typeof(result.duration), source, idx)
+  result.filename = fromBinary(typeof(result.filename), source, idx)
+  result.frame = fromBinary(typeof(result.frame), source, idx)
+  result.rotated = fromBinary(typeof(result.rotated), source, idx)
+  result.sourceSize = fromBinary(typeof(result.sourceSize), source, idx)
+  result.spriteSourceSize = fromBinary(typeof(result.spriteSourceSize), source,
+                                       idx)
+  result.trimmed = fromBinary(typeof(result.trimmed), source, idx)
+
+proc fromBinary*(_: typedesc[AsepriteArrayFrame]; source: string): AsepriteArrayFrame =
+  var idx = 0
+  return fromBinary(AsepriteArrayFrame, source, idx)
 
 converter forAsepriteUnion*(value: seq[AsepriteArrayFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 1, key1: value)
@@ -351,6 +435,30 @@ proc asSeqOfArrayFrame*(value: AsepriteUnion): auto =
   assert(value.kind == 1)
   return value.key1
 
+proc toBinary*(target: var string; source: AsepriteUnion) =
+  toBinary(target, source.kind)
+  case source.kind
+  of 0:
+    toBinary(target, source.key0)
+  of 1:
+    toBinary(target, source.key1)
+  
+proc toBinary*(source: AsepriteUnion): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[AsepriteUnion]; source: string; idx: var int): AsepriteUnion =
+  case fromBinary(range[0 .. 1], source, idx)
+  of 0:
+    return AsepriteUnion(kind: 0,
+                         key0: fromBinary(typeof(result.key0), source, idx))
+  of 1:
+    return AsepriteUnion(kind: 1,
+                         key1: fromBinary(typeof(result.key1), source, idx))
+  
+proc fromBinary*(_: typedesc[AsepriteUnion]; source: string): AsepriteUnion =
+  var idx = 0
+  return fromBinary(AsepriteUnion, source, idx)
+
 proc toJsonHook*(source: AsepriteFormat): JsonNode =
   case source
   of AsepriteFormat.RGBA8888:
@@ -426,6 +534,25 @@ proc toJsonHook*(source: AsepriteFrameTag): JsonNode =
   result{"from"} = newJFloat(source.`from`)
   result{"name"} = newJString(source.name)
   result{"to"} = newJFloat(source.to)
+
+proc toBinary*(target: var string; source: AsepriteFrameTag) =
+  toBinary(target, source.direction)
+  toBinary(target, source.`from`)
+  toBinary(target, source.name)
+  toBinary(target, source.to)
+
+proc toBinary*(source: AsepriteFrameTag): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[AsepriteFrameTag]; source: string; idx: var int): AsepriteFrameTag =
+  result.direction = fromBinary(typeof(result.direction), source, idx)
+  result.`from` = fromBinary(typeof(result.`from`), source, idx)
+  result.name = fromBinary(typeof(result.name), source, idx)
+  result.to = fromBinary(typeof(result.to), source, idx)
+
+proc fromBinary*(_: typedesc[AsepriteFrameTag]; source: string): AsepriteFrameTag =
+  var idx = 0
+  return fromBinary(AsepriteFrameTag, source, idx)
 
 proc toJsonHook*(source: AsepriteBlendMode): JsonNode =
   case source
@@ -565,6 +692,29 @@ proc toJsonHook*(source: AsepriteLayer): JsonNode =
   if isSome(source.opacity):
     result{"opacity"} = newJFloat(unsafeGet(source.opacity))
 
+proc toBinary*(target: var string; source: AsepriteLayer) =
+  toBinary(target, source.blendMode)
+  toBinary(target, source.color)
+  toBinary(target, source.data)
+  toBinary(target, source.group)
+  toBinary(target, source.name)
+  toBinary(target, source.opacity)
+
+proc toBinary*(source: AsepriteLayer): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[AsepriteLayer]; source: string; idx: var int): AsepriteLayer =
+  result.blendMode = fromBinary(typeof(result.blendMode), source, idx)
+  result.color = fromBinary(typeof(result.color), source, idx)
+  result.data = fromBinary(typeof(result.data), source, idx)
+  result.group = fromBinary(typeof(result.group), source, idx)
+  result.name = fromBinary(typeof(result.name), source, idx)
+  result.opacity = fromBinary(typeof(result.opacity), source, idx)
+
+proc fromBinary*(_: typedesc[AsepriteLayer]; source: string): AsepriteLayer =
+  var idx = 0
+  return fromBinary(AsepriteLayer, source, idx)
+
 proc equals(_: typedesc[AsepritePoint]; a, b: AsepritePoint): bool =
   equals(typeof(a.x), a.x, b.x) and equals(typeof(a.y), a.y, b.y)
 
@@ -590,6 +740,21 @@ proc toJsonHook*(source: AsepritePoint): JsonNode =
   result = newJObject()
   result{"x"} = newJFloat(source.x)
   result{"y"} = newJFloat(source.y)
+
+proc toBinary*(target: var string; source: AsepritePoint) =
+  toBinary(target, source.x)
+  toBinary(target, source.y)
+
+proc toBinary*(source: AsepritePoint): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[AsepritePoint]; source: string; idx: var int): AsepritePoint =
+  result.x = fromBinary(typeof(result.x), source, idx)
+  result.y = fromBinary(typeof(result.y), source, idx)
+
+proc fromBinary*(_: typedesc[AsepritePoint]; source: string): AsepritePoint =
+  var idx = 0
+  return fromBinary(AsepritePoint, source, idx)
 
 proc equals(_: typedesc[AsepriteSliceKey]; a, b: AsepriteSliceKey): bool =
   equals(typeof(a.bounds), a.bounds, b.bounds) and
@@ -631,6 +796,25 @@ proc toJsonHook*(source: AsepriteSliceKey): JsonNode =
   result{"frame"} = newJFloat(source.frame)
   if isSome(source.pivot):
     result{"pivot"} = toJsonHook(unsafeGet(source.pivot))
+
+proc toBinary*(target: var string; source: AsepriteSliceKey) =
+  toBinary(target, source.bounds)
+  toBinary(target, source.center)
+  toBinary(target, source.frame)
+  toBinary(target, source.pivot)
+
+proc toBinary*(source: AsepriteSliceKey): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[AsepriteSliceKey]; source: string; idx: var int): AsepriteSliceKey =
+  result.bounds = fromBinary(typeof(result.bounds), source, idx)
+  result.center = fromBinary(typeof(result.center), source, idx)
+  result.frame = fromBinary(typeof(result.frame), source, idx)
+  result.pivot = fromBinary(typeof(result.pivot), source, idx)
+
+proc fromBinary*(_: typedesc[AsepriteSliceKey]; source: string): AsepriteSliceKey =
+  var idx = 0
+  return fromBinary(AsepriteSliceKey, source, idx)
 
 proc equals(_: typedesc[AsepriteSlice]; a, b: AsepriteSlice): bool =
   equals(typeof(a.color), a.color, b.color) and
@@ -675,6 +859,25 @@ proc toJsonHook*(source: AsepriteSlice): JsonNode =
       output.add(toJsonHook(entry))
     output
   result{"name"} = newJString(source.name)
+
+proc toBinary*(target: var string; source: AsepriteSlice) =
+  toBinary(target, source.color)
+  toBinary(target, source.data)
+  toBinary(target, source.keys)
+  toBinary(target, source.name)
+
+proc toBinary*(source: AsepriteSlice): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[AsepriteSlice]; source: string; idx: var int): AsepriteSlice =
+  result.color = fromBinary(typeof(result.color), source, idx)
+  result.data = fromBinary(typeof(result.data), source, idx)
+  result.keys = fromBinary(typeof(result.keys), source, idx)
+  result.name = fromBinary(typeof(result.name), source, idx)
+
+proc fromBinary*(_: typedesc[AsepriteSlice]; source: string): AsepriteSlice =
+  var idx = 0
+  return fromBinary(AsepriteSlice, source, idx)
 
 proc equals(_: typedesc[AsepriteMeta]; a, b: AsepriteMeta): bool =
   equals(typeof(a.app), a.app, b.app) and
@@ -761,6 +964,35 @@ proc toJsonHook*(source: AsepriteMeta): JsonNode =
       output
   result{"version"} = newJString(source.version)
 
+proc toBinary*(target: var string; source: AsepriteMeta) =
+  toBinary(target, source.app)
+  toBinary(target, source.format)
+  toBinary(target, source.frameTags)
+  toBinary(target, source.image)
+  toBinary(target, source.layers)
+  toBinary(target, source.scale)
+  toBinary(target, source.size)
+  toBinary(target, source.slices)
+  toBinary(target, source.version)
+
+proc toBinary*(source: AsepriteMeta): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[AsepriteMeta]; source: string; idx: var int): AsepriteMeta =
+  result.app = fromBinary(typeof(result.app), source, idx)
+  result.format = fromBinary(typeof(result.format), source, idx)
+  result.frameTags = fromBinary(typeof(result.frameTags), source, idx)
+  result.image = fromBinary(typeof(result.image), source, idx)
+  result.layers = fromBinary(typeof(result.layers), source, idx)
+  result.scale = fromBinary(typeof(result.scale), source, idx)
+  result.size = fromBinary(typeof(result.size), source, idx)
+  result.slices = fromBinary(typeof(result.slices), source, idx)
+  result.version = fromBinary(typeof(result.version), source, idx)
+
+proc fromBinary*(_: typedesc[AsepriteMeta]; source: string): AsepriteMeta =
+  var idx = 0
+  return fromBinary(AsepriteMeta, source, idx)
+
 proc equals(_: typedesc[AsepriteSpriteSheet]; a, b: AsepriteSpriteSheet): bool =
   equals(typeof(a.frames), a.frames, b.frames) and
       equals(typeof(a.meta), a.meta, b.meta)
@@ -788,4 +1020,19 @@ proc toJsonHook*(source: AsepriteSpriteSheet): JsonNode =
   result = newJObject()
   result{"frames"} = toJsonHook(source.frames)
   result{"meta"} = toJsonHook(source.meta)
+
+proc toBinary*(target: var string; source: AsepriteSpriteSheet) =
+  toBinary(target, source.frames)
+  toBinary(target, source.meta)
+
+proc toBinary*(source: AsepriteSpriteSheet): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[AsepriteSpriteSheet]; source: string; idx: var int): AsepriteSpriteSheet =
+  result.frames = fromBinary(typeof(result.frames), source, idx)
+  result.meta = fromBinary(typeof(result.meta), source, idx)
+
+proc fromBinary*(_: typedesc[AsepriteSpriteSheet]; source: string): AsepriteSpriteSheet =
+  var idx = 0
+  return fromBinary(AsepriteSpriteSheet, source, idx)
 {.pop.}

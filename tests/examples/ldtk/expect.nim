@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality]
+import json_schema_import/private/[stringify, equality, bin]
 
 type
   LdtkWorldLayout* = enum
@@ -555,6 +555,23 @@ proc toJsonHook*(source: LdtkNeighbourLevel): JsonNode =
     result{"levelUid"} = newJInt(unsafeGet(source.levelUid))
   result{"dir"} = newJString(source.dir)
 
+proc toBinary*(target: var string; source: LdtkNeighbourLevel) =
+  toBinary(target, source.levelIid)
+  toBinary(target, source.levelUid)
+  toBinary(target, source.dir)
+
+proc toBinary*(source: LdtkNeighbourLevel): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkNeighbourLevel]; source: string; idx: var int): LdtkNeighbourLevel =
+  result.levelIid = fromBinary(typeof(result.levelIid), source, idx)
+  result.levelUid = fromBinary(typeof(result.levelUid), source, idx)
+  result.dir = fromBinary(typeof(result.dir), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkNeighbourLevel]; source: string): LdtkNeighbourLevel =
+  var idx = 0
+  return fromBinary(LdtkNeighbourLevel, source, idx)
+
 proc toJsonHook*(source: LdtkBgPos): JsonNode =
   case source
   of LdtkBgPos.Unscaled:
@@ -629,6 +646,23 @@ proc toJsonHook*(source: LdtkLevelBgPosInfos): JsonNode =
       output.add(newJInt(entry))
     output
 
+proc toBinary*(target: var string; source: LdtkLevelBgPosInfos) =
+  toBinary(target, source.cropRect)
+  toBinary(target, source.scale)
+  toBinary(target, source.topLeftPx)
+
+proc toBinary*(source: LdtkLevelBgPosInfos): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkLevelBgPosInfos]; source: string; idx: var int): LdtkLevelBgPosInfos =
+  result.cropRect = fromBinary(typeof(result.cropRect), source, idx)
+  result.scale = fromBinary(typeof(result.scale), source, idx)
+  result.topLeftPx = fromBinary(typeof(result.topLeftPx), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkLevelBgPosInfos]; source: string): LdtkLevelBgPosInfos =
+  var idx = 0
+  return fromBinary(LdtkLevelBgPosInfos, source, idx)
+
 proc equals(_: typedesc[LdtkTilesetRect]; a, b: LdtkTilesetRect): bool =
   equals(typeof(a.tilesetUid), a.tilesetUid, b.tilesetUid) and
       equals(typeof(a.h), a.h, b.h) and
@@ -674,6 +708,27 @@ proc toJsonHook*(source: LdtkTilesetRect): JsonNode =
   result{"x"} = newJInt(source.x)
   result{"y"} = newJInt(source.y)
   result{"w"} = newJInt(source.w)
+
+proc toBinary*(target: var string; source: LdtkTilesetRect) =
+  toBinary(target, source.tilesetUid)
+  toBinary(target, source.h)
+  toBinary(target, source.x)
+  toBinary(target, source.y)
+  toBinary(target, source.w)
+
+proc toBinary*(source: LdtkTilesetRect): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkTilesetRect]; source: string; idx: var int): LdtkTilesetRect =
+  result.tilesetUid = fromBinary(typeof(result.tilesetUid), source, idx)
+  result.h = fromBinary(typeof(result.h), source, idx)
+  result.x = fromBinary(typeof(result.x), source, idx)
+  result.y = fromBinary(typeof(result.y), source, idx)
+  result.w = fromBinary(typeof(result.w), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkTilesetRect]; source: string): LdtkTilesetRect =
+  var idx = 0
+  return fromBinary(LdtkTilesetRect, source, idx)
 
 proc equals(_: typedesc[LdtkFieldInstance]; a, b: LdtkFieldInstance): bool =
   equals(typeof(a.`type`), a.`type`, b.`type`) and
@@ -734,6 +789,30 @@ proc toJsonHook*(source: LdtkFieldInstance): JsonNode =
     output
   result{"__value"} = source.value
 
+proc toBinary*(target: var string; source: LdtkFieldInstance) =
+  toBinary(target, source.`type`)
+  toBinary(target, source.defUid)
+  toBinary(target, source.identifier)
+  toBinary(target, source.tile)
+  toBinary(target, source.realEditorValues)
+  toBinary(target, source.value)
+
+proc toBinary*(source: LdtkFieldInstance): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkFieldInstance]; source: string; idx: var int): LdtkFieldInstance =
+  result.`type` = fromBinary(typeof(result.`type`), source, idx)
+  result.defUid = fromBinary(typeof(result.defUid), source, idx)
+  result.identifier = fromBinary(typeof(result.identifier), source, idx)
+  result.tile = fromBinary(typeof(result.tile), source, idx)
+  result.realEditorValues = fromBinary(typeof(result.realEditorValues), source,
+                                       idx)
+  result.value = fromBinary(typeof(result.value), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkFieldInstance]; source: string): LdtkFieldInstance =
+  var idx = 0
+  return fromBinary(LdtkFieldInstance, source, idx)
+
 proc equals(_: typedesc[LdtkTile]; a, b: LdtkTile): bool =
   equals(typeof(a.t), a.t, b.t) and equals(typeof(a.d), a.d, b.d) and
       equals(typeof(a.px), a.px, b.px) and
@@ -790,6 +869,29 @@ proc toJsonHook*(source: LdtkTile): JsonNode =
     for entry in source.src:
       output.add(newJInt(entry))
     output
+
+proc toBinary*(target: var string; source: LdtkTile) =
+  toBinary(target, source.t)
+  toBinary(target, source.d)
+  toBinary(target, source.px)
+  toBinary(target, source.a)
+  toBinary(target, source.f)
+  toBinary(target, source.src)
+
+proc toBinary*(source: LdtkTile): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkTile]; source: string; idx: var int): LdtkTile =
+  result.t = fromBinary(typeof(result.t), source, idx)
+  result.d = fromBinary(typeof(result.d), source, idx)
+  result.px = fromBinary(typeof(result.px), source, idx)
+  result.a = fromBinary(typeof(result.a), source, idx)
+  result.f = fromBinary(typeof(result.f), source, idx)
+  result.src = fromBinary(typeof(result.src), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkTile]; source: string): LdtkTile =
+  var idx = 0
+  return fromBinary(LdtkTile, source, idx)
 
 proc equals(_: typedesc[LdtkEntityInstance]; a, b: LdtkEntityInstance): bool =
   equals(typeof(a.iid), a.iid, b.iid) and
@@ -916,6 +1018,45 @@ proc toJsonHook*(source: LdtkEntityInstance): JsonNode =
     output
   result{"width"} = newJInt(source.width)
 
+proc toBinary*(target: var string; source: LdtkEntityInstance) =
+  toBinary(target, source.iid)
+  toBinary(target, source.defUid)
+  toBinary(target, source.identifier)
+  toBinary(target, source.tile)
+  toBinary(target, source.px)
+  toBinary(target, source.worldX)
+  toBinary(target, source.worldY)
+  toBinary(target, source.smartColor)
+  toBinary(target, source.grid)
+  toBinary(target, source.pivot)
+  toBinary(target, source.fieldInstances)
+  toBinary(target, source.height)
+  toBinary(target, source.tags)
+  toBinary(target, source.width)
+
+proc toBinary*(source: LdtkEntityInstance): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkEntityInstance]; source: string; idx: var int): LdtkEntityInstance =
+  result.iid = fromBinary(typeof(result.iid), source, idx)
+  result.defUid = fromBinary(typeof(result.defUid), source, idx)
+  result.identifier = fromBinary(typeof(result.identifier), source, idx)
+  result.tile = fromBinary(typeof(result.tile), source, idx)
+  result.px = fromBinary(typeof(result.px), source, idx)
+  result.worldX = fromBinary(typeof(result.worldX), source, idx)
+  result.worldY = fromBinary(typeof(result.worldY), source, idx)
+  result.smartColor = fromBinary(typeof(result.smartColor), source, idx)
+  result.grid = fromBinary(typeof(result.grid), source, idx)
+  result.pivot = fromBinary(typeof(result.pivot), source, idx)
+  result.fieldInstances = fromBinary(typeof(result.fieldInstances), source, idx)
+  result.height = fromBinary(typeof(result.height), source, idx)
+  result.tags = fromBinary(typeof(result.tags), source, idx)
+  result.width = fromBinary(typeof(result.width), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkEntityInstance]; source: string): LdtkEntityInstance =
+  var idx = 0
+  return fromBinary(LdtkEntityInstance, source, idx)
+
 proc equals(_: typedesc[LdtkIntGridValueInstance];
             a, b: LdtkIntGridValueInstance): bool =
   equals(typeof(a.v), a.v, b.v) and
@@ -945,6 +1086,22 @@ proc toJsonHook*(source: LdtkIntGridValueInstance): JsonNode =
   result = newJObject()
   result{"v"} = newJInt(source.v)
   result{"coordId"} = newJInt(source.coordId)
+
+proc toBinary*(target: var string; source: LdtkIntGridValueInstance) =
+  toBinary(target, source.v)
+  toBinary(target, source.coordId)
+
+proc toBinary*(source: LdtkIntGridValueInstance): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkIntGridValueInstance]; source: string;
+                idx: var int): LdtkIntGridValueInstance =
+  result.v = fromBinary(typeof(result.v), source, idx)
+  result.coordId = fromBinary(typeof(result.coordId), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkIntGridValueInstance]; source: string): LdtkIntGridValueInstance =
+  var idx = 0
+  return fromBinary(LdtkIntGridValueInstance, source, idx)
 
 proc equals(_: typedesc[LdtkLayerInstance]; a, b: LdtkLayerInstance): bool =
   equals(typeof(a.cHei), a.cHei, b.cHei) and
@@ -1154,6 +1311,67 @@ proc toJsonHook*(source: LdtkLayerInstance): JsonNode =
         output.add(toJsonHook(entry))
       output
 
+proc toBinary*(target: var string; source: LdtkLayerInstance) =
+  toBinary(target, source.cHei)
+  toBinary(target, source.pxOffsetX)
+  toBinary(target, source.tilesetRelPath)
+  toBinary(target, source.iid)
+  toBinary(target, source.levelId)
+  toBinary(target, source.`type`)
+  toBinary(target, source.autoLayerTiles)
+  toBinary(target, source.optionalRules)
+  toBinary(target, source.identifier)
+  toBinary(target, source.gridSize)
+  toBinary(target, source.pxTotalOffsetY)
+  toBinary(target, source.intGridCsv)
+  toBinary(target, source.overrideTilesetUid)
+  toBinary(target, source.visible)
+  toBinary(target, source.entityInstances)
+  toBinary(target, source.opacity)
+  toBinary(target, source.seed)
+  toBinary(target, source.layerDefUid)
+  toBinary(target, source.pxTotalOffsetX)
+  toBinary(target, source.cWid)
+  toBinary(target, source.pxOffsetY)
+  toBinary(target, source.tilesetDefUid)
+  toBinary(target, source.gridTiles)
+  toBinary(target, source.intGrid)
+
+proc toBinary*(source: LdtkLayerInstance): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkLayerInstance]; source: string; idx: var int): LdtkLayerInstance =
+  result.cHei = fromBinary(typeof(result.cHei), source, idx)
+  result.pxOffsetX = fromBinary(typeof(result.pxOffsetX), source, idx)
+  result.tilesetRelPath = fromBinary(typeof(result.tilesetRelPath), source, idx)
+  result.iid = fromBinary(typeof(result.iid), source, idx)
+  result.levelId = fromBinary(typeof(result.levelId), source, idx)
+  result.`type` = fromBinary(typeof(result.`type`), source, idx)
+  result.autoLayerTiles = fromBinary(typeof(result.autoLayerTiles), source, idx)
+  result.optionalRules = fromBinary(typeof(result.optionalRules), source, idx)
+  result.identifier = fromBinary(typeof(result.identifier), source, idx)
+  result.gridSize = fromBinary(typeof(result.gridSize), source, idx)
+  result.pxTotalOffsetY = fromBinary(typeof(result.pxTotalOffsetY), source, idx)
+  result.intGridCsv = fromBinary(typeof(result.intGridCsv), source, idx)
+  result.overrideTilesetUid = fromBinary(typeof(result.overrideTilesetUid),
+      source, idx)
+  result.visible = fromBinary(typeof(result.visible), source, idx)
+  result.entityInstances = fromBinary(typeof(result.entityInstances), source,
+                                      idx)
+  result.opacity = fromBinary(typeof(result.opacity), source, idx)
+  result.seed = fromBinary(typeof(result.seed), source, idx)
+  result.layerDefUid = fromBinary(typeof(result.layerDefUid), source, idx)
+  result.pxTotalOffsetX = fromBinary(typeof(result.pxTotalOffsetX), source, idx)
+  result.cWid = fromBinary(typeof(result.cWid), source, idx)
+  result.pxOffsetY = fromBinary(typeof(result.pxOffsetY), source, idx)
+  result.tilesetDefUid = fromBinary(typeof(result.tilesetDefUid), source, idx)
+  result.gridTiles = fromBinary(typeof(result.gridTiles), source, idx)
+  result.intGrid = fromBinary(typeof(result.intGrid), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkLayerInstance]; source: string): LdtkLayerInstance =
+  var idx = 0
+  return fromBinary(LdtkLayerInstance, source, idx)
+
 proc equals(_: typedesc[LdtkLevel]; a, b: LdtkLevel): bool =
   equals(typeof(a.neighbours), a.neighbours, b.neighbours) and
       equals(typeof(a.bgColor), a.bgColor, b.bgColor) and
@@ -1321,6 +1539,61 @@ proc toJsonHook*(source: LdtkLevel): JsonNode =
     result{"bgRelPath"} = newJString(unsafeGet(source.bgRelPath))
   result{"worldDepth"} = newJInt(source.worldDepth)
 
+proc toBinary*(target: var string; source: LdtkLevel) =
+  toBinary(target, source.neighbours)
+  toBinary(target, source.bgColor)
+  toBinary(target, source.worldX)
+  toBinary(target, source.externalRelPath)
+  toBinary(target, source.useAutoIdentifier)
+  toBinary(target, source.iid)
+  toBinary(target, source.bgColor1)
+  toBinary(target, source.bgPos)
+  toBinary(target, source.pxHei)
+  toBinary(target, source.worldY)
+  toBinary(target, source.bgPos1)
+  toBinary(target, source.uid)
+  toBinary(target, source.smartColor)
+  toBinary(target, source.fieldInstances)
+  toBinary(target, source.pxWid)
+  toBinary(target, source.identifier)
+  toBinary(target, source.bgPivotY)
+  toBinary(target, source.bgPivotX)
+  toBinary(target, source.layerInstances)
+  toBinary(target, source.bgRelPath)
+  toBinary(target, source.worldDepth)
+
+proc toBinary*(source: LdtkLevel): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkLevel]; source: string; idx: var int): LdtkLevel =
+  result.neighbours = fromBinary(typeof(result.neighbours), source, idx)
+  result.bgColor = fromBinary(typeof(result.bgColor), source, idx)
+  result.worldX = fromBinary(typeof(result.worldX), source, idx)
+  result.externalRelPath = fromBinary(typeof(result.externalRelPath), source,
+                                      idx)
+  result.useAutoIdentifier = fromBinary(typeof(result.useAutoIdentifier),
+                                        source, idx)
+  result.iid = fromBinary(typeof(result.iid), source, idx)
+  result.bgColor1 = fromBinary(typeof(result.bgColor1), source, idx)
+  result.bgPos = fromBinary(typeof(result.bgPos), source, idx)
+  result.pxHei = fromBinary(typeof(result.pxHei), source, idx)
+  result.worldY = fromBinary(typeof(result.worldY), source, idx)
+  result.bgPos1 = fromBinary(typeof(result.bgPos1), source, idx)
+  result.uid = fromBinary(typeof(result.uid), source, idx)
+  result.smartColor = fromBinary(typeof(result.smartColor), source, idx)
+  result.fieldInstances = fromBinary(typeof(result.fieldInstances), source, idx)
+  result.pxWid = fromBinary(typeof(result.pxWid), source, idx)
+  result.identifier = fromBinary(typeof(result.identifier), source, idx)
+  result.bgPivotY = fromBinary(typeof(result.bgPivotY), source, idx)
+  result.bgPivotX = fromBinary(typeof(result.bgPivotX), source, idx)
+  result.layerInstances = fromBinary(typeof(result.layerInstances), source, idx)
+  result.bgRelPath = fromBinary(typeof(result.bgRelPath), source, idx)
+  result.worldDepth = fromBinary(typeof(result.worldDepth), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkLevel]; source: string): LdtkLevel =
+  var idx = 0
+  return fromBinary(LdtkLevel, source, idx)
+
 proc equals(_: typedesc[LdtkWorld]; a, b: LdtkWorld): bool =
   equals(typeof(a.worldGridWidth), a.worldGridWidth, b.worldGridWidth) and
       equals(typeof(a.iid), a.iid, b.iid) and
@@ -1401,6 +1674,36 @@ proc toJsonHook*(source: LdtkWorld): JsonNode =
   result{"defaultLevelHeight"} = newJInt(source.defaultLevelHeight)
   result{"identifier"} = newJString(source.identifier)
 
+proc toBinary*(target: var string; source: LdtkWorld) =
+  toBinary(target, source.worldGridWidth)
+  toBinary(target, source.iid)
+  toBinary(target, source.worldGridHeight)
+  toBinary(target, source.worldLayout)
+  toBinary(target, source.defaultLevelWidth)
+  toBinary(target, source.levels)
+  toBinary(target, source.defaultLevelHeight)
+  toBinary(target, source.identifier)
+
+proc toBinary*(source: LdtkWorld): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkWorld]; source: string; idx: var int): LdtkWorld =
+  result.worldGridWidth = fromBinary(typeof(result.worldGridWidth), source, idx)
+  result.iid = fromBinary(typeof(result.iid), source, idx)
+  result.worldGridHeight = fromBinary(typeof(result.worldGridHeight), source,
+                                      idx)
+  result.worldLayout = fromBinary(typeof(result.worldLayout), source, idx)
+  result.defaultLevelWidth = fromBinary(typeof(result.defaultLevelWidth),
+                                        source, idx)
+  result.levels = fromBinary(typeof(result.levels), source, idx)
+  result.defaultLevelHeight = fromBinary(typeof(result.defaultLevelHeight),
+      source, idx)
+  result.identifier = fromBinary(typeof(result.identifier), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkWorld]; source: string): LdtkWorld =
+  var idx = 0
+  return fromBinary(LdtkWorld, source, idx)
+
 proc equals(_: typedesc[LdtkEntityReferenceInfos];
             a, b: LdtkEntityReferenceInfos): bool =
   equals(typeof(a.worldIid), a.worldIid, b.worldIid) and
@@ -1443,6 +1746,26 @@ proc toJsonHook*(source: LdtkEntityReferenceInfos): JsonNode =
   result{"entityIid"} = newJString(source.entityIid)
   result{"layerIid"} = newJString(source.layerIid)
   result{"levelIid"} = newJString(source.levelIid)
+
+proc toBinary*(target: var string; source: LdtkEntityReferenceInfos) =
+  toBinary(target, source.worldIid)
+  toBinary(target, source.entityIid)
+  toBinary(target, source.layerIid)
+  toBinary(target, source.levelIid)
+
+proc toBinary*(source: LdtkEntityReferenceInfos): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkEntityReferenceInfos]; source: string;
+                idx: var int): LdtkEntityReferenceInfos =
+  result.worldIid = fromBinary(typeof(result.worldIid), source, idx)
+  result.entityIid = fromBinary(typeof(result.entityIid), source, idx)
+  result.layerIid = fromBinary(typeof(result.layerIid), source, idx)
+  result.levelIid = fromBinary(typeof(result.levelIid), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkEntityReferenceInfos]; source: string): LdtkEntityReferenceInfos =
+  var idx = 0
+  return fromBinary(LdtkEntityReferenceInfos, source, idx)
 
 proc equals(_: typedesc[LdtkTocInstanceData]; a, b: LdtkTocInstanceData): bool =
   equals(typeof(a.worldX), a.worldX, b.worldX) and
@@ -1496,6 +1819,29 @@ proc toJsonHook*(source: LdtkTocInstanceData): JsonNode =
   result{"fields"} = source.fields
   result{"iids"} = toJsonHook(source.iids)
 
+proc toBinary*(target: var string; source: LdtkTocInstanceData) =
+  toBinary(target, source.worldX)
+  toBinary(target, source.widPx)
+  toBinary(target, source.worldY)
+  toBinary(target, source.heiPx)
+  toBinary(target, source.fields)
+  toBinary(target, source.iids)
+
+proc toBinary*(source: LdtkTocInstanceData): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkTocInstanceData]; source: string; idx: var int): LdtkTocInstanceData =
+  result.worldX = fromBinary(typeof(result.worldX), source, idx)
+  result.widPx = fromBinary(typeof(result.widPx), source, idx)
+  result.worldY = fromBinary(typeof(result.worldY), source, idx)
+  result.heiPx = fromBinary(typeof(result.heiPx), source, idx)
+  result.fields = fromBinary(typeof(result.fields), source, idx)
+  result.iids = fromBinary(typeof(result.iids), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkTocInstanceData]; source: string): LdtkTocInstanceData =
+  var idx = 0
+  return fromBinary(LdtkTocInstanceData, source, idx)
+
 proc equals(_: typedesc[LdtkTableOfContentEntry]; a, b: LdtkTableOfContentEntry): bool =
   equals(typeof(a.identifier), a.identifier, b.identifier) and
       equals(typeof(a.instancesData), a.instancesData, b.instancesData) and
@@ -1542,6 +1888,24 @@ proc toJsonHook*(source: LdtkTableOfContentEntry): JsonNode =
       for entry in unsafeGet(source.instances):
         output.add(toJsonHook(entry))
       output
+
+proc toBinary*(target: var string; source: LdtkTableOfContentEntry) =
+  toBinary(target, source.identifier)
+  toBinary(target, source.instancesData)
+  toBinary(target, source.instances)
+
+proc toBinary*(source: LdtkTableOfContentEntry): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkTableOfContentEntry]; source: string;
+                idx: var int): LdtkTableOfContentEntry =
+  result.identifier = fromBinary(typeof(result.identifier), source, idx)
+  result.instancesData = fromBinary(typeof(result.instancesData), source, idx)
+  result.instances = fromBinary(typeof(result.instances), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkTableOfContentEntry]; source: string): LdtkTableOfContentEntry =
+  var idx = 0
+  return fromBinary(LdtkTableOfContentEntry, source, idx)
 
 proc toJsonHook*(source: LdtkImageExportMode): JsonNode =
   case source
@@ -1643,6 +2007,21 @@ proc toJsonHook*(source: LdtkCustomCommand): JsonNode =
   result{"when"} = toJsonHook(source.`when`)
   result{"command"} = newJString(source.command)
 
+proc toBinary*(target: var string; source: LdtkCustomCommand) =
+  toBinary(target, source.`when`)
+  toBinary(target, source.command)
+
+proc toBinary*(source: LdtkCustomCommand): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkCustomCommand]; source: string; idx: var int): LdtkCustomCommand =
+  result.`when` = fromBinary(typeof(result.`when`), source, idx)
+  result.command = fromBinary(typeof(result.command), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkCustomCommand]; source: string): LdtkCustomCommand =
+  var idx = 0
+  return fromBinary(LdtkCustomCommand, source, idx)
+
 proc toJsonHook*(source: LdtkldtkWorldLayout): JsonNode =
   case source
   of LdtkldtkWorldLayout.Free:
@@ -1732,6 +2111,22 @@ proc toJsonHook*(source: LdtkTileCustomMetadata): JsonNode =
   result{"tileId"} = newJInt(source.tileId)
   result{"data"} = newJString(source.data)
 
+proc toBinary*(target: var string; source: LdtkTileCustomMetadata) =
+  toBinary(target, source.tileId)
+  toBinary(target, source.data)
+
+proc toBinary*(source: LdtkTileCustomMetadata): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkTileCustomMetadata]; source: string;
+                idx: var int): LdtkTileCustomMetadata =
+  result.tileId = fromBinary(typeof(result.tileId), source, idx)
+  result.data = fromBinary(typeof(result.data), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkTileCustomMetadata]; source: string): LdtkTileCustomMetadata =
+  var idx = 0
+  return fromBinary(LdtkTileCustomMetadata, source, idx)
+
 proc equals(_: typedesc[LdtkEnumTagValue]; a, b: LdtkEnumTagValue): bool =
   equals(typeof(a.tileIds), a.tileIds, b.tileIds) and
       equals(typeof(a.enumValueId), a.enumValueId, b.enumValueId)
@@ -1763,6 +2158,21 @@ proc toJsonHook*(source: LdtkEnumTagValue): JsonNode =
       output.add(newJInt(entry))
     output
   result{"enumValueId"} = newJString(source.enumValueId)
+
+proc toBinary*(target: var string; source: LdtkEnumTagValue) =
+  toBinary(target, source.tileIds)
+  toBinary(target, source.enumValueId)
+
+proc toBinary*(source: LdtkEnumTagValue): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkEnumTagValue]; source: string; idx: var int): LdtkEnumTagValue =
+  result.tileIds = fromBinary(typeof(result.tileIds), source, idx)
+  result.enumValueId = fromBinary(typeof(result.enumValueId), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkEnumTagValue]; source: string): LdtkEnumTagValue =
+  var idx = 0
+  return fromBinary(LdtkEnumTagValue, source, idx)
 
 proc toJsonHook*(source: LdtkEmbedAtlas): JsonNode =
   case source
@@ -1930,6 +2340,54 @@ proc toJsonHook*(source: LdtkTilesetDef): JsonNode =
     result{"relPath"} = newJString(unsafeGet(source.relPath))
   result{"tileGridSize"} = newJInt(source.tileGridSize)
 
+proc toBinary*(target: var string; source: LdtkTilesetDef) =
+  toBinary(target, source.cachedPixelData)
+  toBinary(target, source.cHei)
+  toBinary(target, source.pxHei)
+  toBinary(target, source.customData)
+  toBinary(target, source.tagsSourceEnumUid)
+  toBinary(target, source.uid)
+  toBinary(target, source.padding)
+  toBinary(target, source.enumTags)
+  toBinary(target, source.pxWid)
+  toBinary(target, source.cWid)
+  toBinary(target, source.spacing)
+  toBinary(target, source.identifier)
+  toBinary(target, source.savedSelections)
+  toBinary(target, source.tags)
+  toBinary(target, source.embedAtlas)
+  toBinary(target, source.relPath)
+  toBinary(target, source.tileGridSize)
+
+proc toBinary*(source: LdtkTilesetDef): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkTilesetDef]; source: string; idx: var int): LdtkTilesetDef =
+  result.cachedPixelData = fromBinary(typeof(result.cachedPixelData), source,
+                                      idx)
+  result.cHei = fromBinary(typeof(result.cHei), source, idx)
+  result.pxHei = fromBinary(typeof(result.pxHei), source, idx)
+  result.customData = fromBinary(typeof(result.customData), source, idx)
+  result.tagsSourceEnumUid = fromBinary(typeof(result.tagsSourceEnumUid),
+                                        source, idx)
+  result.uid = fromBinary(typeof(result.uid), source, idx)
+  result.padding = fromBinary(typeof(result.padding), source, idx)
+  result.enumTags = fromBinary(typeof(result.enumTags), source, idx)
+  result.pxWid = fromBinary(typeof(result.pxWid), source, idx)
+  result.cWid = fromBinary(typeof(result.cWid), source, idx)
+  result.spacing = fromBinary(typeof(result.spacing), source, idx)
+  result.identifier = fromBinary(typeof(result.identifier), source, idx)
+  result.savedSelections = fromBinary(typeof(result.savedSelections), source,
+                                      idx)
+  result.tags = fromBinary(typeof(result.tags), source, idx)
+  result.embedAtlas = fromBinary(typeof(result.embedAtlas), source, idx)
+  result.relPath = fromBinary(typeof(result.relPath), source, idx)
+  result.tileGridSize = fromBinary(typeof(result.tileGridSize), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkTilesetDef]; source: string): LdtkTilesetDef =
+  var idx = 0
+  return fromBinary(LdtkTilesetDef, source, idx)
+
 proc equals(_: typedesc[LdtkIntGridValueGroupDef];
             a, b: LdtkIntGridValueGroupDef): bool =
   equals(typeof(a.color), a.color, b.color) and
@@ -1966,6 +2424,24 @@ proc toJsonHook*(source: LdtkIntGridValueGroupDef): JsonNode =
   result{"uid"} = newJInt(source.uid)
   if isSome(source.identifier):
     result{"identifier"} = newJString(unsafeGet(source.identifier))
+
+proc toBinary*(target: var string; source: LdtkIntGridValueGroupDef) =
+  toBinary(target, source.color)
+  toBinary(target, source.uid)
+  toBinary(target, source.identifier)
+
+proc toBinary*(source: LdtkIntGridValueGroupDef): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkIntGridValueGroupDef]; source: string;
+                idx: var int): LdtkIntGridValueGroupDef =
+  result.color = fromBinary(typeof(result.color), source, idx)
+  result.uid = fromBinary(typeof(result.uid), source, idx)
+  result.identifier = fromBinary(typeof(result.identifier), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkIntGridValueGroupDef]; source: string): LdtkIntGridValueGroupDef =
+  var idx = 0
+  return fromBinary(LdtkIntGridValueGroupDef, source, idx)
 
 proc equals(_: typedesc[LdtkIntGridValueDef]; a, b: LdtkIntGridValueDef): bool =
   equals(typeof(a.tile), a.tile, b.tile) and
@@ -2013,6 +2489,27 @@ proc toJsonHook*(source: LdtkIntGridValueDef): JsonNode =
     result{"identifier"} = newJString(unsafeGet(source.identifier))
   result{"value"} = newJInt(source.value)
   result{"groupUid"} = newJInt(source.groupUid)
+
+proc toBinary*(target: var string; source: LdtkIntGridValueDef) =
+  toBinary(target, source.tile)
+  toBinary(target, source.color)
+  toBinary(target, source.identifier)
+  toBinary(target, source.value)
+  toBinary(target, source.groupUid)
+
+proc toBinary*(source: LdtkIntGridValueDef): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkIntGridValueDef]; source: string; idx: var int): LdtkIntGridValueDef =
+  result.tile = fromBinary(typeof(result.tile), source, idx)
+  result.color = fromBinary(typeof(result.color), source, idx)
+  result.identifier = fromBinary(typeof(result.identifier), source, idx)
+  result.value = fromBinary(typeof(result.value), source, idx)
+  result.groupUid = fromBinary(typeof(result.groupUid), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkIntGridValueDef]; source: string): LdtkIntGridValueDef =
+  var idx = 0
+  return fromBinary(LdtkIntGridValueDef, source, idx)
 
 proc toJsonHook*(source: LdtkChecker): JsonNode =
   case source
@@ -2285,6 +2782,80 @@ proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode =
   result{"active"} = newJBool(source.active)
   result{"xOffset"} = newJInt(source.xOffset)
 
+proc toBinary*(target: var string; source: LdtkAutoRuleDef) =
+  toBinary(target, source.flipX)
+  toBinary(target, source.pivotX)
+  toBinary(target, source.perlinActive)
+  toBinary(target, source.tileRectsIds)
+  toBinary(target, source.perlinScale)
+  toBinary(target, source.outOfBoundsValue)
+  toBinary(target, source.pattern)
+  toBinary(target, source.tileRandomXMin)
+  toBinary(target, source.checker)
+  toBinary(target, source.perlinOctaves)
+  toBinary(target, source.tileIds)
+  toBinary(target, source.alpha)
+  toBinary(target, source.tileXOffset)
+  toBinary(target, source.invalidated)
+  toBinary(target, source.xModulo)
+  toBinary(target, source.size)
+  toBinary(target, source.chance)
+  toBinary(target, source.breakOnMatch)
+  toBinary(target, source.tileYOffset)
+  toBinary(target, source.uid)
+  toBinary(target, source.perlinSeed)
+  toBinary(target, source.yOffset)
+  toBinary(target, source.tileRandomYMax)
+  toBinary(target, source.tileRandomYMin)
+  toBinary(target, source.tileMode)
+  toBinary(target, source.flipY)
+  toBinary(target, source.tileRandomXMax)
+  toBinary(target, source.pivotY)
+  toBinary(target, source.yModulo)
+  toBinary(target, source.active)
+  toBinary(target, source.xOffset)
+
+proc toBinary*(source: LdtkAutoRuleDef): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkAutoRuleDef]; source: string; idx: var int): LdtkAutoRuleDef =
+  result.flipX = fromBinary(typeof(result.flipX), source, idx)
+  result.pivotX = fromBinary(typeof(result.pivotX), source, idx)
+  result.perlinActive = fromBinary(typeof(result.perlinActive), source, idx)
+  result.tileRectsIds = fromBinary(typeof(result.tileRectsIds), source, idx)
+  result.perlinScale = fromBinary(typeof(result.perlinScale), source, idx)
+  result.outOfBoundsValue = fromBinary(typeof(result.outOfBoundsValue), source,
+                                       idx)
+  result.pattern = fromBinary(typeof(result.pattern), source, idx)
+  result.tileRandomXMin = fromBinary(typeof(result.tileRandomXMin), source, idx)
+  result.checker = fromBinary(typeof(result.checker), source, idx)
+  result.perlinOctaves = fromBinary(typeof(result.perlinOctaves), source, idx)
+  result.tileIds = fromBinary(typeof(result.tileIds), source, idx)
+  result.alpha = fromBinary(typeof(result.alpha), source, idx)
+  result.tileXOffset = fromBinary(typeof(result.tileXOffset), source, idx)
+  result.invalidated = fromBinary(typeof(result.invalidated), source, idx)
+  result.xModulo = fromBinary(typeof(result.xModulo), source, idx)
+  result.size = fromBinary(typeof(result.size), source, idx)
+  result.chance = fromBinary(typeof(result.chance), source, idx)
+  result.breakOnMatch = fromBinary(typeof(result.breakOnMatch), source, idx)
+  result.tileYOffset = fromBinary(typeof(result.tileYOffset), source, idx)
+  result.uid = fromBinary(typeof(result.uid), source, idx)
+  result.perlinSeed = fromBinary(typeof(result.perlinSeed), source, idx)
+  result.yOffset = fromBinary(typeof(result.yOffset), source, idx)
+  result.tileRandomYMax = fromBinary(typeof(result.tileRandomYMax), source, idx)
+  result.tileRandomYMin = fromBinary(typeof(result.tileRandomYMin), source, idx)
+  result.tileMode = fromBinary(typeof(result.tileMode), source, idx)
+  result.flipY = fromBinary(typeof(result.flipY), source, idx)
+  result.tileRandomXMax = fromBinary(typeof(result.tileRandomXMax), source, idx)
+  result.pivotY = fromBinary(typeof(result.pivotY), source, idx)
+  result.yModulo = fromBinary(typeof(result.yModulo), source, idx)
+  result.active = fromBinary(typeof(result.active), source, idx)
+  result.xOffset = fromBinary(typeof(result.xOffset), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkAutoRuleDef]; source: string): LdtkAutoRuleDef =
+  var idx = 0
+  return fromBinary(LdtkAutoRuleDef, source, idx)
+
 proc equals(_: typedesc[LdtkAutoLayerRuleGroup]; a, b: LdtkAutoLayerRuleGroup): bool =
   equals(typeof(a.name), a.name, b.name) and
       equals(typeof(a.collapsed), a.collapsed, b.collapsed) and
@@ -2386,6 +2957,42 @@ proc toJsonHook*(source: LdtkAutoLayerRuleGroup): JsonNode =
     for entry in source.rules:
       output.add(toJsonHook(entry))
     output
+
+proc toBinary*(target: var string; source: LdtkAutoLayerRuleGroup) =
+  toBinary(target, source.name)
+  toBinary(target, source.collapsed)
+  toBinary(target, source.biomeRequirementMode)
+  toBinary(target, source.color)
+  toBinary(target, source.isOptional)
+  toBinary(target, source.icon)
+  toBinary(target, source.usesWizard)
+  toBinary(target, source.uid)
+  toBinary(target, source.requiredBiomeValues)
+  toBinary(target, source.active)
+  toBinary(target, source.rules)
+
+proc toBinary*(source: LdtkAutoLayerRuleGroup): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkAutoLayerRuleGroup]; source: string;
+                idx: var int): LdtkAutoLayerRuleGroup =
+  result.name = fromBinary(typeof(result.name), source, idx)
+  result.collapsed = fromBinary(typeof(result.collapsed), source, idx)
+  result.biomeRequirementMode = fromBinary(typeof(result.biomeRequirementMode),
+      source, idx)
+  result.color = fromBinary(typeof(result.color), source, idx)
+  result.isOptional = fromBinary(typeof(result.isOptional), source, idx)
+  result.icon = fromBinary(typeof(result.icon), source, idx)
+  result.usesWizard = fromBinary(typeof(result.usesWizard), source, idx)
+  result.uid = fromBinary(typeof(result.uid), source, idx)
+  result.requiredBiomeValues = fromBinary(typeof(result.requiredBiomeValues),
+      source, idx)
+  result.active = fromBinary(typeof(result.active), source, idx)
+  result.rules = fromBinary(typeof(result.rules), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkAutoLayerRuleGroup]; source: string): LdtkAutoLayerRuleGroup =
+  var idx = 0
+  return fromBinary(LdtkAutoLayerRuleGroup, source, idx)
 
 proc toJsonHook*(source: LdtkType): JsonNode =
   case source
@@ -2708,6 +3315,96 @@ proc toJsonHook*(source: LdtkLayerDef): JsonNode =
   if isSome(source.autoTilesKilledByOtherLayerUid):
     result{"autoTilesKilledByOtherLayerUid"} = newJInt(
         unsafeGet(source.autoTilesKilledByOtherLayerUid))
+
+proc toBinary*(target: var string; source: LdtkLayerDef) =
+  toBinary(target, source.pxOffsetX)
+  toBinary(target, source.tilePivotX)
+  toBinary(target, source.uiFilterTags)
+  toBinary(target, source.displayOpacity)
+  toBinary(target, source.parallaxFactorY)
+  toBinary(target, source.hideInList)
+  toBinary(target, source.`type`)
+  toBinary(target, source.guideGridHei)
+  toBinary(target, source.uiColor)
+  toBinary(target, source.doc)
+  toBinary(target, source.tilesetDefUid)
+  toBinary(target, source.canSelectWhenInactive)
+  toBinary(target, source.useAsyncRender)
+  toBinary(target, source.autoSourceLayerDefUid)
+  toBinary(target, source.autoTilesetDefUid)
+  toBinary(target, source.parallaxScaling)
+  toBinary(target, source.renderInWorldView)
+  toBinary(target, source.intGridValuesGroups)
+  toBinary(target, source.inactiveOpacity)
+  toBinary(target, source.uid)
+  toBinary(target, source.excludedTags)
+  toBinary(target, source.hideFieldsWhenInactive)
+  toBinary(target, source.intGridValues)
+  toBinary(target, source.autoRuleGroups)
+  toBinary(target, source.type1)
+  toBinary(target, source.identifier)
+  toBinary(target, source.guideGridWid)
+  toBinary(target, source.requiredTags)
+  toBinary(target, source.pxOffsetY)
+  toBinary(target, source.tilePivotY)
+  toBinary(target, source.biomeFieldUid)
+  toBinary(target, source.gridSize)
+  toBinary(target, source.parallaxFactorX)
+  toBinary(target, source.autoTilesKilledByOtherLayerUid)
+
+proc toBinary*(source: LdtkLayerDef): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkLayerDef]; source: string; idx: var int): LdtkLayerDef =
+  result.pxOffsetX = fromBinary(typeof(result.pxOffsetX), source, idx)
+  result.tilePivotX = fromBinary(typeof(result.tilePivotX), source, idx)
+  result.uiFilterTags = fromBinary(typeof(result.uiFilterTags), source, idx)
+  result.displayOpacity = fromBinary(typeof(result.displayOpacity), source, idx)
+  result.parallaxFactorY = fromBinary(typeof(result.parallaxFactorY), source,
+                                      idx)
+  result.hideInList = fromBinary(typeof(result.hideInList), source, idx)
+  result.`type` = fromBinary(typeof(result.`type`), source, idx)
+  result.guideGridHei = fromBinary(typeof(result.guideGridHei), source, idx)
+  result.uiColor = fromBinary(typeof(result.uiColor), source, idx)
+  result.doc = fromBinary(typeof(result.doc), source, idx)
+  result.tilesetDefUid = fromBinary(typeof(result.tilesetDefUid), source, idx)
+  result.canSelectWhenInactive = fromBinary(
+      typeof(result.canSelectWhenInactive), source, idx)
+  result.useAsyncRender = fromBinary(typeof(result.useAsyncRender), source, idx)
+  result.autoSourceLayerDefUid = fromBinary(
+      typeof(result.autoSourceLayerDefUid), source, idx)
+  result.autoTilesetDefUid = fromBinary(typeof(result.autoTilesetDefUid),
+                                        source, idx)
+  result.parallaxScaling = fromBinary(typeof(result.parallaxScaling), source,
+                                      idx)
+  result.renderInWorldView = fromBinary(typeof(result.renderInWorldView),
+                                        source, idx)
+  result.intGridValuesGroups = fromBinary(typeof(result.intGridValuesGroups),
+      source, idx)
+  result.inactiveOpacity = fromBinary(typeof(result.inactiveOpacity), source,
+                                      idx)
+  result.uid = fromBinary(typeof(result.uid), source, idx)
+  result.excludedTags = fromBinary(typeof(result.excludedTags), source, idx)
+  result.hideFieldsWhenInactive = fromBinary(
+      typeof(result.hideFieldsWhenInactive), source, idx)
+  result.intGridValues = fromBinary(typeof(result.intGridValues), source, idx)
+  result.autoRuleGroups = fromBinary(typeof(result.autoRuleGroups), source, idx)
+  result.type1 = fromBinary(typeof(result.type1), source, idx)
+  result.identifier = fromBinary(typeof(result.identifier), source, idx)
+  result.guideGridWid = fromBinary(typeof(result.guideGridWid), source, idx)
+  result.requiredTags = fromBinary(typeof(result.requiredTags), source, idx)
+  result.pxOffsetY = fromBinary(typeof(result.pxOffsetY), source, idx)
+  result.tilePivotY = fromBinary(typeof(result.tilePivotY), source, idx)
+  result.biomeFieldUid = fromBinary(typeof(result.biomeFieldUid), source, idx)
+  result.gridSize = fromBinary(typeof(result.gridSize), source, idx)
+  result.parallaxFactorX = fromBinary(typeof(result.parallaxFactorX), source,
+                                      idx)
+  result.autoTilesKilledByOtherLayerUid = fromBinary(
+      typeof(result.autoTilesKilledByOtherLayerUid), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkLayerDef]; source: string): LdtkLayerDef =
+  var idx = 0
+  return fromBinary(LdtkLayerDef, source, idx)
 
 proc toJsonHook*(source: LdtkAllowedRefs): JsonNode =
   case source
@@ -3191,6 +3888,103 @@ proc toJsonHook*(source: LdtkFieldDef): JsonNode =
   if isSome(source.arrayMaxLength):
     result{"arrayMaxLength"} = newJInt(unsafeGet(source.arrayMaxLength))
 
+proc toBinary*(target: var string; source: LdtkFieldDef) =
+  toBinary(target, source.acceptFileTypes)
+  toBinary(target, source.editorDisplayScale)
+  toBinary(target, source.searchable)
+  toBinary(target, source.useForSmartColor)
+  toBinary(target, source.editorShowInWorld)
+  toBinary(target, source.allowedRefs)
+  toBinary(target, source.editorAlwaysShow)
+  toBinary(target, source.arrayMinLength)
+  toBinary(target, source.editorTextSuffix)
+  toBinary(target, source.min)
+  toBinary(target, source.`type`)
+  toBinary(target, source.editorDisplayMode)
+  toBinary(target, source.editorDisplayColor)
+  toBinary(target, source.canBeNull)
+  toBinary(target, source.autoChainRef)
+  toBinary(target, source.doc)
+  toBinary(target, source.allowedRefsEntityUid)
+  toBinary(target, source.tilesetUid)
+  toBinary(target, source.allowedRefTags)
+  toBinary(target, source.symmetricalRef)
+  toBinary(target, source.uid)
+  toBinary(target, source.editorTextPrefix)
+  toBinary(target, source.isArray)
+  toBinary(target, source.exportToToc)
+  toBinary(target, source.editorDisplayPos)
+  toBinary(target, source.textLanguageMode)
+  toBinary(target, source.max)
+  toBinary(target, source.allowOutOfLevelRef)
+  toBinary(target, source.editorCutLongValues)
+  toBinary(target, source.defaultOverride)
+  toBinary(target, source.editorLinkStyle)
+  toBinary(target, source.regex)
+  toBinary(target, source.type1)
+  toBinary(target, source.identifier)
+  toBinary(target, source.arrayMaxLength)
+
+proc toBinary*(source: LdtkFieldDef): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkFieldDef]; source: string; idx: var int): LdtkFieldDef =
+  result.acceptFileTypes = fromBinary(typeof(result.acceptFileTypes), source,
+                                      idx)
+  result.editorDisplayScale = fromBinary(typeof(result.editorDisplayScale),
+      source, idx)
+  result.searchable = fromBinary(typeof(result.searchable), source, idx)
+  result.useForSmartColor = fromBinary(typeof(result.useForSmartColor), source,
+                                       idx)
+  result.editorShowInWorld = fromBinary(typeof(result.editorShowInWorld),
+                                        source, idx)
+  result.allowedRefs = fromBinary(typeof(result.allowedRefs), source, idx)
+  result.editorAlwaysShow = fromBinary(typeof(result.editorAlwaysShow), source,
+                                       idx)
+  result.arrayMinLength = fromBinary(typeof(result.arrayMinLength), source, idx)
+  result.editorTextSuffix = fromBinary(typeof(result.editorTextSuffix), source,
+                                       idx)
+  result.min = fromBinary(typeof(result.min), source, idx)
+  result.`type` = fromBinary(typeof(result.`type`), source, idx)
+  result.editorDisplayMode = fromBinary(typeof(result.editorDisplayMode),
+                                        source, idx)
+  result.editorDisplayColor = fromBinary(typeof(result.editorDisplayColor),
+      source, idx)
+  result.canBeNull = fromBinary(typeof(result.canBeNull), source, idx)
+  result.autoChainRef = fromBinary(typeof(result.autoChainRef), source, idx)
+  result.doc = fromBinary(typeof(result.doc), source, idx)
+  result.allowedRefsEntityUid = fromBinary(typeof(result.allowedRefsEntityUid),
+      source, idx)
+  result.tilesetUid = fromBinary(typeof(result.tilesetUid), source, idx)
+  result.allowedRefTags = fromBinary(typeof(result.allowedRefTags), source, idx)
+  result.symmetricalRef = fromBinary(typeof(result.symmetricalRef), source, idx)
+  result.uid = fromBinary(typeof(result.uid), source, idx)
+  result.editorTextPrefix = fromBinary(typeof(result.editorTextPrefix), source,
+                                       idx)
+  result.isArray = fromBinary(typeof(result.isArray), source, idx)
+  result.exportToToc = fromBinary(typeof(result.exportToToc), source, idx)
+  result.editorDisplayPos = fromBinary(typeof(result.editorDisplayPos), source,
+                                       idx)
+  result.textLanguageMode = fromBinary(typeof(result.textLanguageMode), source,
+                                       idx)
+  result.max = fromBinary(typeof(result.max), source, idx)
+  result.allowOutOfLevelRef = fromBinary(typeof(result.allowOutOfLevelRef),
+      source, idx)
+  result.editorCutLongValues = fromBinary(typeof(result.editorCutLongValues),
+      source, idx)
+  result.defaultOverride = fromBinary(typeof(result.defaultOverride), source,
+                                      idx)
+  result.editorLinkStyle = fromBinary(typeof(result.editorLinkStyle), source,
+                                      idx)
+  result.regex = fromBinary(typeof(result.regex), source, idx)
+  result.type1 = fromBinary(typeof(result.type1), source, idx)
+  result.identifier = fromBinary(typeof(result.identifier), source, idx)
+  result.arrayMaxLength = fromBinary(typeof(result.arrayMaxLength), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkFieldDef]; source: string): LdtkFieldDef =
+  var idx = 0
+  return fromBinary(LdtkFieldDef, source, idx)
+
 proc equals(_: typedesc[LdtkEnumDefValues]; a, b: LdtkEnumDefValues): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
       equals(typeof(a.color), a.color, b.color) and
@@ -3244,6 +4038,27 @@ proc toJsonHook*(source: LdtkEnumDefValues): JsonNode =
       for entry in unsafeGet(source.tileSrcRect):
         output.add(newJInt(entry))
       output
+
+proc toBinary*(target: var string; source: LdtkEnumDefValues) =
+  toBinary(target, source.tileId)
+  toBinary(target, source.color)
+  toBinary(target, source.tileRect)
+  toBinary(target, source.id)
+  toBinary(target, source.tileSrcRect)
+
+proc toBinary*(source: LdtkEnumDefValues): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkEnumDefValues]; source: string; idx: var int): LdtkEnumDefValues =
+  result.tileId = fromBinary(typeof(result.tileId), source, idx)
+  result.color = fromBinary(typeof(result.color), source, idx)
+  result.tileRect = fromBinary(typeof(result.tileRect), source, idx)
+  result.id = fromBinary(typeof(result.id), source, idx)
+  result.tileSrcRect = fromBinary(typeof(result.tileSrcRect), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkEnumDefValues]; source: string): LdtkEnumDefValues =
+  var idx = 0
+  return fromBinary(LdtkEnumDefValues, source, idx)
 
 proc equals(_: typedesc[LdtkEnumDef]; a, b: LdtkEnumDef): bool =
   equals(typeof(a.externalFileChecksum), a.externalFileChecksum,
@@ -3321,6 +4136,33 @@ proc toJsonHook*(source: LdtkEnumDef): JsonNode =
     for entry in source.tags:
       output.add(newJString(entry))
     output
+
+proc toBinary*(target: var string; source: LdtkEnumDef) =
+  toBinary(target, source.externalFileChecksum)
+  toBinary(target, source.externalRelPath)
+  toBinary(target, source.uid)
+  toBinary(target, source.values)
+  toBinary(target, source.iconTilesetUid)
+  toBinary(target, source.identifier)
+  toBinary(target, source.tags)
+
+proc toBinary*(source: LdtkEnumDef): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkEnumDef]; source: string; idx: var int): LdtkEnumDef =
+  result.externalFileChecksum = fromBinary(typeof(result.externalFileChecksum),
+      source, idx)
+  result.externalRelPath = fromBinary(typeof(result.externalRelPath), source,
+                                      idx)
+  result.uid = fromBinary(typeof(result.uid), source, idx)
+  result.values = fromBinary(typeof(result.values), source, idx)
+  result.iconTilesetUid = fromBinary(typeof(result.iconTilesetUid), source, idx)
+  result.identifier = fromBinary(typeof(result.identifier), source, idx)
+  result.tags = fromBinary(typeof(result.tags), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkEnumDef]; source: string): LdtkEnumDef =
+  var idx = 0
+  return fromBinary(LdtkEnumDef, source, idx)
 
 proc toJsonHook*(source: LdtkLimitScope): JsonNode =
   case source
@@ -3671,6 +4513,88 @@ proc toJsonHook*(source: LdtkEntityDef): JsonNode =
     output
   result{"width"} = newJInt(source.width)
 
+proc toBinary*(target: var string; source: LdtkEntityDef) =
+  toBinary(target, source.tileId)
+  toBinary(target, source.showName)
+  toBinary(target, source.tilesetId)
+  toBinary(target, source.maxHeight)
+  toBinary(target, source.limitScope)
+  toBinary(target, source.pivotX)
+  toBinary(target, source.maxCount)
+  toBinary(target, source.allowOutOfBounds)
+  toBinary(target, source.hollow)
+  toBinary(target, source.minHeight)
+  toBinary(target, source.keepAspectRatio)
+  toBinary(target, source.color)
+  toBinary(target, source.minWidth)
+  toBinary(target, source.tileRect)
+  toBinary(target, source.doc)
+  toBinary(target, source.fieldDefs)
+  toBinary(target, source.tileRenderMode)
+  toBinary(target, source.limitBehavior)
+  toBinary(target, source.tileOpacity)
+  toBinary(target, source.nineSliceBorders)
+  toBinary(target, source.resizableX)
+  toBinary(target, source.uiTileRect)
+  toBinary(target, source.uid)
+  toBinary(target, source.lineOpacity)
+  toBinary(target, source.maxWidth)
+  toBinary(target, source.resizableY)
+  toBinary(target, source.exportToToc)
+  toBinary(target, source.fillOpacity)
+  toBinary(target, source.height)
+  toBinary(target, source.identifier)
+  toBinary(target, source.pivotY)
+  toBinary(target, source.renderMode)
+  toBinary(target, source.tags)
+  toBinary(target, source.width)
+
+proc toBinary*(source: LdtkEntityDef): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkEntityDef]; source: string; idx: var int): LdtkEntityDef =
+  result.tileId = fromBinary(typeof(result.tileId), source, idx)
+  result.showName = fromBinary(typeof(result.showName), source, idx)
+  result.tilesetId = fromBinary(typeof(result.tilesetId), source, idx)
+  result.maxHeight = fromBinary(typeof(result.maxHeight), source, idx)
+  result.limitScope = fromBinary(typeof(result.limitScope), source, idx)
+  result.pivotX = fromBinary(typeof(result.pivotX), source, idx)
+  result.maxCount = fromBinary(typeof(result.maxCount), source, idx)
+  result.allowOutOfBounds = fromBinary(typeof(result.allowOutOfBounds), source,
+                                       idx)
+  result.hollow = fromBinary(typeof(result.hollow), source, idx)
+  result.minHeight = fromBinary(typeof(result.minHeight), source, idx)
+  result.keepAspectRatio = fromBinary(typeof(result.keepAspectRatio), source,
+                                      idx)
+  result.color = fromBinary(typeof(result.color), source, idx)
+  result.minWidth = fromBinary(typeof(result.minWidth), source, idx)
+  result.tileRect = fromBinary(typeof(result.tileRect), source, idx)
+  result.doc = fromBinary(typeof(result.doc), source, idx)
+  result.fieldDefs = fromBinary(typeof(result.fieldDefs), source, idx)
+  result.tileRenderMode = fromBinary(typeof(result.tileRenderMode), source, idx)
+  result.limitBehavior = fromBinary(typeof(result.limitBehavior), source, idx)
+  result.tileOpacity = fromBinary(typeof(result.tileOpacity), source, idx)
+  result.nineSliceBorders = fromBinary(typeof(result.nineSliceBorders), source,
+                                       idx)
+  result.resizableX = fromBinary(typeof(result.resizableX), source, idx)
+  result.uiTileRect = fromBinary(typeof(result.uiTileRect), source, idx)
+  result.uid = fromBinary(typeof(result.uid), source, idx)
+  result.lineOpacity = fromBinary(typeof(result.lineOpacity), source, idx)
+  result.maxWidth = fromBinary(typeof(result.maxWidth), source, idx)
+  result.resizableY = fromBinary(typeof(result.resizableY), source, idx)
+  result.exportToToc = fromBinary(typeof(result.exportToToc), source, idx)
+  result.fillOpacity = fromBinary(typeof(result.fillOpacity), source, idx)
+  result.height = fromBinary(typeof(result.height), source, idx)
+  result.identifier = fromBinary(typeof(result.identifier), source, idx)
+  result.pivotY = fromBinary(typeof(result.pivotY), source, idx)
+  result.renderMode = fromBinary(typeof(result.renderMode), source, idx)
+  result.tags = fromBinary(typeof(result.tags), source, idx)
+  result.width = fromBinary(typeof(result.width), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkEntityDef]; source: string): LdtkEntityDef =
+  var idx = 0
+  return fromBinary(LdtkEntityDef, source, idx)
+
 proc equals(_: typedesc[LdtkDefinitions]; a, b: LdtkDefinitions): bool =
   equals(typeof(a.tilesets), a.tilesets, b.tilesets) and
       equals(typeof(a.layers), a.layers, b.layers) and
@@ -3749,6 +4673,29 @@ proc toJsonHook*(source: LdtkDefinitions): JsonNode =
       output.add(toJsonHook(entry))
     output
 
+proc toBinary*(target: var string; source: LdtkDefinitions) =
+  toBinary(target, source.tilesets)
+  toBinary(target, source.layers)
+  toBinary(target, source.levelFields)
+  toBinary(target, source.enums)
+  toBinary(target, source.entities)
+  toBinary(target, source.externalEnums)
+
+proc toBinary*(source: LdtkDefinitions): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkDefinitions]; source: string; idx: var int): LdtkDefinitions =
+  result.tilesets = fromBinary(typeof(result.tilesets), source, idx)
+  result.layers = fromBinary(typeof(result.layers), source, idx)
+  result.levelFields = fromBinary(typeof(result.levelFields), source, idx)
+  result.enums = fromBinary(typeof(result.enums), source, idx)
+  result.entities = fromBinary(typeof(result.entities), source, idx)
+  result.externalEnums = fromBinary(typeof(result.externalEnums), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkDefinitions]; source: string): LdtkDefinitions =
+  var idx = 0
+  return fromBinary(LdtkDefinitions, source, idx)
+
 proc equals(_: typedesc[LdtkGridPoint]; a, b: LdtkGridPoint): bool =
   equals(typeof(a.cy), a.cy, b.cy) and equals(typeof(a.cx), a.cx, b.cx)
 
@@ -3774,6 +4721,21 @@ proc toJsonHook*(source: LdtkGridPoint): JsonNode =
   result = newJObject()
   result{"cy"} = newJInt(source.cy)
   result{"cx"} = newJInt(source.cx)
+
+proc toBinary*(target: var string; source: LdtkGridPoint) =
+  toBinary(target, source.cy)
+  toBinary(target, source.cx)
+
+proc toBinary*(source: LdtkGridPoint): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkGridPoint]; source: string; idx: var int): LdtkGridPoint =
+  result.cy = fromBinary(typeof(result.cy), source, idx)
+  result.cx = fromBinary(typeof(result.cx), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkGridPoint]; source: string): LdtkGridPoint =
+  var idx = 0
+  return fromBinary(LdtkGridPoint, source, idx)
 
 proc equals(_: typedesc[Ldtk_FORCED_REFS]; a, b: Ldtk_FORCED_REFS): bool =
   equals(typeof(a.TilesetRect), a.TilesetRect, b.TilesetRect) and
@@ -4026,6 +4988,82 @@ proc toJsonHook*(source: Ldtk_FORCED_REFS): JsonNode =
     result{"GridPoint"} = toJsonHook(unsafeGet(source.GridPoint))
   if isSome(source.IntGridValueDef):
     result{"IntGridValueDef"} = toJsonHook(unsafeGet(source.IntGridValueDef))
+
+proc toBinary*(target: var string; source: Ldtk_FORCED_REFS) =
+  toBinary(target, source.TilesetRect)
+  toBinary(target, source.FieldInstance)
+  toBinary(target, source.EntityInstance)
+  toBinary(target, source.Definitions)
+  toBinary(target, source.EnumTagValue)
+  toBinary(target, source.AutoRuleDef)
+  toBinary(target, source.FieldDef)
+  toBinary(target, source.CustomCommand)
+  toBinary(target, source.EntityDef)
+  toBinary(target, source.AutoLayerRuleGroup)
+  toBinary(target, source.IntGridValueGroupDef)
+  toBinary(target, source.IntGridValueInstance)
+  toBinary(target, source.TocInstanceData)
+  toBinary(target, source.NeighbourLevel)
+  toBinary(target, source.LayerInstance)
+  toBinary(target, source.World)
+  toBinary(target, source.EntityReferenceInfos)
+  toBinary(target, source.TileCustomMetadata)
+  toBinary(target, source.TilesetDef)
+  toBinary(target, source.EnumDefValues)
+  toBinary(target, source.Tile)
+  toBinary(target, source.LayerDef)
+  toBinary(target, source.LevelBgPosInfos)
+  toBinary(target, source.Level)
+  toBinary(target, source.TableOfContentEntry)
+  toBinary(target, source.EnumDef)
+  toBinary(target, source.GridPoint)
+  toBinary(target, source.IntGridValueDef)
+
+proc toBinary*(source: Ldtk_FORCED_REFS): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[Ldtk_FORCED_REFS]; source: string; idx: var int): Ldtk_FORCED_REFS =
+  result.TilesetRect = fromBinary(typeof(result.TilesetRect), source, idx)
+  result.FieldInstance = fromBinary(typeof(result.FieldInstance), source, idx)
+  result.EntityInstance = fromBinary(typeof(result.EntityInstance), source, idx)
+  result.Definitions = fromBinary(typeof(result.Definitions), source, idx)
+  result.EnumTagValue = fromBinary(typeof(result.EnumTagValue), source, idx)
+  result.AutoRuleDef = fromBinary(typeof(result.AutoRuleDef), source, idx)
+  result.FieldDef = fromBinary(typeof(result.FieldDef), source, idx)
+  result.CustomCommand = fromBinary(typeof(result.CustomCommand), source, idx)
+  result.EntityDef = fromBinary(typeof(result.EntityDef), source, idx)
+  result.AutoLayerRuleGroup = fromBinary(typeof(result.AutoLayerRuleGroup),
+      source, idx)
+  result.IntGridValueGroupDef = fromBinary(typeof(result.IntGridValueGroupDef),
+      source, idx)
+  result.IntGridValueInstance = fromBinary(typeof(result.IntGridValueInstance),
+      source, idx)
+  result.TocInstanceData = fromBinary(typeof(result.TocInstanceData), source,
+                                      idx)
+  result.NeighbourLevel = fromBinary(typeof(result.NeighbourLevel), source, idx)
+  result.LayerInstance = fromBinary(typeof(result.LayerInstance), source, idx)
+  result.World = fromBinary(typeof(result.World), source, idx)
+  result.EntityReferenceInfos = fromBinary(typeof(result.EntityReferenceInfos),
+      source, idx)
+  result.TileCustomMetadata = fromBinary(typeof(result.TileCustomMetadata),
+      source, idx)
+  result.TilesetDef = fromBinary(typeof(result.TilesetDef), source, idx)
+  result.EnumDefValues = fromBinary(typeof(result.EnumDefValues), source, idx)
+  result.Tile = fromBinary(typeof(result.Tile), source, idx)
+  result.LayerDef = fromBinary(typeof(result.LayerDef), source, idx)
+  result.LevelBgPosInfos = fromBinary(typeof(result.LevelBgPosInfos), source,
+                                      idx)
+  result.Level = fromBinary(typeof(result.Level), source, idx)
+  result.TableOfContentEntry = fromBinary(typeof(result.TableOfContentEntry),
+      source, idx)
+  result.EnumDef = fromBinary(typeof(result.EnumDef), source, idx)
+  result.GridPoint = fromBinary(typeof(result.GridPoint), source, idx)
+  result.IntGridValueDef = fromBinary(typeof(result.IntGridValueDef), source,
+                                      idx)
+
+proc fromBinary*(_: typedesc[Ldtk_FORCED_REFS]; source: string): Ldtk_FORCED_REFS =
+  var idx = 0
+  return fromBinary(Ldtk_FORCED_REFS, source, idx)
 
 proc equals(_: typedesc[LdtkLdtkJsonRoot]; a, b: LdtkLdtkJsonRoot): bool =
   equals(typeof(a.backupLimit), a.backupLimit, b.backupLimit) and
@@ -4351,4 +5389,102 @@ proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode =
   result{"exportLevelBg"} = newJBool(source.exportLevelBg)
   if isSome(source.backupRelPath):
     result{"backupRelPath"} = newJString(unsafeGet(source.backupRelPath))
+
+proc toBinary*(target: var string; source: LdtkLdtkJsonRoot) =
+  toBinary(target, source.backupLimit)
+  toBinary(target, source.defaultEntityWidth)
+  toBinary(target, source.backupOnSave)
+  toBinary(target, source.worldGridWidth)
+  toBinary(target, source.iid)
+  toBinary(target, source.defaultLevelBgColor)
+  toBinary(target, source.bgColor)
+  toBinary(target, source.worlds)
+  toBinary(target, source.toc)
+  toBinary(target, source.nextUid)
+  toBinary(target, source.imageExportMode)
+  toBinary(target, source.identifierStyle)
+  toBinary(target, source.defaultPivotY)
+  toBinary(target, source.dummyWorldIid)
+  toBinary(target, source.customCommands)
+  toBinary(target, source.worldGridHeight)
+  toBinary(target, source.appBuildId)
+  toBinary(target, source.defaultGridSize)
+  toBinary(target, source.worldLayout)
+  toBinary(target, source.flags)
+  toBinary(target, source.levelNamePattern)
+  toBinary(target, source.exportPng)
+  toBinary(target, source.defaultLevelWidth)
+  toBinary(target, source.pngFilePattern)
+  toBinary(target, source.FORCED_REFS)
+  toBinary(target, source.exportTiled)
+  toBinary(target, source.defs)
+  toBinary(target, source.levels)
+  toBinary(target, source.jsonVersion)
+  toBinary(target, source.defaultEntityHeight)
+  toBinary(target, source.defaultPivotX)
+  toBinary(target, source.defaultLevelHeight)
+  toBinary(target, source.simplifiedExport)
+  toBinary(target, source.externalLevels)
+  toBinary(target, source.tutorialDesc)
+  toBinary(target, source.minifyJson)
+  toBinary(target, source.exportLevelBg)
+  toBinary(target, source.backupRelPath)
+
+proc toBinary*(source: LdtkLdtkJsonRoot): string =
+  toBinary(result, source)
+
+proc fromBinary(_: typedesc[LdtkLdtkJsonRoot]; source: string; idx: var int): LdtkLdtkJsonRoot =
+  result.backupLimit = fromBinary(typeof(result.backupLimit), source, idx)
+  result.defaultEntityWidth = fromBinary(typeof(result.defaultEntityWidth),
+      source, idx)
+  result.backupOnSave = fromBinary(typeof(result.backupOnSave), source, idx)
+  result.worldGridWidth = fromBinary(typeof(result.worldGridWidth), source, idx)
+  result.iid = fromBinary(typeof(result.iid), source, idx)
+  result.defaultLevelBgColor = fromBinary(typeof(result.defaultLevelBgColor),
+      source, idx)
+  result.bgColor = fromBinary(typeof(result.bgColor), source, idx)
+  result.worlds = fromBinary(typeof(result.worlds), source, idx)
+  result.toc = fromBinary(typeof(result.toc), source, idx)
+  result.nextUid = fromBinary(typeof(result.nextUid), source, idx)
+  result.imageExportMode = fromBinary(typeof(result.imageExportMode), source,
+                                      idx)
+  result.identifierStyle = fromBinary(typeof(result.identifierStyle), source,
+                                      idx)
+  result.defaultPivotY = fromBinary(typeof(result.defaultPivotY), source, idx)
+  result.dummyWorldIid = fromBinary(typeof(result.dummyWorldIid), source, idx)
+  result.customCommands = fromBinary(typeof(result.customCommands), source, idx)
+  result.worldGridHeight = fromBinary(typeof(result.worldGridHeight), source,
+                                      idx)
+  result.appBuildId = fromBinary(typeof(result.appBuildId), source, idx)
+  result.defaultGridSize = fromBinary(typeof(result.defaultGridSize), source,
+                                      idx)
+  result.worldLayout = fromBinary(typeof(result.worldLayout), source, idx)
+  result.flags = fromBinary(typeof(result.flags), source, idx)
+  result.levelNamePattern = fromBinary(typeof(result.levelNamePattern), source,
+                                       idx)
+  result.exportPng = fromBinary(typeof(result.exportPng), source, idx)
+  result.defaultLevelWidth = fromBinary(typeof(result.defaultLevelWidth),
+                                        source, idx)
+  result.pngFilePattern = fromBinary(typeof(result.pngFilePattern), source, idx)
+  result.FORCED_REFS = fromBinary(typeof(result.FORCED_REFS), source, idx)
+  result.exportTiled = fromBinary(typeof(result.exportTiled), source, idx)
+  result.defs = fromBinary(typeof(result.defs), source, idx)
+  result.levels = fromBinary(typeof(result.levels), source, idx)
+  result.jsonVersion = fromBinary(typeof(result.jsonVersion), source, idx)
+  result.defaultEntityHeight = fromBinary(typeof(result.defaultEntityHeight),
+      source, idx)
+  result.defaultPivotX = fromBinary(typeof(result.defaultPivotX), source, idx)
+  result.defaultLevelHeight = fromBinary(typeof(result.defaultLevelHeight),
+      source, idx)
+  result.simplifiedExport = fromBinary(typeof(result.simplifiedExport), source,
+                                       idx)
+  result.externalLevels = fromBinary(typeof(result.externalLevels), source, idx)
+  result.tutorialDesc = fromBinary(typeof(result.tutorialDesc), source, idx)
+  result.minifyJson = fromBinary(typeof(result.minifyJson), source, idx)
+  result.exportLevelBg = fromBinary(typeof(result.exportLevelBg), source, idx)
+  result.backupRelPath = fromBinary(typeof(result.backupRelPath), source, idx)
+
+proc fromBinary*(_: typedesc[LdtkLdtkJsonRoot]; source: string): LdtkLdtkJsonRoot =
+  var idx = 0
+  return fromBinary(LdtkLdtkJsonRoot, source, idx)
 {.pop.}
