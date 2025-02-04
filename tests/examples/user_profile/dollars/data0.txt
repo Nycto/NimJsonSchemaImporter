@@ -1,0 +1,1 @@
+UserProfileUserProfile(username: "user123", email: "user@example.com", fullName: "John Doe", age: 30, location: "Cityville", interests: ["Travel", "Technology"])

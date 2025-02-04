@@ -1,5 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
+import json_schema_import/private/stringify
 
 type
   Basicbasic* = object
@@ -10,6 +11,15 @@ proc toJsonHook*(source: Basicbasic): JsonNode
 proc `==`*(a, b: Basicbasic): bool =
   true and a.firstName == b.firstName and a.lastName == b.lastName and
       a.age == b.age
+
+proc stringify(_: typedesc[Basicbasic]; value: Basicbasic): string =
+  stringifyObj("Basicbasic", ("firstName", stringify(typeof(value.firstName),
+      value.firstName)), ("lastName",
+                          stringify(typeof(value.lastName), value.lastName)),
+               ("age", stringify(typeof(value.age), value.age)))
+
+proc `$`*(value: Basicbasic): string =
+  stringify(Basicbasic, value)
 
 proc fromJsonHook*(target: var Basicbasic; source: JsonNode) =
   if hasKey(source, "firstName") and source{"firstName"}.kind != JNull:

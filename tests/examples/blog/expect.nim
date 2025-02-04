@@ -1,5 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
+import json_schema_import/private/stringify
 
 type
   BlogAuthor* = object
@@ -15,6 +16,14 @@ proc toJsonHook*(source: BlogAuthor): JsonNode
 proc toJsonHook*(source: Blogblog): JsonNode
 proc `==`*(a, b: BlogAuthor): bool =
   true and a.username == b.username and a.email == b.email
+
+proc stringify(_: typedesc[BlogAuthor]; value: BlogAuthor): string =
+  stringifyObj("BlogAuthor", ("username",
+                              stringify(typeof(value.username), value.username)),
+               ("email", stringify(typeof(value.email), value.email)))
+
+proc `$`*(value: BlogAuthor): string =
+  stringify(BlogAuthor, value)
 
 proc fromJsonHook*(target: var BlogAuthor; source: JsonNode) =
   if hasKey(source, "username") and source{"username"}.kind != JNull:
@@ -35,6 +44,18 @@ proc `==`*(a, b: Blogblog): bool =
       a.publishedDate == b.publishedDate and
       a.author == b.author and
       a.tags == b.tags
+
+proc stringify(_: typedesc[Blogblog]; value: Blogblog): string =
+  stringifyObj("Blogblog",
+               ("title", stringify(typeof(value.title), value.title)),
+               ("content", stringify(typeof(value.content), value.content)), (
+      "publishedDate",
+      stringify(typeof(value.publishedDate), value.publishedDate)),
+               ("author", stringify(typeof(value.author), value.author)),
+               ("tags", stringify(typeof(value.tags), value.tags)))
+
+proc `$`*(value: Blogblog): string =
+  stringify(Blogblog, value)
 
 proc fromJsonHook*(target: var Blogblog; source: JsonNode) =
   assert(hasKey(source, "title"),

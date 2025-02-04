@@ -1,5 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
+import json_schema_import/private/stringify
 
 type
   Addressaddress* = object
@@ -19,6 +20,20 @@ proc `==`*(a, b: Addressaddress): bool =
       a.region == b.region and
       a.postalCode == b.postalCode and
       a.countryName == b.countryName
+
+proc stringify(_: typedesc[Addressaddress]; value: Addressaddress): string =
+  stringifyObj("Addressaddress", ("postOfficeBox", stringify(
+      typeof(value.postOfficeBox), value.postOfficeBox)), ("extendedAddress",
+      stringify(typeof(value.extendedAddress), value.extendedAddress)), (
+      "streetAddress",
+      stringify(typeof(value.streetAddress), value.streetAddress)), ("locality",
+      stringify(typeof(value.locality), value.locality)),
+               ("region", stringify(typeof(value.region), value.region)), (
+      "postalCode", stringify(typeof(value.postalCode), value.postalCode)), (
+      "countryName", stringify(typeof(value.countryName), value.countryName)))
+
+proc `$`*(value: Addressaddress): string =
+  stringify(Addressaddress, value)
 
 proc fromJsonHook*(target: var Addressaddress; source: JsonNode) =
   if hasKey(source, "postOfficeBox") and

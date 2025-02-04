@@ -1,5 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
+import json_schema_import/private/stringify
 
 type
   User_profileuser_profile* = object
@@ -16,6 +17,19 @@ proc `==`*(a, b: User_profileuser_profile): bool =
       a.age == b.age and
       a.location == b.location and
       a.interests == b.interests
+
+proc stringify(_: typedesc[User_profileuser_profile];
+               value: User_profileuser_profile): string =
+  stringifyObj("User_profileuser_profile", ("username",
+      stringify(typeof(value.username), value.username)),
+               ("email", stringify(typeof(value.email), value.email)), (
+      "fullName", stringify(typeof(value.fullName), value.fullName)),
+               ("age", stringify(typeof(value.age), value.age)), ("location",
+      stringify(typeof(value.location), value.location)), ("interests",
+      stringify(typeof(value.interests), value.interests)))
+
+proc `$`*(value: User_profileuser_profile): string =
+  stringify(User_profileuser_profile, value)
 
 proc fromJsonHook*(target: var User_profileuser_profile; source: JsonNode) =
   assert(hasKey(source, "username"), "username" & " is missing while decoding " &

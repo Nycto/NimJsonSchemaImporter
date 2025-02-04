@@ -1,4 +1,4 @@
-import types, schemaRef, marshalling, util, unpack, namechain, equalsgen
+import types, schemaRef, marshalling, util, unpack, namechain, equalsgen, dollargen
 import std/[macros, tables, sets, json, options, hashes, strutils]
 
 type
@@ -58,6 +58,7 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
 
     ctx.procs.add(
         typ.buildEquals(result),
+        typ.buildDollars(result),
         typ.buildObjectDecoder(result),
         typ.buildObjectEncoder(result),
     )
@@ -112,6 +113,7 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
 
     ctx.procs.add(
         typ.buildEquals(result),
+        typ.buildDollars(result),
         typ.buildUnionDecoder(result),
         typ.buildUnionEncoder(result),
         typ.buildUnionUnpacker(result),

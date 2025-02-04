@@ -1,5 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
+import json_schema_import/private/stringify
 
 type
   UnionKey1Union* = object
@@ -62,6 +63,20 @@ proc `==`*(a, b: UnionKey1Union): bool =
   of 3:
     return a.key3 == b.key3
   
+proc stringify(_: typedesc[UnionKey1Union]; value: UnionKey1Union): string =
+  case value.kind
+  of 0:
+    return stringify(typeof(value.key0), value.key0)
+  of 1:
+    return stringify(typeof(value.key1), value.key1)
+  of 2:
+    return stringify(typeof(value.key2), value.key2)
+  of 3:
+    return stringify(typeof(value.key3), value.key3)
+  
+proc `$`*(value: UnionKey1Union): string =
+  stringify(UnionKey1Union, value)
+
 proc fromJsonHook*(target: var UnionKey1Union; source: JsonNode) =
   if source.kind == JString:
     target = UnionKey1Union(kind: 0, key0: jsonTo(source, typeof(target.key0)))
@@ -116,6 +131,12 @@ proc asFloat*(value: UnionKey1Union): auto =
 
 proc `==`*(a, b: UnionKey3): bool =
   true and a.foo == b.foo
+
+proc stringify(_: typedesc[UnionKey3]; value: UnionKey3): string =
+  stringifyObj("UnionKey3", ("foo", stringify(typeof(value.foo), value.foo)))
+
+proc `$`*(value: UnionKey3): string =
+  stringify(UnionKey3, value)
 
 proc fromJsonHook*(target: var UnionKey3; source: JsonNode) =
   if hasKey(source, "foo") and source{"foo"}.kind != JNull:
@@ -176,6 +197,22 @@ proc `==`*(a, b: UnionKey3Union): bool =
   of 4:
     return a.key4 == b.key4
   
+proc stringify(_: typedesc[UnionKey3Union]; value: UnionKey3Union): string =
+  case value.kind
+  of 0:
+    return stringify(typeof(value.key0), value.key0)
+  of 1:
+    return stringify(typeof(value.key1), value.key1)
+  of 2:
+    return stringify(typeof(value.key2), value.key2)
+  of 3:
+    return stringify(typeof(value.key3), value.key3)
+  of 4:
+    return stringify(typeof(value.key4), value.key4)
+  
+proc `$`*(value: UnionKey3Union): string =
+  stringify(UnionKey3Union, value)
+
 proc fromJsonHook*(target: var UnionKey3Union; source: JsonNode) =
   if source.kind == JObject:
     target = UnionKey3Union(kind: 0, key0: jsonTo(source, typeof(target.key0)))
@@ -263,6 +300,15 @@ proc asStr*(value: UnionKey3Union): auto =
 
 proc `==`*(a, b: Unionunion): bool =
   true and a.key1 == b.key1 and a.key2 == b.key2 and a.key3 == b.key3
+
+proc stringify(_: typedesc[Unionunion]; value: Unionunion): string =
+  stringifyObj("Unionunion",
+               ("key1", stringify(typeof(value.key1), value.key1)),
+               ("key2", stringify(typeof(value.key2), value.key2)),
+               ("key3", stringify(typeof(value.key3), value.key3)))
+
+proc `$`*(value: Unionunion): string =
+  stringify(Unionunion, value)
 
 proc fromJsonHook*(target: var Unionunion; source: JsonNode) =
   assert(hasKey(source, "key1"),

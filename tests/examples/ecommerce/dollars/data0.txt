@@ -1,0 +1,1 @@
+EcommerceOrderSchema(orderId: "ORD123", items: [EcommerceProductSchema(name: "Product A", price: 50.0), EcommerceProductSchema(name: "Product B", price: 30.0)])

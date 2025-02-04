@@ -1,4 +1,6 @@
-import std/[macros, json, sets, strutils], regex
+import std/[macros, json, sets, strutils, tables], regex
+
+type SomeTable*[K, V] = Table[K, V] | OrderedTable[K, V]
 
 proc unionKey*(i: int): NimNode = ident("key" & $i)
 
@@ -55,6 +57,7 @@ proc safePropName*(name: string): NimNode = name.cleanupIdent.wrapIdent
 proc formatCodeDump*(code: NimNode): string =
     result = "{.push warning[UnusedImport]:off.}\n"
     result &= "import std/[json, jsonutils, tables, options]\n"
+    result &= "import json_schema_import/private/stringify\n"
     result &= code.repr.replace(re2"\`gensym_?\d+", "")
     result &= "{.pop.}\n"
 

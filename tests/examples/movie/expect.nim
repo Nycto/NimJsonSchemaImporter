@@ -1,5 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
+import json_schema_import/private/stringify
 
 type
   MovieGenre* = enum
@@ -43,6 +44,18 @@ proc `==`*(a, b: Moviemovie): bool =
       a.genre == b.genre and
       a.duration == b.duration and
       a.`cast` == b.`cast`
+
+proc stringify(_: typedesc[Moviemovie]; value: Moviemovie): string =
+  stringifyObj("Moviemovie",
+               ("title", stringify(typeof(value.title), value.title)), (
+      "director", stringify(typeof(value.director), value.director)), (
+      "releaseDate", stringify(typeof(value.releaseDate), value.releaseDate)),
+               ("genre", stringify(typeof(value.genre), value.genre)), (
+      "duration", stringify(typeof(value.duration), value.duration)),
+               ("cast", stringify(typeof(value.`cast`), value.`cast`)))
+
+proc `$`*(value: Moviemovie): string =
+  stringify(Moviemovie, value)
 
 proc fromJsonHook*(target: var Moviemovie; source: JsonNode) =
   assert(hasKey(source, "title"),

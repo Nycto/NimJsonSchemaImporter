@@ -1,5 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
+import json_schema_import/private/stringify
 
 type
   HealthEmergencyContact* = object
@@ -17,6 +18,15 @@ proc toJsonHook*(source: HealthEmergencyContact): JsonNode
 proc toJsonHook*(source: Healthhealth): JsonNode
 proc `==`*(a, b: HealthEmergencyContact): bool =
   true and a.username == b.username and a.email == b.email
+
+proc stringify(_: typedesc[HealthEmergencyContact];
+               value: HealthEmergencyContact): string =
+  stringifyObj("HealthEmergencyContact", ("username",
+      stringify(typeof(value.username), value.username)),
+               ("email", stringify(typeof(value.email), value.email)))
+
+proc `$`*(value: HealthEmergencyContact): string =
+  stringify(HealthEmergencyContact, value)
 
 proc fromJsonHook*(target: var HealthEmergencyContact; source: JsonNode) =
   if hasKey(source, "username") and source{"username"}.kind != JNull:
@@ -39,6 +49,20 @@ proc `==`*(a, b: Healthhealth): bool =
       a.conditions == b.conditions and
       a.medications == b.medications and
       a.emergencyContact == b.emergencyContact
+
+proc stringify(_: typedesc[Healthhealth]; value: Healthhealth): string =
+  stringifyObj("Healthhealth", ("patientName", stringify(
+      typeof(value.patientName), value.patientName)), ("dateOfBirth",
+      stringify(typeof(value.dateOfBirth), value.dateOfBirth)), ("bloodType",
+      stringify(typeof(value.bloodType), value.bloodType)), ("allergies",
+      stringify(typeof(value.allergies), value.allergies)), ("conditions",
+      stringify(typeof(value.conditions), value.conditions)), ("medications",
+      stringify(typeof(value.medications), value.medications)), (
+      "emergencyContact",
+      stringify(typeof(value.emergencyContact), value.emergencyContact)))
+
+proc `$`*(value: Healthhealth): string =
+  stringify(Healthhealth, value)
 
 proc fromJsonHook*(target: var Healthhealth; source: JsonNode) =
   assert(hasKey(source, "patientName"),

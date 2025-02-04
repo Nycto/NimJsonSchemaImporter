@@ -1,5 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
+import json_schema_import/private/stringify
 
 type
   LdtkWorldLayout* = enum
@@ -523,6 +524,15 @@ proc `==`*(a, b: LdtkNeighbourLevel): bool =
   true and a.levelIid == b.levelIid and a.levelUid == b.levelUid and
       a.dir == b.dir
 
+proc stringify(_: typedesc[LdtkNeighbourLevel]; value: LdtkNeighbourLevel): string =
+  stringifyObj("LdtkNeighbourLevel", ("levelIid", stringify(
+      typeof(value.levelIid), value.levelIid)), ("levelUid",
+      stringify(typeof(value.levelUid), value.levelUid)),
+               ("dir", stringify(typeof(value.dir), value.dir)))
+
+proc `$`*(value: LdtkNeighbourLevel): string =
+  stringify(LdtkNeighbourLevel, value)
+
 proc fromJsonHook*(target: var LdtkNeighbourLevel; source: JsonNode) =
   assert(hasKey(source, "levelIid"),
          "levelIid" & " is missing while decoding " & "LdtkNeighbourLevel")
@@ -573,6 +583,15 @@ proc `==`*(a, b: LdtkLevelBgPosInfos): bool =
   true and a.cropRect == b.cropRect and a.scale == b.scale and
       a.topLeftPx == b.topLeftPx
 
+proc stringify(_: typedesc[LdtkLevelBgPosInfos]; value: LdtkLevelBgPosInfos): string =
+  stringifyObj("LdtkLevelBgPosInfos", ("cropRect", stringify(
+      typeof(value.cropRect), value.cropRect)),
+               ("scale", stringify(typeof(value.scale), value.scale)), (
+      "topLeftPx", stringify(typeof(value.topLeftPx), value.topLeftPx)))
+
+proc `$`*(value: LdtkLevelBgPosInfos): string =
+  stringify(LdtkLevelBgPosInfos, value)
+
 proc fromJsonHook*(target: var LdtkLevelBgPosInfos; source: JsonNode) =
   assert(hasKey(source, "cropRect"),
          "cropRect" & " is missing while decoding " & "LdtkLevelBgPosInfos")
@@ -607,6 +626,17 @@ proc `==`*(a, b: LdtkTilesetRect): bool =
       a.y == b.y and
       a.w == b.w
 
+proc stringify(_: typedesc[LdtkTilesetRect]; value: LdtkTilesetRect): string =
+  stringifyObj("LdtkTilesetRect", ("tilesetUid", stringify(
+      typeof(value.tilesetUid), value.tilesetUid)),
+               ("h", stringify(typeof(value.h), value.h)),
+               ("x", stringify(typeof(value.x), value.x)),
+               ("y", stringify(typeof(value.y), value.y)),
+               ("w", stringify(typeof(value.w), value.w)))
+
+proc `$`*(value: LdtkTilesetRect): string =
+  stringify(LdtkTilesetRect, value)
+
 proc fromJsonHook*(target: var LdtkTilesetRect; source: JsonNode) =
   assert(hasKey(source, "tilesetUid"),
          "tilesetUid" & " is missing while decoding " & "LdtkTilesetRect")
@@ -638,6 +668,19 @@ proc `==`*(a, b: LdtkFieldInstance): bool =
       a.tile == b.tile and
       a.realEditorValues == b.realEditorValues and
       a.value == b.value
+
+proc stringify(_: typedesc[LdtkFieldInstance]; value: LdtkFieldInstance): string =
+  stringifyObj("LdtkFieldInstance",
+               ("type", stringify(typeof(value.`type`), value.`type`)),
+               ("defUid", stringify(typeof(value.defUid), value.defUid)), (
+      "identifier", stringify(typeof(value.identifier), value.identifier)),
+               ("tile", stringify(typeof(value.tile), value.tile)), (
+      "realEditorValues",
+      stringify(typeof(value.realEditorValues), value.realEditorValues)),
+               ("value", stringify(typeof(value.value), value.value)))
+
+proc `$`*(value: LdtkFieldInstance): string =
+  stringify(LdtkFieldInstance, value)
 
 proc fromJsonHook*(target: var LdtkFieldInstance; source: JsonNode) =
   assert(hasKey(source, "__type"),
@@ -678,6 +721,17 @@ proc `==`*(a, b: LdtkTile): bool =
   true and a.t == b.t and a.d == b.d and a.px == b.px and a.a == b.a and
       a.f == b.f and
       a.src == b.src
+
+proc stringify(_: typedesc[LdtkTile]; value: LdtkTile): string =
+  stringifyObj("LdtkTile", ("t", stringify(typeof(value.t), value.t)),
+               ("d", stringify(typeof(value.d), value.d)),
+               ("px", stringify(typeof(value.px), value.px)),
+               ("a", stringify(typeof(value.a), value.a)),
+               ("f", stringify(typeof(value.f), value.f)),
+               ("src", stringify(typeof(value.src), value.src)))
+
+proc `$`*(value: LdtkTile): string =
+  stringify(LdtkTile, value)
 
 proc fromJsonHook*(target: var LdtkTile; source: JsonNode) =
   assert(hasKey(source, "t"), "t" & " is missing while decoding " & "LdtkTile")
@@ -729,6 +783,27 @@ proc `==`*(a, b: LdtkEntityInstance): bool =
       a.height == b.height and
       a.tags == b.tags and
       a.width == b.width
+
+proc stringify(_: typedesc[LdtkEntityInstance]; value: LdtkEntityInstance): string =
+  stringifyObj("LdtkEntityInstance",
+               ("iid", stringify(typeof(value.iid), value.iid)),
+               ("defUid", stringify(typeof(value.defUid), value.defUid)), (
+      "identifier", stringify(typeof(value.identifier), value.identifier)),
+               ("tile", stringify(typeof(value.tile), value.tile)),
+               ("px", stringify(typeof(value.px), value.px)),
+               ("worldX", stringify(typeof(value.worldX), value.worldX)),
+               ("worldY", stringify(typeof(value.worldY), value.worldY)), (
+      "smartColor", stringify(typeof(value.smartColor), value.smartColor)),
+               ("grid", stringify(typeof(value.grid), value.grid)),
+               ("pivot", stringify(typeof(value.pivot), value.pivot)), (
+      "fieldInstances",
+      stringify(typeof(value.fieldInstances), value.fieldInstances)),
+               ("height", stringify(typeof(value.height), value.height)),
+               ("tags", stringify(typeof(value.tags), value.tags)),
+               ("width", stringify(typeof(value.width), value.width)))
+
+proc `$`*(value: LdtkEntityInstance): string =
+  stringify(LdtkEntityInstance, value)
 
 proc fromJsonHook*(target: var LdtkEntityInstance; source: JsonNode) =
   assert(hasKey(source, "iid"),
@@ -818,6 +893,15 @@ proc toJsonHook*(source: LdtkEntityInstance): JsonNode =
 proc `==`*(a, b: LdtkIntGridValueInstance): bool =
   true and a.v == b.v and a.coordId == b.coordId
 
+proc stringify(_: typedesc[LdtkIntGridValueInstance];
+               value: LdtkIntGridValueInstance): string =
+  stringifyObj("LdtkIntGridValueInstance",
+               ("v", stringify(typeof(value.v), value.v)),
+               ("coordId", stringify(typeof(value.coordId), value.coordId)))
+
+proc `$`*(value: LdtkIntGridValueInstance): string =
+  stringify(LdtkIntGridValueInstance, value)
+
 proc fromJsonHook*(target: var LdtkIntGridValueInstance; source: JsonNode) =
   assert(hasKey(source, "v"),
          "v" & " is missing while decoding " & "LdtkIntGridValueInstance")
@@ -855,6 +939,44 @@ proc `==`*(a, b: LdtkLayerInstance): bool =
       a.tilesetDefUid == b.tilesetDefUid and
       a.gridTiles == b.gridTiles and
       a.intGrid == b.intGrid
+
+proc stringify(_: typedesc[LdtkLayerInstance]; value: LdtkLayerInstance): string =
+  stringifyObj("LdtkLayerInstance",
+               ("cHei", stringify(typeof(value.cHei), value.cHei)), (
+      "pxOffsetX", stringify(typeof(value.pxOffsetX), value.pxOffsetX)), (
+      "tilesetRelPath",
+      stringify(typeof(value.tilesetRelPath), value.tilesetRelPath)),
+               ("iid", stringify(typeof(value.iid), value.iid)),
+               ("levelId", stringify(typeof(value.levelId), value.levelId)),
+               ("type", stringify(typeof(value.`type`), value.`type`)), (
+      "autoLayerTiles",
+      stringify(typeof(value.autoLayerTiles), value.autoLayerTiles)), (
+      "optionalRules",
+      stringify(typeof(value.optionalRules), value.optionalRules)), (
+      "identifier", stringify(typeof(value.identifier), value.identifier)), (
+      "gridSize", stringify(typeof(value.gridSize), value.gridSize)), (
+      "pxTotalOffsetY",
+      stringify(typeof(value.pxTotalOffsetY), value.pxTotalOffsetY)), (
+      "intGridCsv", stringify(typeof(value.intGridCsv), value.intGridCsv)), (
+      "overrideTilesetUid",
+      stringify(typeof(value.overrideTilesetUid), value.overrideTilesetUid)),
+               ("visible", stringify(typeof(value.visible), value.visible)), (
+      "entityInstances",
+      stringify(typeof(value.entityInstances), value.entityInstances)),
+               ("opacity", stringify(typeof(value.opacity), value.opacity)),
+               ("seed", stringify(typeof(value.seed), value.seed)), (
+      "layerDefUid", stringify(typeof(value.layerDefUid), value.layerDefUid)), (
+      "pxTotalOffsetX",
+      stringify(typeof(value.pxTotalOffsetX), value.pxTotalOffsetX)),
+               ("cWid", stringify(typeof(value.cWid), value.cWid)), (
+      "pxOffsetY", stringify(typeof(value.pxOffsetY), value.pxOffsetY)), (
+      "tilesetDefUid",
+      stringify(typeof(value.tilesetDefUid), value.tilesetDefUid)), (
+      "gridTiles", stringify(typeof(value.gridTiles), value.gridTiles)),
+               ("intGrid", stringify(typeof(value.intGrid), value.intGrid)))
+
+proc `$`*(value: LdtkLayerInstance): string =
+  stringify(LdtkLayerInstance, value)
 
 proc fromJsonHook*(target: var LdtkLayerInstance; source: JsonNode) =
   assert(hasKey(source, "__cHei"),
@@ -1018,6 +1140,36 @@ proc `==`*(a, b: LdtkLevel): bool =
       a.bgRelPath == b.bgRelPath and
       a.worldDepth == b.worldDepth
 
+proc stringify(_: typedesc[LdtkLevel]; value: LdtkLevel): string =
+  stringifyObj("LdtkLevel", ("neighbours", stringify(typeof(value.neighbours),
+      value.neighbours)),
+               ("bgColor", stringify(typeof(value.bgColor), value.bgColor)),
+               ("worldX", stringify(typeof(value.worldX), value.worldX)), (
+      "externalRelPath",
+      stringify(typeof(value.externalRelPath), value.externalRelPath)), (
+      "useAutoIdentifier",
+      stringify(typeof(value.useAutoIdentifier), value.useAutoIdentifier)),
+               ("iid", stringify(typeof(value.iid), value.iid)), ("bgColor1",
+      stringify(typeof(value.bgColor1), value.bgColor1)),
+               ("bgPos", stringify(typeof(value.bgPos), value.bgPos)),
+               ("pxHei", stringify(typeof(value.pxHei), value.pxHei)),
+               ("worldY", stringify(typeof(value.worldY), value.worldY)),
+               ("bgPos1", stringify(typeof(value.bgPos1), value.bgPos1)),
+               ("uid", stringify(typeof(value.uid), value.uid)), ("smartColor",
+      stringify(typeof(value.smartColor), value.smartColor)), ("fieldInstances",
+      stringify(typeof(value.fieldInstances), value.fieldInstances)),
+               ("pxWid", stringify(typeof(value.pxWid), value.pxWid)), (
+      "identifier", stringify(typeof(value.identifier), value.identifier)), (
+      "bgPivotY", stringify(typeof(value.bgPivotY), value.bgPivotY)), (
+      "bgPivotX", stringify(typeof(value.bgPivotX), value.bgPivotX)), (
+      "layerInstances",
+      stringify(typeof(value.layerInstances), value.layerInstances)), (
+      "bgRelPath", stringify(typeof(value.bgRelPath), value.bgRelPath)), (
+      "worldDepth", stringify(typeof(value.worldDepth), value.worldDepth)))
+
+proc `$`*(value: LdtkLevel): string =
+  stringify(LdtkLevel, value)
+
 proc fromJsonHook*(target: var LdtkLevel; source: JsonNode) =
   assert(hasKey(source, "__neighbours"),
          "__neighbours" & " is missing while decoding " & "LdtkLevel")
@@ -1137,6 +1289,23 @@ proc `==`*(a, b: LdtkWorld): bool =
       a.defaultLevelHeight == b.defaultLevelHeight and
       a.identifier == b.identifier
 
+proc stringify(_: typedesc[LdtkWorld]; value: LdtkWorld): string =
+  stringifyObj("LdtkWorld", ("worldGridWidth", stringify(
+      typeof(value.worldGridWidth), value.worldGridWidth)),
+               ("iid", stringify(typeof(value.iid), value.iid)), (
+      "worldGridHeight",
+      stringify(typeof(value.worldGridHeight), value.worldGridHeight)), (
+      "worldLayout", stringify(typeof(value.worldLayout), value.worldLayout)), (
+      "defaultLevelWidth",
+      stringify(typeof(value.defaultLevelWidth), value.defaultLevelWidth)),
+               ("levels", stringify(typeof(value.levels), value.levels)), (
+      "defaultLevelHeight",
+      stringify(typeof(value.defaultLevelHeight), value.defaultLevelHeight)), (
+      "identifier", stringify(typeof(value.identifier), value.identifier)))
+
+proc `$`*(value: LdtkWorld): string =
+  stringify(LdtkWorld, value)
+
 proc fromJsonHook*(target: var LdtkWorld; source: JsonNode) =
   assert(hasKey(source, "worldGridWidth"),
          "worldGridWidth" & " is missing while decoding " & "LdtkWorld")
@@ -1190,6 +1359,17 @@ proc `==`*(a, b: LdtkEntityReferenceInfos): bool =
       a.layerIid == b.layerIid and
       a.levelIid == b.levelIid
 
+proc stringify(_: typedesc[LdtkEntityReferenceInfos];
+               value: LdtkEntityReferenceInfos): string =
+  stringifyObj("LdtkEntityReferenceInfos", ("worldIid",
+      stringify(typeof(value.worldIid), value.worldIid)), ("entityIid",
+      stringify(typeof(value.entityIid), value.entityIid)), ("layerIid",
+      stringify(typeof(value.layerIid), value.layerIid)),
+               ("levelIid", stringify(typeof(value.levelIid), value.levelIid)))
+
+proc `$`*(value: LdtkEntityReferenceInfos): string =
+  stringify(LdtkEntityReferenceInfos, value)
+
 proc fromJsonHook*(target: var LdtkEntityReferenceInfos; source: JsonNode) =
   assert(hasKey(source, "worldIid"), "worldIid" & " is missing while decoding " &
       "LdtkEntityReferenceInfos")
@@ -1217,6 +1397,18 @@ proc `==`*(a, b: LdtkTocInstanceData): bool =
       a.heiPx == b.heiPx and
       a.fields == b.fields and
       a.iids == b.iids
+
+proc stringify(_: typedesc[LdtkTocInstanceData]; value: LdtkTocInstanceData): string =
+  stringifyObj("LdtkTocInstanceData",
+               ("worldX", stringify(typeof(value.worldX), value.worldX)),
+               ("widPx", stringify(typeof(value.widPx), value.widPx)),
+               ("worldY", stringify(typeof(value.worldY), value.worldY)),
+               ("heiPx", stringify(typeof(value.heiPx), value.heiPx)),
+               ("fields", stringify(typeof(value.fields), value.fields)),
+               ("iids", stringify(typeof(value.iids), value.iids)))
+
+proc `$`*(value: LdtkTocInstanceData): string =
+  stringify(LdtkTocInstanceData, value)
 
 proc fromJsonHook*(target: var LdtkTocInstanceData; source: JsonNode) =
   assert(hasKey(source, "worldX"),
@@ -1250,6 +1442,16 @@ proc toJsonHook*(source: LdtkTocInstanceData): JsonNode =
 proc `==`*(a, b: LdtkTableOfContentEntry): bool =
   true and a.identifier == b.identifier and a.instancesData == b.instancesData and
       a.instances == b.instances
+
+proc stringify(_: typedesc[LdtkTableOfContentEntry];
+               value: LdtkTableOfContentEntry): string =
+  stringifyObj("LdtkTableOfContentEntry", ("identifier",
+      stringify(typeof(value.identifier), value.identifier)), ("instancesData",
+      stringify(typeof(value.instancesData), value.instancesData)), (
+      "instances", stringify(typeof(value.instances), value.instances)))
+
+proc `$`*(value: LdtkTableOfContentEntry): string =
+  stringify(LdtkTableOfContentEntry, value)
 
 proc fromJsonHook*(target: var LdtkTableOfContentEntry; source: JsonNode) =
   assert(hasKey(source, "identifier"), "identifier" &
@@ -1355,6 +1557,14 @@ proc fromJsonHook*(target: var LdtkWhen; source: JsonNode) =
 proc `==`*(a, b: LdtkCustomCommand): bool =
   true and a.`when` == b.`when` and a.command == b.command
 
+proc stringify(_: typedesc[LdtkCustomCommand]; value: LdtkCustomCommand): string =
+  stringifyObj("LdtkCustomCommand",
+               ("when", stringify(typeof(value.`when`), value.`when`)),
+               ("command", stringify(typeof(value.command), value.command)))
+
+proc `$`*(value: LdtkCustomCommand): string =
+  stringify(LdtkCustomCommand, value)
+
 proc fromJsonHook*(target: var LdtkCustomCommand; source: JsonNode) =
   assert(hasKey(source, "when"),
          "when" & " is missing while decoding " & "LdtkCustomCommand")
@@ -1431,6 +1641,15 @@ proc fromJsonHook*(target: var LdtkFlags; source: JsonNode) =
 proc `==`*(a, b: LdtkTileCustomMetadata): bool =
   true and a.tileId == b.tileId and a.data == b.data
 
+proc stringify(_: typedesc[LdtkTileCustomMetadata];
+               value: LdtkTileCustomMetadata): string =
+  stringifyObj("LdtkTileCustomMetadata",
+               ("tileId", stringify(typeof(value.tileId), value.tileId)),
+               ("data", stringify(typeof(value.data), value.data)))
+
+proc `$`*(value: LdtkTileCustomMetadata): string =
+  stringify(LdtkTileCustomMetadata, value)
+
 proc fromJsonHook*(target: var LdtkTileCustomMetadata; source: JsonNode) =
   assert(hasKey(source, "tileId"),
          "tileId" & " is missing while decoding " & "LdtkTileCustomMetadata")
@@ -1446,6 +1665,14 @@ proc toJsonHook*(source: LdtkTileCustomMetadata): JsonNode =
 
 proc `==`*(a, b: LdtkEnumTagValue): bool =
   true and a.tileIds == b.tileIds and a.enumValueId == b.enumValueId
+
+proc stringify(_: typedesc[LdtkEnumTagValue]; value: LdtkEnumTagValue): string =
+  stringifyObj("LdtkEnumTagValue",
+               ("tileIds", stringify(typeof(value.tileIds), value.tileIds)), (
+      "enumValueId", stringify(typeof(value.enumValueId), value.enumValueId)))
+
+proc `$`*(value: LdtkEnumTagValue): string =
+  stringify(LdtkEnumTagValue, value)
 
 proc fromJsonHook*(target: var LdtkEnumTagValue; source: JsonNode) =
   assert(hasKey(source, "tileIds"),
@@ -1493,6 +1720,31 @@ proc `==`*(a, b: LdtkTilesetDef): bool =
       a.embedAtlas == b.embedAtlas and
       a.relPath == b.relPath and
       a.tileGridSize == b.tileGridSize
+
+proc stringify(_: typedesc[LdtkTilesetDef]; value: LdtkTilesetDef): string =
+  stringifyObj("LdtkTilesetDef", ("cachedPixelData", stringify(
+      typeof(value.cachedPixelData), value.cachedPixelData)),
+               ("cHei", stringify(typeof(value.cHei), value.cHei)),
+               ("pxHei", stringify(typeof(value.pxHei), value.pxHei)), (
+      "customData", stringify(typeof(value.customData), value.customData)), (
+      "tagsSourceEnumUid",
+      stringify(typeof(value.tagsSourceEnumUid), value.tagsSourceEnumUid)),
+               ("uid", stringify(typeof(value.uid), value.uid)),
+               ("padding", stringify(typeof(value.padding), value.padding)), (
+      "enumTags", stringify(typeof(value.enumTags), value.enumTags)),
+               ("pxWid", stringify(typeof(value.pxWid), value.pxWid)),
+               ("cWid", stringify(typeof(value.cWid), value.cWid)),
+               ("spacing", stringify(typeof(value.spacing), value.spacing)), (
+      "identifier", stringify(typeof(value.identifier), value.identifier)), (
+      "savedSelections",
+      stringify(typeof(value.savedSelections), value.savedSelections)),
+               ("tags", stringify(typeof(value.tags), value.tags)), (
+      "embedAtlas", stringify(typeof(value.embedAtlas), value.embedAtlas)),
+               ("relPath", stringify(typeof(value.relPath), value.relPath)), (
+      "tileGridSize", stringify(typeof(value.tileGridSize), value.tileGridSize)))
+
+proc `$`*(value: LdtkTilesetDef): string =
+  stringify(LdtkTilesetDef, value)
 
 proc fromJsonHook*(target: var LdtkTilesetDef; source: JsonNode) =
   if hasKey(source, "cachedPixelData") and
@@ -1604,6 +1856,16 @@ proc `==`*(a, b: LdtkIntGridValueGroupDef): bool =
   true and a.color == b.color and a.uid == b.uid and
       a.identifier == b.identifier
 
+proc stringify(_: typedesc[LdtkIntGridValueGroupDef];
+               value: LdtkIntGridValueGroupDef): string =
+  stringifyObj("LdtkIntGridValueGroupDef",
+               ("color", stringify(typeof(value.color), value.color)),
+               ("uid", stringify(typeof(value.uid), value.uid)), ("identifier",
+      stringify(typeof(value.identifier), value.identifier)))
+
+proc `$`*(value: LdtkIntGridValueGroupDef): string =
+  stringify(LdtkIntGridValueGroupDef, value)
+
 proc fromJsonHook*(target: var LdtkIntGridValueGroupDef; source: JsonNode) =
   if hasKey(source, "color") and source{"color"}.kind != JNull:
     target.color = some(jsonTo(source{"color"}, typeof(unsafeGet(target.color))))
@@ -1627,6 +1889,17 @@ proc `==`*(a, b: LdtkIntGridValueDef): bool =
       a.identifier == b.identifier and
       a.value == b.value and
       a.groupUid == b.groupUid
+
+proc stringify(_: typedesc[LdtkIntGridValueDef]; value: LdtkIntGridValueDef): string =
+  stringifyObj("LdtkIntGridValueDef",
+               ("tile", stringify(typeof(value.tile), value.tile)),
+               ("color", stringify(typeof(value.color), value.color)), (
+      "identifier", stringify(typeof(value.identifier), value.identifier)),
+               ("value", stringify(typeof(value.value), value.value)),
+               ("groupUid", stringify(typeof(value.groupUid), value.groupUid)))
+
+proc `$`*(value: LdtkIntGridValueDef): string =
+  stringify(LdtkIntGridValueDef, value)
 
 proc fromJsonHook*(target: var LdtkIntGridValueDef; source: JsonNode) =
   if hasKey(source, "tile") and source{"tile"}.kind != JNull:
@@ -1721,6 +1994,49 @@ proc `==`*(a, b: LdtkAutoRuleDef): bool =
       a.yModulo == b.yModulo and
       a.active == b.active and
       a.xOffset == b.xOffset
+
+proc stringify(_: typedesc[LdtkAutoRuleDef]; value: LdtkAutoRuleDef): string =
+  stringifyObj("LdtkAutoRuleDef",
+               ("flipX", stringify(typeof(value.flipX), value.flipX)),
+               ("pivotX", stringify(typeof(value.pivotX), value.pivotX)), (
+      "perlinActive", stringify(typeof(value.perlinActive), value.perlinActive)), (
+      "tileRectsIds", stringify(typeof(value.tileRectsIds), value.tileRectsIds)), (
+      "perlinScale", stringify(typeof(value.perlinScale), value.perlinScale)), (
+      "outOfBoundsValue",
+      stringify(typeof(value.outOfBoundsValue), value.outOfBoundsValue)),
+               ("pattern", stringify(typeof(value.pattern), value.pattern)), (
+      "tileRandomXMin",
+      stringify(typeof(value.tileRandomXMin), value.tileRandomXMin)),
+               ("checker", stringify(typeof(value.checker), value.checker)), (
+      "perlinOctaves",
+      stringify(typeof(value.perlinOctaves), value.perlinOctaves)),
+               ("tileIds", stringify(typeof(value.tileIds), value.tileIds)),
+               ("alpha", stringify(typeof(value.alpha), value.alpha)), (
+      "tileXOffset", stringify(typeof(value.tileXOffset), value.tileXOffset)), (
+      "invalidated", stringify(typeof(value.invalidated), value.invalidated)),
+               ("xModulo", stringify(typeof(value.xModulo), value.xModulo)),
+               ("size", stringify(typeof(value.size), value.size)),
+               ("chance", stringify(typeof(value.chance), value.chance)), (
+      "breakOnMatch", stringify(typeof(value.breakOnMatch), value.breakOnMatch)), (
+      "tileYOffset", stringify(typeof(value.tileYOffset), value.tileYOffset)),
+               ("uid", stringify(typeof(value.uid), value.uid)), ("perlinSeed",
+      stringify(typeof(value.perlinSeed), value.perlinSeed)),
+               ("yOffset", stringify(typeof(value.yOffset), value.yOffset)), (
+      "tileRandomYMax",
+      stringify(typeof(value.tileRandomYMax), value.tileRandomYMax)), (
+      "tileRandomYMin",
+      stringify(typeof(value.tileRandomYMin), value.tileRandomYMin)), (
+      "tileMode", stringify(typeof(value.tileMode), value.tileMode)),
+               ("flipY", stringify(typeof(value.flipY), value.flipY)), (
+      "tileRandomXMax",
+      stringify(typeof(value.tileRandomXMax), value.tileRandomXMax)),
+               ("pivotY", stringify(typeof(value.pivotY), value.pivotY)),
+               ("yModulo", stringify(typeof(value.yModulo), value.yModulo)),
+               ("active", stringify(typeof(value.active), value.active)),
+               ("xOffset", stringify(typeof(value.xOffset), value.xOffset)))
+
+proc `$`*(value: LdtkAutoRuleDef): string =
+  stringify(LdtkAutoRuleDef, value)
 
 proc fromJsonHook*(target: var LdtkAutoRuleDef; source: JsonNode) =
   assert(hasKey(source, "flipX"),
@@ -1890,6 +2206,26 @@ proc `==`*(a, b: LdtkAutoLayerRuleGroup): bool =
       a.active == b.active and
       a.rules == b.rules
 
+proc stringify(_: typedesc[LdtkAutoLayerRuleGroup];
+               value: LdtkAutoLayerRuleGroup): string =
+  stringifyObj("LdtkAutoLayerRuleGroup",
+               ("name", stringify(typeof(value.name), value.name)), (
+      "collapsed", stringify(typeof(value.collapsed), value.collapsed)), (
+      "biomeRequirementMode",
+      stringify(typeof(value.biomeRequirementMode), value.biomeRequirementMode)),
+               ("color", stringify(typeof(value.color), value.color)), (
+      "isOptional", stringify(typeof(value.isOptional), value.isOptional)),
+               ("icon", stringify(typeof(value.icon), value.icon)), (
+      "usesWizard", stringify(typeof(value.usesWizard), value.usesWizard)),
+               ("uid", stringify(typeof(value.uid), value.uid)), (
+      "requiredBiomeValues",
+      stringify(typeof(value.requiredBiomeValues), value.requiredBiomeValues)),
+               ("active", stringify(typeof(value.active), value.active)),
+               ("rules", stringify(typeof(value.rules), value.rules)))
+
+proc `$`*(value: LdtkAutoLayerRuleGroup): string =
+  stringify(LdtkAutoLayerRuleGroup, value)
+
 proc fromJsonHook*(target: var LdtkAutoLayerRuleGroup; source: JsonNode) =
   assert(hasKey(source, "name"),
          "name" & " is missing while decoding " & "LdtkAutoLayerRuleGroup")
@@ -2012,6 +2348,59 @@ proc `==`*(a, b: LdtkLayerDef): bool =
       a.gridSize == b.gridSize and
       a.parallaxFactorX == b.parallaxFactorX and
       a.autoTilesKilledByOtherLayerUid == b.autoTilesKilledByOtherLayerUid
+
+proc stringify(_: typedesc[LdtkLayerDef]; value: LdtkLayerDef): string =
+  stringifyObj("LdtkLayerDef", ("pxOffsetX", stringify(typeof(value.pxOffsetX),
+      value.pxOffsetX)), ("tilePivotX",
+                          stringify(typeof(value.tilePivotX), value.tilePivotX)), (
+      "uiFilterTags", stringify(typeof(value.uiFilterTags), value.uiFilterTags)), (
+      "displayOpacity",
+      stringify(typeof(value.displayOpacity), value.displayOpacity)), (
+      "parallaxFactorY",
+      stringify(typeof(value.parallaxFactorY), value.parallaxFactorY)), (
+      "hideInList", stringify(typeof(value.hideInList), value.hideInList)),
+               ("type", stringify(typeof(value.`type`), value.`type`)), (
+      "guideGridHei", stringify(typeof(value.guideGridHei), value.guideGridHei)),
+               ("uiColor", stringify(typeof(value.uiColor), value.uiColor)),
+               ("doc", stringify(typeof(value.doc), value.doc)), (
+      "tilesetDefUid",
+      stringify(typeof(value.tilesetDefUid), value.tilesetDefUid)), (
+      "canSelectWhenInactive", stringify(typeof(value.canSelectWhenInactive),
+      value.canSelectWhenInactive)), ("useAsyncRender", stringify(
+      typeof(value.useAsyncRender), value.useAsyncRender)), (
+      "autoSourceLayerDefUid", stringify(typeof(value.autoSourceLayerDefUid),
+      value.autoSourceLayerDefUid)), ("autoTilesetDefUid", stringify(
+      typeof(value.autoTilesetDefUid), value.autoTilesetDefUid)), (
+      "parallaxScaling",
+      stringify(typeof(value.parallaxScaling), value.parallaxScaling)), (
+      "renderInWorldView",
+      stringify(typeof(value.renderInWorldView), value.renderInWorldView)), (
+      "intGridValuesGroups",
+      stringify(typeof(value.intGridValuesGroups), value.intGridValuesGroups)), (
+      "inactiveOpacity",
+      stringify(typeof(value.inactiveOpacity), value.inactiveOpacity)),
+               ("uid", stringify(typeof(value.uid), value.uid)), (
+      "excludedTags", stringify(typeof(value.excludedTags), value.excludedTags)), (
+      "hideFieldsWhenInactive", stringify(typeof(value.hideFieldsWhenInactive),
+      value.hideFieldsWhenInactive)), ("intGridValues", stringify(
+      typeof(value.intGridValues), value.intGridValues)), ("autoRuleGroups",
+      stringify(typeof(value.autoRuleGroups), value.autoRuleGroups)),
+               ("type1", stringify(typeof(value.type1), value.type1)), (
+      "identifier", stringify(typeof(value.identifier), value.identifier)), (
+      "guideGridWid", stringify(typeof(value.guideGridWid), value.guideGridWid)), (
+      "requiredTags", stringify(typeof(value.requiredTags), value.requiredTags)), (
+      "pxOffsetY", stringify(typeof(value.pxOffsetY), value.pxOffsetY)), (
+      "tilePivotY", stringify(typeof(value.tilePivotY), value.tilePivotY)), (
+      "biomeFieldUid",
+      stringify(typeof(value.biomeFieldUid), value.biomeFieldUid)), ("gridSize",
+      stringify(typeof(value.gridSize), value.gridSize)), ("parallaxFactorX",
+      stringify(typeof(value.parallaxFactorX), value.parallaxFactorX)), (
+      "autoTilesKilledByOtherLayerUid", stringify(
+      typeof(value.autoTilesKilledByOtherLayerUid),
+      value.autoTilesKilledByOtherLayerUid)))
+
+proc `$`*(value: LdtkLayerDef): string =
+  stringify(LdtkLayerDef, value)
 
 proc fromJsonHook*(target: var LdtkLayerDef; source: JsonNode) =
   assert(hasKey(source, "pxOffsetX"),
@@ -2437,6 +2826,66 @@ proc `==`*(a, b: LdtkFieldDef): bool =
       a.identifier == b.identifier and
       a.arrayMaxLength == b.arrayMaxLength
 
+proc stringify(_: typedesc[LdtkFieldDef]; value: LdtkFieldDef): string =
+  stringifyObj("LdtkFieldDef", ("acceptFileTypes", stringify(
+      typeof(value.acceptFileTypes), value.acceptFileTypes)), (
+      "editorDisplayScale",
+      stringify(typeof(value.editorDisplayScale), value.editorDisplayScale)), (
+      "searchable", stringify(typeof(value.searchable), value.searchable)), (
+      "useForSmartColor",
+      stringify(typeof(value.useForSmartColor), value.useForSmartColor)), (
+      "editorShowInWorld",
+      stringify(typeof(value.editorShowInWorld), value.editorShowInWorld)), (
+      "allowedRefs", stringify(typeof(value.allowedRefs), value.allowedRefs)), (
+      "editorAlwaysShow",
+      stringify(typeof(value.editorAlwaysShow), value.editorAlwaysShow)), (
+      "arrayMinLength",
+      stringify(typeof(value.arrayMinLength), value.arrayMinLength)), (
+      "editorTextSuffix",
+      stringify(typeof(value.editorTextSuffix), value.editorTextSuffix)),
+               ("min", stringify(typeof(value.min), value.min)),
+               ("type", stringify(typeof(value.`type`), value.`type`)), (
+      "editorDisplayMode",
+      stringify(typeof(value.editorDisplayMode), value.editorDisplayMode)), (
+      "editorDisplayColor",
+      stringify(typeof(value.editorDisplayColor), value.editorDisplayColor)), (
+      "canBeNull", stringify(typeof(value.canBeNull), value.canBeNull)), (
+      "autoChainRef", stringify(typeof(value.autoChainRef), value.autoChainRef)),
+               ("doc", stringify(typeof(value.doc), value.doc)), (
+      "allowedRefsEntityUid",
+      stringify(typeof(value.allowedRefsEntityUid), value.allowedRefsEntityUid)), (
+      "tilesetUid", stringify(typeof(value.tilesetUid), value.tilesetUid)), (
+      "allowedRefTags",
+      stringify(typeof(value.allowedRefTags), value.allowedRefTags)), (
+      "symmetricalRef",
+      stringify(typeof(value.symmetricalRef), value.symmetricalRef)),
+               ("uid", stringify(typeof(value.uid), value.uid)), (
+      "editorTextPrefix",
+      stringify(typeof(value.editorTextPrefix), value.editorTextPrefix)),
+               ("isArray", stringify(typeof(value.isArray), value.isArray)), (
+      "exportToToc", stringify(typeof(value.exportToToc), value.exportToToc)), (
+      "editorDisplayPos",
+      stringify(typeof(value.editorDisplayPos), value.editorDisplayPos)), (
+      "textLanguageMode",
+      stringify(typeof(value.textLanguageMode), value.textLanguageMode)),
+               ("max", stringify(typeof(value.max), value.max)), (
+      "allowOutOfLevelRef",
+      stringify(typeof(value.allowOutOfLevelRef), value.allowOutOfLevelRef)), (
+      "editorCutLongValues",
+      stringify(typeof(value.editorCutLongValues), value.editorCutLongValues)), (
+      "defaultOverride",
+      stringify(typeof(value.defaultOverride), value.defaultOverride)), (
+      "editorLinkStyle",
+      stringify(typeof(value.editorLinkStyle), value.editorLinkStyle)),
+               ("regex", stringify(typeof(value.regex), value.regex)),
+               ("type1", stringify(typeof(value.type1), value.type1)), (
+      "identifier", stringify(typeof(value.identifier), value.identifier)), (
+      "arrayMaxLength",
+      stringify(typeof(value.arrayMaxLength), value.arrayMaxLength)))
+
+proc `$`*(value: LdtkFieldDef): string =
+  stringify(LdtkFieldDef, value)
+
 proc fromJsonHook*(target: var LdtkFieldDef; source: JsonNode) =
   if hasKey(source, "acceptFileTypes") and
       source{"acceptFileTypes"}.kind != JNull:
@@ -2630,6 +3079,17 @@ proc `==`*(a, b: LdtkEnumDefValues): bool =
       a.id == b.id and
       a.tileSrcRect == b.tileSrcRect
 
+proc stringify(_: typedesc[LdtkEnumDefValues]; value: LdtkEnumDefValues): string =
+  stringifyObj("LdtkEnumDefValues",
+               ("tileId", stringify(typeof(value.tileId), value.tileId)),
+               ("color", stringify(typeof(value.color), value.color)), (
+      "tileRect", stringify(typeof(value.tileRect), value.tileRect)),
+               ("id", stringify(typeof(value.id), value.id)), ("tileSrcRect",
+      stringify(typeof(value.tileSrcRect), value.tileSrcRect)))
+
+proc `$`*(value: LdtkEnumDefValues): string =
+  stringify(LdtkEnumDefValues, value)
+
 proc fromJsonHook*(target: var LdtkEnumDefValues; source: JsonNode) =
   if hasKey(source, "tileId") and source{"tileId"}.kind != JNull:
     target.tileId = some(jsonTo(source{"tileId"},
@@ -2671,6 +3131,21 @@ proc `==`*(a, b: LdtkEnumDef): bool =
       a.iconTilesetUid == b.iconTilesetUid and
       a.identifier == b.identifier and
       a.tags == b.tags
+
+proc stringify(_: typedesc[LdtkEnumDef]; value: LdtkEnumDef): string =
+  stringifyObj("LdtkEnumDef", ("externalFileChecksum", stringify(
+      typeof(value.externalFileChecksum), value.externalFileChecksum)), (
+      "externalRelPath",
+      stringify(typeof(value.externalRelPath), value.externalRelPath)),
+               ("uid", stringify(typeof(value.uid), value.uid)),
+               ("values", stringify(typeof(value.values), value.values)), (
+      "iconTilesetUid",
+      stringify(typeof(value.iconTilesetUid), value.iconTilesetUid)), (
+      "identifier", stringify(typeof(value.identifier), value.identifier)),
+               ("tags", stringify(typeof(value.tags), value.tags)))
+
+proc `$`*(value: LdtkEnumDef): string =
+  stringify(LdtkEnumDef, value)
 
 proc fromJsonHook*(target: var LdtkEnumDef; source: JsonNode) =
   if hasKey(source, "externalFileChecksum") and
@@ -2856,6 +3331,50 @@ proc `==`*(a, b: LdtkEntityDef): bool =
       a.tags == b.tags and
       a.width == b.width
 
+proc stringify(_: typedesc[LdtkEntityDef]; value: LdtkEntityDef): string =
+  stringifyObj("LdtkEntityDef",
+               ("tileId", stringify(typeof(value.tileId), value.tileId)), (
+      "showName", stringify(typeof(value.showName), value.showName)), (
+      "tilesetId", stringify(typeof(value.tilesetId), value.tilesetId)), (
+      "maxHeight", stringify(typeof(value.maxHeight), value.maxHeight)), (
+      "limitScope", stringify(typeof(value.limitScope), value.limitScope)),
+               ("pivotX", stringify(typeof(value.pivotX), value.pivotX)), (
+      "maxCount", stringify(typeof(value.maxCount), value.maxCount)), (
+      "allowOutOfBounds",
+      stringify(typeof(value.allowOutOfBounds), value.allowOutOfBounds)),
+               ("hollow", stringify(typeof(value.hollow), value.hollow)), (
+      "minHeight", stringify(typeof(value.minHeight), value.minHeight)), (
+      "keepAspectRatio",
+      stringify(typeof(value.keepAspectRatio), value.keepAspectRatio)),
+               ("color", stringify(typeof(value.color), value.color)), (
+      "minWidth", stringify(typeof(value.minWidth), value.minWidth)), (
+      "tileRect", stringify(typeof(value.tileRect), value.tileRect)),
+               ("doc", stringify(typeof(value.doc), value.doc)), ("fieldDefs",
+      stringify(typeof(value.fieldDefs), value.fieldDefs)), ("tileRenderMode",
+      stringify(typeof(value.tileRenderMode), value.tileRenderMode)), (
+      "limitBehavior",
+      stringify(typeof(value.limitBehavior), value.limitBehavior)), (
+      "tileOpacity", stringify(typeof(value.tileOpacity), value.tileOpacity)), (
+      "nineSliceBorders",
+      stringify(typeof(value.nineSliceBorders), value.nineSliceBorders)), (
+      "resizableX", stringify(typeof(value.resizableX), value.resizableX)), (
+      "uiTileRect", stringify(typeof(value.uiTileRect), value.uiTileRect)),
+               ("uid", stringify(typeof(value.uid), value.uid)), ("lineOpacity",
+      stringify(typeof(value.lineOpacity), value.lineOpacity)), ("maxWidth",
+      stringify(typeof(value.maxWidth), value.maxWidth)), ("resizableY",
+      stringify(typeof(value.resizableY), value.resizableY)), ("exportToToc",
+      stringify(typeof(value.exportToToc), value.exportToToc)), ("fillOpacity",
+      stringify(typeof(value.fillOpacity), value.fillOpacity)),
+               ("height", stringify(typeof(value.height), value.height)), (
+      "identifier", stringify(typeof(value.identifier), value.identifier)),
+               ("pivotY", stringify(typeof(value.pivotY), value.pivotY)), (
+      "renderMode", stringify(typeof(value.renderMode), value.renderMode)),
+               ("tags", stringify(typeof(value.tags), value.tags)),
+               ("width", stringify(typeof(value.width), value.width)))
+
+proc `$`*(value: LdtkEntityDef): string =
+  stringify(LdtkEntityDef, value)
+
 proc fromJsonHook*(target: var LdtkEntityDef; source: JsonNode) =
   if hasKey(source, "tileId") and source{"tileId"}.kind != JNull:
     target.tileId = some(jsonTo(source{"tileId"},
@@ -3029,6 +3548,19 @@ proc `==`*(a, b: LdtkDefinitions): bool =
       a.entities == b.entities and
       a.externalEnums == b.externalEnums
 
+proc stringify(_: typedesc[LdtkDefinitions]; value: LdtkDefinitions): string =
+  stringifyObj("LdtkDefinitions", ("tilesets", stringify(typeof(value.tilesets),
+      value.tilesets)),
+               ("layers", stringify(typeof(value.layers), value.layers)), (
+      "levelFields", stringify(typeof(value.levelFields), value.levelFields)),
+               ("enums", stringify(typeof(value.enums), value.enums)), (
+      "entities", stringify(typeof(value.entities), value.entities)), (
+      "externalEnums",
+      stringify(typeof(value.externalEnums), value.externalEnums)))
+
+proc `$`*(value: LdtkDefinitions): string =
+  stringify(LdtkDefinitions, value)
+
 proc fromJsonHook*(target: var LdtkDefinitions; source: JsonNode) =
   assert(hasKey(source, "tilesets"),
          "tilesets" & " is missing while decoding " & "LdtkDefinitions")
@@ -3086,6 +3618,13 @@ proc toJsonHook*(source: LdtkDefinitions): JsonNode =
 proc `==`*(a, b: LdtkGridPoint): bool =
   true and a.cy == b.cy and a.cx == b.cx
 
+proc stringify(_: typedesc[LdtkGridPoint]; value: LdtkGridPoint): string =
+  stringifyObj("LdtkGridPoint", ("cy", stringify(typeof(value.cy), value.cy)),
+               ("cx", stringify(typeof(value.cx), value.cx)))
+
+proc `$`*(value: LdtkGridPoint): string =
+  stringify(LdtkGridPoint, value)
+
 proc fromJsonHook*(target: var LdtkGridPoint; source: JsonNode) =
   assert(hasKey(source, "cy"),
          "cy" & " is missing while decoding " & "LdtkGridPoint")
@@ -3127,6 +3666,53 @@ proc `==`*(a, b: Ldtk_FORCED_REFS): bool =
       a.EnumDef == b.EnumDef and
       a.GridPoint == b.GridPoint and
       a.IntGridValueDef == b.IntGridValueDef
+
+proc stringify(_: typedesc[Ldtk_FORCED_REFS]; value: Ldtk_FORCED_REFS): string =
+  stringifyObj("Ldtk_FORCED_REFS", ("TilesetRect", stringify(
+      typeof(value.TilesetRect), value.TilesetRect)), ("FieldInstance",
+      stringify(typeof(value.FieldInstance), value.FieldInstance)), (
+      "EntityInstance",
+      stringify(typeof(value.EntityInstance), value.EntityInstance)), (
+      "Definitions", stringify(typeof(value.Definitions), value.Definitions)), (
+      "EnumTagValue", stringify(typeof(value.EnumTagValue), value.EnumTagValue)), (
+      "AutoRuleDef", stringify(typeof(value.AutoRuleDef), value.AutoRuleDef)), (
+      "FieldDef", stringify(typeof(value.FieldDef), value.FieldDef)), (
+      "CustomCommand",
+      stringify(typeof(value.CustomCommand), value.CustomCommand)), (
+      "EntityDef", stringify(typeof(value.EntityDef), value.EntityDef)), (
+      "AutoLayerRuleGroup",
+      stringify(typeof(value.AutoLayerRuleGroup), value.AutoLayerRuleGroup)), (
+      "IntGridValueGroupDef",
+      stringify(typeof(value.IntGridValueGroupDef), value.IntGridValueGroupDef)), (
+      "IntGridValueInstance",
+      stringify(typeof(value.IntGridValueInstance), value.IntGridValueInstance)), (
+      "TocInstanceData",
+      stringify(typeof(value.TocInstanceData), value.TocInstanceData)), (
+      "NeighbourLevel",
+      stringify(typeof(value.NeighbourLevel), value.NeighbourLevel)), (
+      "LayerInstance",
+      stringify(typeof(value.LayerInstance), value.LayerInstance)),
+               ("World", stringify(typeof(value.World), value.World)), (
+      "EntityReferenceInfos",
+      stringify(typeof(value.EntityReferenceInfos), value.EntityReferenceInfos)), (
+      "TileCustomMetadata",
+      stringify(typeof(value.TileCustomMetadata), value.TileCustomMetadata)), (
+      "TilesetDef", stringify(typeof(value.TilesetDef), value.TilesetDef)), (
+      "EnumDefValues",
+      stringify(typeof(value.EnumDefValues), value.EnumDefValues)),
+               ("Tile", stringify(typeof(value.Tile), value.Tile)), ("LayerDef",
+      stringify(typeof(value.LayerDef), value.LayerDef)), ("LevelBgPosInfos",
+      stringify(typeof(value.LevelBgPosInfos), value.LevelBgPosInfos)),
+               ("Level", stringify(typeof(value.Level), value.Level)), (
+      "TableOfContentEntry",
+      stringify(typeof(value.TableOfContentEntry), value.TableOfContentEntry)),
+               ("EnumDef", stringify(typeof(value.EnumDef), value.EnumDef)), (
+      "GridPoint", stringify(typeof(value.GridPoint), value.GridPoint)), (
+      "IntGridValueDef",
+      stringify(typeof(value.IntGridValueDef), value.IntGridValueDef)))
+
+proc `$`*(value: Ldtk_FORCED_REFS): string =
+  stringify(Ldtk_FORCED_REFS, value)
 
 proc fromJsonHook*(target: var Ldtk_FORCED_REFS; source: JsonNode) =
   if hasKey(source, "TilesetRect") and source{"TilesetRect"}.kind != JNull:
@@ -3333,6 +3919,69 @@ proc `==`*(a, b: LdtkLdtkJsonRoot): bool =
       a.minifyJson == b.minifyJson and
       a.exportLevelBg == b.exportLevelBg and
       a.backupRelPath == b.backupRelPath
+
+proc stringify(_: typedesc[LdtkLdtkJsonRoot]; value: LdtkLdtkJsonRoot): string =
+  stringifyObj("LdtkLdtkJsonRoot", ("backupLimit", stringify(
+      typeof(value.backupLimit), value.backupLimit)), ("defaultEntityWidth",
+      stringify(typeof(value.defaultEntityWidth), value.defaultEntityWidth)), (
+      "backupOnSave", stringify(typeof(value.backupOnSave), value.backupOnSave)), (
+      "worldGridWidth",
+      stringify(typeof(value.worldGridWidth), value.worldGridWidth)),
+               ("iid", stringify(typeof(value.iid), value.iid)), (
+      "defaultLevelBgColor",
+      stringify(typeof(value.defaultLevelBgColor), value.defaultLevelBgColor)),
+               ("bgColor", stringify(typeof(value.bgColor), value.bgColor)),
+               ("worlds", stringify(typeof(value.worlds), value.worlds)),
+               ("toc", stringify(typeof(value.toc), value.toc)),
+               ("nextUid", stringify(typeof(value.nextUid), value.nextUid)), (
+      "imageExportMode",
+      stringify(typeof(value.imageExportMode), value.imageExportMode)), (
+      "identifierStyle",
+      stringify(typeof(value.identifierStyle), value.identifierStyle)), (
+      "defaultPivotY",
+      stringify(typeof(value.defaultPivotY), value.defaultPivotY)), (
+      "dummyWorldIid",
+      stringify(typeof(value.dummyWorldIid), value.dummyWorldIid)), (
+      "customCommands",
+      stringify(typeof(value.customCommands), value.customCommands)), (
+      "worldGridHeight",
+      stringify(typeof(value.worldGridHeight), value.worldGridHeight)), (
+      "appBuildId", stringify(typeof(value.appBuildId), value.appBuildId)), (
+      "defaultGridSize",
+      stringify(typeof(value.defaultGridSize), value.defaultGridSize)), (
+      "worldLayout", stringify(typeof(value.worldLayout), value.worldLayout)),
+               ("flags", stringify(typeof(value.flags), value.flags)), (
+      "levelNamePattern",
+      stringify(typeof(value.levelNamePattern), value.levelNamePattern)), (
+      "exportPng", stringify(typeof(value.exportPng), value.exportPng)), (
+      "defaultLevelWidth",
+      stringify(typeof(value.defaultLevelWidth), value.defaultLevelWidth)), (
+      "pngFilePattern",
+      stringify(typeof(value.pngFilePattern), value.pngFilePattern)), (
+      "FORCED_REFS", stringify(typeof(value.FORCED_REFS), value.FORCED_REFS)), (
+      "exportTiled", stringify(typeof(value.exportTiled), value.exportTiled)),
+               ("defs", stringify(typeof(value.defs), value.defs)),
+               ("levels", stringify(typeof(value.levels), value.levels)), (
+      "jsonVersion", stringify(typeof(value.jsonVersion), value.jsonVersion)), (
+      "defaultEntityHeight",
+      stringify(typeof(value.defaultEntityHeight), value.defaultEntityHeight)), (
+      "defaultPivotX",
+      stringify(typeof(value.defaultPivotX), value.defaultPivotX)), (
+      "defaultLevelHeight",
+      stringify(typeof(value.defaultLevelHeight), value.defaultLevelHeight)), (
+      "simplifiedExport",
+      stringify(typeof(value.simplifiedExport), value.simplifiedExport)), (
+      "externalLevels",
+      stringify(typeof(value.externalLevels), value.externalLevels)), (
+      "tutorialDesc", stringify(typeof(value.tutorialDesc), value.tutorialDesc)), (
+      "minifyJson", stringify(typeof(value.minifyJson), value.minifyJson)), (
+      "exportLevelBg",
+      stringify(typeof(value.exportLevelBg), value.exportLevelBg)), (
+      "backupRelPath",
+      stringify(typeof(value.backupRelPath), value.backupRelPath)))
+
+proc `$`*(value: LdtkLdtkJsonRoot): string =
+  stringify(LdtkLdtkJsonRoot, value)
 
 proc fromJsonHook*(target: var LdtkLdtkJsonRoot; source: JsonNode) =
   assert(hasKey(source, "backupLimit"),

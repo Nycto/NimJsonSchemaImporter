@@ -1,5 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
+import json_schema_import/private/stringify
 
 type
   File_systemType* = enum
@@ -66,6 +67,14 @@ proc fromJsonHook*(target: var File_systemType; source: JsonNode) =
 proc `==`*(a, b: File_systemDiskDevice): bool =
   true and a.`type` == b.`type` and a.device == b.device
 
+proc stringify(_: typedesc[File_systemDiskDevice]; value: File_systemDiskDevice): string =
+  stringifyObj("File_systemDiskDevice",
+               ("type", stringify(typeof(value.`type`), value.`type`)),
+               ("device", stringify(typeof(value.device), value.device)))
+
+proc `$`*(value: File_systemDiskDevice): string =
+  stringify(File_systemDiskDevice, value)
+
 proc fromJsonHook*(target: var File_systemDiskDevice; source: JsonNode) =
   assert(hasKey(source, "type"),
          "type" & " is missing while decoding " & "File_systemDiskDevice")
@@ -96,6 +105,14 @@ proc fromJsonHook*(target: var File_systemStorageType; source: JsonNode) =
   
 proc `==`*(a, b: File_systemDiskUUID): bool =
   true and a.`type` == b.`type` and a.label == b.label
+
+proc stringify(_: typedesc[File_systemDiskUUID]; value: File_systemDiskUUID): string =
+  stringifyObj("File_systemDiskUUID",
+               ("type", stringify(typeof(value.`type`), value.`type`)),
+               ("label", stringify(typeof(value.label), value.label)))
+
+proc `$`*(value: File_systemDiskUUID): string =
+  stringify(File_systemDiskUUID, value)
 
 proc fromJsonHook*(target: var File_systemDiskUUID; source: JsonNode) =
   assert(hasKey(source, "type"),
@@ -129,6 +146,15 @@ proc fromJsonHook*(target: var File_systemfile_systemStorageType;
 proc `==`*(a, b: File_systemNfs): bool =
   true and a.`type` == b.`type` and a.remotePath == b.remotePath and
       a.server == b.server
+
+proc stringify(_: typedesc[File_systemNfs]; value: File_systemNfs): string =
+  stringifyObj("File_systemNfs",
+               ("type", stringify(typeof(value.`type`), value.`type`)), (
+      "remotePath", stringify(typeof(value.remotePath), value.remotePath)),
+               ("server", stringify(typeof(value.server), value.server)))
+
+proc `$`*(value: File_systemNfs): string =
+  stringify(File_systemNfs, value)
 
 proc fromJsonHook*(target: var File_systemNfs; source: JsonNode) =
   assert(hasKey(source, "type"),
@@ -166,6 +192,14 @@ proc fromJsonHook*(target: var File_systemfile_systemStorageType2;
 proc `==`*(a, b: File_systemTmpfs): bool =
   true and a.`type` == b.`type` and a.sizeInMB == b.sizeInMB
 
+proc stringify(_: typedesc[File_systemTmpfs]; value: File_systemTmpfs): string =
+  stringifyObj("File_systemTmpfs",
+               ("type", stringify(typeof(value.`type`), value.`type`)),
+               ("sizeInMB", stringify(typeof(value.sizeInMB), value.sizeInMB)))
+
+proc `$`*(value: File_systemTmpfs): string =
+  stringify(File_systemTmpfs, value)
+
 proc fromJsonHook*(target: var File_systemTmpfs; source: JsonNode) =
   assert(hasKey(source, "type"),
          "type" & " is missing while decoding " & "File_systemTmpfs")
@@ -195,6 +229,20 @@ proc `==`*(a, b: File_systemUnion): bool =
   of 3:
     return a.key3 == b.key3
   
+proc stringify(_: typedesc[File_systemUnion]; value: File_systemUnion): string =
+  case value.kind
+  of 0:
+    return stringify(typeof(value.key0), value.key0)
+  of 1:
+    return stringify(typeof(value.key1), value.key1)
+  of 2:
+    return stringify(typeof(value.key2), value.key2)
+  of 3:
+    return stringify(typeof(value.key3), value.key3)
+  
+proc `$`*(value: File_systemUnion): string =
+  stringify(File_systemUnion, value)
+
 proc fromJsonHook*(target: var File_systemUnion; source: JsonNode) =
   if source.kind == JObject and hasKey(source, "device"):
     target = File_systemUnion(kind: 0, key0: jsonTo(source, typeof(target.key0)))
@@ -271,6 +319,17 @@ proc `==`*(a, b: File_systemfile_system): bool =
   true and a.storage == b.storage and a.fstype == b.fstype and
       a.options == b.options and
       a.readonly == b.readonly
+
+proc stringify(_: typedesc[File_systemfile_system];
+               value: File_systemfile_system): string =
+  stringifyObj("File_systemfile_system",
+               ("storage", stringify(typeof(value.storage), value.storage)),
+               ("fstype", stringify(typeof(value.fstype), value.fstype)),
+               ("options", stringify(typeof(value.options), value.options)),
+               ("readonly", stringify(typeof(value.readonly), value.readonly)))
+
+proc `$`*(value: File_systemfile_system): string =
+  stringify(File_systemfile_system, value)
 
 proc fromJsonHook*(target: var File_systemfile_system; source: JsonNode) =
   assert(hasKey(source, "storage"),

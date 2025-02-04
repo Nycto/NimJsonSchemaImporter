@@ -1,5 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
+import json_schema_import/private/stringify
 
 type
   EcommerceProductSchema* = object
@@ -12,6 +13,15 @@ proc toJsonHook*(source: EcommerceProductSchema): JsonNode
 proc toJsonHook*(source: EcommerceOrderSchema): JsonNode
 proc `==`*(a, b: EcommerceProductSchema): bool =
   true and a.name == b.name and a.price == b.price
+
+proc stringify(_: typedesc[EcommerceProductSchema];
+               value: EcommerceProductSchema): string =
+  stringifyObj("EcommerceProductSchema",
+               ("name", stringify(typeof(value.name), value.name)),
+               ("price", stringify(typeof(value.price), value.price)))
+
+proc `$`*(value: EcommerceProductSchema): string =
+  stringify(EcommerceProductSchema, value)
 
 proc fromJsonHook*(target: var EcommerceProductSchema; source: JsonNode) =
   if hasKey(source, "name") and source{"name"}.kind != JNull:
@@ -28,6 +38,14 @@ proc toJsonHook*(source: EcommerceProductSchema): JsonNode =
 
 proc `==`*(a, b: EcommerceOrderSchema): bool =
   true and a.orderId == b.orderId and a.items == b.items
+
+proc stringify(_: typedesc[EcommerceOrderSchema]; value: EcommerceOrderSchema): string =
+  stringifyObj("EcommerceOrderSchema",
+               ("orderId", stringify(typeof(value.orderId), value.orderId)),
+               ("items", stringify(typeof(value.items), value.items)))
+
+proc `$`*(value: EcommerceOrderSchema): string =
+  stringify(EcommerceOrderSchema, value)
 
 proc fromJsonHook*(target: var EcommerceOrderSchema; source: JsonNode) =
   if hasKey(source, "orderId") and source{"orderId"}.kind != JNull:
