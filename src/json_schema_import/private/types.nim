@@ -156,7 +156,7 @@ iterator proposeNames*(typ: TypeDef, prefix: string, name: NameChain): string =
     for name in name.add(typ.sref.getName).nameOptions(prefix):
         yield name
 
-    var base = typ.id.path.extractFilename.string.capitalizeAscii.removeExt
+    var base = typ.id.path.extractFilename.capitalizeAscii.removeExt
     if base == "":
         base = "Anon"
 
