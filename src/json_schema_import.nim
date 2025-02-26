@@ -4,6 +4,7 @@
 
 import std/[json, macros, jsonutils, strutils], json_schema_import/config
 import json_schema_import/private/[parse, gen, util, equality, bin]
+from std/os import fileExists, `/`, relativePath
 
 export JsonSchemaConfig, UrlResolver, json, jsonutils, equality, bin
 
@@ -50,3 +51,18 @@ macro importJsonSchema*(path, prefix: string) =
 macro jsonSchema*(schema: static JsonNode) =
     ## Converts a direct json reference to nim as if it were a json schema
     parseJsonSchema(schema, JsonSchemaConfig()).code
+
+proc realEmbedFromJson(typ: typedesc; rootDir, path: static string; alwaysEmbed: static bool): typ =
+    ## Embeds a parsed JSON file when in release mode. Otherwise, loads from disk
+    when alwaysEmbed:
+        const bin = toBinary(slurp(rootDir / path).parseJson.jsonTo(typ))
+        return typ.fromBinary(bin)
+    else:
+        let loadPath = (rootDir / path).relativePath(getProjectPath())
+        assert(loadPath.fileExists, "File not found: " & loadPath)
+        return jsonTo(parseFile(loadPath), typ)
+
+macro embedFromJson*(typ: typedesc, path: string, alwaysEmbed: static bool = defined(release)): auto =
+    let rootDir = path.getRootDir()
+    return quote:
+        realEmbedFromJson(`typ`, `rootDir`, `path`, `alwaysEmbed`)
