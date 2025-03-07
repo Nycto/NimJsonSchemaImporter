@@ -33,18 +33,22 @@ type
     of 1:
       key1*: seq[AsepriteArrayFrame]
   AsepriteFormat* = enum
-    RGBA8888, I8
+    RGBA8888 = "RGBA8888", I8 = "I8"
   AsepriteDirection* = enum
-    Forward, Reverse, Pingpong
+    Forward = "forward", Reverse = "reverse", Pingpong = "pingpong"
   AsepriteFrameTag* = object
     direction*: AsepriteDirection
     `from`*: BiggestFloat
     name*: string
     to*: BiggestFloat
   AsepriteBlendMode* = enum
-    Normal, Darken, Multiply, Color_burn, Lighten, Screen, Color_dodge,
-    Addition, Overlay, Soft_light, Hard_light, Difference, Exclusion, Subtract,
-    Divide, Hsl_hue, Hsl_saturation, Hsl_color, Hsl_luminosity
+    Normal = "normal", Darken = "darken", Multiply = "multiply",
+    Color_burn = "color_burn", Lighten = "lighten", Screen = "screen",
+    Color_dodge = "color_dodge", Addition = "addition", Overlay = "overlay",
+    Soft_light = "soft_light", Hard_light = "hard_light",
+    Difference = "difference", Exclusion = "exclusion", Subtract = "subtract",
+    Divide = "divide", Hsl_hue = "hsl_hue", Hsl_saturation = "hsl_saturation",
+    Hsl_color = "hsl_color", Hsl_luminosity = "hsl_luminosity"
   AsepriteLayer* = object
     blendMode*: Option[AsepriteBlendMode]
     color*: Option[string]
@@ -82,11 +86,7 @@ proc toJsonHook*(source: AsepriteRectangle): JsonNode
 proc toJsonHook*(source: AsepriteSize): JsonNode
 proc toJsonHook*(source: AsepriteFrame): JsonNode
 proc toJsonHook*(source: AsepriteArrayFrame): JsonNode
-proc toJsonHook*(source: AsepriteUnion): JsonNode
-proc toJsonHook*(source: AsepriteFormat): JsonNode
-proc toJsonHook*(source: AsepriteDirection): JsonNode
 proc toJsonHook*(source: AsepriteFrameTag): JsonNode
-proc toJsonHook*(source: AsepriteBlendMode): JsonNode
 proc toJsonHook*(source: AsepriteLayer): JsonNode
 proc toJsonHook*(source: AsepritePoint): JsonNode
 proc toJsonHook*(source: AsepriteSliceKey): JsonNode
@@ -459,42 +459,6 @@ proc fromBinary*(_: typedesc[AsepriteUnion]; source: string): AsepriteUnion =
   var idx = 0
   return fromBinary(AsepriteUnion, source, idx)
 
-proc toJsonHook*(source: AsepriteFormat): JsonNode =
-  case source
-  of AsepriteFormat.RGBA8888:
-    return newJString("RGBA8888")
-  of AsepriteFormat.I8:
-    return newJString("I8")
-  
-proc fromJsonHook*(target: var AsepriteFormat; source: JsonNode) =
-  target = case getStr(source)
-  of "RGBA8888":
-    AsepriteFormat.RGBA8888
-  of "I8":
-    AsepriteFormat.I8
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
-proc toJsonHook*(source: AsepriteDirection): JsonNode =
-  case source
-  of AsepriteDirection.Forward:
-    return newJString("forward")
-  of AsepriteDirection.Reverse:
-    return newJString("reverse")
-  of AsepriteDirection.Pingpong:
-    return newJString("pingpong")
-  
-proc fromJsonHook*(target: var AsepriteDirection; source: JsonNode) =
-  target = case getStr(source)
-  of "forward":
-    AsepriteDirection.Forward
-  of "reverse":
-    AsepriteDirection.Reverse
-  of "pingpong":
-    AsepriteDirection.Pingpong
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[AsepriteFrameTag]; a, b: AsepriteFrameTag): bool =
   equals(typeof(a.direction), a.direction, b.direction) and
       equals(typeof(a.`from`), a.`from`, b.`from`) and
@@ -530,7 +494,7 @@ proc fromJsonHook*(target: var AsepriteFrameTag; source: JsonNode) =
 
 proc toJsonHook*(source: AsepriteFrameTag): JsonNode =
   result = newJObject()
-  result{"direction"} = toJsonHook(source.direction)
+  result{"direction"} = `%`(source.direction)
   result{"from"} = newJFloat(source.`from`)
   result{"name"} = newJString(source.name)
   result{"to"} = newJFloat(source.to)
@@ -554,90 +518,6 @@ proc fromBinary*(_: typedesc[AsepriteFrameTag]; source: string): AsepriteFrameTa
   var idx = 0
   return fromBinary(AsepriteFrameTag, source, idx)
 
-proc toJsonHook*(source: AsepriteBlendMode): JsonNode =
-  case source
-  of AsepriteBlendMode.Normal:
-    return newJString("normal")
-  of AsepriteBlendMode.Darken:
-    return newJString("darken")
-  of AsepriteBlendMode.Multiply:
-    return newJString("multiply")
-  of AsepriteBlendMode.Color_burn:
-    return newJString("color_burn")
-  of AsepriteBlendMode.Lighten:
-    return newJString("lighten")
-  of AsepriteBlendMode.Screen:
-    return newJString("screen")
-  of AsepriteBlendMode.Color_dodge:
-    return newJString("color_dodge")
-  of AsepriteBlendMode.Addition:
-    return newJString("addition")
-  of AsepriteBlendMode.Overlay:
-    return newJString("overlay")
-  of AsepriteBlendMode.Soft_light:
-    return newJString("soft_light")
-  of AsepriteBlendMode.Hard_light:
-    return newJString("hard_light")
-  of AsepriteBlendMode.Difference:
-    return newJString("difference")
-  of AsepriteBlendMode.Exclusion:
-    return newJString("exclusion")
-  of AsepriteBlendMode.Subtract:
-    return newJString("subtract")
-  of AsepriteBlendMode.Divide:
-    return newJString("divide")
-  of AsepriteBlendMode.Hsl_hue:
-    return newJString("hsl_hue")
-  of AsepriteBlendMode.Hsl_saturation:
-    return newJString("hsl_saturation")
-  of AsepriteBlendMode.Hsl_color:
-    return newJString("hsl_color")
-  of AsepriteBlendMode.Hsl_luminosity:
-    return newJString("hsl_luminosity")
-  
-proc fromJsonHook*(target: var AsepriteBlendMode; source: JsonNode) =
-  target = case getStr(source)
-  of "normal":
-    AsepriteBlendMode.Normal
-  of "darken":
-    AsepriteBlendMode.Darken
-  of "multiply":
-    AsepriteBlendMode.Multiply
-  of "color_burn":
-    AsepriteBlendMode.Color_burn
-  of "lighten":
-    AsepriteBlendMode.Lighten
-  of "screen":
-    AsepriteBlendMode.Screen
-  of "color_dodge":
-    AsepriteBlendMode.Color_dodge
-  of "addition":
-    AsepriteBlendMode.Addition
-  of "overlay":
-    AsepriteBlendMode.Overlay
-  of "soft_light":
-    AsepriteBlendMode.Soft_light
-  of "hard_light":
-    AsepriteBlendMode.Hard_light
-  of "difference":
-    AsepriteBlendMode.Difference
-  of "exclusion":
-    AsepriteBlendMode.Exclusion
-  of "subtract":
-    AsepriteBlendMode.Subtract
-  of "divide":
-    AsepriteBlendMode.Divide
-  of "hsl_hue":
-    AsepriteBlendMode.Hsl_hue
-  of "hsl_saturation":
-    AsepriteBlendMode.Hsl_saturation
-  of "hsl_color":
-    AsepriteBlendMode.Hsl_color
-  of "hsl_luminosity":
-    AsepriteBlendMode.Hsl_luminosity
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[AsepriteLayer]; a, b: AsepriteLayer): bool =
   equals(typeof(a.blendMode), a.blendMode, b.blendMode) and
       equals(typeof(a.color), a.color, b.color) and
@@ -681,7 +561,7 @@ proc fromJsonHook*(target: var AsepriteLayer; source: JsonNode) =
 proc toJsonHook*(source: AsepriteLayer): JsonNode =
   result = newJObject()
   if isSome(source.blendMode):
-    result{"blendMode"} = toJsonHook(unsafeGet(source.blendMode))
+    result{"blendMode"} = `%`(unsafeGet(source.blendMode))
   if isSome(source.color):
     result{"color"} = newJString(unsafeGet(source.color))
   if isSome(source.data):
@@ -940,7 +820,7 @@ proc fromJsonHook*(target: var AsepriteMeta; source: JsonNode) =
 proc toJsonHook*(source: AsepriteMeta): JsonNode =
   result = newJObject()
   result{"app"} = newJString(source.app)
-  result{"format"} = toJsonHook(source.format)
+  result{"format"} = `%`(source.format)
   if isSome(source.frameTags):
     result{"frameTags"} = block:
       var output = newJArray()

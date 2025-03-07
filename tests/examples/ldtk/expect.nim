@@ -4,13 +4,15 @@ import json_schema_import/private/[stringify, equality, bin]
 
 type
   LdtkWorldLayout* = enum
-    Free, GridVania, LinearHorizontal, LinearVertical
+    Free = "Free", GridVania = "GridVania",
+    LinearHorizontal = "LinearHorizontal", LinearVertical = "LinearVertical"
   LdtkNeighbourLevel* = object
     levelIid*: string
     levelUid*: Option[BiggestInt]
     dir*: string
   LdtkBgPos* = enum
-    Unscaled, Contain, Cover, CoverDirty, Repeat
+    Unscaled = "Unscaled", Contain = "Contain", Cover = "Cover",
+    CoverDirty = "CoverDirty", Repeat = "Repeat"
   LdtkLevelBgPosInfos* = object
     cropRect*: seq[BiggestFloat]
     scale*: seq[BiggestFloat]
@@ -126,20 +128,27 @@ type
     instancesData*: seq[LdtkTocInstanceData]
     instances*: Option[seq[LdtkEntityReferenceInfos]]
   LdtkImageExportMode* = enum
-    None, OneImagePerLayer, OneImagePerLevel, LayersAndLevels
+    None = "None", OneImagePerLayer = "OneImagePerLayer",
+    OneImagePerLevel = "OneImagePerLevel", LayersAndLevels = "LayersAndLevels"
   LdtkIdentifierStyle* = enum
-    Capitalize, Uppercase, Lowercase, Free
+    Capitalize = "Capitalize", Uppercase = "Uppercase", Lowercase = "Lowercase",
+    Free = "Free"
   LdtkWhen* = enum
-    Manual, AfterLoad, BeforeSave, AfterSave
+    Manual = "Manual", AfterLoad = "AfterLoad", BeforeSave = "BeforeSave",
+    AfterSave = "AfterSave"
   LdtkCustomCommand* = object
     `when`*: LdtkWhen
     command*: string
   LdtkldtkWorldLayout* = enum
-    Free, GridVania, LinearHorizontal, LinearVertical
+    Free = "Free", GridVania = "GridVania",
+    LinearHorizontal = "LinearHorizontal", LinearVertical = "LinearVertical"
   LdtkFlags* = enum
-    DiscardPreCsvIntGrid, ExportOldTableOfContentData,
-    ExportPreCsvIntGridFormat, IgnoreBackupSuggest,
-    PrependIndexToLevelFileNames, MultiWorlds, UseMultilinesType
+    DiscardPreCsvIntGrid = "DiscardPreCsvIntGrid",
+    ExportOldTableOfContentData = "ExportOldTableOfContentData",
+    ExportPreCsvIntGridFormat = "ExportPreCsvIntGridFormat",
+    IgnoreBackupSuggest = "IgnoreBackupSuggest",
+    PrependIndexToLevelFileNames = "PrependIndexToLevelFileNames",
+    MultiWorlds = "MultiWorlds", UseMultilinesType = "UseMultilinesType"
   LdtkTileCustomMetadata* = object
     tileId*: BiggestInt
     data*: string
@@ -147,7 +156,7 @@ type
     tileIds*: seq[BiggestInt]
     enumValueId*: string
   LdtkEmbedAtlas* = enum
-    LdtkIcons
+    LdtkIcons = "LdtkIcons"
   LdtkTilesetDef* = object
     cachedPixelData*: Option[OrderedTable[string, JsonNode]]
     cHei*: BiggestInt
@@ -177,9 +186,9 @@ type
     value*: BiggestInt
     groupUid*: BiggestInt
   LdtkChecker* = enum
-    None, Horizontal, Vertical
+    None = "None", Horizontal = "Horizontal", Vertical = "Vertical"
   LdtkTileMode* = enum
-    Single, Stamp
+    Single = "Single", Stamp = "Stamp"
   LdtkAutoRuleDef* = object
     flipX*: bool
     pivotX*: BiggestFloat
@@ -225,7 +234,8 @@ type
     active*: bool
     rules*: seq[LdtkAutoRuleDef]
   LdtkType* = enum
-    IntGrid, Entities, Tiles, AutoLayer
+    IntGrid = "IntGrid", Entities = "Entities", Tiles = "Tiles",
+    AutoLayer = "AutoLayer"
   LdtkLayerDef* = object
     pxOffsetX*: BiggestInt
     tilePivotX*: BiggestFloat
@@ -262,18 +272,28 @@ type
     parallaxFactorX*: BiggestFloat
     autoTilesKilledByOtherLayerUid*: Option[BiggestInt]
   LdtkAllowedRefs* = enum
-    Any, OnlySame, OnlyTags, OnlySpecificEntity
+    Any = "Any", OnlySame = "OnlySame", OnlyTags = "OnlyTags",
+    OnlySpecificEntity = "OnlySpecificEntity"
   LdtkEditorDisplayMode* = enum
-    Hidden, ValueOnly, NameAndValue, EntityTile, LevelTile, Points, PointStar,
-    PointPath, PointPathLoop, RadiusPx, RadiusGrid, ArrayCountWithLabel,
-    ArrayCountNoLabel, RefLinkBetweenPivots, RefLinkBetweenCenters
+    Hidden = "Hidden", ValueOnly = "ValueOnly", NameAndValue = "NameAndValue",
+    EntityTile = "EntityTile", LevelTile = "LevelTile", Points = "Points",
+    PointStar = "PointStar", PointPath = "PointPath",
+    PointPathLoop = "PointPathLoop", RadiusPx = "RadiusPx",
+    RadiusGrid = "RadiusGrid", ArrayCountWithLabel = "ArrayCountWithLabel",
+    ArrayCountNoLabel = "ArrayCountNoLabel",
+    RefLinkBetweenPivots = "RefLinkBetweenPivots",
+    RefLinkBetweenCenters = "RefLinkBetweenCenters"
   LdtkEditorDisplayPos* = enum
-    Above, Center, Beneath
+    Above = "Above", Center = "Center", Beneath = "Beneath"
   LdtkTextLanguageMode* = enum
-    LangPython, LangRuby, LangJS, LangLua, LangC, LangHaxe, LangMarkdown,
-    LangJson, LangXml, LangLog
+    LangPython = "LangPython", LangRuby = "LangRuby", LangJS = "LangJS",
+    LangLua = "LangLua", LangC = "LangC", LangHaxe = "LangHaxe",
+    LangMarkdown = "LangMarkdown", LangJson = "LangJson", LangXml = "LangXml",
+    LangLog = "LangLog"
   LdtkEditorLinkStyle* = enum
-    ZigZag, StraightArrow, CurvedArrow, ArrowsLine, DashedLine
+    ZigZag = "ZigZag", StraightArrow = "StraightArrow",
+    CurvedArrow = "CurvedArrow", ArrowsLine = "ArrowsLine",
+    DashedLine = "DashedLine"
   LdtkFieldDef* = object
     acceptFileTypes*: Option[seq[string]]
     editorDisplayScale*: BiggestFloat
@@ -325,14 +345,16 @@ type
     identifier*: string
     tags*: seq[string]
   LdtkLimitScope* = enum
-    PerLayer, PerLevel, PerWorld
+    PerLayer = "PerLayer", PerLevel = "PerLevel", PerWorld = "PerWorld"
   LdtkTileRenderMode* = enum
-    Cover, FitInside, Repeat, Stretch, FullSizeCropped, FullSizeUncropped,
-    NineSlice
+    Cover = "Cover", FitInside = "FitInside", Repeat = "Repeat",
+    Stretch = "Stretch", FullSizeCropped = "FullSizeCropped",
+    FullSizeUncropped = "FullSizeUncropped", NineSlice = "NineSlice"
   LdtkLimitBehavior* = enum
-    DiscardOldOnes, PreventAdding, MoveLastOne
+    DiscardOldOnes = "DiscardOldOnes", PreventAdding = "PreventAdding",
+    MoveLastOne = "MoveLastOne"
   LdtkRenderMode* = enum
-    Rectangle, Ellipse, Tile, Cross
+    Rectangle = "Rectangle", Ellipse = "Ellipse", Tile = "Tile", Cross = "Cross"
   LdtkEntityDef* = object
     tileId*: Option[BiggestInt]
     showName*: bool
@@ -446,9 +468,7 @@ type
     minifyJson*: bool
     exportLevelBg*: bool
     backupRelPath*: Option[string]
-proc toJsonHook*(source: LdtkWorldLayout): JsonNode
 proc toJsonHook*(source: LdtkNeighbourLevel): JsonNode
-proc toJsonHook*(source: LdtkBgPos): JsonNode
 proc toJsonHook*(source: LdtkLevelBgPosInfos): JsonNode
 proc toJsonHook*(source: LdtkTilesetRect): JsonNode
 proc toJsonHook*(source: LdtkFieldInstance): JsonNode
@@ -461,65 +481,23 @@ proc toJsonHook*(source: LdtkWorld): JsonNode
 proc toJsonHook*(source: LdtkEntityReferenceInfos): JsonNode
 proc toJsonHook*(source: LdtkTocInstanceData): JsonNode
 proc toJsonHook*(source: LdtkTableOfContentEntry): JsonNode
-proc toJsonHook*(source: LdtkImageExportMode): JsonNode
-proc toJsonHook*(source: LdtkIdentifierStyle): JsonNode
-proc toJsonHook*(source: LdtkWhen): JsonNode
 proc toJsonHook*(source: LdtkCustomCommand): JsonNode
-proc toJsonHook*(source: LdtkldtkWorldLayout): JsonNode
-proc toJsonHook*(source: LdtkFlags): JsonNode
 proc toJsonHook*(source: LdtkTileCustomMetadata): JsonNode
 proc toJsonHook*(source: LdtkEnumTagValue): JsonNode
-proc toJsonHook*(source: LdtkEmbedAtlas): JsonNode
 proc toJsonHook*(source: LdtkTilesetDef): JsonNode
 proc toJsonHook*(source: LdtkIntGridValueGroupDef): JsonNode
 proc toJsonHook*(source: LdtkIntGridValueDef): JsonNode
-proc toJsonHook*(source: LdtkChecker): JsonNode
-proc toJsonHook*(source: LdtkTileMode): JsonNode
 proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode
 proc toJsonHook*(source: LdtkAutoLayerRuleGroup): JsonNode
-proc toJsonHook*(source: LdtkType): JsonNode
 proc toJsonHook*(source: LdtkLayerDef): JsonNode
-proc toJsonHook*(source: LdtkAllowedRefs): JsonNode
-proc toJsonHook*(source: LdtkEditorDisplayMode): JsonNode
-proc toJsonHook*(source: LdtkEditorDisplayPos): JsonNode
-proc toJsonHook*(source: LdtkTextLanguageMode): JsonNode
-proc toJsonHook*(source: LdtkEditorLinkStyle): JsonNode
 proc toJsonHook*(source: LdtkFieldDef): JsonNode
 proc toJsonHook*(source: LdtkEnumDefValues): JsonNode
 proc toJsonHook*(source: LdtkEnumDef): JsonNode
-proc toJsonHook*(source: LdtkLimitScope): JsonNode
-proc toJsonHook*(source: LdtkTileRenderMode): JsonNode
-proc toJsonHook*(source: LdtkLimitBehavior): JsonNode
-proc toJsonHook*(source: LdtkRenderMode): JsonNode
 proc toJsonHook*(source: LdtkEntityDef): JsonNode
 proc toJsonHook*(source: LdtkDefinitions): JsonNode
 proc toJsonHook*(source: LdtkGridPoint): JsonNode
 proc toJsonHook*(source: Ldtk_FORCED_REFS): JsonNode
 proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode
-proc toJsonHook*(source: LdtkWorldLayout): JsonNode =
-  case source
-  of LdtkWorldLayout.Free:
-    return newJString("Free")
-  of LdtkWorldLayout.GridVania:
-    return newJString("GridVania")
-  of LdtkWorldLayout.LinearHorizontal:
-    return newJString("LinearHorizontal")
-  of LdtkWorldLayout.LinearVertical:
-    return newJString("LinearVertical")
-  
-proc fromJsonHook*(target: var LdtkWorldLayout; source: JsonNode) =
-  target = case getStr(source)
-  of "Free":
-    LdtkWorldLayout.Free
-  of "GridVania":
-    LdtkWorldLayout.GridVania
-  of "LinearHorizontal":
-    LdtkWorldLayout.LinearHorizontal
-  of "LinearVertical":
-    LdtkWorldLayout.LinearVertical
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[LdtkNeighbourLevel]; a, b: LdtkNeighbourLevel): bool =
   equals(typeof(a.levelIid), a.levelIid, b.levelIid) and
       equals(typeof(a.levelUid), a.levelUid, b.levelUid) and
@@ -572,34 +550,6 @@ proc fromBinary*(_: typedesc[LdtkNeighbourLevel]; source: string): LdtkNeighbour
   var idx = 0
   return fromBinary(LdtkNeighbourLevel, source, idx)
 
-proc toJsonHook*(source: LdtkBgPos): JsonNode =
-  case source
-  of LdtkBgPos.Unscaled:
-    return newJString("Unscaled")
-  of LdtkBgPos.Contain:
-    return newJString("Contain")
-  of LdtkBgPos.Cover:
-    return newJString("Cover")
-  of LdtkBgPos.CoverDirty:
-    return newJString("CoverDirty")
-  of LdtkBgPos.Repeat:
-    return newJString("Repeat")
-  
-proc fromJsonHook*(target: var LdtkBgPos; source: JsonNode) =
-  target = case getStr(source)
-  of "Unscaled":
-    LdtkBgPos.Unscaled
-  of "Contain":
-    LdtkBgPos.Contain
-  of "Cover":
-    LdtkBgPos.Cover
-  of "CoverDirty":
-    LdtkBgPos.CoverDirty
-  of "Repeat":
-    LdtkBgPos.Repeat
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[LdtkLevelBgPosInfos]; a, b: LdtkLevelBgPosInfos): bool =
   equals(typeof(a.cropRect), a.cropRect, b.cropRect) and
       equals(typeof(a.scale), a.scale, b.scale) and
@@ -1513,7 +1463,7 @@ proc toJsonHook*(source: LdtkLevel): JsonNode =
   if isSome(source.bgColor1):
     result{"bgColor"} = newJString(unsafeGet(source.bgColor1))
   if isSome(source.bgPos):
-    result{"bgPos"} = toJsonHook(unsafeGet(source.bgPos))
+    result{"bgPos"} = `%`(unsafeGet(source.bgPos))
   result{"pxHei"} = newJInt(source.pxHei)
   result{"worldY"} = newJInt(source.worldY)
   if isSome(source.bgPos1):
@@ -1662,7 +1612,7 @@ proc toJsonHook*(source: LdtkWorld): JsonNode =
   result{"iid"} = newJString(source.iid)
   result{"worldGridHeight"} = newJInt(source.worldGridHeight)
   result{"worldLayout"} = if isSome(source.worldLayout):
-    toJsonHook(unsafeGet(source.worldLayout))
+    `%`(unsafeGet(source.worldLayout))
   else:
     newJNull()
   result{"defaultLevelWidth"} = newJInt(source.defaultLevelWidth)
@@ -1907,78 +1857,6 @@ proc fromBinary*(_: typedesc[LdtkTableOfContentEntry]; source: string): LdtkTabl
   var idx = 0
   return fromBinary(LdtkTableOfContentEntry, source, idx)
 
-proc toJsonHook*(source: LdtkImageExportMode): JsonNode =
-  case source
-  of LdtkImageExportMode.None:
-    return newJString("None")
-  of LdtkImageExportMode.OneImagePerLayer:
-    return newJString("OneImagePerLayer")
-  of LdtkImageExportMode.OneImagePerLevel:
-    return newJString("OneImagePerLevel")
-  of LdtkImageExportMode.LayersAndLevels:
-    return newJString("LayersAndLevels")
-  
-proc fromJsonHook*(target: var LdtkImageExportMode; source: JsonNode) =
-  target = case getStr(source)
-  of "None":
-    LdtkImageExportMode.None
-  of "OneImagePerLayer":
-    LdtkImageExportMode.OneImagePerLayer
-  of "OneImagePerLevel":
-    LdtkImageExportMode.OneImagePerLevel
-  of "LayersAndLevels":
-    LdtkImageExportMode.LayersAndLevels
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
-proc toJsonHook*(source: LdtkIdentifierStyle): JsonNode =
-  case source
-  of LdtkIdentifierStyle.Capitalize:
-    return newJString("Capitalize")
-  of LdtkIdentifierStyle.Uppercase:
-    return newJString("Uppercase")
-  of LdtkIdentifierStyle.Lowercase:
-    return newJString("Lowercase")
-  of LdtkIdentifierStyle.Free:
-    return newJString("Free")
-  
-proc fromJsonHook*(target: var LdtkIdentifierStyle; source: JsonNode) =
-  target = case getStr(source)
-  of "Capitalize":
-    LdtkIdentifierStyle.Capitalize
-  of "Uppercase":
-    LdtkIdentifierStyle.Uppercase
-  of "Lowercase":
-    LdtkIdentifierStyle.Lowercase
-  of "Free":
-    LdtkIdentifierStyle.Free
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
-proc toJsonHook*(source: LdtkWhen): JsonNode =
-  case source
-  of LdtkWhen.Manual:
-    return newJString("Manual")
-  of LdtkWhen.AfterLoad:
-    return newJString("AfterLoad")
-  of LdtkWhen.BeforeSave:
-    return newJString("BeforeSave")
-  of LdtkWhen.AfterSave:
-    return newJString("AfterSave")
-  
-proc fromJsonHook*(target: var LdtkWhen; source: JsonNode) =
-  target = case getStr(source)
-  of "Manual":
-    LdtkWhen.Manual
-  of "AfterLoad":
-    LdtkWhen.AfterLoad
-  of "BeforeSave":
-    LdtkWhen.BeforeSave
-  of "AfterSave":
-    LdtkWhen.AfterSave
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[LdtkCustomCommand]; a, b: LdtkCustomCommand): bool =
   equals(typeof(a.`when`), a.`when`, b.`when`) and
       equals(typeof(a.command), a.command, b.command)
@@ -2004,7 +1882,7 @@ proc fromJsonHook*(target: var LdtkCustomCommand; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkCustomCommand): JsonNode =
   result = newJObject()
-  result{"when"} = toJsonHook(source.`when`)
+  result{"when"} = `%`(source.`when`)
   result{"command"} = newJString(source.command)
 
 proc toBinary*(target: var string; source: LdtkCustomCommand) =
@@ -2022,66 +1900,6 @@ proc fromBinary*(_: typedesc[LdtkCustomCommand]; source: string): LdtkCustomComm
   var idx = 0
   return fromBinary(LdtkCustomCommand, source, idx)
 
-proc toJsonHook*(source: LdtkldtkWorldLayout): JsonNode =
-  case source
-  of LdtkldtkWorldLayout.Free:
-    return newJString("Free")
-  of LdtkldtkWorldLayout.GridVania:
-    return newJString("GridVania")
-  of LdtkldtkWorldLayout.LinearHorizontal:
-    return newJString("LinearHorizontal")
-  of LdtkldtkWorldLayout.LinearVertical:
-    return newJString("LinearVertical")
-  
-proc fromJsonHook*(target: var LdtkldtkWorldLayout; source: JsonNode) =
-  target = case getStr(source)
-  of "Free":
-    LdtkldtkWorldLayout.Free
-  of "GridVania":
-    LdtkldtkWorldLayout.GridVania
-  of "LinearHorizontal":
-    LdtkldtkWorldLayout.LinearHorizontal
-  of "LinearVertical":
-    LdtkldtkWorldLayout.LinearVertical
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
-proc toJsonHook*(source: LdtkFlags): JsonNode =
-  case source
-  of LdtkFlags.DiscardPreCsvIntGrid:
-    return newJString("DiscardPreCsvIntGrid")
-  of LdtkFlags.ExportOldTableOfContentData:
-    return newJString("ExportOldTableOfContentData")
-  of LdtkFlags.ExportPreCsvIntGridFormat:
-    return newJString("ExportPreCsvIntGridFormat")
-  of LdtkFlags.IgnoreBackupSuggest:
-    return newJString("IgnoreBackupSuggest")
-  of LdtkFlags.PrependIndexToLevelFileNames:
-    return newJString("PrependIndexToLevelFileNames")
-  of LdtkFlags.MultiWorlds:
-    return newJString("MultiWorlds")
-  of LdtkFlags.UseMultilinesType:
-    return newJString("UseMultilinesType")
-  
-proc fromJsonHook*(target: var LdtkFlags; source: JsonNode) =
-  target = case getStr(source)
-  of "DiscardPreCsvIntGrid":
-    LdtkFlags.DiscardPreCsvIntGrid
-  of "ExportOldTableOfContentData":
-    LdtkFlags.ExportOldTableOfContentData
-  of "ExportPreCsvIntGridFormat":
-    LdtkFlags.ExportPreCsvIntGridFormat
-  of "IgnoreBackupSuggest":
-    LdtkFlags.IgnoreBackupSuggest
-  of "PrependIndexToLevelFileNames":
-    LdtkFlags.PrependIndexToLevelFileNames
-  of "MultiWorlds":
-    LdtkFlags.MultiWorlds
-  of "UseMultilinesType":
-    LdtkFlags.UseMultilinesType
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[LdtkTileCustomMetadata]; a, b: LdtkTileCustomMetadata): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
       equals(typeof(a.data), a.data, b.data)
@@ -2174,18 +1992,6 @@ proc fromBinary*(_: typedesc[LdtkEnumTagValue]; source: string): LdtkEnumTagValu
   var idx = 0
   return fromBinary(LdtkEnumTagValue, source, idx)
 
-proc toJsonHook*(source: LdtkEmbedAtlas): JsonNode =
-  case source
-  of LdtkEmbedAtlas.LdtkIcons:
-    return newJString("LdtkIcons")
-  
-proc fromJsonHook*(target: var LdtkEmbedAtlas; source: JsonNode) =
-  target = case getStr(source)
-  of "LdtkIcons":
-    LdtkEmbedAtlas.LdtkIcons
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[LdtkTilesetDef]; a, b: LdtkTilesetDef): bool =
   equals(typeof(a.cachedPixelData), a.cachedPixelData, b.cachedPixelData) and
       equals(typeof(a.cHei), a.cHei, b.cHei) and
@@ -2335,7 +2141,7 @@ proc toJsonHook*(source: LdtkTilesetDef): JsonNode =
       output.add(newJString(entry))
     output
   if isSome(source.embedAtlas):
-    result{"embedAtlas"} = toJsonHook(unsafeGet(source.embedAtlas))
+    result{"embedAtlas"} = `%`(unsafeGet(source.embedAtlas))
   if isSome(source.relPath):
     result{"relPath"} = newJString(unsafeGet(source.relPath))
   result{"tileGridSize"} = newJInt(source.tileGridSize)
@@ -2511,42 +2317,6 @@ proc fromBinary*(_: typedesc[LdtkIntGridValueDef]; source: string): LdtkIntGridV
   var idx = 0
   return fromBinary(LdtkIntGridValueDef, source, idx)
 
-proc toJsonHook*(source: LdtkChecker): JsonNode =
-  case source
-  of LdtkChecker.None:
-    return newJString("None")
-  of LdtkChecker.Horizontal:
-    return newJString("Horizontal")
-  of LdtkChecker.Vertical:
-    return newJString("Vertical")
-  
-proc fromJsonHook*(target: var LdtkChecker; source: JsonNode) =
-  target = case getStr(source)
-  of "None":
-    LdtkChecker.None
-  of "Horizontal":
-    LdtkChecker.Horizontal
-  of "Vertical":
-    LdtkChecker.Vertical
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
-proc toJsonHook*(source: LdtkTileMode): JsonNode =
-  case source
-  of LdtkTileMode.Single:
-    return newJString("Single")
-  of LdtkTileMode.Stamp:
-    return newJString("Stamp")
-  
-proc fromJsonHook*(target: var LdtkTileMode; source: JsonNode) =
-  target = case getStr(source)
-  of "Single":
-    LdtkTileMode.Single
-  of "Stamp":
-    LdtkTileMode.Stamp
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[LdtkAutoRuleDef]; a, b: LdtkAutoRuleDef): bool =
   equals(typeof(a.flipX), a.flipX, b.flipX) and
       equals(typeof(a.pivotX), a.pivotX, b.pivotX) and
@@ -2753,7 +2523,7 @@ proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode =
       output.add(newJInt(entry))
     output
   result{"tileRandomXMin"} = newJInt(source.tileRandomXMin)
-  result{"checker"} = toJsonHook(source.checker)
+  result{"checker"} = `%`(source.checker)
   result{"perlinOctaves"} = newJFloat(source.perlinOctaves)
   if isSome(source.tileIds):
     result{"tileIds"} = block:
@@ -2774,7 +2544,7 @@ proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode =
   result{"yOffset"} = newJInt(source.yOffset)
   result{"tileRandomYMax"} = newJInt(source.tileRandomYMax)
   result{"tileRandomYMin"} = newJInt(source.tileRandomYMin)
-  result{"tileMode"} = toJsonHook(source.tileMode)
+  result{"tileMode"} = `%`(source.tileMode)
   result{"flipY"} = newJBool(source.flipY)
   result{"tileRandomXMax"} = newJInt(source.tileRandomXMax)
   result{"pivotY"} = newJFloat(source.pivotY)
@@ -2994,30 +2764,6 @@ proc fromBinary*(_: typedesc[LdtkAutoLayerRuleGroup]; source: string): LdtkAutoL
   var idx = 0
   return fromBinary(LdtkAutoLayerRuleGroup, source, idx)
 
-proc toJsonHook*(source: LdtkType): JsonNode =
-  case source
-  of LdtkType.IntGrid:
-    return newJString("IntGrid")
-  of LdtkType.Entities:
-    return newJString("Entities")
-  of LdtkType.Tiles:
-    return newJString("Tiles")
-  of LdtkType.AutoLayer:
-    return newJString("AutoLayer")
-  
-proc fromJsonHook*(target: var LdtkType; source: JsonNode) =
-  target = case getStr(source)
-  of "IntGrid":
-    LdtkType.IntGrid
-  of "Entities":
-    LdtkType.Entities
-  of "Tiles":
-    LdtkType.Tiles
-  of "AutoLayer":
-    LdtkType.AutoLayer
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[LdtkLayerDef]; a, b: LdtkLayerDef): bool =
   equals(typeof(a.pxOffsetX), a.pxOffsetX, b.pxOffsetX) and
       equals(typeof(a.tilePivotX), a.tilePivotX, b.tilePivotX) and
@@ -3298,7 +3044,7 @@ proc toJsonHook*(source: LdtkLayerDef): JsonNode =
     for entry in source.autoRuleGroups:
       output.add(toJsonHook(entry))
     output
-  result{"type"} = toJsonHook(source.type1)
+  result{"type"} = `%`(source.type1)
   result{"identifier"} = newJString(source.identifier)
   result{"guideGridWid"} = newJInt(source.guideGridWid)
   result{"requiredTags"} = block:
@@ -3406,194 +3152,6 @@ proc fromBinary*(_: typedesc[LdtkLayerDef]; source: string): LdtkLayerDef =
   var idx = 0
   return fromBinary(LdtkLayerDef, source, idx)
 
-proc toJsonHook*(source: LdtkAllowedRefs): JsonNode =
-  case source
-  of LdtkAllowedRefs.Any:
-    return newJString("Any")
-  of LdtkAllowedRefs.OnlySame:
-    return newJString("OnlySame")
-  of LdtkAllowedRefs.OnlyTags:
-    return newJString("OnlyTags")
-  of LdtkAllowedRefs.OnlySpecificEntity:
-    return newJString("OnlySpecificEntity")
-  
-proc fromJsonHook*(target: var LdtkAllowedRefs; source: JsonNode) =
-  target = case getStr(source)
-  of "Any":
-    LdtkAllowedRefs.Any
-  of "OnlySame":
-    LdtkAllowedRefs.OnlySame
-  of "OnlyTags":
-    LdtkAllowedRefs.OnlyTags
-  of "OnlySpecificEntity":
-    LdtkAllowedRefs.OnlySpecificEntity
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
-proc toJsonHook*(source: LdtkEditorDisplayMode): JsonNode =
-  case source
-  of LdtkEditorDisplayMode.Hidden:
-    return newJString("Hidden")
-  of LdtkEditorDisplayMode.ValueOnly:
-    return newJString("ValueOnly")
-  of LdtkEditorDisplayMode.NameAndValue:
-    return newJString("NameAndValue")
-  of LdtkEditorDisplayMode.EntityTile:
-    return newJString("EntityTile")
-  of LdtkEditorDisplayMode.LevelTile:
-    return newJString("LevelTile")
-  of LdtkEditorDisplayMode.Points:
-    return newJString("Points")
-  of LdtkEditorDisplayMode.PointStar:
-    return newJString("PointStar")
-  of LdtkEditorDisplayMode.PointPath:
-    return newJString("PointPath")
-  of LdtkEditorDisplayMode.PointPathLoop:
-    return newJString("PointPathLoop")
-  of LdtkEditorDisplayMode.RadiusPx:
-    return newJString("RadiusPx")
-  of LdtkEditorDisplayMode.RadiusGrid:
-    return newJString("RadiusGrid")
-  of LdtkEditorDisplayMode.ArrayCountWithLabel:
-    return newJString("ArrayCountWithLabel")
-  of LdtkEditorDisplayMode.ArrayCountNoLabel:
-    return newJString("ArrayCountNoLabel")
-  of LdtkEditorDisplayMode.RefLinkBetweenPivots:
-    return newJString("RefLinkBetweenPivots")
-  of LdtkEditorDisplayMode.RefLinkBetweenCenters:
-    return newJString("RefLinkBetweenCenters")
-  
-proc fromJsonHook*(target: var LdtkEditorDisplayMode; source: JsonNode) =
-  target = case getStr(source)
-  of "Hidden":
-    LdtkEditorDisplayMode.Hidden
-  of "ValueOnly":
-    LdtkEditorDisplayMode.ValueOnly
-  of "NameAndValue":
-    LdtkEditorDisplayMode.NameAndValue
-  of "EntityTile":
-    LdtkEditorDisplayMode.EntityTile
-  of "LevelTile":
-    LdtkEditorDisplayMode.LevelTile
-  of "Points":
-    LdtkEditorDisplayMode.Points
-  of "PointStar":
-    LdtkEditorDisplayMode.PointStar
-  of "PointPath":
-    LdtkEditorDisplayMode.PointPath
-  of "PointPathLoop":
-    LdtkEditorDisplayMode.PointPathLoop
-  of "RadiusPx":
-    LdtkEditorDisplayMode.RadiusPx
-  of "RadiusGrid":
-    LdtkEditorDisplayMode.RadiusGrid
-  of "ArrayCountWithLabel":
-    LdtkEditorDisplayMode.ArrayCountWithLabel
-  of "ArrayCountNoLabel":
-    LdtkEditorDisplayMode.ArrayCountNoLabel
-  of "RefLinkBetweenPivots":
-    LdtkEditorDisplayMode.RefLinkBetweenPivots
-  of "RefLinkBetweenCenters":
-    LdtkEditorDisplayMode.RefLinkBetweenCenters
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
-proc toJsonHook*(source: LdtkEditorDisplayPos): JsonNode =
-  case source
-  of LdtkEditorDisplayPos.Above:
-    return newJString("Above")
-  of LdtkEditorDisplayPos.Center:
-    return newJString("Center")
-  of LdtkEditorDisplayPos.Beneath:
-    return newJString("Beneath")
-  
-proc fromJsonHook*(target: var LdtkEditorDisplayPos; source: JsonNode) =
-  target = case getStr(source)
-  of "Above":
-    LdtkEditorDisplayPos.Above
-  of "Center":
-    LdtkEditorDisplayPos.Center
-  of "Beneath":
-    LdtkEditorDisplayPos.Beneath
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
-proc toJsonHook*(source: LdtkTextLanguageMode): JsonNode =
-  case source
-  of LdtkTextLanguageMode.LangPython:
-    return newJString("LangPython")
-  of LdtkTextLanguageMode.LangRuby:
-    return newJString("LangRuby")
-  of LdtkTextLanguageMode.LangJS:
-    return newJString("LangJS")
-  of LdtkTextLanguageMode.LangLua:
-    return newJString("LangLua")
-  of LdtkTextLanguageMode.LangC:
-    return newJString("LangC")
-  of LdtkTextLanguageMode.LangHaxe:
-    return newJString("LangHaxe")
-  of LdtkTextLanguageMode.LangMarkdown:
-    return newJString("LangMarkdown")
-  of LdtkTextLanguageMode.LangJson:
-    return newJString("LangJson")
-  of LdtkTextLanguageMode.LangXml:
-    return newJString("LangXml")
-  of LdtkTextLanguageMode.LangLog:
-    return newJString("LangLog")
-  
-proc fromJsonHook*(target: var LdtkTextLanguageMode; source: JsonNode) =
-  target = case getStr(source)
-  of "LangPython":
-    LdtkTextLanguageMode.LangPython
-  of "LangRuby":
-    LdtkTextLanguageMode.LangRuby
-  of "LangJS":
-    LdtkTextLanguageMode.LangJS
-  of "LangLua":
-    LdtkTextLanguageMode.LangLua
-  of "LangC":
-    LdtkTextLanguageMode.LangC
-  of "LangHaxe":
-    LdtkTextLanguageMode.LangHaxe
-  of "LangMarkdown":
-    LdtkTextLanguageMode.LangMarkdown
-  of "LangJson":
-    LdtkTextLanguageMode.LangJson
-  of "LangXml":
-    LdtkTextLanguageMode.LangXml
-  of "LangLog":
-    LdtkTextLanguageMode.LangLog
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
-proc toJsonHook*(source: LdtkEditorLinkStyle): JsonNode =
-  case source
-  of LdtkEditorLinkStyle.ZigZag:
-    return newJString("ZigZag")
-  of LdtkEditorLinkStyle.StraightArrow:
-    return newJString("StraightArrow")
-  of LdtkEditorLinkStyle.CurvedArrow:
-    return newJString("CurvedArrow")
-  of LdtkEditorLinkStyle.ArrowsLine:
-    return newJString("ArrowsLine")
-  of LdtkEditorLinkStyle.DashedLine:
-    return newJString("DashedLine")
-  
-proc fromJsonHook*(target: var LdtkEditorLinkStyle; source: JsonNode) =
-  target = case getStr(source)
-  of "ZigZag":
-    LdtkEditorLinkStyle.ZigZag
-  of "StraightArrow":
-    LdtkEditorLinkStyle.StraightArrow
-  of "CurvedArrow":
-    LdtkEditorLinkStyle.CurvedArrow
-  of "ArrowsLine":
-    LdtkEditorLinkStyle.ArrowsLine
-  of "DashedLine":
-    LdtkEditorLinkStyle.DashedLine
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[LdtkFieldDef]; a, b: LdtkFieldDef): bool =
   equals(typeof(a.acceptFileTypes), a.acceptFileTypes, b.acceptFileTypes) and
       equals(typeof(a.editorDisplayScale), a.editorDisplayScale,
@@ -3838,7 +3396,7 @@ proc toJsonHook*(source: LdtkFieldDef): JsonNode =
   result{"searchable"} = newJBool(source.searchable)
   result{"useForSmartColor"} = newJBool(source.useForSmartColor)
   result{"editorShowInWorld"} = newJBool(source.editorShowInWorld)
-  result{"allowedRefs"} = toJsonHook(source.allowedRefs)
+  result{"allowedRefs"} = `%`(source.allowedRefs)
   result{"editorAlwaysShow"} = newJBool(source.editorAlwaysShow)
   if isSome(source.arrayMinLength):
     result{"arrayMinLength"} = newJInt(unsafeGet(source.arrayMinLength))
@@ -3847,7 +3405,7 @@ proc toJsonHook*(source: LdtkFieldDef): JsonNode =
   if isSome(source.min):
     result{"min"} = newJFloat(unsafeGet(source.min))
   result{"__type"} = newJString(source.`type`)
-  result{"editorDisplayMode"} = toJsonHook(source.editorDisplayMode)
+  result{"editorDisplayMode"} = `%`(source.editorDisplayMode)
   if isSome(source.editorDisplayColor):
     result{"editorDisplayColor"} = newJString(
         unsafeGet(source.editorDisplayColor))
@@ -3871,16 +3429,16 @@ proc toJsonHook*(source: LdtkFieldDef): JsonNode =
     result{"editorTextPrefix"} = newJString(unsafeGet(source.editorTextPrefix))
   result{"isArray"} = newJBool(source.isArray)
   result{"exportToToc"} = newJBool(source.exportToToc)
-  result{"editorDisplayPos"} = toJsonHook(source.editorDisplayPos)
+  result{"editorDisplayPos"} = `%`(source.editorDisplayPos)
   if isSome(source.textLanguageMode):
-    result{"textLanguageMode"} = toJsonHook(unsafeGet(source.textLanguageMode))
+    result{"textLanguageMode"} = `%`(unsafeGet(source.textLanguageMode))
   if isSome(source.max):
     result{"max"} = newJFloat(unsafeGet(source.max))
   result{"allowOutOfLevelRef"} = newJBool(source.allowOutOfLevelRef)
   result{"editorCutLongValues"} = newJBool(source.editorCutLongValues)
   if isSome(source.defaultOverride):
     result{"defaultOverride"} = unsafeGet(source.defaultOverride)
-  result{"editorLinkStyle"} = toJsonHook(source.editorLinkStyle)
+  result{"editorLinkStyle"} = `%`(source.editorLinkStyle)
   if isSome(source.regex):
     result{"regex"} = newJString(unsafeGet(source.regex))
   result{"type"} = newJString(source.type1)
@@ -4164,106 +3722,6 @@ proc fromBinary*(_: typedesc[LdtkEnumDef]; source: string): LdtkEnumDef =
   var idx = 0
   return fromBinary(LdtkEnumDef, source, idx)
 
-proc toJsonHook*(source: LdtkLimitScope): JsonNode =
-  case source
-  of LdtkLimitScope.PerLayer:
-    return newJString("PerLayer")
-  of LdtkLimitScope.PerLevel:
-    return newJString("PerLevel")
-  of LdtkLimitScope.PerWorld:
-    return newJString("PerWorld")
-  
-proc fromJsonHook*(target: var LdtkLimitScope; source: JsonNode) =
-  target = case getStr(source)
-  of "PerLayer":
-    LdtkLimitScope.PerLayer
-  of "PerLevel":
-    LdtkLimitScope.PerLevel
-  of "PerWorld":
-    LdtkLimitScope.PerWorld
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
-proc toJsonHook*(source: LdtkTileRenderMode): JsonNode =
-  case source
-  of LdtkTileRenderMode.Cover:
-    return newJString("Cover")
-  of LdtkTileRenderMode.FitInside:
-    return newJString("FitInside")
-  of LdtkTileRenderMode.Repeat:
-    return newJString("Repeat")
-  of LdtkTileRenderMode.Stretch:
-    return newJString("Stretch")
-  of LdtkTileRenderMode.FullSizeCropped:
-    return newJString("FullSizeCropped")
-  of LdtkTileRenderMode.FullSizeUncropped:
-    return newJString("FullSizeUncropped")
-  of LdtkTileRenderMode.NineSlice:
-    return newJString("NineSlice")
-  
-proc fromJsonHook*(target: var LdtkTileRenderMode; source: JsonNode) =
-  target = case getStr(source)
-  of "Cover":
-    LdtkTileRenderMode.Cover
-  of "FitInside":
-    LdtkTileRenderMode.FitInside
-  of "Repeat":
-    LdtkTileRenderMode.Repeat
-  of "Stretch":
-    LdtkTileRenderMode.Stretch
-  of "FullSizeCropped":
-    LdtkTileRenderMode.FullSizeCropped
-  of "FullSizeUncropped":
-    LdtkTileRenderMode.FullSizeUncropped
-  of "NineSlice":
-    LdtkTileRenderMode.NineSlice
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
-proc toJsonHook*(source: LdtkLimitBehavior): JsonNode =
-  case source
-  of LdtkLimitBehavior.DiscardOldOnes:
-    return newJString("DiscardOldOnes")
-  of LdtkLimitBehavior.PreventAdding:
-    return newJString("PreventAdding")
-  of LdtkLimitBehavior.MoveLastOne:
-    return newJString("MoveLastOne")
-  
-proc fromJsonHook*(target: var LdtkLimitBehavior; source: JsonNode) =
-  target = case getStr(source)
-  of "DiscardOldOnes":
-    LdtkLimitBehavior.DiscardOldOnes
-  of "PreventAdding":
-    LdtkLimitBehavior.PreventAdding
-  of "MoveLastOne":
-    LdtkLimitBehavior.MoveLastOne
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
-proc toJsonHook*(source: LdtkRenderMode): JsonNode =
-  case source
-  of LdtkRenderMode.Rectangle:
-    return newJString("Rectangle")
-  of LdtkRenderMode.Ellipse:
-    return newJString("Ellipse")
-  of LdtkRenderMode.Tile:
-    return newJString("Tile")
-  of LdtkRenderMode.Cross:
-    return newJString("Cross")
-  
-proc fromJsonHook*(target: var LdtkRenderMode; source: JsonNode) =
-  target = case getStr(source)
-  of "Rectangle":
-    LdtkRenderMode.Rectangle
-  of "Ellipse":
-    LdtkRenderMode.Ellipse
-  of "Tile":
-    LdtkRenderMode.Tile
-  of "Cross":
-    LdtkRenderMode.Cross
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[LdtkEntityDef]; a, b: LdtkEntityDef): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
       equals(typeof(a.showName), a.showName, b.showName) and
@@ -4464,7 +3922,7 @@ proc toJsonHook*(source: LdtkEntityDef): JsonNode =
     result{"tilesetId"} = newJInt(unsafeGet(source.tilesetId))
   if isSome(source.maxHeight):
     result{"maxHeight"} = newJInt(unsafeGet(source.maxHeight))
-  result{"limitScope"} = toJsonHook(source.limitScope)
+  result{"limitScope"} = `%`(source.limitScope)
   result{"pivotX"} = newJFloat(source.pivotX)
   result{"maxCount"} = newJInt(source.maxCount)
   result{"allowOutOfBounds"} = newJBool(source.allowOutOfBounds)
@@ -4484,8 +3942,8 @@ proc toJsonHook*(source: LdtkEntityDef): JsonNode =
     for entry in source.fieldDefs:
       output.add(toJsonHook(entry))
     output
-  result{"tileRenderMode"} = toJsonHook(source.tileRenderMode)
-  result{"limitBehavior"} = toJsonHook(source.limitBehavior)
+  result{"tileRenderMode"} = `%`(source.tileRenderMode)
+  result{"limitBehavior"} = `%`(source.limitBehavior)
   result{"tileOpacity"} = newJFloat(source.tileOpacity)
   result{"nineSliceBorders"} = block:
     var output = newJArray()
@@ -4505,7 +3963,7 @@ proc toJsonHook*(source: LdtkEntityDef): JsonNode =
   result{"height"} = newJInt(source.height)
   result{"identifier"} = newJString(source.identifier)
   result{"pivotY"} = newJFloat(source.pivotY)
-  result{"renderMode"} = toJsonHook(source.renderMode)
+  result{"renderMode"} = `%`(source.renderMode)
   result{"tags"} = block:
     var output = newJArray()
     for entry in source.tags:
@@ -5340,8 +4798,8 @@ proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode =
       output.add(toJsonHook(entry))
     output
   result{"nextUid"} = newJInt(source.nextUid)
-  result{"imageExportMode"} = toJsonHook(source.imageExportMode)
-  result{"identifierStyle"} = toJsonHook(source.identifierStyle)
+  result{"imageExportMode"} = `%`(source.imageExportMode)
+  result{"identifierStyle"} = `%`(source.identifierStyle)
   result{"defaultPivotY"} = newJFloat(source.defaultPivotY)
   result{"dummyWorldIid"} = newJString(source.dummyWorldIid)
   result{"customCommands"} = block:
@@ -5354,11 +4812,11 @@ proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode =
   result{"appBuildId"} = newJFloat(source.appBuildId)
   result{"defaultGridSize"} = newJInt(source.defaultGridSize)
   if isSome(source.worldLayout):
-    result{"worldLayout"} = toJsonHook(unsafeGet(source.worldLayout))
+    result{"worldLayout"} = `%`(unsafeGet(source.worldLayout))
   result{"flags"} = block:
     var output = newJArray()
     for entry in source.flags:
-      output.add(toJsonHook(entry))
+      output.add(`%`(entry))
     output
   result{"levelNamePattern"} = newJString(source.levelNamePattern)
   if isSome(source.exportPng):

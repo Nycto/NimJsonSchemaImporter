@@ -44,8 +44,10 @@ proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
         return newCall(bindSym("newJFloat"), input)
     of BoolType:
         return newCall(bindSym("newJBool"), input)
-    of ObjType, EnumType, UnionType:
+    of ObjType, UnionType:
         return newCall(ident("toJsonHook"), input)
+    of EnumType:
+        return newCall(bindSym("%"), input)
     of NullType, RefType:
         return newCall(bindSym("newJNull"))
     of JsonType:
@@ -104,36 +106,6 @@ proc buildUnionEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
     return quote:
         proc toJsonHook*(`source`: `typeName`): JsonNode =
             `cases`
-
-proc buildEnumEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
-    assert(typ.kind == EnumType)
-
-    var cases = nnkCaseStmt.newTree(source)
-    for value in typ.values:
-        cases.add(
-            nnkOfBranch.newTree(
-                newDotExpr(typeName, safeTypeName(value)),
-                nnkReturnStmt.newTree(newCall(bindSym("newJString"), value.newLit))
-            )
-        )
-
-    return quote:
-        proc toJsonHook*(`source`: `typeName`): JsonNode =
-            `cases`
-
-proc buildEnumDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
-    assert(typ.kind == EnumType)
-
-    var cases = nnkCaseStmt.newTree(newCall(bindSym("getStr"), source))
-    for value in typ.values:
-        cases.add(nnkOfBranch.newTree(value.newLit, newDotExpr(typeName, safeTypeName(value))))
-
-    cases.add nnkElse.newTree quote do:
-        raise newException(ValueError, "Unable to decode enum: " & $`source`)
-
-    return quote:
-        proc fromJsonHook*(`target`: var `typeName`; `source`: JsonNode) =
-            `target` = `cases`
 
 proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
     var decodeKeys = newStmtList()

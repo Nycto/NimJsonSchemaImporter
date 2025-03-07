@@ -16,7 +16,7 @@ type
   UnionKey3* = object
     foo*: Option[string]
   UnionunionKey3* = enum
-    A, B, C
+    A = "a", B = "b", C = "c"
   UnionKey3Union* = object
     case kind*: range[0 .. 4]
     of 0:
@@ -33,10 +33,7 @@ type
     key1*: Option[UnionKey1Union]
     key2*: string
     key3*: Option[UnionKey3Union]
-proc toJsonHook*(source: UnionKey1Union): JsonNode
 proc toJsonHook*(source: UnionKey3): JsonNode
-proc toJsonHook*(source: UnionunionKey3): JsonNode
-proc toJsonHook*(source: UnionKey3Union): JsonNode
 proc toJsonHook*(source: Unionunion): JsonNode
 converter forUnionKey1Union*(value: string): UnionKey1Union =
   return UnionKey1Union(kind: 0, key0: value)
@@ -209,26 +206,6 @@ converter forUnionKey3Union*(value: seq[string]): UnionKey3Union =
 converter forUnionKey3Union*(value: OrderedTable[string, string]): UnionKey3Union =
   return UnionKey3Union(kind: 2, key2: value)
 
-proc toJsonHook*(source: UnionunionKey3): JsonNode =
-  case source
-  of UnionunionKey3.A:
-    return newJString("a")
-  of UnionunionKey3.B:
-    return newJString("b")
-  of UnionunionKey3.C:
-    return newJString("c")
-  
-proc fromJsonHook*(target: var UnionunionKey3; source: JsonNode) =
-  target = case getStr(source)
-  of "a":
-    UnionunionKey3.A
-  of "b":
-    UnionunionKey3.B
-  of "c":
-    UnionunionKey3.C
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 converter forUnionKey3Union*(value: UnionunionKey3): UnionKey3Union =
   return UnionKey3Union(kind: 3, key3: value)
 
@@ -301,7 +278,7 @@ proc toJsonHook*(source: UnionKey3Union): JsonNode =
         output[key] = newJString(entry)
       output
   of 3:
-    toJsonHook(source.key3)
+    `%`(source.key3)
   of 4:
     newJString(source.key4)
   

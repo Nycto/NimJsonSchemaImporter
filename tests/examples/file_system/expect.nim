@@ -4,23 +4,23 @@ import json_schema_import/private/[stringify, equality, bin]
 
 type
   File_systemType* = enum
-    Disk
+    Disk = "disk"
   File_systemDiskDevice* = object
     `type`*: File_systemType
     device*: string
   File_systemStorageType* = enum
-    Disk
+    Disk = "disk"
   File_systemDiskUUID* = object
     `type`*: File_systemStorageType
     label*: string
   File_systemfile_systemStorageType* = enum
-    Nfs
+    Nfs = "nfs"
   File_systemNfs* = object
     `type`*: File_systemfile_systemStorageType
     remotePath*: string
     server*: string
   File_systemfile_systemStorageType2* = enum
-    Tmpfs
+    Tmpfs = "tmpfs"
   File_systemTmpfs* = object
     `type`*: File_systemfile_systemStorageType2
     sizeInMB*: BiggestInt
@@ -35,35 +35,17 @@ type
     of 3:
       key3*: File_systemTmpfs
   File_systemFstype* = enum
-    Ext3, Ext4, Btrfs
+    Ext3 = "ext3", Ext4 = "ext4", Btrfs = "btrfs"
   File_systemfile_system* = object
     storage*: File_systemUnion
     fstype*: Option[File_systemFstype]
     options*: Option[seq[string]]
     readonly*: Option[bool]
-proc toJsonHook*(source: File_systemType): JsonNode
 proc toJsonHook*(source: File_systemDiskDevice): JsonNode
-proc toJsonHook*(source: File_systemStorageType): JsonNode
 proc toJsonHook*(source: File_systemDiskUUID): JsonNode
-proc toJsonHook*(source: File_systemfile_systemStorageType): JsonNode
 proc toJsonHook*(source: File_systemNfs): JsonNode
-proc toJsonHook*(source: File_systemfile_systemStorageType2): JsonNode
 proc toJsonHook*(source: File_systemTmpfs): JsonNode
-proc toJsonHook*(source: File_systemUnion): JsonNode
-proc toJsonHook*(source: File_systemFstype): JsonNode
 proc toJsonHook*(source: File_systemfile_system): JsonNode
-proc toJsonHook*(source: File_systemType): JsonNode =
-  case source
-  of File_systemType.Disk:
-    return newJString("disk")
-  
-proc fromJsonHook*(target: var File_systemType; source: JsonNode) =
-  target = case getStr(source)
-  of "disk":
-    File_systemType.Disk
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[File_systemDiskDevice]; a, b: File_systemDiskDevice): bool =
   equals(typeof(a.`type`), a.`type`, b.`type`) and
       equals(typeof(a.device), a.device, b.device)
@@ -89,7 +71,7 @@ proc fromJsonHook*(target: var File_systemDiskDevice; source: JsonNode) =
 
 proc toJsonHook*(source: File_systemDiskDevice): JsonNode =
   result = newJObject()
-  result{"type"} = toJsonHook(source.`type`)
+  result{"type"} = `%`(source.`type`)
   result{"device"} = newJString(source.device)
 
 proc toBinary*(target: var string; source: File_systemDiskDevice) =
@@ -110,18 +92,6 @@ proc fromBinary*(_: typedesc[File_systemDiskDevice]; source: string): File_syste
 converter forFile_systemUnion*(value: File_systemDiskDevice): File_systemUnion =
   return File_systemUnion(kind: 0, key0: value)
 
-proc toJsonHook*(source: File_systemStorageType): JsonNode =
-  case source
-  of File_systemStorageType.Disk:
-    return newJString("disk")
-  
-proc fromJsonHook*(target: var File_systemStorageType; source: JsonNode) =
-  target = case getStr(source)
-  of "disk":
-    File_systemStorageType.Disk
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[File_systemDiskUUID]; a, b: File_systemDiskUUID): bool =
   equals(typeof(a.`type`), a.`type`, b.`type`) and
       equals(typeof(a.label), a.label, b.label)
@@ -147,7 +117,7 @@ proc fromJsonHook*(target: var File_systemDiskUUID; source: JsonNode) =
 
 proc toJsonHook*(source: File_systemDiskUUID): JsonNode =
   result = newJObject()
-  result{"type"} = toJsonHook(source.`type`)
+  result{"type"} = `%`(source.`type`)
   result{"label"} = newJString(source.label)
 
 proc toBinary*(target: var string; source: File_systemDiskUUID) =
@@ -168,19 +138,6 @@ proc fromBinary*(_: typedesc[File_systemDiskUUID]; source: string): File_systemD
 converter forFile_systemUnion*(value: File_systemDiskUUID): File_systemUnion =
   return File_systemUnion(kind: 1, key1: value)
 
-proc toJsonHook*(source: File_systemfile_systemStorageType): JsonNode =
-  case source
-  of File_systemfile_systemStorageType.Nfs:
-    return newJString("nfs")
-  
-proc fromJsonHook*(target: var File_systemfile_systemStorageType;
-                   source: JsonNode) =
-  target = case getStr(source)
-  of "nfs":
-    File_systemfile_systemStorageType.Nfs
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[File_systemNfs]; a, b: File_systemNfs): bool =
   equals(typeof(a.`type`), a.`type`, b.`type`) and
       equals(typeof(a.remotePath), a.remotePath, b.remotePath) and
@@ -211,7 +168,7 @@ proc fromJsonHook*(target: var File_systemNfs; source: JsonNode) =
 
 proc toJsonHook*(source: File_systemNfs): JsonNode =
   result = newJObject()
-  result{"type"} = toJsonHook(source.`type`)
+  result{"type"} = `%`(source.`type`)
   result{"remotePath"} = newJString(source.remotePath)
   result{"server"} = newJString(source.server)
 
@@ -235,19 +192,6 @@ proc fromBinary*(_: typedesc[File_systemNfs]; source: string): File_systemNfs =
 converter forFile_systemUnion*(value: File_systemNfs): File_systemUnion =
   return File_systemUnion(kind: 2, key2: value)
 
-proc toJsonHook*(source: File_systemfile_systemStorageType2): JsonNode =
-  case source
-  of File_systemfile_systemStorageType2.Tmpfs:
-    return newJString("tmpfs")
-  
-proc fromJsonHook*(target: var File_systemfile_systemStorageType2;
-                   source: JsonNode) =
-  target = case getStr(source)
-  of "tmpfs":
-    File_systemfile_systemStorageType2.Tmpfs
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[File_systemTmpfs]; a, b: File_systemTmpfs): bool =
   equals(typeof(a.`type`), a.`type`, b.`type`) and
       equals(typeof(a.sizeInMB), a.sizeInMB, b.sizeInMB)
@@ -273,7 +217,7 @@ proc fromJsonHook*(target: var File_systemTmpfs; source: JsonNode) =
 
 proc toJsonHook*(source: File_systemTmpfs): JsonNode =
   result = newJObject()
-  result{"type"} = toJsonHook(source.`type`)
+  result{"type"} = `%`(source.`type`)
   result{"sizeInMB"} = newJInt(source.sizeInMB)
 
 proc toBinary*(target: var string; source: File_systemTmpfs) =
@@ -410,26 +354,6 @@ proc fromBinary*(_: typedesc[File_systemUnion]; source: string): File_systemUnio
   var idx = 0
   return fromBinary(File_systemUnion, source, idx)
 
-proc toJsonHook*(source: File_systemFstype): JsonNode =
-  case source
-  of File_systemFstype.Ext3:
-    return newJString("ext3")
-  of File_systemFstype.Ext4:
-    return newJString("ext4")
-  of File_systemFstype.Btrfs:
-    return newJString("btrfs")
-  
-proc fromJsonHook*(target: var File_systemFstype; source: JsonNode) =
-  target = case getStr(source)
-  of "ext3":
-    File_systemFstype.Ext3
-  of "ext4":
-    File_systemFstype.Ext4
-  of "btrfs":
-    File_systemFstype.Btrfs
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[File_systemfile_system]; a, b: File_systemfile_system): bool =
   equals(typeof(a.storage), a.storage, b.storage) and
       equals(typeof(a.fstype), a.fstype, b.fstype) and
@@ -468,7 +392,7 @@ proc toJsonHook*(source: File_systemfile_system): JsonNode =
   result = newJObject()
   result{"storage"} = toJsonHook(source.storage)
   if isSome(source.fstype):
-    result{"fstype"} = toJsonHook(unsafeGet(source.fstype))
+    result{"fstype"} = `%`(unsafeGet(source.fstype))
   if isSome(source.options):
     result{"options"} = block:
       var output = newJArray()

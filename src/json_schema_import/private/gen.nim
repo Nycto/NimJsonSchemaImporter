@@ -27,9 +27,6 @@ proc add(ctx: GenContext, name, typ: NimNode) =
     ctx.usedNames.incl(name.getName.toUpperAscii)
     ctx.types.incl(nnkTypeDef.newTree(postfix(name, "*"), newEmptyNode(), typ))
 
-    ctx.declarations.add quote do:
-        proc toJsonHook*(`source`: `name`): JsonNode
-
 proc genName(ctx: GenContext, name: NameChain, typ: TypeDef): NimNode =
     for name in typ.proposeNames(ctx.prefix, name):
         let upperName = name.toUpperAscii
@@ -59,6 +56,9 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
 
     ctx.add(result, nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), records))
 
+    ctx.declarations.add quote do:
+        proc toJsonHook*(`source`: `result`): JsonNode
+
     ctx.procs.add(
         typ.buildEquals(result),
         typ.buildDollars(result),
@@ -77,11 +77,9 @@ proc genEnum(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
 
     var enumTyp = nnkEnumTy.newTree(newEmptyNode())
     for value in typ.values:
-        enumTyp.add(safeTypeName(value))
+        enumTyp.add(nnkEnumFieldDef.newTree(safeTypeName(value), value.newLit))
 
     ctx.add(result, enumTyp)
-
-    ctx.procs.add(typ.buildEnumEncoder(result), typ.buildEnumDecoder(result))
 
 proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     ## Generates the type required to represent a union type

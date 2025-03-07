@@ -4,7 +4,8 @@ import json_schema_import/private/[stringify, equality, bin]
 
 type
   MovieGenre* = enum
-    Action, Comedy, Drama, `Science Fiction`
+    Action = "Action", Comedy = "Comedy", Drama = "Drama",
+    `Science Fiction` = "Science Fiction"
   Moviemovie* = object
     title*: string
     director*: string
@@ -12,32 +13,7 @@ type
     genre*: Option[MovieGenre]
     duration*: Option[string]
     `cast`*: Option[seq[string]]
-proc toJsonHook*(source: MovieGenre): JsonNode
 proc toJsonHook*(source: Moviemovie): JsonNode
-proc toJsonHook*(source: MovieGenre): JsonNode =
-  case source
-  of MovieGenre.Action:
-    return newJString("Action")
-  of MovieGenre.Comedy:
-    return newJString("Comedy")
-  of MovieGenre.Drama:
-    return newJString("Drama")
-  of MovieGenre.`Science Fiction`:
-    return newJString("Science Fiction")
-  
-proc fromJsonHook*(target: var MovieGenre; source: JsonNode) =
-  target = case getStr(source)
-  of "Action":
-    MovieGenre.Action
-  of "Comedy":
-    MovieGenre.Comedy
-  of "Drama":
-    MovieGenre.Drama
-  of "Science Fiction":
-    MovieGenre.`Science Fiction`
-  else:
-    raise newException(ValueError, "Unable to decode enum: " & $source)
-  
 proc equals(_: typedesc[Moviemovie]; a, b: Moviemovie): bool =
   equals(typeof(a.title), a.title, b.title) and
       equals(typeof(a.director), a.director, b.director) and
@@ -85,7 +61,7 @@ proc toJsonHook*(source: Moviemovie): JsonNode =
   result{"director"} = newJString(source.director)
   result{"releaseDate"} = newJString(source.releaseDate)
   if isSome(source.genre):
-    result{"genre"} = toJsonHook(unsafeGet(source.genre))
+    result{"genre"} = `%`(unsafeGet(source.genre))
   if isSome(source.duration):
     result{"duration"} = newJString(unsafeGet(source.duration))
   if isSome(source.`cast`):
