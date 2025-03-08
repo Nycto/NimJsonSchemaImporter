@@ -2,7 +2,7 @@
 ## Library for generating native nim types from a JSON schema
 ##
 
-import std/[json, macros, jsonutils, strutils], json_schema_import/config
+import std/[json, macros, jsonutils, strutils, genasts], json_schema_import/config
 import json_schema_import/private/[parse, gen, util, equality, bin]
 from std/os import fileExists, `/`, relativePath
 
@@ -52,17 +52,26 @@ macro jsonSchema*(schema: static JsonNode) =
     ## Converts a direct json reference to nim as if it were a json schema
     parseJsonSchema(schema, JsonSchemaConfig()).code
 
-proc realEmbedFromJson(typ: typedesc; rootDir, path: static string; alwaysEmbed: static bool): typ =
-    ## Embeds a parsed JSON file when in release mode. Otherwise, loads from disk
-    when alwaysEmbed:
-        const bin = toBinary(slurp(rootDir / path).parseJson.jsonTo(typ))
-        return typ.fromBinary(bin)
-    else:
-        let loadPath = (rootDir / path).relativePath(getProjectPath())
-        assert(loadPath.fileExists, "File not found: " & loadPath)
-        return jsonTo(parseFile(loadPath), typ)
+proc parseJsonTo[T](json: string): T =
+    ## Parses a json blob to a nim type
+    return jsonTo(parseJson(json), T)
 
-macro embedFromJson*(typ: typedesc, path: string, alwaysEmbed: static bool = defined(release)): auto =
+macro embedFromJson*(
+    typ: typedesc;
+    path: string;
+    parse: untyped = parseJsonTo;
+    alwaysEmbed: static bool = defined(release);
+): auto =
+    ## Embeds content from a file into the nim binary for release builds
     let rootDir = path.getRootDir()
-    return quote:
-        realEmbedFromJson(`typ`, `rootDir`, `path`, `alwaysEmbed`)
+    if alwaysEmbed:
+        return genAst(rootDir, path, typ, parse):
+            block:
+                const bin = toBinary(`parse`[`typ`](slurp(rootDir / path)))
+                typ.fromBinary(bin)
+    else:
+        return genAst(rootDir, path, typ, parse):
+            block:
+                let loadPath = (rootDir / path).relativePath(getProjectPath())
+                assert(loadPath.fileExists, "File not found: " & loadPath)
+                `parse`[`typ`](readFile(loadPath))
