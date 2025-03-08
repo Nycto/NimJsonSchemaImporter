@@ -2,9 +2,8 @@
 ## Library for generating native nim types from a JSON schema
 ##
 
-import std/[json, macros, jsonutils, strutils, genasts], json_schema_import/config
+import std/[json, macros, jsonutils, strutils], json_schema_import/config
 import json_schema_import/private/[parse, gen, util, equality, bin]
-from std/os import fileExists, `/`, relativePath
 
 export JsonSchemaConfig, UrlResolver, json, jsonutils, equality, bin
 
@@ -55,23 +54,3 @@ macro jsonSchema*(schema: static JsonNode) =
 proc parseJsonTo[T](json: string): T =
     ## Parses a json blob to a nim type
     return jsonTo(parseJson(json), T)
-
-macro embedFromJson*(
-    typ: typedesc;
-    path: string;
-    parse: untyped = parseJsonTo;
-    alwaysEmbed: static bool = defined(release);
-): auto =
-    ## Embeds content from a file into the nim binary for release builds
-    let rootDir = path.getRootDir()
-    if alwaysEmbed:
-        return genAst(rootDir, path, typ, parse):
-            block:
-                const bin = toBinary(`parse`[`typ`](slurp(rootDir / path)))
-                typ.fromBinary(bin)
-    else:
-        return genAst(rootDir, path, typ, parse):
-            block:
-                let loadPath = (rootDir / path).relativePath(getProjectPath())
-                assert(loadPath.fileExists, "File not found: " & loadPath)
-                `parse`[`typ`](readFile(loadPath))
