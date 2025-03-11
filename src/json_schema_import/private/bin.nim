@@ -123,3 +123,10 @@ proc fromBinary*(_: typedesc[JsonNode], source: string, idx: var int): JsonNode 
     of JObject: return JsonNode(kind: kind, fields: fromBinary(OrderedTable[string, JsonNode], source, idx))
     of JNull: return newJNull()
     of JBool: return newJBool(fromBinary(bool, source, idx))
+
+proc toBinary*[T](source: T): string =
+    toBinary(result, source)
+
+proc fromBinary*(typ: typedesc, source: string): typ =
+    var idx = 0
+    return fromBinary(typ, source, idx)

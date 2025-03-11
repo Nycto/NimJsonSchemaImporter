@@ -61,18 +61,11 @@ proc toBinary*(target: var string; source: Complex_objectAddress) =
   toBinary(target, source.state)
   toBinary(target, source.postalCode)
 
-proc toBinary*(source: Complex_objectAddress): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[Complex_objectAddress]; source: string; idx: var int): Complex_objectAddress =
   result.street = fromBinary(typeof(result.street), source, idx)
   result.city = fromBinary(typeof(result.city), source, idx)
   result.state = fromBinary(typeof(result.state), source, idx)
   result.postalCode = fromBinary(typeof(result.postalCode), source, idx)
-
-proc fromBinary*(_: typedesc[Complex_objectAddress]; source: string): Complex_objectAddress =
-  var idx = 0
-  return fromBinary(Complex_objectAddress, source, idx)
 
 proc equals(_: typedesc[Complex_objectcomplex_object];
             a, b: Complex_objectcomplex_object): bool =
@@ -127,17 +120,10 @@ proc toBinary*(target: var string; source: Complex_objectcomplex_object) =
   toBinary(target, source.address)
   toBinary(target, source.hobbies)
 
-proc toBinary*(source: Complex_objectcomplex_object): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[Complex_objectcomplex_object]; source: string;
                 idx: var int): Complex_objectcomplex_object =
   result.name = fromBinary(typeof(result.name), source, idx)
   result.age = fromBinary(typeof(result.age), source, idx)
   result.address = fromBinary(typeof(result.address), source, idx)
   result.hobbies = fromBinary(typeof(result.hobbies), source, idx)
-
-proc fromBinary*(_: typedesc[Complex_objectcomplex_object]; source: string): Complex_objectcomplex_object =
-  var idx = 0
-  return fromBinary(Complex_objectcomplex_object, source, idx)
 {.pop.}

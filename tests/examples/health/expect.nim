@@ -50,17 +50,10 @@ proc toBinary*(target: var string; source: HealthEmergencyContact) =
   toBinary(target, source.username)
   toBinary(target, source.email)
 
-proc toBinary*(source: HealthEmergencyContact): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[HealthEmergencyContact]; source: string;
                 idx: var int): HealthEmergencyContact =
   result.username = fromBinary(typeof(result.username), source, idx)
   result.email = fromBinary(typeof(result.email), source, idx)
-
-proc fromBinary*(_: typedesc[HealthEmergencyContact]; source: string): HealthEmergencyContact =
-  var idx = 0
-  return fromBinary(HealthEmergencyContact, source, idx)
 
 proc equals(_: typedesc[Healthhealth]; a, b: Healthhealth): bool =
   equals(typeof(a.patientName), a.patientName, b.patientName) and
@@ -147,9 +140,6 @@ proc toBinary*(target: var string; source: Healthhealth) =
   toBinary(target, source.medications)
   toBinary(target, source.emergencyContact)
 
-proc toBinary*(source: Healthhealth): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[Healthhealth]; source: string; idx: var int): Healthhealth =
   result.patientName = fromBinary(typeof(result.patientName), source, idx)
   result.dateOfBirth = fromBinary(typeof(result.dateOfBirth), source, idx)
@@ -159,8 +149,4 @@ proc fromBinary(_: typedesc[Healthhealth]; source: string; idx: var int): Health
   result.medications = fromBinary(typeof(result.medications), source, idx)
   result.emergencyContact = fromBinary(typeof(result.emergencyContact), source,
                                        idx)
-
-proc fromBinary*(_: typedesc[Healthhealth]; source: string): Healthhealth =
-  var idx = 0
-  return fromBinary(Healthhealth, source, idx)
 {.pop.}

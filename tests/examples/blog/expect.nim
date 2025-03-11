@@ -47,16 +47,9 @@ proc toBinary*(target: var string; source: BlogAuthor) =
   toBinary(target, source.username)
   toBinary(target, source.email)
 
-proc toBinary*(source: BlogAuthor): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[BlogAuthor]; source: string; idx: var int): BlogAuthor =
   result.username = fromBinary(typeof(result.username), source, idx)
   result.email = fromBinary(typeof(result.email), source, idx)
-
-proc fromBinary*(_: typedesc[BlogAuthor]; source: string): BlogAuthor =
-  var idx = 0
-  return fromBinary(BlogAuthor, source, idx)
 
 proc equals(_: typedesc[Blogblog]; a, b: Blogblog): bool =
   equals(typeof(a.title), a.title, b.title) and
@@ -118,17 +111,10 @@ proc toBinary*(target: var string; source: Blogblog) =
   toBinary(target, source.author)
   toBinary(target, source.tags)
 
-proc toBinary*(source: Blogblog): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[Blogblog]; source: string; idx: var int): Blogblog =
   result.title = fromBinary(typeof(result.title), source, idx)
   result.content = fromBinary(typeof(result.content), source, idx)
   result.publishedDate = fromBinary(typeof(result.publishedDate), source, idx)
   result.author = fromBinary(typeof(result.author), source, idx)
   result.tags = fromBinary(typeof(result.tags), source, idx)
-
-proc fromBinary*(_: typedesc[Blogblog]; source: string): Blogblog =
-  var idx = 0
-  return fromBinary(Blogblog, source, idx)
 {.pop.}

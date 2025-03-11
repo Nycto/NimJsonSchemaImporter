@@ -80,9 +80,6 @@ proc toBinary*(target: var string; source: User_profileuser_profile) =
   toBinary(target, source.location)
   toBinary(target, source.interests)
 
-proc toBinary*(source: User_profileuser_profile): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[User_profileuser_profile]; source: string;
                 idx: var int): User_profileuser_profile =
   result.username = fromBinary(typeof(result.username), source, idx)
@@ -91,8 +88,4 @@ proc fromBinary(_: typedesc[User_profileuser_profile]; source: string;
   result.age = fromBinary(typeof(result.age), source, idx)
   result.location = fromBinary(typeof(result.location), source, idx)
   result.interests = fromBinary(typeof(result.interests), source, idx)
-
-proc fromBinary*(_: typedesc[User_profileuser_profile]; source: string): User_profileuser_profile =
-  var idx = 0
-  return fromBinary(User_profileuser_profile, source, idx)
 {.pop.}

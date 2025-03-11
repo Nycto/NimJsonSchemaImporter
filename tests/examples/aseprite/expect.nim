@@ -137,18 +137,11 @@ proc toBinary*(target: var string; source: AsepriteRectangle) =
   toBinary(target, source.x)
   toBinary(target, source.y)
 
-proc toBinary*(source: AsepriteRectangle): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[AsepriteRectangle]; source: string; idx: var int): AsepriteRectangle =
   result.h = fromBinary(typeof(result.h), source, idx)
   result.w = fromBinary(typeof(result.w), source, idx)
   result.x = fromBinary(typeof(result.x), source, idx)
   result.y = fromBinary(typeof(result.y), source, idx)
-
-proc fromBinary*(_: typedesc[AsepriteRectangle]; source: string): AsepriteRectangle =
-  var idx = 0
-  return fromBinary(AsepriteRectangle, source, idx)
 
 proc equals(_: typedesc[AsepriteSize]; a, b: AsepriteSize): bool =
   equals(typeof(a.h), a.h, b.h) and equals(typeof(a.w), a.w, b.w)
@@ -180,16 +173,9 @@ proc toBinary*(target: var string; source: AsepriteSize) =
   toBinary(target, source.h)
   toBinary(target, source.w)
 
-proc toBinary*(source: AsepriteSize): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[AsepriteSize]; source: string; idx: var int): AsepriteSize =
   result.h = fromBinary(typeof(result.h), source, idx)
   result.w = fromBinary(typeof(result.w), source, idx)
-
-proc fromBinary*(_: typedesc[AsepriteSize]; source: string): AsepriteSize =
-  var idx = 0
-  return fromBinary(AsepriteSize, source, idx)
 
 proc equals(_: typedesc[AsepriteFrame]; a, b: AsepriteFrame): bool =
   equals(typeof(a.duration), a.duration, b.duration) and
@@ -252,9 +238,6 @@ proc toBinary*(target: var string; source: AsepriteFrame) =
   toBinary(target, source.spriteSourceSize)
   toBinary(target, source.trimmed)
 
-proc toBinary*(source: AsepriteFrame): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[AsepriteFrame]; source: string; idx: var int): AsepriteFrame =
   result.duration = fromBinary(typeof(result.duration), source, idx)
   result.frame = fromBinary(typeof(result.frame), source, idx)
@@ -263,10 +246,6 @@ proc fromBinary(_: typedesc[AsepriteFrame]; source: string; idx: var int): Asepr
   result.spriteSourceSize = fromBinary(typeof(result.spriteSourceSize), source,
                                        idx)
   result.trimmed = fromBinary(typeof(result.trimmed), source, idx)
-
-proc fromBinary*(_: typedesc[AsepriteFrame]; source: string): AsepriteFrame =
-  var idx = 0
-  return fromBinary(AsepriteFrame, source, idx)
 
 converter forAsepriteUnion*(value: OrderedTable[string, AsepriteFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 0, key0: value)
@@ -341,9 +320,6 @@ proc toBinary*(target: var string; source: AsepriteArrayFrame) =
   toBinary(target, source.spriteSourceSize)
   toBinary(target, source.trimmed)
 
-proc toBinary*(source: AsepriteArrayFrame): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[AsepriteArrayFrame]; source: string; idx: var int): AsepriteArrayFrame =
   result.duration = fromBinary(typeof(result.duration), source, idx)
   result.filename = fromBinary(typeof(result.filename), source, idx)
@@ -353,10 +329,6 @@ proc fromBinary(_: typedesc[AsepriteArrayFrame]; source: string; idx: var int): 
   result.spriteSourceSize = fromBinary(typeof(result.spriteSourceSize), source,
                                        idx)
   result.trimmed = fromBinary(typeof(result.trimmed), source, idx)
-
-proc fromBinary*(_: typedesc[AsepriteArrayFrame]; source: string): AsepriteArrayFrame =
-  var idx = 0
-  return fromBinary(AsepriteArrayFrame, source, idx)
 
 converter forAsepriteUnion*(value: seq[AsepriteArrayFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 1, key1: value)
@@ -443,9 +415,6 @@ proc toBinary*(target: var string; source: AsepriteUnion) =
   of 1:
     toBinary(target, source.key1)
   
-proc toBinary*(source: AsepriteUnion): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[AsepriteUnion]; source: string; idx: var int): AsepriteUnion =
   case fromBinary(range[0 .. 1], source, idx)
   of 0:
@@ -455,10 +424,6 @@ proc fromBinary(_: typedesc[AsepriteUnion]; source: string; idx: var int): Asepr
     return AsepriteUnion(kind: 1,
                          key1: fromBinary(typeof(result.key1), source, idx))
   
-proc fromBinary*(_: typedesc[AsepriteUnion]; source: string): AsepriteUnion =
-  var idx = 0
-  return fromBinary(AsepriteUnion, source, idx)
-
 proc equals(_: typedesc[AsepriteFrameTag]; a, b: AsepriteFrameTag): bool =
   equals(typeof(a.direction), a.direction, b.direction) and
       equals(typeof(a.`from`), a.`from`, b.`from`) and
@@ -505,18 +470,11 @@ proc toBinary*(target: var string; source: AsepriteFrameTag) =
   toBinary(target, source.name)
   toBinary(target, source.to)
 
-proc toBinary*(source: AsepriteFrameTag): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[AsepriteFrameTag]; source: string; idx: var int): AsepriteFrameTag =
   result.direction = fromBinary(typeof(result.direction), source, idx)
   result.`from` = fromBinary(typeof(result.`from`), source, idx)
   result.name = fromBinary(typeof(result.name), source, idx)
   result.to = fromBinary(typeof(result.to), source, idx)
-
-proc fromBinary*(_: typedesc[AsepriteFrameTag]; source: string): AsepriteFrameTag =
-  var idx = 0
-  return fromBinary(AsepriteFrameTag, source, idx)
 
 proc equals(_: typedesc[AsepriteLayer]; a, b: AsepriteLayer): bool =
   equals(typeof(a.blendMode), a.blendMode, b.blendMode) and
@@ -580,9 +538,6 @@ proc toBinary*(target: var string; source: AsepriteLayer) =
   toBinary(target, source.name)
   toBinary(target, source.opacity)
 
-proc toBinary*(source: AsepriteLayer): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[AsepriteLayer]; source: string; idx: var int): AsepriteLayer =
   result.blendMode = fromBinary(typeof(result.blendMode), source, idx)
   result.color = fromBinary(typeof(result.color), source, idx)
@@ -590,10 +545,6 @@ proc fromBinary(_: typedesc[AsepriteLayer]; source: string; idx: var int): Asepr
   result.group = fromBinary(typeof(result.group), source, idx)
   result.name = fromBinary(typeof(result.name), source, idx)
   result.opacity = fromBinary(typeof(result.opacity), source, idx)
-
-proc fromBinary*(_: typedesc[AsepriteLayer]; source: string): AsepriteLayer =
-  var idx = 0
-  return fromBinary(AsepriteLayer, source, idx)
 
 proc equals(_: typedesc[AsepritePoint]; a, b: AsepritePoint): bool =
   equals(typeof(a.x), a.x, b.x) and equals(typeof(a.y), a.y, b.y)
@@ -625,16 +576,9 @@ proc toBinary*(target: var string; source: AsepritePoint) =
   toBinary(target, source.x)
   toBinary(target, source.y)
 
-proc toBinary*(source: AsepritePoint): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[AsepritePoint]; source: string; idx: var int): AsepritePoint =
   result.x = fromBinary(typeof(result.x), source, idx)
   result.y = fromBinary(typeof(result.y), source, idx)
-
-proc fromBinary*(_: typedesc[AsepritePoint]; source: string): AsepritePoint =
-  var idx = 0
-  return fromBinary(AsepritePoint, source, idx)
 
 proc equals(_: typedesc[AsepriteSliceKey]; a, b: AsepriteSliceKey): bool =
   equals(typeof(a.bounds), a.bounds, b.bounds) and
@@ -683,18 +627,11 @@ proc toBinary*(target: var string; source: AsepriteSliceKey) =
   toBinary(target, source.frame)
   toBinary(target, source.pivot)
 
-proc toBinary*(source: AsepriteSliceKey): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[AsepriteSliceKey]; source: string; idx: var int): AsepriteSliceKey =
   result.bounds = fromBinary(typeof(result.bounds), source, idx)
   result.center = fromBinary(typeof(result.center), source, idx)
   result.frame = fromBinary(typeof(result.frame), source, idx)
   result.pivot = fromBinary(typeof(result.pivot), source, idx)
-
-proc fromBinary*(_: typedesc[AsepriteSliceKey]; source: string): AsepriteSliceKey =
-  var idx = 0
-  return fromBinary(AsepriteSliceKey, source, idx)
 
 proc equals(_: typedesc[AsepriteSlice]; a, b: AsepriteSlice): bool =
   equals(typeof(a.color), a.color, b.color) and
@@ -746,18 +683,11 @@ proc toBinary*(target: var string; source: AsepriteSlice) =
   toBinary(target, source.keys)
   toBinary(target, source.name)
 
-proc toBinary*(source: AsepriteSlice): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[AsepriteSlice]; source: string; idx: var int): AsepriteSlice =
   result.color = fromBinary(typeof(result.color), source, idx)
   result.data = fromBinary(typeof(result.data), source, idx)
   result.keys = fromBinary(typeof(result.keys), source, idx)
   result.name = fromBinary(typeof(result.name), source, idx)
-
-proc fromBinary*(_: typedesc[AsepriteSlice]; source: string): AsepriteSlice =
-  var idx = 0
-  return fromBinary(AsepriteSlice, source, idx)
 
 proc equals(_: typedesc[AsepriteMeta]; a, b: AsepriteMeta): bool =
   equals(typeof(a.app), a.app, b.app) and
@@ -855,9 +785,6 @@ proc toBinary*(target: var string; source: AsepriteMeta) =
   toBinary(target, source.slices)
   toBinary(target, source.version)
 
-proc toBinary*(source: AsepriteMeta): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[AsepriteMeta]; source: string; idx: var int): AsepriteMeta =
   result.app = fromBinary(typeof(result.app), source, idx)
   result.format = fromBinary(typeof(result.format), source, idx)
@@ -868,10 +795,6 @@ proc fromBinary(_: typedesc[AsepriteMeta]; source: string; idx: var int): Asepri
   result.size = fromBinary(typeof(result.size), source, idx)
   result.slices = fromBinary(typeof(result.slices), source, idx)
   result.version = fromBinary(typeof(result.version), source, idx)
-
-proc fromBinary*(_: typedesc[AsepriteMeta]; source: string): AsepriteMeta =
-  var idx = 0
-  return fromBinary(AsepriteMeta, source, idx)
 
 proc equals(_: typedesc[AsepriteSpriteSheet]; a, b: AsepriteSpriteSheet): bool =
   equals(typeof(a.frames), a.frames, b.frames) and
@@ -905,14 +828,7 @@ proc toBinary*(target: var string; source: AsepriteSpriteSheet) =
   toBinary(target, source.frames)
   toBinary(target, source.meta)
 
-proc toBinary*(source: AsepriteSpriteSheet): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[AsepriteSpriteSheet]; source: string; idx: var int): AsepriteSpriteSheet =
   result.frames = fromBinary(typeof(result.frames), source, idx)
   result.meta = fromBinary(typeof(result.meta), source, idx)
-
-proc fromBinary*(_: typedesc[AsepriteSpriteSheet]; source: string): AsepriteSpriteSheet =
-  var idx = 0
-  return fromBinary(AsepriteSpriteSheet, source, idx)
 {.pop.}

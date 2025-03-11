@@ -54,12 +54,5 @@ proc buildBinarySerde*(typ: TypeDef, typeName: NimNode): NimNode =
         proc toBinary*(`target`: var string, `source`: `typeName`) =
             `encode`
 
-        proc toBinary*(`source`: `typeName`): string =
-            toBinary(result, `source`)
-
         proc fromBinary(_: typedesc[`typeName`], `source`: string, `idx`: var int): `typeName` =
             `decode`
-
-        proc fromBinary*(_: typedesc[`typeName`], `source`: string): `typeName` =
-            var `idx` = 0
-            return fromBinary(`typeName`, `source`, `idx`)

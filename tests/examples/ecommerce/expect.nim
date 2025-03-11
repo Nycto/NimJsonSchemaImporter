@@ -44,17 +44,10 @@ proc toBinary*(target: var string; source: EcommerceProductSchema) =
   toBinary(target, source.name)
   toBinary(target, source.price)
 
-proc toBinary*(source: EcommerceProductSchema): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[EcommerceProductSchema]; source: string;
                 idx: var int): EcommerceProductSchema =
   result.name = fromBinary(typeof(result.name), source, idx)
   result.price = fromBinary(typeof(result.price), source, idx)
-
-proc fromBinary*(_: typedesc[EcommerceProductSchema]; source: string): EcommerceProductSchema =
-  var idx = 0
-  return fromBinary(EcommerceProductSchema, source, idx)
 
 proc equals(_: typedesc[EcommerceOrderSchema]; a, b: EcommerceOrderSchema): bool =
   equals(typeof(a.orderId), a.orderId, b.orderId) and
@@ -93,14 +86,7 @@ proc toBinary*(target: var string; source: EcommerceOrderSchema) =
   toBinary(target, source.orderId)
   toBinary(target, source.items)
 
-proc toBinary*(source: EcommerceOrderSchema): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[EcommerceOrderSchema]; source: string; idx: var int): EcommerceOrderSchema =
   result.orderId = fromBinary(typeof(result.orderId), source, idx)
   result.items = fromBinary(typeof(result.items), source, idx)
-
-proc fromBinary*(_: typedesc[EcommerceOrderSchema]; source: string): EcommerceOrderSchema =
-  var idx = 0
-  return fromBinary(EcommerceOrderSchema, source, idx)
 {.pop.}

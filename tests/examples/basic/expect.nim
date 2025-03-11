@@ -49,15 +49,8 @@ proc toBinary*(target: var string; source: Basicbasic) =
   toBinary(target, source.lastName)
   toBinary(target, source.age)
 
-proc toBinary*(source: Basicbasic): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[Basicbasic]; source: string; idx: var int): Basicbasic =
   result.firstName = fromBinary(typeof(result.firstName), source, idx)
   result.lastName = fromBinary(typeof(result.lastName), source, idx)
   result.age = fromBinary(typeof(result.age), source, idx)
-
-proc fromBinary*(_: typedesc[Basicbasic]; source: string): Basicbasic =
-  var idx = 0
-  return fromBinary(Basicbasic, source, idx)
 {.pop.}

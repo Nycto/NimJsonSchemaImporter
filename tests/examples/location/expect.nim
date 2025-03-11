@@ -39,14 +39,7 @@ proc toBinary*(target: var string; source: Locationlocation) =
   toBinary(target, source.latitude)
   toBinary(target, source.longitude)
 
-proc toBinary*(source: Locationlocation): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[Locationlocation]; source: string; idx: var int): Locationlocation =
   result.latitude = fromBinary(typeof(result.latitude), source, idx)
   result.longitude = fromBinary(typeof(result.longitude), source, idx)
-
-proc fromBinary*(_: typedesc[Locationlocation]; source: string): Locationlocation =
-  var idx = 0
-  return fromBinary(Locationlocation, source, idx)
 {.pop.}

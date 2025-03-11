@@ -43,16 +43,9 @@ proc toBinary*(target: var string; source: Array_of_thingsVeggie) =
   toBinary(target, source.veggieName)
   toBinary(target, source.veggieLike)
 
-proc toBinary*(source: Array_of_thingsVeggie): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[Array_of_thingsVeggie]; source: string; idx: var int): Array_of_thingsVeggie =
   result.veggieName = fromBinary(typeof(result.veggieName), source, idx)
   result.veggieLike = fromBinary(typeof(result.veggieLike), source, idx)
-
-proc fromBinary*(_: typedesc[Array_of_thingsVeggie]; source: string): Array_of_thingsVeggie =
-  var idx = 0
-  return fromBinary(Array_of_thingsVeggie, source, idx)
 
 proc equals(_: typedesc[Array_of_thingsarray_of_things];
             a, b: Array_of_thingsarray_of_things): bool =
@@ -98,15 +91,8 @@ proc toBinary*(target: var string; source: Array_of_thingsarray_of_things) =
   toBinary(target, source.fruits)
   toBinary(target, source.vegetables)
 
-proc toBinary*(source: Array_of_thingsarray_of_things): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[Array_of_thingsarray_of_things]; source: string;
                 idx: var int): Array_of_thingsarray_of_things =
   result.fruits = fromBinary(typeof(result.fruits), source, idx)
   result.vegetables = fromBinary(typeof(result.vegetables), source, idx)
-
-proc fromBinary*(_: typedesc[Array_of_thingsarray_of_things]; source: string): Array_of_thingsarray_of_things =
-  var idx = 0
-  return fromBinary(Array_of_thingsarray_of_things, source, idx)
 {.pop.}

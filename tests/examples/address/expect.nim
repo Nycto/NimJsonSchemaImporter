@@ -87,9 +87,6 @@ proc toBinary*(target: var string; source: Addressaddress) =
   toBinary(target, source.postalCode)
   toBinary(target, source.countryName)
 
-proc toBinary*(source: Addressaddress): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[Addressaddress]; source: string; idx: var int): Addressaddress =
   result.postOfficeBox = fromBinary(typeof(result.postOfficeBox), source, idx)
   result.extendedAddress = fromBinary(typeof(result.extendedAddress), source,
@@ -99,8 +96,4 @@ proc fromBinary(_: typedesc[Addressaddress]; source: string; idx: var int): Addr
   result.region = fromBinary(typeof(result.region), source, idx)
   result.postalCode = fromBinary(typeof(result.postalCode), source, idx)
   result.countryName = fromBinary(typeof(result.countryName), source, idx)
-
-proc fromBinary*(_: typedesc[Addressaddress]; source: string): Addressaddress =
-  var idx = 0
-  return fromBinary(Addressaddress, source, idx)
 {.pop.}

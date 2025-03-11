@@ -141,9 +141,6 @@ proc toBinary*(target: var string; source: UnionKey1Union) =
   of 3:
     toBinary(target, source.key3)
   
-proc toBinary*(source: UnionKey1Union): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[UnionKey1Union]; source: string; idx: var int): UnionKey1Union =
   case fromBinary(range[0 .. 3], source, idx)
   of 0:
@@ -159,10 +156,6 @@ proc fromBinary(_: typedesc[UnionKey1Union]; source: string; idx: var int): Unio
     return UnionKey1Union(kind: 3,
                           key3: fromBinary(typeof(result.key3), source, idx))
   
-proc fromBinary*(_: typedesc[UnionKey1Union]; source: string): UnionKey1Union =
-  var idx = 0
-  return fromBinary(UnionKey1Union, source, idx)
-
 proc equals(_: typedesc[UnionKey3]; a, b: UnionKey3): bool =
   equals(typeof(a.foo), a.foo, b.foo)
 
@@ -187,15 +180,8 @@ proc toJsonHook*(source: UnionKey3): JsonNode =
 proc toBinary*(target: var string; source: UnionKey3) =
   toBinary(target, source.foo)
 
-proc toBinary*(source: UnionKey3): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[UnionKey3]; source: string; idx: var int): UnionKey3 =
   result.foo = fromBinary(typeof(result.foo), source, idx)
-
-proc fromBinary*(_: typedesc[UnionKey3]; source: string): UnionKey3 =
-  var idx = 0
-  return fromBinary(UnionKey3, source, idx)
 
 converter forUnionKey3Union*(value: UnionKey3): UnionKey3Union =
   return UnionKey3Union(kind: 0, key0: value)
@@ -345,9 +331,6 @@ proc toBinary*(target: var string; source: UnionKey3Union) =
   of 4:
     toBinary(target, source.key4)
   
-proc toBinary*(source: UnionKey3Union): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[UnionKey3Union]; source: string; idx: var int): UnionKey3Union =
   case fromBinary(range[0 .. 4], source, idx)
   of 0:
@@ -366,10 +349,6 @@ proc fromBinary(_: typedesc[UnionKey3Union]; source: string; idx: var int): Unio
     return UnionKey3Union(kind: 4,
                           key4: fromBinary(typeof(result.key4), source, idx))
   
-proc fromBinary*(_: typedesc[UnionKey3Union]; source: string): UnionKey3Union =
-  var idx = 0
-  return fromBinary(UnionKey3Union, source, idx)
-
 proc equals(_: typedesc[Unionunion]; a, b: Unionunion): bool =
   equals(typeof(a.key1), a.key1, b.key1) and
       equals(typeof(a.key2), a.key2, b.key2) and
@@ -415,15 +394,8 @@ proc toBinary*(target: var string; source: Unionunion) =
   toBinary(target, source.key2)
   toBinary(target, source.key3)
 
-proc toBinary*(source: Unionunion): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[Unionunion]; source: string; idx: var int): Unionunion =
   result.key1 = fromBinary(typeof(result.key1), source, idx)
   result.key2 = fromBinary(typeof(result.key2), source, idx)
   result.key3 = fromBinary(typeof(result.key3), source, idx)
-
-proc fromBinary*(_: typedesc[Unionunion]; source: string): Unionunion =
-  var idx = 0
-  return fromBinary(Unionunion, source, idx)
 {.pop.}

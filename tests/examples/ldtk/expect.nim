@@ -538,17 +538,10 @@ proc toBinary*(target: var string; source: LdtkNeighbourLevel) =
   toBinary(target, source.levelUid)
   toBinary(target, source.dir)
 
-proc toBinary*(source: LdtkNeighbourLevel): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkNeighbourLevel]; source: string; idx: var int): LdtkNeighbourLevel =
   result.levelIid = fromBinary(typeof(result.levelIid), source, idx)
   result.levelUid = fromBinary(typeof(result.levelUid), source, idx)
   result.dir = fromBinary(typeof(result.dir), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkNeighbourLevel]; source: string): LdtkNeighbourLevel =
-  var idx = 0
-  return fromBinary(LdtkNeighbourLevel, source, idx)
 
 proc equals(_: typedesc[LdtkLevelBgPosInfos]; a, b: LdtkLevelBgPosInfos): bool =
   equals(typeof(a.cropRect), a.cropRect, b.cropRect) and
@@ -601,17 +594,10 @@ proc toBinary*(target: var string; source: LdtkLevelBgPosInfos) =
   toBinary(target, source.scale)
   toBinary(target, source.topLeftPx)
 
-proc toBinary*(source: LdtkLevelBgPosInfos): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkLevelBgPosInfos]; source: string; idx: var int): LdtkLevelBgPosInfos =
   result.cropRect = fromBinary(typeof(result.cropRect), source, idx)
   result.scale = fromBinary(typeof(result.scale), source, idx)
   result.topLeftPx = fromBinary(typeof(result.topLeftPx), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkLevelBgPosInfos]; source: string): LdtkLevelBgPosInfos =
-  var idx = 0
-  return fromBinary(LdtkLevelBgPosInfos, source, idx)
 
 proc equals(_: typedesc[LdtkTilesetRect]; a, b: LdtkTilesetRect): bool =
   equals(typeof(a.tilesetUid), a.tilesetUid, b.tilesetUid) and
@@ -666,19 +652,12 @@ proc toBinary*(target: var string; source: LdtkTilesetRect) =
   toBinary(target, source.y)
   toBinary(target, source.w)
 
-proc toBinary*(source: LdtkTilesetRect): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkTilesetRect]; source: string; idx: var int): LdtkTilesetRect =
   result.tilesetUid = fromBinary(typeof(result.tilesetUid), source, idx)
   result.h = fromBinary(typeof(result.h), source, idx)
   result.x = fromBinary(typeof(result.x), source, idx)
   result.y = fromBinary(typeof(result.y), source, idx)
   result.w = fromBinary(typeof(result.w), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkTilesetRect]; source: string): LdtkTilesetRect =
-  var idx = 0
-  return fromBinary(LdtkTilesetRect, source, idx)
 
 proc equals(_: typedesc[LdtkFieldInstance]; a, b: LdtkFieldInstance): bool =
   equals(typeof(a.`type`), a.`type`, b.`type`) and
@@ -747,9 +726,6 @@ proc toBinary*(target: var string; source: LdtkFieldInstance) =
   toBinary(target, source.realEditorValues)
   toBinary(target, source.value)
 
-proc toBinary*(source: LdtkFieldInstance): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkFieldInstance]; source: string; idx: var int): LdtkFieldInstance =
   result.`type` = fromBinary(typeof(result.`type`), source, idx)
   result.defUid = fromBinary(typeof(result.defUid), source, idx)
@@ -758,10 +734,6 @@ proc fromBinary(_: typedesc[LdtkFieldInstance]; source: string; idx: var int): L
   result.realEditorValues = fromBinary(typeof(result.realEditorValues), source,
                                        idx)
   result.value = fromBinary(typeof(result.value), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkFieldInstance]; source: string): LdtkFieldInstance =
-  var idx = 0
-  return fromBinary(LdtkFieldInstance, source, idx)
 
 proc equals(_: typedesc[LdtkTile]; a, b: LdtkTile): bool =
   equals(typeof(a.t), a.t, b.t) and equals(typeof(a.d), a.d, b.d) and
@@ -828,9 +800,6 @@ proc toBinary*(target: var string; source: LdtkTile) =
   toBinary(target, source.f)
   toBinary(target, source.src)
 
-proc toBinary*(source: LdtkTile): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkTile]; source: string; idx: var int): LdtkTile =
   result.t = fromBinary(typeof(result.t), source, idx)
   result.d = fromBinary(typeof(result.d), source, idx)
@@ -838,10 +807,6 @@ proc fromBinary(_: typedesc[LdtkTile]; source: string; idx: var int): LdtkTile =
   result.a = fromBinary(typeof(result.a), source, idx)
   result.f = fromBinary(typeof(result.f), source, idx)
   result.src = fromBinary(typeof(result.src), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkTile]; source: string): LdtkTile =
-  var idx = 0
-  return fromBinary(LdtkTile, source, idx)
 
 proc equals(_: typedesc[LdtkEntityInstance]; a, b: LdtkEntityInstance): bool =
   equals(typeof(a.iid), a.iid, b.iid) and
@@ -984,9 +949,6 @@ proc toBinary*(target: var string; source: LdtkEntityInstance) =
   toBinary(target, source.tags)
   toBinary(target, source.width)
 
-proc toBinary*(source: LdtkEntityInstance): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkEntityInstance]; source: string; idx: var int): LdtkEntityInstance =
   result.iid = fromBinary(typeof(result.iid), source, idx)
   result.defUid = fromBinary(typeof(result.defUid), source, idx)
@@ -1002,10 +964,6 @@ proc fromBinary(_: typedesc[LdtkEntityInstance]; source: string; idx: var int): 
   result.height = fromBinary(typeof(result.height), source, idx)
   result.tags = fromBinary(typeof(result.tags), source, idx)
   result.width = fromBinary(typeof(result.width), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkEntityInstance]; source: string): LdtkEntityInstance =
-  var idx = 0
-  return fromBinary(LdtkEntityInstance, source, idx)
 
 proc equals(_: typedesc[LdtkIntGridValueInstance];
             a, b: LdtkIntGridValueInstance): bool =
@@ -1041,17 +999,10 @@ proc toBinary*(target: var string; source: LdtkIntGridValueInstance) =
   toBinary(target, source.v)
   toBinary(target, source.coordId)
 
-proc toBinary*(source: LdtkIntGridValueInstance): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkIntGridValueInstance]; source: string;
                 idx: var int): LdtkIntGridValueInstance =
   result.v = fromBinary(typeof(result.v), source, idx)
   result.coordId = fromBinary(typeof(result.coordId), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkIntGridValueInstance]; source: string): LdtkIntGridValueInstance =
-  var idx = 0
-  return fromBinary(LdtkIntGridValueInstance, source, idx)
 
 proc equals(_: typedesc[LdtkLayerInstance]; a, b: LdtkLayerInstance): bool =
   equals(typeof(a.cHei), a.cHei, b.cHei) and
@@ -1287,9 +1238,6 @@ proc toBinary*(target: var string; source: LdtkLayerInstance) =
   toBinary(target, source.gridTiles)
   toBinary(target, source.intGrid)
 
-proc toBinary*(source: LdtkLayerInstance): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkLayerInstance]; source: string; idx: var int): LdtkLayerInstance =
   result.cHei = fromBinary(typeof(result.cHei), source, idx)
   result.pxOffsetX = fromBinary(typeof(result.pxOffsetX), source, idx)
@@ -1317,10 +1265,6 @@ proc fromBinary(_: typedesc[LdtkLayerInstance]; source: string; idx: var int): L
   result.tilesetDefUid = fromBinary(typeof(result.tilesetDefUid), source, idx)
   result.gridTiles = fromBinary(typeof(result.gridTiles), source, idx)
   result.intGrid = fromBinary(typeof(result.intGrid), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkLayerInstance]; source: string): LdtkLayerInstance =
-  var idx = 0
-  return fromBinary(LdtkLayerInstance, source, idx)
 
 proc equals(_: typedesc[LdtkLevel]; a, b: LdtkLevel): bool =
   equals(typeof(a.neighbours), a.neighbours, b.neighbours) and
@@ -1512,9 +1456,6 @@ proc toBinary*(target: var string; source: LdtkLevel) =
   toBinary(target, source.bgRelPath)
   toBinary(target, source.worldDepth)
 
-proc toBinary*(source: LdtkLevel): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkLevel]; source: string; idx: var int): LdtkLevel =
   result.neighbours = fromBinary(typeof(result.neighbours), source, idx)
   result.bgColor = fromBinary(typeof(result.bgColor), source, idx)
@@ -1539,10 +1480,6 @@ proc fromBinary(_: typedesc[LdtkLevel]; source: string; idx: var int): LdtkLevel
   result.layerInstances = fromBinary(typeof(result.layerInstances), source, idx)
   result.bgRelPath = fromBinary(typeof(result.bgRelPath), source, idx)
   result.worldDepth = fromBinary(typeof(result.worldDepth), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkLevel]; source: string): LdtkLevel =
-  var idx = 0
-  return fromBinary(LdtkLevel, source, idx)
 
 proc equals(_: typedesc[LdtkWorld]; a, b: LdtkWorld): bool =
   equals(typeof(a.worldGridWidth), a.worldGridWidth, b.worldGridWidth) and
@@ -1634,9 +1571,6 @@ proc toBinary*(target: var string; source: LdtkWorld) =
   toBinary(target, source.defaultLevelHeight)
   toBinary(target, source.identifier)
 
-proc toBinary*(source: LdtkWorld): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkWorld]; source: string; idx: var int): LdtkWorld =
   result.worldGridWidth = fromBinary(typeof(result.worldGridWidth), source, idx)
   result.iid = fromBinary(typeof(result.iid), source, idx)
@@ -1649,10 +1583,6 @@ proc fromBinary(_: typedesc[LdtkWorld]; source: string; idx: var int): LdtkWorld
   result.defaultLevelHeight = fromBinary(typeof(result.defaultLevelHeight),
       source, idx)
   result.identifier = fromBinary(typeof(result.identifier), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkWorld]; source: string): LdtkWorld =
-  var idx = 0
-  return fromBinary(LdtkWorld, source, idx)
 
 proc equals(_: typedesc[LdtkEntityReferenceInfos];
             a, b: LdtkEntityReferenceInfos): bool =
@@ -1703,19 +1633,12 @@ proc toBinary*(target: var string; source: LdtkEntityReferenceInfos) =
   toBinary(target, source.layerIid)
   toBinary(target, source.levelIid)
 
-proc toBinary*(source: LdtkEntityReferenceInfos): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkEntityReferenceInfos]; source: string;
                 idx: var int): LdtkEntityReferenceInfos =
   result.worldIid = fromBinary(typeof(result.worldIid), source, idx)
   result.entityIid = fromBinary(typeof(result.entityIid), source, idx)
   result.layerIid = fromBinary(typeof(result.layerIid), source, idx)
   result.levelIid = fromBinary(typeof(result.levelIid), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkEntityReferenceInfos]; source: string): LdtkEntityReferenceInfos =
-  var idx = 0
-  return fromBinary(LdtkEntityReferenceInfos, source, idx)
 
 proc equals(_: typedesc[LdtkTocInstanceData]; a, b: LdtkTocInstanceData): bool =
   equals(typeof(a.worldX), a.worldX, b.worldX) and
@@ -1777,9 +1700,6 @@ proc toBinary*(target: var string; source: LdtkTocInstanceData) =
   toBinary(target, source.fields)
   toBinary(target, source.iids)
 
-proc toBinary*(source: LdtkTocInstanceData): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkTocInstanceData]; source: string; idx: var int): LdtkTocInstanceData =
   result.worldX = fromBinary(typeof(result.worldX), source, idx)
   result.widPx = fromBinary(typeof(result.widPx), source, idx)
@@ -1787,10 +1707,6 @@ proc fromBinary(_: typedesc[LdtkTocInstanceData]; source: string; idx: var int):
   result.heiPx = fromBinary(typeof(result.heiPx), source, idx)
   result.fields = fromBinary(typeof(result.fields), source, idx)
   result.iids = fromBinary(typeof(result.iids), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkTocInstanceData]; source: string): LdtkTocInstanceData =
-  var idx = 0
-  return fromBinary(LdtkTocInstanceData, source, idx)
 
 proc equals(_: typedesc[LdtkTableOfContentEntry]; a, b: LdtkTableOfContentEntry): bool =
   equals(typeof(a.identifier), a.identifier, b.identifier) and
@@ -1844,18 +1760,11 @@ proc toBinary*(target: var string; source: LdtkTableOfContentEntry) =
   toBinary(target, source.instancesData)
   toBinary(target, source.instances)
 
-proc toBinary*(source: LdtkTableOfContentEntry): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkTableOfContentEntry]; source: string;
                 idx: var int): LdtkTableOfContentEntry =
   result.identifier = fromBinary(typeof(result.identifier), source, idx)
   result.instancesData = fromBinary(typeof(result.instancesData), source, idx)
   result.instances = fromBinary(typeof(result.instances), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkTableOfContentEntry]; source: string): LdtkTableOfContentEntry =
-  var idx = 0
-  return fromBinary(LdtkTableOfContentEntry, source, idx)
 
 proc equals(_: typedesc[LdtkCustomCommand]; a, b: LdtkCustomCommand): bool =
   equals(typeof(a.`when`), a.`when`, b.`when`) and
@@ -1889,16 +1798,9 @@ proc toBinary*(target: var string; source: LdtkCustomCommand) =
   toBinary(target, source.`when`)
   toBinary(target, source.command)
 
-proc toBinary*(source: LdtkCustomCommand): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkCustomCommand]; source: string; idx: var int): LdtkCustomCommand =
   result.`when` = fromBinary(typeof(result.`when`), source, idx)
   result.command = fromBinary(typeof(result.command), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkCustomCommand]; source: string): LdtkCustomCommand =
-  var idx = 0
-  return fromBinary(LdtkCustomCommand, source, idx)
 
 proc equals(_: typedesc[LdtkTileCustomMetadata]; a, b: LdtkTileCustomMetadata): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -1933,17 +1835,10 @@ proc toBinary*(target: var string; source: LdtkTileCustomMetadata) =
   toBinary(target, source.tileId)
   toBinary(target, source.data)
 
-proc toBinary*(source: LdtkTileCustomMetadata): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkTileCustomMetadata]; source: string;
                 idx: var int): LdtkTileCustomMetadata =
   result.tileId = fromBinary(typeof(result.tileId), source, idx)
   result.data = fromBinary(typeof(result.data), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkTileCustomMetadata]; source: string): LdtkTileCustomMetadata =
-  var idx = 0
-  return fromBinary(LdtkTileCustomMetadata, source, idx)
 
 proc equals(_: typedesc[LdtkEnumTagValue]; a, b: LdtkEnumTagValue): bool =
   equals(typeof(a.tileIds), a.tileIds, b.tileIds) and
@@ -1981,16 +1876,9 @@ proc toBinary*(target: var string; source: LdtkEnumTagValue) =
   toBinary(target, source.tileIds)
   toBinary(target, source.enumValueId)
 
-proc toBinary*(source: LdtkEnumTagValue): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkEnumTagValue]; source: string; idx: var int): LdtkEnumTagValue =
   result.tileIds = fromBinary(typeof(result.tileIds), source, idx)
   result.enumValueId = fromBinary(typeof(result.enumValueId), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkEnumTagValue]; source: string): LdtkEnumTagValue =
-  var idx = 0
-  return fromBinary(LdtkEnumTagValue, source, idx)
 
 proc equals(_: typedesc[LdtkTilesetDef]; a, b: LdtkTilesetDef): bool =
   equals(typeof(a.cachedPixelData), a.cachedPixelData, b.cachedPixelData) and
@@ -2165,9 +2053,6 @@ proc toBinary*(target: var string; source: LdtkTilesetDef) =
   toBinary(target, source.relPath)
   toBinary(target, source.tileGridSize)
 
-proc toBinary*(source: LdtkTilesetDef): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkTilesetDef]; source: string; idx: var int): LdtkTilesetDef =
   result.cachedPixelData = fromBinary(typeof(result.cachedPixelData), source,
                                       idx)
@@ -2189,10 +2074,6 @@ proc fromBinary(_: typedesc[LdtkTilesetDef]; source: string; idx: var int): Ldtk
   result.embedAtlas = fromBinary(typeof(result.embedAtlas), source, idx)
   result.relPath = fromBinary(typeof(result.relPath), source, idx)
   result.tileGridSize = fromBinary(typeof(result.tileGridSize), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkTilesetDef]; source: string): LdtkTilesetDef =
-  var idx = 0
-  return fromBinary(LdtkTilesetDef, source, idx)
 
 proc equals(_: typedesc[LdtkIntGridValueGroupDef];
             a, b: LdtkIntGridValueGroupDef): bool =
@@ -2236,18 +2117,11 @@ proc toBinary*(target: var string; source: LdtkIntGridValueGroupDef) =
   toBinary(target, source.uid)
   toBinary(target, source.identifier)
 
-proc toBinary*(source: LdtkIntGridValueGroupDef): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkIntGridValueGroupDef]; source: string;
                 idx: var int): LdtkIntGridValueGroupDef =
   result.color = fromBinary(typeof(result.color), source, idx)
   result.uid = fromBinary(typeof(result.uid), source, idx)
   result.identifier = fromBinary(typeof(result.identifier), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkIntGridValueGroupDef]; source: string): LdtkIntGridValueGroupDef =
-  var idx = 0
-  return fromBinary(LdtkIntGridValueGroupDef, source, idx)
 
 proc equals(_: typedesc[LdtkIntGridValueDef]; a, b: LdtkIntGridValueDef): bool =
   equals(typeof(a.tile), a.tile, b.tile) and
@@ -2303,19 +2177,12 @@ proc toBinary*(target: var string; source: LdtkIntGridValueDef) =
   toBinary(target, source.value)
   toBinary(target, source.groupUid)
 
-proc toBinary*(source: LdtkIntGridValueDef): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkIntGridValueDef]; source: string; idx: var int): LdtkIntGridValueDef =
   result.tile = fromBinary(typeof(result.tile), source, idx)
   result.color = fromBinary(typeof(result.color), source, idx)
   result.identifier = fromBinary(typeof(result.identifier), source, idx)
   result.value = fromBinary(typeof(result.value), source, idx)
   result.groupUid = fromBinary(typeof(result.groupUid), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkIntGridValueDef]; source: string): LdtkIntGridValueDef =
-  var idx = 0
-  return fromBinary(LdtkIntGridValueDef, source, idx)
 
 proc equals(_: typedesc[LdtkAutoRuleDef]; a, b: LdtkAutoRuleDef): bool =
   equals(typeof(a.flipX), a.flipX, b.flipX) and
@@ -2585,9 +2452,6 @@ proc toBinary*(target: var string; source: LdtkAutoRuleDef) =
   toBinary(target, source.active)
   toBinary(target, source.xOffset)
 
-proc toBinary*(source: LdtkAutoRuleDef): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkAutoRuleDef]; source: string; idx: var int): LdtkAutoRuleDef =
   result.flipX = fromBinary(typeof(result.flipX), source, idx)
   result.pivotX = fromBinary(typeof(result.pivotX), source, idx)
@@ -2621,10 +2485,6 @@ proc fromBinary(_: typedesc[LdtkAutoRuleDef]; source: string; idx: var int): Ldt
   result.yModulo = fromBinary(typeof(result.yModulo), source, idx)
   result.active = fromBinary(typeof(result.active), source, idx)
   result.xOffset = fromBinary(typeof(result.xOffset), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkAutoRuleDef]; source: string): LdtkAutoRuleDef =
-  var idx = 0
-  return fromBinary(LdtkAutoRuleDef, source, idx)
 
 proc equals(_: typedesc[LdtkAutoLayerRuleGroup]; a, b: LdtkAutoLayerRuleGroup): bool =
   equals(typeof(a.name), a.name, b.name) and
@@ -2741,9 +2601,6 @@ proc toBinary*(target: var string; source: LdtkAutoLayerRuleGroup) =
   toBinary(target, source.active)
   toBinary(target, source.rules)
 
-proc toBinary*(source: LdtkAutoLayerRuleGroup): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkAutoLayerRuleGroup]; source: string;
                 idx: var int): LdtkAutoLayerRuleGroup =
   result.name = fromBinary(typeof(result.name), source, idx)
@@ -2759,10 +2616,6 @@ proc fromBinary(_: typedesc[LdtkAutoLayerRuleGroup]; source: string;
       source, idx)
   result.active = fromBinary(typeof(result.active), source, idx)
   result.rules = fromBinary(typeof(result.rules), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkAutoLayerRuleGroup]; source: string): LdtkAutoLayerRuleGroup =
-  var idx = 0
-  return fromBinary(LdtkAutoLayerRuleGroup, source, idx)
 
 proc equals(_: typedesc[LdtkLayerDef]; a, b: LdtkLayerDef): bool =
   equals(typeof(a.pxOffsetX), a.pxOffsetX, b.pxOffsetX) and
@@ -3098,9 +2951,6 @@ proc toBinary*(target: var string; source: LdtkLayerDef) =
   toBinary(target, source.parallaxFactorX)
   toBinary(target, source.autoTilesKilledByOtherLayerUid)
 
-proc toBinary*(source: LdtkLayerDef): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkLayerDef]; source: string; idx: var int): LdtkLayerDef =
   result.pxOffsetX = fromBinary(typeof(result.pxOffsetX), source, idx)
   result.tilePivotX = fromBinary(typeof(result.tilePivotX), source, idx)
@@ -3147,10 +2997,6 @@ proc fromBinary(_: typedesc[LdtkLayerDef]; source: string; idx: var int): LdtkLa
                                       idx)
   result.autoTilesKilledByOtherLayerUid = fromBinary(
       typeof(result.autoTilesKilledByOtherLayerUid), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkLayerDef]; source: string): LdtkLayerDef =
-  var idx = 0
-  return fromBinary(LdtkLayerDef, source, idx)
 
 proc equals(_: typedesc[LdtkFieldDef]; a, b: LdtkFieldDef): bool =
   equals(typeof(a.acceptFileTypes), a.acceptFileTypes, b.acceptFileTypes) and
@@ -3483,9 +3329,6 @@ proc toBinary*(target: var string; source: LdtkFieldDef) =
   toBinary(target, source.identifier)
   toBinary(target, source.arrayMaxLength)
 
-proc toBinary*(source: LdtkFieldDef): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkFieldDef]; source: string; idx: var int): LdtkFieldDef =
   result.acceptFileTypes = fromBinary(typeof(result.acceptFileTypes), source,
                                       idx)
@@ -3538,10 +3381,6 @@ proc fromBinary(_: typedesc[LdtkFieldDef]; source: string; idx: var int): LdtkFi
   result.type1 = fromBinary(typeof(result.type1), source, idx)
   result.identifier = fromBinary(typeof(result.identifier), source, idx)
   result.arrayMaxLength = fromBinary(typeof(result.arrayMaxLength), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkFieldDef]; source: string): LdtkFieldDef =
-  var idx = 0
-  return fromBinary(LdtkFieldDef, source, idx)
 
 proc equals(_: typedesc[LdtkEnumDefValues]; a, b: LdtkEnumDefValues): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -3604,19 +3443,12 @@ proc toBinary*(target: var string; source: LdtkEnumDefValues) =
   toBinary(target, source.id)
   toBinary(target, source.tileSrcRect)
 
-proc toBinary*(source: LdtkEnumDefValues): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkEnumDefValues]; source: string; idx: var int): LdtkEnumDefValues =
   result.tileId = fromBinary(typeof(result.tileId), source, idx)
   result.color = fromBinary(typeof(result.color), source, idx)
   result.tileRect = fromBinary(typeof(result.tileRect), source, idx)
   result.id = fromBinary(typeof(result.id), source, idx)
   result.tileSrcRect = fromBinary(typeof(result.tileSrcRect), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkEnumDefValues]; source: string): LdtkEnumDefValues =
-  var idx = 0
-  return fromBinary(LdtkEnumDefValues, source, idx)
 
 proc equals(_: typedesc[LdtkEnumDef]; a, b: LdtkEnumDef): bool =
   equals(typeof(a.externalFileChecksum), a.externalFileChecksum,
@@ -3704,9 +3536,6 @@ proc toBinary*(target: var string; source: LdtkEnumDef) =
   toBinary(target, source.identifier)
   toBinary(target, source.tags)
 
-proc toBinary*(source: LdtkEnumDef): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkEnumDef]; source: string; idx: var int): LdtkEnumDef =
   result.externalFileChecksum = fromBinary(typeof(result.externalFileChecksum),
       source, idx)
@@ -3717,10 +3546,6 @@ proc fromBinary(_: typedesc[LdtkEnumDef]; source: string; idx: var int): LdtkEnu
   result.iconTilesetUid = fromBinary(typeof(result.iconTilesetUid), source, idx)
   result.identifier = fromBinary(typeof(result.identifier), source, idx)
   result.tags = fromBinary(typeof(result.tags), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkEnumDef]; source: string): LdtkEnumDef =
-  var idx = 0
-  return fromBinary(LdtkEnumDef, source, idx)
 
 proc equals(_: typedesc[LdtkEntityDef]; a, b: LdtkEntityDef): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -4007,9 +3832,6 @@ proc toBinary*(target: var string; source: LdtkEntityDef) =
   toBinary(target, source.tags)
   toBinary(target, source.width)
 
-proc toBinary*(source: LdtkEntityDef): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkEntityDef]; source: string; idx: var int): LdtkEntityDef =
   result.tileId = fromBinary(typeof(result.tileId), source, idx)
   result.showName = fromBinary(typeof(result.showName), source, idx)
@@ -4048,10 +3870,6 @@ proc fromBinary(_: typedesc[LdtkEntityDef]; source: string; idx: var int): LdtkE
   result.renderMode = fromBinary(typeof(result.renderMode), source, idx)
   result.tags = fromBinary(typeof(result.tags), source, idx)
   result.width = fromBinary(typeof(result.width), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkEntityDef]; source: string): LdtkEntityDef =
-  var idx = 0
-  return fromBinary(LdtkEntityDef, source, idx)
 
 proc equals(_: typedesc[LdtkDefinitions]; a, b: LdtkDefinitions): bool =
   equals(typeof(a.tilesets), a.tilesets, b.tilesets) and
@@ -4139,9 +3957,6 @@ proc toBinary*(target: var string; source: LdtkDefinitions) =
   toBinary(target, source.entities)
   toBinary(target, source.externalEnums)
 
-proc toBinary*(source: LdtkDefinitions): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkDefinitions]; source: string; idx: var int): LdtkDefinitions =
   result.tilesets = fromBinary(typeof(result.tilesets), source, idx)
   result.layers = fromBinary(typeof(result.layers), source, idx)
@@ -4149,10 +3964,6 @@ proc fromBinary(_: typedesc[LdtkDefinitions]; source: string; idx: var int): Ldt
   result.enums = fromBinary(typeof(result.enums), source, idx)
   result.entities = fromBinary(typeof(result.entities), source, idx)
   result.externalEnums = fromBinary(typeof(result.externalEnums), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkDefinitions]; source: string): LdtkDefinitions =
-  var idx = 0
-  return fromBinary(LdtkDefinitions, source, idx)
 
 proc equals(_: typedesc[LdtkGridPoint]; a, b: LdtkGridPoint): bool =
   equals(typeof(a.cy), a.cy, b.cy) and equals(typeof(a.cx), a.cx, b.cx)
@@ -4184,16 +3995,9 @@ proc toBinary*(target: var string; source: LdtkGridPoint) =
   toBinary(target, source.cy)
   toBinary(target, source.cx)
 
-proc toBinary*(source: LdtkGridPoint): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkGridPoint]; source: string; idx: var int): LdtkGridPoint =
   result.cy = fromBinary(typeof(result.cy), source, idx)
   result.cx = fromBinary(typeof(result.cx), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkGridPoint]; source: string): LdtkGridPoint =
-  var idx = 0
-  return fromBinary(LdtkGridPoint, source, idx)
 
 proc equals(_: typedesc[Ldtk_FORCED_REFS]; a, b: Ldtk_FORCED_REFS): bool =
   equals(typeof(a.TilesetRect), a.TilesetRect, b.TilesetRect) and
@@ -4477,9 +4281,6 @@ proc toBinary*(target: var string; source: Ldtk_FORCED_REFS) =
   toBinary(target, source.GridPoint)
   toBinary(target, source.IntGridValueDef)
 
-proc toBinary*(source: Ldtk_FORCED_REFS): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[Ldtk_FORCED_REFS]; source: string; idx: var int): Ldtk_FORCED_REFS =
   result.TilesetRect = fromBinary(typeof(result.TilesetRect), source, idx)
   result.FieldInstance = fromBinary(typeof(result.FieldInstance), source, idx)
@@ -4518,10 +4319,6 @@ proc fromBinary(_: typedesc[Ldtk_FORCED_REFS]; source: string; idx: var int): Ld
   result.GridPoint = fromBinary(typeof(result.GridPoint), source, idx)
   result.IntGridValueDef = fromBinary(typeof(result.IntGridValueDef), source,
                                       idx)
-
-proc fromBinary*(_: typedesc[Ldtk_FORCED_REFS]; source: string): Ldtk_FORCED_REFS =
-  var idx = 0
-  return fromBinary(Ldtk_FORCED_REFS, source, idx)
 
 proc equals(_: typedesc[LdtkLdtkJsonRoot]; a, b: LdtkLdtkJsonRoot): bool =
   equals(typeof(a.backupLimit), a.backupLimit, b.backupLimit) and
@@ -4888,9 +4685,6 @@ proc toBinary*(target: var string; source: LdtkLdtkJsonRoot) =
   toBinary(target, source.exportLevelBg)
   toBinary(target, source.backupRelPath)
 
-proc toBinary*(source: LdtkLdtkJsonRoot): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[LdtkLdtkJsonRoot]; source: string; idx: var int): LdtkLdtkJsonRoot =
   result.backupLimit = fromBinary(typeof(result.backupLimit), source, idx)
   result.defaultEntityWidth = fromBinary(typeof(result.defaultEntityWidth),
@@ -4941,8 +4735,4 @@ proc fromBinary(_: typedesc[LdtkLdtkJsonRoot]; source: string; idx: var int): Ld
   result.minifyJson = fromBinary(typeof(result.minifyJson), source, idx)
   result.exportLevelBg = fromBinary(typeof(result.exportLevelBg), source, idx)
   result.backupRelPath = fromBinary(typeof(result.backupRelPath), source, idx)
-
-proc fromBinary*(_: typedesc[LdtkLdtkJsonRoot]; source: string): LdtkLdtkJsonRoot =
-  var idx = 0
-  return fromBinary(LdtkLdtkJsonRoot, source, idx)
 {.pop.}

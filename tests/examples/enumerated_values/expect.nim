@@ -34,14 +34,7 @@ proc toJsonHook*(source: Enumerated_valuesenumerated_values): JsonNode =
 proc toBinary*(target: var string; source: Enumerated_valuesenumerated_values) =
   toBinary(target, source.data)
 
-proc toBinary*(source: Enumerated_valuesenumerated_values): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[Enumerated_valuesenumerated_values]; source: string;
                 idx: var int): Enumerated_valuesenumerated_values =
   result.data = fromBinary(typeof(result.data), source, idx)
-
-proc fromBinary*(_: typedesc[Enumerated_valuesenumerated_values]; source: string): Enumerated_valuesenumerated_values =
-  var idx = 0
-  return fromBinary(Enumerated_valuesenumerated_values, source, idx)
 {.pop.}

@@ -79,9 +79,6 @@ proc toBinary*(target: var string; source: Moviemovie) =
   toBinary(target, source.duration)
   toBinary(target, source.`cast`)
 
-proc toBinary*(source: Moviemovie): string =
-  toBinary(result, source)
-
 proc fromBinary(_: typedesc[Moviemovie]; source: string; idx: var int): Moviemovie =
   result.title = fromBinary(typeof(result.title), source, idx)
   result.director = fromBinary(typeof(result.director), source, idx)
@@ -89,8 +86,4 @@ proc fromBinary(_: typedesc[Moviemovie]; source: string; idx: var int): Moviemov
   result.genre = fromBinary(typeof(result.genre), source, idx)
   result.duration = fromBinary(typeof(result.duration), source, idx)
   result.`cast` = fromBinary(typeof(result.`cast`), source, idx)
-
-proc fromBinary*(_: typedesc[Moviemovie]; source: string): Moviemovie =
-  var idx = 0
-  return fromBinary(Moviemovie, source, idx)
 {.pop.}
