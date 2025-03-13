@@ -43,14 +43,4 @@ proc toJsonHook*(source: Basicbasic): JsonNode =
     result{"lastName"} = newJString(unsafeGet(source.lastName))
   if isSome(source.age):
     result{"age"} = newJInt(unsafeGet(source.age))
-
-proc toBinary*(target: var string; source: Basicbasic) =
-  toBinary(target, source.firstName)
-  toBinary(target, source.lastName)
-  toBinary(target, source.age)
-
-proc fromBinary(_: typedesc[Basicbasic]; source: string; idx: var int): Basicbasic =
-  result.firstName = fromBinary(typeof(result.firstName), source, idx)
-  result.lastName = fromBinary(typeof(result.lastName), source, idx)
-  result.age = fromBinary(typeof(result.age), source, idx)
 {.pop.}

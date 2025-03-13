@@ -46,15 +46,6 @@ proc toJsonHook*(source: HealthEmergencyContact): JsonNode =
   if isSome(source.email):
     result{"email"} = newJString(unsafeGet(source.email))
 
-proc toBinary*(target: var string; source: HealthEmergencyContact) =
-  toBinary(target, source.username)
-  toBinary(target, source.email)
-
-proc fromBinary(_: typedesc[HealthEmergencyContact]; source: string;
-                idx: var int): HealthEmergencyContact =
-  result.username = fromBinary(typeof(result.username), source, idx)
-  result.email = fromBinary(typeof(result.email), source, idx)
-
 proc equals(_: typedesc[Healthhealth]; a, b: Healthhealth): bool =
   equals(typeof(a.patientName), a.patientName, b.patientName) and
       equals(typeof(a.dateOfBirth), a.dateOfBirth, b.dateOfBirth) and
@@ -130,23 +121,4 @@ proc toJsonHook*(source: Healthhealth): JsonNode =
       output
   if isSome(source.emergencyContact):
     result{"emergencyContact"} = toJsonHook(unsafeGet(source.emergencyContact))
-
-proc toBinary*(target: var string; source: Healthhealth) =
-  toBinary(target, source.patientName)
-  toBinary(target, source.dateOfBirth)
-  toBinary(target, source.bloodType)
-  toBinary(target, source.allergies)
-  toBinary(target, source.conditions)
-  toBinary(target, source.medications)
-  toBinary(target, source.emergencyContact)
-
-proc fromBinary(_: typedesc[Healthhealth]; source: string; idx: var int): Healthhealth =
-  result.patientName = fromBinary(typeof(result.patientName), source, idx)
-  result.dateOfBirth = fromBinary(typeof(result.dateOfBirth), source, idx)
-  result.bloodType = fromBinary(typeof(result.bloodType), source, idx)
-  result.allergies = fromBinary(typeof(result.allergies), source, idx)
-  result.conditions = fromBinary(typeof(result.conditions), source, idx)
-  result.medications = fromBinary(typeof(result.medications), source, idx)
-  result.emergencyContact = fromBinary(typeof(result.emergencyContact), source,
-                                       idx)
 {.pop.}

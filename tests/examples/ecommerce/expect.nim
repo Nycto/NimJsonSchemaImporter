@@ -40,15 +40,6 @@ proc toJsonHook*(source: EcommerceProductSchema): JsonNode =
   if isSome(source.price):
     result{"price"} = newJFloat(unsafeGet(source.price))
 
-proc toBinary*(target: var string; source: EcommerceProductSchema) =
-  toBinary(target, source.name)
-  toBinary(target, source.price)
-
-proc fromBinary(_: typedesc[EcommerceProductSchema]; source: string;
-                idx: var int): EcommerceProductSchema =
-  result.name = fromBinary(typeof(result.name), source, idx)
-  result.price = fromBinary(typeof(result.price), source, idx)
-
 proc equals(_: typedesc[EcommerceOrderSchema]; a, b: EcommerceOrderSchema): bool =
   equals(typeof(a.orderId), a.orderId, b.orderId) and
       equals(typeof(a.items), a.items, b.items)
@@ -81,12 +72,4 @@ proc toJsonHook*(source: EcommerceOrderSchema): JsonNode =
       for entry in unsafeGet(source.items):
         output.add(toJsonHook(entry))
       output
-
-proc toBinary*(target: var string; source: EcommerceOrderSchema) =
-  toBinary(target, source.orderId)
-  toBinary(target, source.items)
-
-proc fromBinary(_: typedesc[EcommerceOrderSchema]; source: string; idx: var int): EcommerceOrderSchema =
-  result.orderId = fromBinary(typeof(result.orderId), source, idx)
-  result.items = fromBinary(typeof(result.items), source, idx)
 {.pop.}

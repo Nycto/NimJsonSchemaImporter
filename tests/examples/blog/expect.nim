@@ -43,14 +43,6 @@ proc toJsonHook*(source: BlogAuthor): JsonNode =
   if isSome(source.email):
     result{"email"} = newJString(unsafeGet(source.email))
 
-proc toBinary*(target: var string; source: BlogAuthor) =
-  toBinary(target, source.username)
-  toBinary(target, source.email)
-
-proc fromBinary(_: typedesc[BlogAuthor]; source: string; idx: var int): BlogAuthor =
-  result.username = fromBinary(typeof(result.username), source, idx)
-  result.email = fromBinary(typeof(result.email), source, idx)
-
 proc equals(_: typedesc[Blogblog]; a, b: Blogblog): bool =
   equals(typeof(a.title), a.title, b.title) and
       equals(typeof(a.content), a.content, b.content) and
@@ -103,18 +95,4 @@ proc toJsonHook*(source: Blogblog): JsonNode =
       for entry in unsafeGet(source.tags):
         output.add(newJString(entry))
       output
-
-proc toBinary*(target: var string; source: Blogblog) =
-  toBinary(target, source.title)
-  toBinary(target, source.content)
-  toBinary(target, source.publishedDate)
-  toBinary(target, source.author)
-  toBinary(target, source.tags)
-
-proc fromBinary(_: typedesc[Blogblog]; source: string; idx: var int): Blogblog =
-  result.title = fromBinary(typeof(result.title), source, idx)
-  result.content = fromBinary(typeof(result.content), source, idx)
-  result.publishedDate = fromBinary(typeof(result.publishedDate), source, idx)
-  result.author = fromBinary(typeof(result.author), source, idx)
-  result.tags = fromBinary(typeof(result.tags), source, idx)
 {.pop.}

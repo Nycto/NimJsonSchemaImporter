@@ -177,12 +177,6 @@ proc toJsonHook*(source: UnionKey3): JsonNode =
   if isSome(source.foo):
     result{"foo"} = newJString(unsafeGet(source.foo))
 
-proc toBinary*(target: var string; source: UnionKey3) =
-  toBinary(target, source.foo)
-
-proc fromBinary(_: typedesc[UnionKey3]; source: string; idx: var int): UnionKey3 =
-  result.foo = fromBinary(typeof(result.foo), source, idx)
-
 converter forUnionKey3Union*(value: UnionKey3): UnionKey3Union =
   return UnionKey3Union(kind: 0, key0: value)
 
@@ -388,14 +382,4 @@ proc toJsonHook*(source: Unionunion): JsonNode =
     toJsonHook(unsafeGet(source.key3))
   else:
     newJNull()
-
-proc toBinary*(target: var string; source: Unionunion) =
-  toBinary(target, source.key1)
-  toBinary(target, source.key2)
-  toBinary(target, source.key3)
-
-proc fromBinary(_: typedesc[Unionunion]; source: string; idx: var int): Unionunion =
-  result.key1 = fromBinary(typeof(result.key1), source, idx)
-  result.key2 = fromBinary(typeof(result.key2), source, idx)
-  result.key3 = fromBinary(typeof(result.key3), source, idx)
 {.pop.}

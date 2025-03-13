@@ -34,12 +34,4 @@ proc toJsonHook*(source: Locationlocation): JsonNode =
   result = newJObject()
   result{"latitude"} = newJFloat(source.latitude)
   result{"longitude"} = newJFloat(source.longitude)
-
-proc toBinary*(target: var string; source: Locationlocation) =
-  toBinary(target, source.latitude)
-  toBinary(target, source.longitude)
-
-proc fromBinary(_: typedesc[Locationlocation]; source: string; idx: var int): Locationlocation =
-  result.latitude = fromBinary(typeof(result.latitude), source, idx)
-  result.longitude = fromBinary(typeof(result.longitude), source, idx)
 {.pop.}

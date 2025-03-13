@@ -64,7 +64,6 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
         typ.buildDollars(result),
         typ.buildObjectDecoder(result),
         typ.buildObjectEncoder(result),
-        typ.buildBinarySerde(result),
     )
 
 proc genArray(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
@@ -119,7 +118,7 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
         typ.buildUnionDecoder(result),
         typ.buildUnionEncoder(result),
         typ.buildUnionUnpacker(result),
-        typ.buildBinarySerde(result),
+        typ.buildUnionBinSerde(result),
     )
 
 proc genMap(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =

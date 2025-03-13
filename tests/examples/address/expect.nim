@@ -77,23 +77,4 @@ proc toJsonHook*(source: Addressaddress): JsonNode =
   if isSome(source.postalCode):
     result{"postalCode"} = newJString(unsafeGet(source.postalCode))
   result{"countryName"} = newJString(source.countryName)
-
-proc toBinary*(target: var string; source: Addressaddress) =
-  toBinary(target, source.postOfficeBox)
-  toBinary(target, source.extendedAddress)
-  toBinary(target, source.streetAddress)
-  toBinary(target, source.locality)
-  toBinary(target, source.region)
-  toBinary(target, source.postalCode)
-  toBinary(target, source.countryName)
-
-proc fromBinary(_: typedesc[Addressaddress]; source: string; idx: var int): Addressaddress =
-  result.postOfficeBox = fromBinary(typeof(result.postOfficeBox), source, idx)
-  result.extendedAddress = fromBinary(typeof(result.extendedAddress), source,
-                                      idx)
-  result.streetAddress = fromBinary(typeof(result.streetAddress), source, idx)
-  result.locality = fromBinary(typeof(result.locality), source, idx)
-  result.region = fromBinary(typeof(result.region), source, idx)
-  result.postalCode = fromBinary(typeof(result.postalCode), source, idx)
-  result.countryName = fromBinary(typeof(result.countryName), source, idx)
 {.pop.}

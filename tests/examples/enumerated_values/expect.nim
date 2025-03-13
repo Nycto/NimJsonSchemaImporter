@@ -30,11 +30,4 @@ proc toJsonHook*(source: Enumerated_valuesenumerated_values): JsonNode =
   result = newJObject()
   if isSome(source.data):
     result{"data"} = unsafeGet(source.data)
-
-proc toBinary*(target: var string; source: Enumerated_valuesenumerated_values) =
-  toBinary(target, source.data)
-
-proc fromBinary(_: typedesc[Enumerated_valuesenumerated_values]; source: string;
-                idx: var int): Enumerated_valuesenumerated_values =
-  result.data = fromBinary(typeof(result.data), source, idx)
 {.pop.}

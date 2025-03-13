@@ -81,6 +81,24 @@ proc fromBinary*(_: typedesc[float64], source: string, idx: var int): float64 =
     cast[float64](fromBinary(uint64, source, idx))
 
 
+proc toBinary*[T : object | tuple](target: var string, source: T) =
+    for _, value in source.fieldPairs:
+        toBinary(target, value)
+
+proc fromBinary*[T: object | tuple](_: typedesc[T], source: string, idx: var int): T =
+    for _, value in result.fieldPairs:
+        value = fromBinary(typeof(value), source, idx)
+
+
+proc toBinary*[T : ref object | ref tuple](target: var string, source: T) =
+    toBinary(target, source[])
+
+proc fromBinary*[T: ref object | ref tuple](_: typedesc[T], source: string, idx: var int): T =
+    result = new(T)
+    for _, value in result[].fieldPairs:
+        value = fromBinary(typeof(value), source, idx)
+
+
 type SomeTable[K, V] = Table[K, V] | OrderedTable[K, V]
 
 proc toBinary*[K, V](target: var string, source: SomeTable[K, V]) =

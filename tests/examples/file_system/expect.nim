@@ -74,14 +74,6 @@ proc toJsonHook*(source: File_systemDiskDevice): JsonNode =
   result{"type"} = `%`(source.`type`)
   result{"device"} = newJString(source.device)
 
-proc toBinary*(target: var string; source: File_systemDiskDevice) =
-  toBinary(target, source.`type`)
-  toBinary(target, source.device)
-
-proc fromBinary(_: typedesc[File_systemDiskDevice]; source: string; idx: var int): File_systemDiskDevice =
-  result.`type` = fromBinary(typeof(result.`type`), source, idx)
-  result.device = fromBinary(typeof(result.device), source, idx)
-
 converter forFile_systemUnion*(value: File_systemDiskDevice): File_systemUnion =
   return File_systemUnion(kind: 0, key0: value)
 
@@ -112,14 +104,6 @@ proc toJsonHook*(source: File_systemDiskUUID): JsonNode =
   result = newJObject()
   result{"type"} = `%`(source.`type`)
   result{"label"} = newJString(source.label)
-
-proc toBinary*(target: var string; source: File_systemDiskUUID) =
-  toBinary(target, source.`type`)
-  toBinary(target, source.label)
-
-proc fromBinary(_: typedesc[File_systemDiskUUID]; source: string; idx: var int): File_systemDiskUUID =
-  result.`type` = fromBinary(typeof(result.`type`), source, idx)
-  result.label = fromBinary(typeof(result.label), source, idx)
 
 converter forFile_systemUnion*(value: File_systemDiskUUID): File_systemUnion =
   return File_systemUnion(kind: 1, key1: value)
@@ -158,16 +142,6 @@ proc toJsonHook*(source: File_systemNfs): JsonNode =
   result{"remotePath"} = newJString(source.remotePath)
   result{"server"} = newJString(source.server)
 
-proc toBinary*(target: var string; source: File_systemNfs) =
-  toBinary(target, source.`type`)
-  toBinary(target, source.remotePath)
-  toBinary(target, source.server)
-
-proc fromBinary(_: typedesc[File_systemNfs]; source: string; idx: var int): File_systemNfs =
-  result.`type` = fromBinary(typeof(result.`type`), source, idx)
-  result.remotePath = fromBinary(typeof(result.remotePath), source, idx)
-  result.server = fromBinary(typeof(result.server), source, idx)
-
 converter forFile_systemUnion*(value: File_systemNfs): File_systemUnion =
   return File_systemUnion(kind: 2, key2: value)
 
@@ -198,14 +172,6 @@ proc toJsonHook*(source: File_systemTmpfs): JsonNode =
   result = newJObject()
   result{"type"} = `%`(source.`type`)
   result{"sizeInMB"} = newJInt(source.sizeInMB)
-
-proc toBinary*(target: var string; source: File_systemTmpfs) =
-  toBinary(target, source.`type`)
-  toBinary(target, source.sizeInMB)
-
-proc fromBinary(_: typedesc[File_systemTmpfs]; source: string; idx: var int): File_systemTmpfs =
-  result.`type` = fromBinary(typeof(result.`type`), source, idx)
-  result.sizeInMB = fromBinary(typeof(result.sizeInMB), source, idx)
 
 converter forFile_systemUnion*(value: File_systemTmpfs): File_systemUnion =
   return File_systemUnion(kind: 3, key3: value)
@@ -366,17 +332,4 @@ proc toJsonHook*(source: File_systemfile_system): JsonNode =
       output
   if isSome(source.readonly):
     result{"readonly"} = newJBool(unsafeGet(source.readonly))
-
-proc toBinary*(target: var string; source: File_systemfile_system) =
-  toBinary(target, source.storage)
-  toBinary(target, source.fstype)
-  toBinary(target, source.options)
-  toBinary(target, source.readonly)
-
-proc fromBinary(_: typedesc[File_systemfile_system]; source: string;
-                idx: var int): File_systemfile_system =
-  result.storage = fromBinary(typeof(result.storage), source, idx)
-  result.fstype = fromBinary(typeof(result.fstype), source, idx)
-  result.options = fromBinary(typeof(result.options), source, idx)
-  result.readonly = fromBinary(typeof(result.readonly), source, idx)
 {.pop.}

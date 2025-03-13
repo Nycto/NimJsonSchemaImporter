@@ -4,22 +4,6 @@ let source {.compileTime.} = ident("source")
 let target {.compileTime.} = ident("target")
 let idx {.compileTime.} = ident("idx")
 
-proc objBin(typ: TypeDef, typeName: NimNode): (NimNode, NimNode) =
-    assert(typ.kind == ObjType)
-
-    let encode = newStmtList()
-    let decode = newStmtList()
-
-    for _, (propName, subtype, _) in typ.properties:
-        let safeKey = safePropName(propName)
-
-        encode.add(newCall(ident("toBinary"), target, newDotExpr(source, safeKey)))
-
-        decode.add quote do:
-            result.`safeKey` = fromBinary(typeof(result.`safeKey`), `source`, `idx`)
-
-    return (encode, decode)
-
 proc unionEncode(typ: TypeDef, typeName: NimNode): NimNode =
     assert(typ.kind == UnionType)
     var cases = nnkCaseStmt.newTree(newDotExpr(source, ident("kind")))
@@ -44,12 +28,10 @@ proc unionDecode(typ: TypeDef, typeName: NimNode): NimNode =
             return `typeName`(kind: `i`, `key`: fromBinary(typeof(result.`key`), `source`, `idx`))
         result.add(nnkOfBranch.newTree(i.newLit, action))
 
-proc buildBinarySerde*(typ: TypeDef, typeName: NimNode): NimNode =
-    let (encode, decode) = case typ.kind
-        of ObjType: typ.objBin(typeName)
-        of UnionType: (typ.unionEncode(typeName), typ.unionDecode(typeName))
-        else: raiseAssert("Unsupported value type")
-
+proc buildUnionBinSerde*(typ: TypeDef, typeName: NimNode): NimNode =
+    doAssert(typ.kind == UnionType)
+    let encode = typ.unionEncode(typeName)
+    let decode = typ.unionDecode(typeName)
     return quote:
         proc toBinary*(`target`: var string, `source`: `typeName`) =
             `encode`

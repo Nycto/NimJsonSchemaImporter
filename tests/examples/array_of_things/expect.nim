@@ -39,14 +39,6 @@ proc toJsonHook*(source: Array_of_thingsVeggie): JsonNode =
   result{"veggieName"} = newJString(source.veggieName)
   result{"veggieLike"} = newJBool(source.veggieLike)
 
-proc toBinary*(target: var string; source: Array_of_thingsVeggie) =
-  toBinary(target, source.veggieName)
-  toBinary(target, source.veggieLike)
-
-proc fromBinary(_: typedesc[Array_of_thingsVeggie]; source: string; idx: var int): Array_of_thingsVeggie =
-  result.veggieName = fromBinary(typeof(result.veggieName), source, idx)
-  result.veggieLike = fromBinary(typeof(result.veggieLike), source, idx)
-
 proc equals(_: typedesc[Array_of_thingsarray_of_things];
             a, b: Array_of_thingsarray_of_things): bool =
   equals(typeof(a.fruits), a.fruits, b.fruits) and
@@ -86,13 +78,4 @@ proc toJsonHook*(source: Array_of_thingsarray_of_things): JsonNode =
       for entry in unsafeGet(source.vegetables):
         output.add(toJsonHook(entry))
       output
-
-proc toBinary*(target: var string; source: Array_of_thingsarray_of_things) =
-  toBinary(target, source.fruits)
-  toBinary(target, source.vegetables)
-
-proc fromBinary(_: typedesc[Array_of_thingsarray_of_things]; source: string;
-                idx: var int): Array_of_thingsarray_of_things =
-  result.fruits = fromBinary(typeof(result.fruits), source, idx)
-  result.vegetables = fromBinary(typeof(result.vegetables), source, idx)
 {.pop.}

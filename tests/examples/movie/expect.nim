@@ -70,20 +70,4 @@ proc toJsonHook*(source: Moviemovie): JsonNode =
       for entry in unsafeGet(source.`cast`):
         output.add(newJString(entry))
       output
-
-proc toBinary*(target: var string; source: Moviemovie) =
-  toBinary(target, source.title)
-  toBinary(target, source.director)
-  toBinary(target, source.releaseDate)
-  toBinary(target, source.genre)
-  toBinary(target, source.duration)
-  toBinary(target, source.`cast`)
-
-proc fromBinary(_: typedesc[Moviemovie]; source: string; idx: var int): Moviemovie =
-  result.title = fromBinary(typeof(result.title), source, idx)
-  result.director = fromBinary(typeof(result.director), source, idx)
-  result.releaseDate = fromBinary(typeof(result.releaseDate), source, idx)
-  result.genre = fromBinary(typeof(result.genre), source, idx)
-  result.duration = fromBinary(typeof(result.duration), source, idx)
-  result.`cast` = fromBinary(typeof(result.`cast`), source, idx)
 {.pop.}
