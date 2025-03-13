@@ -50,7 +50,3 @@ macro importJsonSchema*(path, prefix: string) =
 macro jsonSchema*(schema: static JsonNode) =
     ## Converts a direct json reference to nim as if it were a json schema
     parseJsonSchema(schema, JsonSchemaConfig()).code
-
-proc parseJsonTo[T](json: string): T =
-    ## Parses a json blob to a nim type
-    return jsonTo(parseJson(json), T)
