@@ -1,1 +1,1 @@
-MovieMovie(title: "Sample Movie", director: "John Director", releaseDate: "2023-07-01", genre: Action, duration: "2h 15m", cast: ["Actor A", "Actress B", "Actor C"])
+Movie(title: "Sample Movie", director: "John Director", releaseDate: "2023-07-01", genre: Action, duration: "2h 15m", cast: ["Actor A", "Actress B", "Actor C"])

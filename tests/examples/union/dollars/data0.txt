@@ -1,1 +1,1 @@
-UnionUnion(key1: 123, key2: "foo", key3: ["a", "b", "c"])
+Union(key1: 123, key2: "foo", key3: ["a", "b", "c"])

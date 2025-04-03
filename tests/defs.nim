@@ -1,25 +1,25 @@
 
 # https://json-schema.org/learn/json-schema-examples
-buildTest("address", AddressAddress)
-buildTest("blog", BlogBlog)
+buildTest("address", Address)
+buildTest("blog", Blog)
 buildTest("ecommerce", EcommerceOrderSchema)
-buildTest("location", LocationLocation)
-buildTest("health", HealthHealth)
-buildTest("movie", MovieMovie)
-buildTest("user_profile", User_profileUser_profile)
+buildTest("location", Location)
+buildTest("health", Health)
+buildTest("movie", Movie)
+buildTest("user_profile", User_profile)
 
 # https://json-schema.org/learn/miscellaneous-examples
-buildTest("basic", BasicBasic)
-buildTest("array_of_things", Array_of_thingsArray_of_things)
-buildTest("enumerated_values", Enumerated_values_EnumeratedValues)
-buildTest("complex_object", Complex_objectComplex_object)
+buildTest("basic", Basic)
+buildTest("array_of_things", Array_of_things)
+buildTest("enumerated_values", Enumerated_values)
+buildTest("complex_object", Complex_object)
 
 # https://json-schema.org/learn/file-system#full-entry
-buildTest("file_system", File_systemFile_system)
+buildTest("file_system", File_system)
 
 # Specific use cases
-buildTest("union", UnionUnion)
+buildTest("union", Union)
 
 # Specific applications
-buildTest("ldtk", LdtkLdtkJsonRoot)
+buildTest("ldtk", LdtkJsonRoot)
 buildTest("aseprite", AsepriteSpriteSheet)

@@ -1,1 +1,1 @@
-ArrayOfThingsArrayOfThings(fruits: ["apple", "orange", "pear"], vegetables: [ArrayOfThingsVeggie(veggieName: "potato", veggieLike: true), ArrayOfThingsVeggie(veggieName: "broccoli", veggieLike: false)])
+ArrayOfThings(fruits: ["apple", "orange", "pear"], vegetables: [ArrayOfThingsVeggie(veggieName: "potato", veggieLike: true), ArrayOfThingsVeggie(veggieName: "broccoli", veggieLike: false)])

@@ -1,1 +1,1 @@
-BlogBlog(title: "New Blog Post", content: "This is the content of the blog post...", publishedDate: "2023-08-25T15:00:00Z", author: BlogAuthor(username: "authoruser", email: "author@example.com"), tags: ["Technology", "Programming"])
+Blog(title: "New Blog Post", content: "This is the content of the blog post...", publishedDate: "2023-08-25T15:00:00Z", author: BlogAuthor(username: "authoruser", email: "author@example.com"), tags: ["Technology", "Programming"])

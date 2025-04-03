@@ -3,29 +3,29 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  Basicbasic* = object
+  Basic* = object
     firstName*: Option[string]
     lastName*: Option[string]
     age*: Option[BiggestInt]
-proc toJsonHook*(source: Basicbasic): JsonNode
-proc equals(_: typedesc[Basicbasic]; a, b: Basicbasic): bool =
+proc toJsonHook*(source: Basic): JsonNode
+proc equals(_: typedesc[Basic]; a, b: Basic): bool =
   equals(typeof(a.firstName), a.firstName, b.firstName) and
       equals(typeof(a.lastName), a.lastName, b.lastName) and
       equals(typeof(a.age), a.age, b.age)
 
-proc `==`*(a, b: Basicbasic): bool =
-  return equals(Basicbasic, a, b)
+proc `==`*(a, b: Basic): bool =
+  return equals(Basic, a, b)
 
-proc stringify(_: typedesc[Basicbasic]; value: Basicbasic): string =
-  stringifyObj("Basicbasic", ("firstName", stringify(typeof(value.firstName),
-      value.firstName)), ("lastName",
-                          stringify(typeof(value.lastName), value.lastName)),
+proc stringify(_: typedesc[Basic]; value: Basic): string =
+  stringifyObj("Basic", ("firstName",
+                         stringify(typeof(value.firstName), value.firstName)), (
+      "lastName", stringify(typeof(value.lastName), value.lastName)),
                ("age", stringify(typeof(value.age), value.age)))
 
-proc `$`*(value: Basicbasic): string =
-  stringify(Basicbasic, value)
+proc `$`*(value: Basic): string =
+  stringify(Basic, value)
 
-proc fromJsonHook*(target: var Basicbasic; source: JsonNode) =
+proc fromJsonHook*(target: var Basic; source: JsonNode) =
   if hasKey(source, "firstName") and source{"firstName"}.kind != JNull:
     target.firstName = some(jsonTo(source{"firstName"},
                                    typeof(unsafeGet(target.firstName))))
@@ -35,7 +35,7 @@ proc fromJsonHook*(target: var Basicbasic; source: JsonNode) =
   if hasKey(source, "age") and source{"age"}.kind != JNull:
     target.age = some(jsonTo(source{"age"}, typeof(unsafeGet(target.age))))
 
-proc toJsonHook*(source: Basicbasic): JsonNode =
+proc toJsonHook*(source: Basic): JsonNode =
   result = newJObject()
   if isSome(source.firstName):
     result{"firstName"} = newJString(unsafeGet(source.firstName))

@@ -8,13 +8,13 @@ type
     city*: string
     state*: string
     postalCode*: string
-  Complex_objectcomplex_object* = object
+  Complex_object* = object
     name*: string
     age*: BiggestInt
     address*: Option[Complex_objectAddress]
     hobbies*: Option[seq[string]]
 proc toJsonHook*(source: Complex_objectAddress): JsonNode
-proc toJsonHook*(source: Complex_objectcomplex_object): JsonNode
+proc toJsonHook*(source: Complex_object): JsonNode
 proc equals(_: typedesc[Complex_objectAddress]; a, b: Complex_objectAddress): bool =
   equals(typeof(a.street), a.street, b.street) and
       equals(typeof(a.city), a.city, b.city) and
@@ -55,32 +55,30 @@ proc toJsonHook*(source: Complex_objectAddress): JsonNode =
   result{"state"} = newJString(source.state)
   result{"postalCode"} = newJString(source.postalCode)
 
-proc equals(_: typedesc[Complex_objectcomplex_object];
-            a, b: Complex_objectcomplex_object): bool =
+proc equals(_: typedesc[Complex_object]; a, b: Complex_object): bool =
   equals(typeof(a.name), a.name, b.name) and equals(typeof(a.age), a.age, b.age) and
       equals(typeof(a.address), a.address, b.address) and
       equals(typeof(a.hobbies), a.hobbies, b.hobbies)
 
-proc `==`*(a, b: Complex_objectcomplex_object): bool =
-  return equals(Complex_objectcomplex_object, a, b)
+proc `==`*(a, b: Complex_object): bool =
+  return equals(Complex_object, a, b)
 
-proc stringify(_: typedesc[Complex_objectcomplex_object];
-               value: Complex_objectcomplex_object): string =
-  stringifyObj("Complex_objectcomplex_object",
+proc stringify(_: typedesc[Complex_object]; value: Complex_object): string =
+  stringifyObj("Complex_object",
                ("name", stringify(typeof(value.name), value.name)),
                ("age", stringify(typeof(value.age), value.age)),
                ("address", stringify(typeof(value.address), value.address)),
                ("hobbies", stringify(typeof(value.hobbies), value.hobbies)))
 
-proc `$`*(value: Complex_objectcomplex_object): string =
-  stringify(Complex_objectcomplex_object, value)
+proc `$`*(value: Complex_object): string =
+  stringify(Complex_object, value)
 
-proc fromJsonHook*(target: var Complex_objectcomplex_object; source: JsonNode) =
-  assert(hasKey(source, "name"), "name" & " is missing while decoding " &
-      "Complex_objectcomplex_object")
+proc fromJsonHook*(target: var Complex_object; source: JsonNode) =
+  assert(hasKey(source, "name"),
+         "name" & " is missing while decoding " & "Complex_object")
   target.name = jsonTo(source{"name"}, typeof(target.name))
   assert(hasKey(source, "age"),
-         "age" & " is missing while decoding " & "Complex_objectcomplex_object")
+         "age" & " is missing while decoding " & "Complex_object")
   target.age = jsonTo(source{"age"}, typeof(target.age))
   if hasKey(source, "address") and source{"address"}.kind != JNull:
     target.address = some(jsonTo(source{"address"},
@@ -89,7 +87,7 @@ proc fromJsonHook*(target: var Complex_objectcomplex_object; source: JsonNode) =
     target.hobbies = some(jsonTo(source{"hobbies"},
                                  typeof(unsafeGet(target.hobbies))))
 
-proc toJsonHook*(source: Complex_objectcomplex_object): JsonNode =
+proc toJsonHook*(source: Complex_object): JsonNode =
   result = newJObject()
   result{"name"} = newJString(source.name)
   result{"age"} = newJInt(source.age)

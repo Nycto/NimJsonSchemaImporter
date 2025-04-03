@@ -6,11 +6,11 @@ type
   Array_of_thingsVeggie* = object
     veggieName*: string
     veggieLike*: bool
-  Array_of_thingsarray_of_things* = object
+  Array_of_things* = object
     fruits*: Option[seq[string]]
     vegetables*: Option[seq[Array_of_thingsVeggie]]
 proc toJsonHook*(source: Array_of_thingsVeggie): JsonNode
-proc toJsonHook*(source: Array_of_thingsarray_of_things): JsonNode
+proc toJsonHook*(source: Array_of_things): JsonNode
 proc equals(_: typedesc[Array_of_thingsVeggie]; a, b: Array_of_thingsVeggie): bool =
   equals(typeof(a.veggieName), a.veggieName, b.veggieName) and
       equals(typeof(a.veggieLike), a.veggieLike, b.veggieLike)
@@ -39,24 +39,22 @@ proc toJsonHook*(source: Array_of_thingsVeggie): JsonNode =
   result{"veggieName"} = newJString(source.veggieName)
   result{"veggieLike"} = newJBool(source.veggieLike)
 
-proc equals(_: typedesc[Array_of_thingsarray_of_things];
-            a, b: Array_of_thingsarray_of_things): bool =
+proc equals(_: typedesc[Array_of_things]; a, b: Array_of_things): bool =
   equals(typeof(a.fruits), a.fruits, b.fruits) and
       equals(typeof(a.vegetables), a.vegetables, b.vegetables)
 
-proc `==`*(a, b: Array_of_thingsarray_of_things): bool =
-  return equals(Array_of_thingsarray_of_things, a, b)
+proc `==`*(a, b: Array_of_things): bool =
+  return equals(Array_of_things, a, b)
 
-proc stringify(_: typedesc[Array_of_thingsarray_of_things];
-               value: Array_of_thingsarray_of_things): string =
-  stringifyObj("Array_of_thingsarray_of_things",
+proc stringify(_: typedesc[Array_of_things]; value: Array_of_things): string =
+  stringifyObj("Array_of_things",
                ("fruits", stringify(typeof(value.fruits), value.fruits)), (
       "vegetables", stringify(typeof(value.vegetables), value.vegetables)))
 
-proc `$`*(value: Array_of_thingsarray_of_things): string =
-  stringify(Array_of_thingsarray_of_things, value)
+proc `$`*(value: Array_of_things): string =
+  stringify(Array_of_things, value)
 
-proc fromJsonHook*(target: var Array_of_thingsarray_of_things; source: JsonNode) =
+proc fromJsonHook*(target: var Array_of_things; source: JsonNode) =
   if hasKey(source, "fruits") and source{"fruits"}.kind != JNull:
     target.fruits = some(jsonTo(source{"fruits"},
                                 typeof(unsafeGet(target.fruits))))
@@ -64,7 +62,7 @@ proc fromJsonHook*(target: var Array_of_thingsarray_of_things; source: JsonNode)
     target.vegetables = some(jsonTo(source{"vegetables"},
                                     typeof(unsafeGet(target.vegetables))))
 
-proc toJsonHook*(source: Array_of_thingsarray_of_things): JsonNode =
+proc toJsonHook*(source: Array_of_things): JsonNode =
   result = newJObject()
   if isSome(source.fruits):
     result{"fruits"} = block:

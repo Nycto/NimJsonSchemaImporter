@@ -1,1 +1,1 @@
-UnionUnion(key1: "ut magna incididunt voluptate", key2: "enim Ut occaecat ut commodo", key3: UnionKey3(foo: "irure aliquip voluptate"))
+Union(key1: "ut magna incididunt voluptate", key2: "enim Ut occaecat ut commodo", key3: UnionKey3(foo: "irure aliquip voluptate"))

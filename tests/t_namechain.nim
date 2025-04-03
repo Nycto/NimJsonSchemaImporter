@@ -30,3 +30,6 @@ suite "Name chaining and generation":
     test "Multiple Categorized names":
         check(take(rootName("Foo").categorize("Union").add("bar").categorize("Obj"), 5) ==
             @["PreBar", "PreBarObj", "PreFooBarObj", "PreFooBarObjUnion", "PreFooBarObjUnion2"])
+
+    test "No double prefixes":
+        check(take(rootName("Pre").add("bar"), 4) == @["PreBar", "PreBar", "PreBar2", "PreBar3"])

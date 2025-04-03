@@ -3,7 +3,7 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  Addressaddress* = object
+  Address* = object
     postOfficeBox*: Option[string]
     extendedAddress*: Option[string]
     streetAddress*: Option[string]
@@ -11,8 +11,8 @@ type
     region*: string
     postalCode*: Option[string]
     countryName*: string
-proc toJsonHook*(source: Addressaddress): JsonNode
-proc equals(_: typedesc[Addressaddress]; a, b: Addressaddress): bool =
+proc toJsonHook*(source: Address): JsonNode
+proc equals(_: typedesc[Address]; a, b: Address): bool =
   equals(typeof(a.postOfficeBox), a.postOfficeBox, b.postOfficeBox) and
       equals(typeof(a.extendedAddress), a.extendedAddress, b.extendedAddress) and
       equals(typeof(a.streetAddress), a.streetAddress, b.streetAddress) and
@@ -21,11 +21,11 @@ proc equals(_: typedesc[Addressaddress]; a, b: Addressaddress): bool =
       equals(typeof(a.postalCode), a.postalCode, b.postalCode) and
       equals(typeof(a.countryName), a.countryName, b.countryName)
 
-proc `==`*(a, b: Addressaddress): bool =
-  return equals(Addressaddress, a, b)
+proc `==`*(a, b: Address): bool =
+  return equals(Address, a, b)
 
-proc stringify(_: typedesc[Addressaddress]; value: Addressaddress): string =
-  stringifyObj("Addressaddress", ("postOfficeBox", stringify(
+proc stringify(_: typedesc[Address]; value: Address): string =
+  stringifyObj("Address", ("postOfficeBox", stringify(
       typeof(value.postOfficeBox), value.postOfficeBox)), ("extendedAddress",
       stringify(typeof(value.extendedAddress), value.extendedAddress)), (
       "streetAddress",
@@ -35,10 +35,10 @@ proc stringify(_: typedesc[Addressaddress]; value: Addressaddress): string =
       "postalCode", stringify(typeof(value.postalCode), value.postalCode)), (
       "countryName", stringify(typeof(value.countryName), value.countryName)))
 
-proc `$`*(value: Addressaddress): string =
-  stringify(Addressaddress, value)
+proc `$`*(value: Address): string =
+  stringify(Address, value)
 
-proc fromJsonHook*(target: var Addressaddress; source: JsonNode) =
+proc fromJsonHook*(target: var Address; source: JsonNode) =
   if hasKey(source, "postOfficeBox") and
       source{"postOfficeBox"}.kind != JNull:
     target.postOfficeBox = some(jsonTo(source{"postOfficeBox"},
@@ -52,19 +52,19 @@ proc fromJsonHook*(target: var Addressaddress; source: JsonNode) =
     target.streetAddress = some(jsonTo(source{"streetAddress"},
                                        typeof(unsafeGet(target.streetAddress))))
   assert(hasKey(source, "locality"),
-         "locality" & " is missing while decoding " & "Addressaddress")
+         "locality" & " is missing while decoding " & "Address")
   target.locality = jsonTo(source{"locality"}, typeof(target.locality))
   assert(hasKey(source, "region"),
-         "region" & " is missing while decoding " & "Addressaddress")
+         "region" & " is missing while decoding " & "Address")
   target.region = jsonTo(source{"region"}, typeof(target.region))
   if hasKey(source, "postalCode") and source{"postalCode"}.kind != JNull:
     target.postalCode = some(jsonTo(source{"postalCode"},
                                     typeof(unsafeGet(target.postalCode))))
   assert(hasKey(source, "countryName"),
-         "countryName" & " is missing while decoding " & "Addressaddress")
+         "countryName" & " is missing while decoding " & "Address")
   target.countryName = jsonTo(source{"countryName"}, typeof(target.countryName))
 
-proc toJsonHook*(source: Addressaddress): JsonNode =
+proc toJsonHook*(source: Address): JsonNode =
   result = newJObject()
   if isSome(source.postOfficeBox):
     result{"postOfficeBox"} = newJString(unsafeGet(source.postOfficeBox))

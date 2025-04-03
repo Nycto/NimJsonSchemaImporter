@@ -6,15 +6,15 @@ type
   MovieGenre* = enum
     Action = "Action", Comedy = "Comedy", Drama = "Drama",
     `Science Fiction` = "Science Fiction"
-  Moviemovie* = object
+  Movie* = object
     title*: string
     director*: string
     releaseDate*: string
     genre*: Option[MovieGenre]
     duration*: Option[string]
     `cast`*: Option[seq[string]]
-proc toJsonHook*(source: Moviemovie): JsonNode
-proc equals(_: typedesc[Moviemovie]; a, b: Moviemovie): bool =
+proc toJsonHook*(source: Movie): JsonNode
+proc equals(_: typedesc[Movie]; a, b: Movie): bool =
   equals(typeof(a.title), a.title, b.title) and
       equals(typeof(a.director), a.director, b.director) and
       equals(typeof(a.releaseDate), a.releaseDate, b.releaseDate) and
@@ -22,30 +22,29 @@ proc equals(_: typedesc[Moviemovie]; a, b: Moviemovie): bool =
       equals(typeof(a.duration), a.duration, b.duration) and
       equals(typeof(a.`cast`), a.`cast`, b.`cast`)
 
-proc `==`*(a, b: Moviemovie): bool =
-  return equals(Moviemovie, a, b)
+proc `==`*(a, b: Movie): bool =
+  return equals(Movie, a, b)
 
-proc stringify(_: typedesc[Moviemovie]; value: Moviemovie): string =
-  stringifyObj("Moviemovie",
-               ("title", stringify(typeof(value.title), value.title)), (
+proc stringify(_: typedesc[Movie]; value: Movie): string =
+  stringifyObj("Movie", ("title", stringify(typeof(value.title), value.title)), (
       "director", stringify(typeof(value.director), value.director)), (
       "releaseDate", stringify(typeof(value.releaseDate), value.releaseDate)),
                ("genre", stringify(typeof(value.genre), value.genre)), (
       "duration", stringify(typeof(value.duration), value.duration)),
                ("cast", stringify(typeof(value.`cast`), value.`cast`)))
 
-proc `$`*(value: Moviemovie): string =
-  stringify(Moviemovie, value)
+proc `$`*(value: Movie): string =
+  stringify(Movie, value)
 
-proc fromJsonHook*(target: var Moviemovie; source: JsonNode) =
+proc fromJsonHook*(target: var Movie; source: JsonNode) =
   assert(hasKey(source, "title"),
-         "title" & " is missing while decoding " & "Moviemovie")
+         "title" & " is missing while decoding " & "Movie")
   target.title = jsonTo(source{"title"}, typeof(target.title))
   assert(hasKey(source, "director"),
-         "director" & " is missing while decoding " & "Moviemovie")
+         "director" & " is missing while decoding " & "Movie")
   target.director = jsonTo(source{"director"}, typeof(target.director))
   assert(hasKey(source, "releaseDate"),
-         "releaseDate" & " is missing while decoding " & "Moviemovie")
+         "releaseDate" & " is missing while decoding " & "Movie")
   target.releaseDate = jsonTo(source{"releaseDate"}, typeof(target.releaseDate))
   if hasKey(source, "genre") and source{"genre"}.kind != JNull:
     target.genre = some(jsonTo(source{"genre"}, typeof(unsafeGet(target.genre))))
@@ -55,7 +54,7 @@ proc fromJsonHook*(target: var Moviemovie; source: JsonNode) =
   if hasKey(source, "cast") and source{"cast"}.kind != JNull:
     target.`cast` = some(jsonTo(source{"cast"}, typeof(unsafeGet(target.`cast`))))
 
-proc toJsonHook*(source: Moviemovie): JsonNode =
+proc toJsonHook*(source: Movie): JsonNode =
   result = newJObject()
   result{"title"} = newJString(source.title)
   result{"director"} = newJString(source.director)

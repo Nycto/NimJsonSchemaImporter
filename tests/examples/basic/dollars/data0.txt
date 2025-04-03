@@ -1,1 +1,1 @@
-BasicBasic(firstName: "John", lastName: "Doe", age: 21)
+Basic(firstName: "John", lastName: "Doe", age: 21)

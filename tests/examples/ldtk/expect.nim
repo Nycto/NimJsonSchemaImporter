@@ -139,7 +139,7 @@ type
   LdtkCustomCommand* = object
     `when`*: LdtkWhen
     command*: string
-  LdtkldtkWorldLayout* = enum
+  LdtkWorldLayout2* = enum
     Free = "Free", GridVania = "GridVania",
     LinearHorizontal = "LinearHorizontal", LinearVertical = "LinearVertical"
   LdtkFlags* = enum
@@ -448,7 +448,7 @@ type
     worldGridHeight*: Option[BiggestInt]
     appBuildId*: BiggestFloat
     defaultGridSize*: BiggestInt
-    worldLayout*: Option[LdtkldtkWorldLayout]
+    worldLayout*: Option[LdtkWorldLayout2]
     flags*: seq[LdtkFlags]
     levelNamePattern*: string
     exportPng*: Option[bool]

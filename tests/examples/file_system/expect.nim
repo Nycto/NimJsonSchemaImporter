@@ -13,16 +13,16 @@ type
   File_systemDiskUUID* = object
     `type`*: File_systemStorageType
     label*: string
-  File_systemfile_systemStorageType* = enum
+  File_systemStorageType2* = enum
     Nfs = "nfs"
   File_systemNfs* = object
-    `type`*: File_systemfile_systemStorageType
+    `type`*: File_systemStorageType2
     remotePath*: string
     server*: string
-  File_systemfile_systemStorageType2* = enum
+  File_systemStorageType3* = enum
     Tmpfs = "tmpfs"
   File_systemTmpfs* = object
-    `type`*: File_systemfile_systemStorageType2
+    `type`*: File_systemStorageType3
     sizeInMB*: BiggestInt
   File_systemUnion* = object
     case kind*: range[0 .. 3]
@@ -36,7 +36,7 @@ type
       key3*: File_systemTmpfs
   File_systemFstype* = enum
     Ext3 = "ext3", Ext4 = "ext4", Btrfs = "btrfs"
-  File_systemfile_system* = object
+  File_system* = object
     storage*: File_systemUnion
     fstype*: Option[File_systemFstype]
     options*: Option[seq[string]]
@@ -45,7 +45,7 @@ proc toJsonHook*(source: File_systemDiskDevice): JsonNode
 proc toJsonHook*(source: File_systemDiskUUID): JsonNode
 proc toJsonHook*(source: File_systemNfs): JsonNode
 proc toJsonHook*(source: File_systemTmpfs): JsonNode
-proc toJsonHook*(source: File_systemfile_system): JsonNode
+proc toJsonHook*(source: File_system): JsonNode
 proc equals(_: typedesc[File_systemDiskDevice]; a, b: File_systemDiskDevice): bool =
   equals(typeof(a.`type`), a.`type`, b.`type`) and
       equals(typeof(a.device), a.device, b.device)
@@ -285,29 +285,28 @@ proc fromBinary(_: typedesc[File_systemUnion]; source: string; idx: var int): Fi
     return File_systemUnion(kind: 3,
                             key3: fromBinary(typeof(result.key3), source, idx))
   
-proc equals(_: typedesc[File_systemfile_system]; a, b: File_systemfile_system): bool =
+proc equals(_: typedesc[File_system]; a, b: File_system): bool =
   equals(typeof(a.storage), a.storage, b.storage) and
       equals(typeof(a.fstype), a.fstype, b.fstype) and
       equals(typeof(a.options), a.options, b.options) and
       equals(typeof(a.readonly), a.readonly, b.readonly)
 
-proc `==`*(a, b: File_systemfile_system): bool =
-  return equals(File_systemfile_system, a, b)
+proc `==`*(a, b: File_system): bool =
+  return equals(File_system, a, b)
 
-proc stringify(_: typedesc[File_systemfile_system];
-               value: File_systemfile_system): string =
-  stringifyObj("File_systemfile_system",
+proc stringify(_: typedesc[File_system]; value: File_system): string =
+  stringifyObj("File_system",
                ("storage", stringify(typeof(value.storage), value.storage)),
                ("fstype", stringify(typeof(value.fstype), value.fstype)),
                ("options", stringify(typeof(value.options), value.options)),
                ("readonly", stringify(typeof(value.readonly), value.readonly)))
 
-proc `$`*(value: File_systemfile_system): string =
-  stringify(File_systemfile_system, value)
+proc `$`*(value: File_system): string =
+  stringify(File_system, value)
 
-proc fromJsonHook*(target: var File_systemfile_system; source: JsonNode) =
+proc fromJsonHook*(target: var File_system; source: JsonNode) =
   assert(hasKey(source, "storage"),
-         "storage" & " is missing while decoding " & "File_systemfile_system")
+         "storage" & " is missing while decoding " & "File_system")
   target.storage = jsonTo(source{"storage"}, typeof(target.storage))
   if hasKey(source, "fstype") and source{"fstype"}.kind != JNull:
     target.fstype = some(jsonTo(source{"fstype"},
@@ -319,7 +318,7 @@ proc fromJsonHook*(target: var File_systemfile_system; source: JsonNode) =
     target.readonly = some(jsonTo(source{"readonly"},
                                   typeof(unsafeGet(target.readonly))))
 
-proc toJsonHook*(source: File_systemfile_system): JsonNode =
+proc toJsonHook*(source: File_system): JsonNode =
   result = newJObject()
   result{"storage"} = toJsonHook(source.storage)
   if isSome(source.fstype):

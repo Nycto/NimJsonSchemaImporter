@@ -6,14 +6,14 @@ type
   BlogAuthor* = object
     username*: Option[string]
     email*: Option[string]
-  Blogblog* = object
+  Blog* = object
     title*: string
     content*: string
     publishedDate*: Option[string]
     author*: BlogAuthor
     tags*: Option[seq[string]]
 proc toJsonHook*(source: BlogAuthor): JsonNode
-proc toJsonHook*(source: Blogblog): JsonNode
+proc toJsonHook*(source: Blog): JsonNode
 proc equals(_: typedesc[BlogAuthor]; a, b: BlogAuthor): bool =
   equals(typeof(a.username), a.username, b.username) and
       equals(typeof(a.email), a.email, b.email)
@@ -43,46 +43,45 @@ proc toJsonHook*(source: BlogAuthor): JsonNode =
   if isSome(source.email):
     result{"email"} = newJString(unsafeGet(source.email))
 
-proc equals(_: typedesc[Blogblog]; a, b: Blogblog): bool =
+proc equals(_: typedesc[Blog]; a, b: Blog): bool =
   equals(typeof(a.title), a.title, b.title) and
       equals(typeof(a.content), a.content, b.content) and
       equals(typeof(a.publishedDate), a.publishedDate, b.publishedDate) and
       equals(typeof(a.author), a.author, b.author) and
       equals(typeof(a.tags), a.tags, b.tags)
 
-proc `==`*(a, b: Blogblog): bool =
-  return equals(Blogblog, a, b)
+proc `==`*(a, b: Blog): bool =
+  return equals(Blog, a, b)
 
-proc stringify(_: typedesc[Blogblog]; value: Blogblog): string =
-  stringifyObj("Blogblog",
-               ("title", stringify(typeof(value.title), value.title)),
+proc stringify(_: typedesc[Blog]; value: Blog): string =
+  stringifyObj("Blog", ("title", stringify(typeof(value.title), value.title)),
                ("content", stringify(typeof(value.content), value.content)), (
       "publishedDate",
       stringify(typeof(value.publishedDate), value.publishedDate)),
                ("author", stringify(typeof(value.author), value.author)),
                ("tags", stringify(typeof(value.tags), value.tags)))
 
-proc `$`*(value: Blogblog): string =
-  stringify(Blogblog, value)
+proc `$`*(value: Blog): string =
+  stringify(Blog, value)
 
-proc fromJsonHook*(target: var Blogblog; source: JsonNode) =
+proc fromJsonHook*(target: var Blog; source: JsonNode) =
   assert(hasKey(source, "title"),
-         "title" & " is missing while decoding " & "Blogblog")
+         "title" & " is missing while decoding " & "Blog")
   target.title = jsonTo(source{"title"}, typeof(target.title))
   assert(hasKey(source, "content"),
-         "content" & " is missing while decoding " & "Blogblog")
+         "content" & " is missing while decoding " & "Blog")
   target.content = jsonTo(source{"content"}, typeof(target.content))
   if hasKey(source, "publishedDate") and
       source{"publishedDate"}.kind != JNull:
     target.publishedDate = some(jsonTo(source{"publishedDate"},
                                        typeof(unsafeGet(target.publishedDate))))
   assert(hasKey(source, "author"),
-         "author" & " is missing while decoding " & "Blogblog")
+         "author" & " is missing while decoding " & "Blog")
   target.author = jsonTo(source{"author"}, typeof(target.author))
   if hasKey(source, "tags") and source{"tags"}.kind != JNull:
     target.tags = some(jsonTo(source{"tags"}, typeof(unsafeGet(target.tags))))
 
-proc toJsonHook*(source: Blogblog): JsonNode =
+proc toJsonHook*(source: Blog): JsonNode =
   result = newJObject()
   result{"title"} = newJString(source.title)
   result{"content"} = newJString(source.content)

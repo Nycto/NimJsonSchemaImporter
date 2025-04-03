@@ -3,16 +3,15 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  User_profileuser_profile* = object
+  User_profile* = object
     username*: string
     email*: string
     fullName*: Option[string]
     age*: Option[BiggestInt]
     location*: Option[string]
     interests*: Option[seq[string]]
-proc toJsonHook*(source: User_profileuser_profile): JsonNode
-proc equals(_: typedesc[User_profileuser_profile];
-            a, b: User_profileuser_profile): bool =
+proc toJsonHook*(source: User_profile): JsonNode
+proc equals(_: typedesc[User_profile]; a, b: User_profile): bool =
   equals(typeof(a.username), a.username, b.username) and
       equals(typeof(a.email), a.email, b.email) and
       equals(typeof(a.fullName), a.fullName, b.fullName) and
@@ -20,28 +19,26 @@ proc equals(_: typedesc[User_profileuser_profile];
       equals(typeof(a.location), a.location, b.location) and
       equals(typeof(a.interests), a.interests, b.interests)
 
-proc `==`*(a, b: User_profileuser_profile): bool =
-  return equals(User_profileuser_profile, a, b)
+proc `==`*(a, b: User_profile): bool =
+  return equals(User_profile, a, b)
 
-proc stringify(_: typedesc[User_profileuser_profile];
-               value: User_profileuser_profile): string =
-  stringifyObj("User_profileuser_profile", ("username",
-      stringify(typeof(value.username), value.username)),
-               ("email", stringify(typeof(value.email), value.email)), (
+proc stringify(_: typedesc[User_profile]; value: User_profile): string =
+  stringifyObj("User_profile", ("username", stringify(typeof(value.username),
+      value.username)), ("email", stringify(typeof(value.email), value.email)), (
       "fullName", stringify(typeof(value.fullName), value.fullName)),
                ("age", stringify(typeof(value.age), value.age)), ("location",
       stringify(typeof(value.location), value.location)), ("interests",
       stringify(typeof(value.interests), value.interests)))
 
-proc `$`*(value: User_profileuser_profile): string =
-  stringify(User_profileuser_profile, value)
+proc `$`*(value: User_profile): string =
+  stringify(User_profile, value)
 
-proc fromJsonHook*(target: var User_profileuser_profile; source: JsonNode) =
-  assert(hasKey(source, "username"), "username" & " is missing while decoding " &
-      "User_profileuser_profile")
+proc fromJsonHook*(target: var User_profile; source: JsonNode) =
+  assert(hasKey(source, "username"),
+         "username" & " is missing while decoding " & "User_profile")
   target.username = jsonTo(source{"username"}, typeof(target.username))
   assert(hasKey(source, "email"),
-         "email" & " is missing while decoding " & "User_profileuser_profile")
+         "email" & " is missing while decoding " & "User_profile")
   target.email = jsonTo(source{"email"}, typeof(target.email))
   if hasKey(source, "fullName") and source{"fullName"}.kind != JNull:
     target.fullName = some(jsonTo(source{"fullName"},
@@ -55,7 +52,7 @@ proc fromJsonHook*(target: var User_profileuser_profile; source: JsonNode) =
     target.interests = some(jsonTo(source{"interests"},
                                    typeof(unsafeGet(target.interests))))
 
-proc toJsonHook*(source: User_profileuser_profile): JsonNode =
+proc toJsonHook*(source: User_profile): JsonNode =
   result = newJObject()
   result{"username"} = newJString(source.username)
   result{"email"} = newJString(source.email)

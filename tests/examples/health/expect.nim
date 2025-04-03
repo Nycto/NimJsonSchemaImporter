@@ -6,7 +6,7 @@ type
   HealthEmergencyContact* = object
     username*: Option[string]
     email*: Option[string]
-  Healthhealth* = object
+  Health* = object
     patientName*: string
     dateOfBirth*: string
     bloodType*: string
@@ -15,7 +15,7 @@ type
     medications*: Option[seq[string]]
     emergencyContact*: Option[HealthEmergencyContact]
 proc toJsonHook*(source: HealthEmergencyContact): JsonNode
-proc toJsonHook*(source: Healthhealth): JsonNode
+proc toJsonHook*(source: Health): JsonNode
 proc equals(_: typedesc[HealthEmergencyContact]; a, b: HealthEmergencyContact): bool =
   equals(typeof(a.username), a.username, b.username) and
       equals(typeof(a.email), a.email, b.email)
@@ -46,7 +46,7 @@ proc toJsonHook*(source: HealthEmergencyContact): JsonNode =
   if isSome(source.email):
     result{"email"} = newJString(unsafeGet(source.email))
 
-proc equals(_: typedesc[Healthhealth]; a, b: Healthhealth): bool =
+proc equals(_: typedesc[Health]; a, b: Health): bool =
   equals(typeof(a.patientName), a.patientName, b.patientName) and
       equals(typeof(a.dateOfBirth), a.dateOfBirth, b.dateOfBirth) and
       equals(typeof(a.bloodType), a.bloodType, b.bloodType) and
@@ -55,32 +55,32 @@ proc equals(_: typedesc[Healthhealth]; a, b: Healthhealth): bool =
       equals(typeof(a.medications), a.medications, b.medications) and
       equals(typeof(a.emergencyContact), a.emergencyContact, b.emergencyContact)
 
-proc `==`*(a, b: Healthhealth): bool =
-  return equals(Healthhealth, a, b)
+proc `==`*(a, b: Health): bool =
+  return equals(Health, a, b)
 
-proc stringify(_: typedesc[Healthhealth]; value: Healthhealth): string =
-  stringifyObj("Healthhealth", ("patientName", stringify(
-      typeof(value.patientName), value.patientName)), ("dateOfBirth",
-      stringify(typeof(value.dateOfBirth), value.dateOfBirth)), ("bloodType",
-      stringify(typeof(value.bloodType), value.bloodType)), ("allergies",
-      stringify(typeof(value.allergies), value.allergies)), ("conditions",
-      stringify(typeof(value.conditions), value.conditions)), ("medications",
-      stringify(typeof(value.medications), value.medications)), (
+proc stringify(_: typedesc[Health]; value: Health): string =
+  stringifyObj("Health", ("patientName", stringify(typeof(value.patientName),
+      value.patientName)), ("dateOfBirth", stringify(typeof(value.dateOfBirth),
+      value.dateOfBirth)), ("bloodType",
+                            stringify(typeof(value.bloodType), value.bloodType)), (
+      "allergies", stringify(typeof(value.allergies), value.allergies)), (
+      "conditions", stringify(typeof(value.conditions), value.conditions)), (
+      "medications", stringify(typeof(value.medications), value.medications)), (
       "emergencyContact",
       stringify(typeof(value.emergencyContact), value.emergencyContact)))
 
-proc `$`*(value: Healthhealth): string =
-  stringify(Healthhealth, value)
+proc `$`*(value: Health): string =
+  stringify(Health, value)
 
-proc fromJsonHook*(target: var Healthhealth; source: JsonNode) =
+proc fromJsonHook*(target: var Health; source: JsonNode) =
   assert(hasKey(source, "patientName"),
-         "patientName" & " is missing while decoding " & "Healthhealth")
+         "patientName" & " is missing while decoding " & "Health")
   target.patientName = jsonTo(source{"patientName"}, typeof(target.patientName))
   assert(hasKey(source, "dateOfBirth"),
-         "dateOfBirth" & " is missing while decoding " & "Healthhealth")
+         "dateOfBirth" & " is missing while decoding " & "Health")
   target.dateOfBirth = jsonTo(source{"dateOfBirth"}, typeof(target.dateOfBirth))
   assert(hasKey(source, "bloodType"),
-         "bloodType" & " is missing while decoding " & "Healthhealth")
+         "bloodType" & " is missing while decoding " & "Health")
   target.bloodType = jsonTo(source{"bloodType"}, typeof(target.bloodType))
   if hasKey(source, "allergies") and source{"allergies"}.kind != JNull:
     target.allergies = some(jsonTo(source{"allergies"},
@@ -96,7 +96,7 @@ proc fromJsonHook*(target: var Healthhealth; source: JsonNode) =
     target.emergencyContact = some(jsonTo(source{"emergencyContact"},
         typeof(unsafeGet(target.emergencyContact))))
 
-proc toJsonHook*(source: Healthhealth): JsonNode =
+proc toJsonHook*(source: Health): JsonNode =
   result = newJObject()
   result{"patientName"} = newJString(source.patientName)
   result{"dateOfBirth"} = newJString(source.dateOfBirth)
