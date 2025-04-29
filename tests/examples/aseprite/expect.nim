@@ -82,16 +82,36 @@ type
   AsepriteSpriteSheet* = object
     frames*: AsepriteUnion
     meta*: AsepriteMeta
+proc `=copy`(a: var AsepriteRectangle;
+             b: AsepriteRectangle) {.error.}
 proc toJsonHook*(source: AsepriteRectangle): JsonNode
+proc `=copy`(a: var AsepriteSize; b: AsepriteSize) {.error.}
 proc toJsonHook*(source: AsepriteSize): JsonNode
+proc `=copy`(a: var AsepriteFrame; b: AsepriteFrame) {.
+    error.}
 proc toJsonHook*(source: AsepriteFrame): JsonNode
+proc `=copy`(a: var AsepriteArrayFrame;
+             b: AsepriteArrayFrame) {.error.}
 proc toJsonHook*(source: AsepriteArrayFrame): JsonNode
+proc `=copy`(a: var AsepriteFrameTag; b: AsepriteFrameTag) {.
+    error.}
 proc toJsonHook*(source: AsepriteFrameTag): JsonNode
+proc `=copy`(a: var AsepriteLayer; b: AsepriteLayer) {.
+    error.}
 proc toJsonHook*(source: AsepriteLayer): JsonNode
+proc `=copy`(a: var AsepritePoint; b: AsepritePoint) {.
+    error.}
 proc toJsonHook*(source: AsepritePoint): JsonNode
+proc `=copy`(a: var AsepriteSliceKey; b: AsepriteSliceKey) {.
+    error.}
 proc toJsonHook*(source: AsepriteSliceKey): JsonNode
+proc `=copy`(a: var AsepriteSlice; b: AsepriteSlice) {.
+    error.}
 proc toJsonHook*(source: AsepriteSlice): JsonNode
+proc `=copy`(a: var AsepriteMeta; b: AsepriteMeta) {.error.}
 proc toJsonHook*(source: AsepriteMeta): JsonNode
+proc `=copy`(a: var AsepriteSpriteSheet;
+             b: AsepriteSpriteSheet) {.error.}
 proc toJsonHook*(source: AsepriteSpriteSheet): JsonNode
 proc equals(_: typedesc[AsepriteRectangle]; a, b: AsepriteRectangle): bool =
   equals(typeof(a.h), a.h, b.h) and equals(typeof(a.w), a.w, b.w) and
@@ -312,14 +332,17 @@ proc toJsonHook*(source: AsepriteUnion): JsonNode =
   case source.kind
   of 0:
     block:
+      let cursor {.cursor.} = source.key0
       var output = newJObject()
-      for key, entry in pairs(source.key0):
-        output[key] = toJsonHook(entry)
+      for key in keys(cursor):
+        output[key] = toJsonHook(
+            cursor[key])
       output
   of 1:
     block:
+      let cursor {.cursor.} = source.key1
       var output = newJArray()
-      for entry in source.key1:
+      for entry in cursor:
         output.add(toJsonHook(entry))
       output
   
@@ -567,8 +590,9 @@ proc toJsonHook*(source: AsepriteSlice): JsonNode =
   if isSome(source.data):
     result{"data"} = newJString(unsafeGet(source.data))
   result{"keys"} = block:
+    let cursor {.cursor.} = source.keys
     var output = newJArray()
-    for entry in source.keys:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"name"} = newJString(source.name)
@@ -637,23 +661,26 @@ proc toJsonHook*(source: AsepriteMeta): JsonNode =
   result{"format"} = `%`(source.format)
   if isSome(source.frameTags):
     result{"frameTags"} = block:
+      let cursor {.cursor.} = unsafeGet(source.frameTags)
       var output = newJArray()
-      for entry in unsafeGet(source.frameTags):
+      for entry in cursor:
         output.add(toJsonHook(entry))
       output
   result{"image"} = newJString(source.image)
   if isSome(source.layers):
     result{"layers"} = block:
+      let cursor {.cursor.} = unsafeGet(source.layers)
       var output = newJArray()
-      for entry in unsafeGet(source.layers):
+      for entry in cursor:
         output.add(toJsonHook(entry))
       output
   result{"scale"} = newJString(source.scale)
   result{"size"} = toJsonHook(source.size)
   if isSome(source.slices):
     result{"slices"} = block:
+      let cursor {.cursor.} = unsafeGet(source.slices)
       var output = newJArray()
-      for entry in unsafeGet(source.slices):
+      for entry in cursor:
         output.add(toJsonHook(entry))
       output
   result{"version"} = newJString(source.version)

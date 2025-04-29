@@ -11,6 +11,7 @@ type
     region*: string
     postalCode*: Option[string]
     countryName*: string
+proc `=copy`(a: var Address; b: Address) {.error.}
 proc toJsonHook*(source: Address): JsonNode
 proc equals(_: typedesc[Address]; a, b: Address): bool =
   equals(typeof(a.postOfficeBox), a.postOfficeBox, b.postOfficeBox) and

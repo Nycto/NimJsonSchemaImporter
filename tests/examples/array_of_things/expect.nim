@@ -9,7 +9,11 @@ type
   Array_of_things* = object
     fruits*: Option[seq[string]]
     vegetables*: Option[seq[Array_of_thingsVeggie]]
+proc `=copy`(a: var Array_of_thingsVeggie;
+             b: Array_of_thingsVeggie) {.error.}
 proc toJsonHook*(source: Array_of_thingsVeggie): JsonNode
+proc `=copy`(a: var Array_of_things; b: Array_of_things) {.
+    error.}
 proc toJsonHook*(source: Array_of_things): JsonNode
 proc equals(_: typedesc[Array_of_thingsVeggie]; a, b: Array_of_thingsVeggie): bool =
   equals(typeof(a.veggieName), a.veggieName, b.veggieName) and
@@ -66,14 +70,16 @@ proc toJsonHook*(source: Array_of_things): JsonNode =
   result = newJObject()
   if isSome(source.fruits):
     result{"fruits"} = block:
+      let cursor {.cursor.} = unsafeGet(source.fruits)
       var output = newJArray()
-      for entry in unsafeGet(source.fruits):
+      for entry in cursor:
         output.add(newJString(entry))
       output
   if isSome(source.vegetables):
     result{"vegetables"} = block:
+      let cursor {.cursor.} = unsafeGet(source.vegetables)
       var output = newJArray()
-      for entry in unsafeGet(source.vegetables):
+      for entry in cursor:
         output.add(toJsonHook(entry))
       output
 {.pop.}

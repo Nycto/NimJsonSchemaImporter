@@ -33,7 +33,9 @@ type
     key1*: Option[UnionUnion]
     key2*: string
     key3*: Option[UnionKey3Union]
+proc `=copy`(a: var UnionKey3; b: UnionKey3) {.error.}
 proc toJsonHook*(source: UnionKey3): JsonNode
+proc `=copy`(a: var Union; b: Union) {.error.}
 proc toJsonHook*(source: Union): JsonNode
 converter forUnionUnion*(value: string): UnionUnion =
   return UnionUnion(kind: 0, key0: value)
@@ -247,15 +249,18 @@ proc toJsonHook*(source: UnionKey3Union): JsonNode =
     toJsonHook(source.key0)
   of 1:
     block:
+      let cursor {.cursor.} = source.key1
       var output = newJArray()
-      for entry in source.key1:
+      for entry in cursor:
         output.add(newJString(entry))
       output
   of 2:
     block:
+      let cursor {.cursor.} = source.key2
       var output = newJObject()
-      for key, entry in pairs(source.key2):
-        output[key] = newJString(entry)
+      for key in keys(cursor):
+        output[key] = newJString(
+            cursor[key])
       output
   of 3:
     `%`(source.key3)

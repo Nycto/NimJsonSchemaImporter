@@ -6,6 +6,7 @@ type
   Location* = object
     latitude*: BiggestFloat
     longitude*: BiggestFloat
+proc `=copy`(a: var Location; b: Location) {.error.}
 proc toJsonHook*(source: Location): JsonNode
 proc equals(_: typedesc[Location]; a, b: Location): bool =
   equals(typeof(a.latitude), a.latitude, b.latitude) and

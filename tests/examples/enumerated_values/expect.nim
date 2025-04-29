@@ -5,6 +5,8 @@ import json_schema_import/private/[stringify, equality, bin]
 type
   Enumerated_values* = object
     data*: Option[JsonNode]
+proc `=copy`(a: var Enumerated_values; b: Enumerated_values) {.
+    error.}
 proc toJsonHook*(source: Enumerated_values): JsonNode
 proc equals(_: typedesc[Enumerated_values]; a, b: Enumerated_values): bool =
   equals(typeof(a.data), a.data, b.data)

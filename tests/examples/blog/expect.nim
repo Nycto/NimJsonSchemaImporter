@@ -12,7 +12,9 @@ type
     publishedDate*: Option[string]
     author*: BlogAuthor
     tags*: Option[seq[string]]
+proc `=copy`(a: var BlogAuthor; b: BlogAuthor) {.error.}
 proc toJsonHook*(source: BlogAuthor): JsonNode
+proc `=copy`(a: var Blog; b: Blog) {.error.}
 proc toJsonHook*(source: Blog): JsonNode
 proc equals(_: typedesc[BlogAuthor]; a, b: BlogAuthor): bool =
   equals(typeof(a.username), a.username, b.username) and
@@ -90,8 +92,9 @@ proc toJsonHook*(source: Blog): JsonNode =
   result{"author"} = toJsonHook(source.author)
   if isSome(source.tags):
     result{"tags"} = block:
+      let cursor {.cursor.} = unsafeGet(source.tags)
       var output = newJArray()
-      for entry in unsafeGet(source.tags):
+      for entry in cursor:
         output.add(newJString(entry))
       output
 {.pop.}

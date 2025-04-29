@@ -19,18 +19,21 @@ proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
     let encodeItem = entry.createEncodeExpr(typ.items)
     return quote:
       block:
+        let cursor {.cursor.} = `input`
         var output = newJArray()
-        for `entry` in `input`:
+        for `entry` in cursor:
           output.add(`encodeItem`)
         output
   of MapType:
-    let entry = genSym(nskForVar, "entry`gensym")
-    let encodeEntry = entry.createEncodeExpr(typ.entries)
+    let cursor = genSym(nskLet, "cursor`gensym")
+    let key = genSym(nskForVar, "key`gensym")
+    let encodeEntry = newCall(bindSym("[]"), cursor, key).createEncodeExpr(typ.entries)
     return quote:
       block:
+        let `cursor` {.cursor.} = `input`
         var output = newJObject()
-        for key, `entry` in pairs(`input`):
-          output[key] = `encodeEntry`
+        for `key` in keys(`cursor`):
+          output[`key`] = `encodeEntry`
         output
   of OptionalType:
     let encodeValue =

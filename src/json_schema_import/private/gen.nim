@@ -57,7 +57,9 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
 
   ctx.add(result, nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), records))
 
+  let copyProc = nnkAccQuoted.newTree(ident("=copy"))
   ctx.declarations.add quote do:
+    proc `copyProc`(a: var `result`, b: `result`) {.error.}
     proc toJsonHook*(`source`: `result`): JsonNode
 
   ctx.procs.add(

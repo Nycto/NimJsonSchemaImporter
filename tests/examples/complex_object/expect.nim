@@ -13,7 +13,11 @@ type
     age*: BiggestInt
     address*: Option[Complex_objectAddress]
     hobbies*: Option[seq[string]]
+proc `=copy`(a: var Complex_objectAddress;
+             b: Complex_objectAddress) {.error.}
 proc toJsonHook*(source: Complex_objectAddress): JsonNode
+proc `=copy`(a: var Complex_object; b: Complex_object) {.
+    error.}
 proc toJsonHook*(source: Complex_object): JsonNode
 proc equals(_: typedesc[Complex_objectAddress]; a, b: Complex_objectAddress): bool =
   equals(typeof(a.street), a.street, b.street) and
@@ -95,8 +99,9 @@ proc toJsonHook*(source: Complex_object): JsonNode =
     result{"address"} = toJsonHook(unsafeGet(source.address))
   if isSome(source.hobbies):
     result{"hobbies"} = block:
+      let cursor {.cursor.} = unsafeGet(source.hobbies)
       var output = newJArray()
-      for entry in unsafeGet(source.hobbies):
+      for entry in cursor:
         output.add(newJString(entry))
       output
 {.pop.}

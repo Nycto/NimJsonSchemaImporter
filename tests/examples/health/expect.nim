@@ -14,7 +14,10 @@ type
     conditions*: Option[seq[string]]
     medications*: Option[seq[string]]
     emergencyContact*: Option[HealthEmergencyContact]
+proc `=copy`(a: var HealthEmergencyContact;
+             b: HealthEmergencyContact) {.error.}
 proc toJsonHook*(source: HealthEmergencyContact): JsonNode
+proc `=copy`(a: var Health; b: Health) {.error.}
 proc toJsonHook*(source: Health): JsonNode
 proc equals(_: typedesc[HealthEmergencyContact]; a, b: HealthEmergencyContact): bool =
   equals(typeof(a.username), a.username, b.username) and
@@ -103,20 +106,23 @@ proc toJsonHook*(source: Health): JsonNode =
   result{"bloodType"} = newJString(source.bloodType)
   if isSome(source.allergies):
     result{"allergies"} = block:
+      let cursor {.cursor.} = unsafeGet(source.allergies)
       var output = newJArray()
-      for entry in unsafeGet(source.allergies):
+      for entry in cursor:
         output.add(newJString(entry))
       output
   if isSome(source.conditions):
     result{"conditions"} = block:
+      let cursor {.cursor.} = unsafeGet(source.conditions)
       var output = newJArray()
-      for entry in unsafeGet(source.conditions):
+      for entry in cursor:
         output.add(newJString(entry))
       output
   if isSome(source.medications):
     result{"medications"} = block:
+      let cursor {.cursor.} = unsafeGet(source.medications)
       var output = newJArray()
-      for entry in unsafeGet(source.medications):
+      for entry in cursor:
         output.add(newJString(entry))
       output
   if isSome(source.emergencyContact):

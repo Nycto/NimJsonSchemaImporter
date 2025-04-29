@@ -41,10 +41,19 @@ type
     fstype*: Option[File_systemFstype]
     options*: Option[seq[string]]
     readonly*: Option[bool]
+proc `=copy`(a: var File_systemDiskDevice;
+             b: File_systemDiskDevice) {.error.}
 proc toJsonHook*(source: File_systemDiskDevice): JsonNode
+proc `=copy`(a: var File_systemDiskUUID;
+             b: File_systemDiskUUID) {.error.}
 proc toJsonHook*(source: File_systemDiskUUID): JsonNode
+proc `=copy`(a: var File_systemNfs; b: File_systemNfs) {.
+    error.}
 proc toJsonHook*(source: File_systemNfs): JsonNode
+proc `=copy`(a: var File_systemTmpfs; b: File_systemTmpfs) {.
+    error.}
 proc toJsonHook*(source: File_systemTmpfs): JsonNode
+proc `=copy`(a: var File_system; b: File_system) {.error.}
 proc toJsonHook*(source: File_system): JsonNode
 proc equals(_: typedesc[File_systemDiskDevice]; a, b: File_systemDiskDevice): bool =
   equals(typeof(a.`type`), a.`type`, b.`type`) and
@@ -325,8 +334,9 @@ proc toJsonHook*(source: File_system): JsonNode =
     result{"fstype"} = `%`(unsafeGet(source.fstype))
   if isSome(source.options):
     result{"options"} = block:
+      let cursor {.cursor.} = unsafeGet(source.options)
       var output = newJArray()
-      for entry in unsafeGet(source.options):
+      for entry in cursor:
         output.add(newJString(entry))
       output
   if isSome(source.readonly):

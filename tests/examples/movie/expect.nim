@@ -13,6 +13,7 @@ type
     genre*: Option[MovieGenre]
     duration*: Option[string]
     `cast`*: Option[seq[string]]
+proc `=copy`(a: var Movie; b: Movie) {.error.}
 proc toJsonHook*(source: Movie): JsonNode
 proc equals(_: typedesc[Movie]; a, b: Movie): bool =
   equals(typeof(a.title), a.title, b.title) and
@@ -65,8 +66,9 @@ proc toJsonHook*(source: Movie): JsonNode =
     result{"duration"} = newJString(unsafeGet(source.duration))
   if isSome(source.`cast`):
     result{"cast"} = block:
+      let cursor {.cursor.} = unsafeGet(source.`cast`)
       var output = newJArray()
-      for entry in unsafeGet(source.`cast`):
+      for entry in cursor:
         output.add(newJString(entry))
       output
 {.pop.}

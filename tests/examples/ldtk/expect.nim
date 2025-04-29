@@ -468,35 +468,89 @@ type
     minifyJson*: bool
     exportLevelBg*: bool
     backupRelPath*: Option[string]
+proc `=copy`(a: var LdtkNeighbourLevel;
+             b: LdtkNeighbourLevel) {.error.}
 proc toJsonHook*(source: LdtkNeighbourLevel): JsonNode
+proc `=copy`(a: var LdtkLevelBgPosInfos;
+             b: LdtkLevelBgPosInfos) {.error.}
 proc toJsonHook*(source: LdtkLevelBgPosInfos): JsonNode
+proc `=copy`(a: var LdtkTilesetRect; b: LdtkTilesetRect) {.
+    error.}
 proc toJsonHook*(source: LdtkTilesetRect): JsonNode
+proc `=copy`(a: var LdtkFieldInstance; b: LdtkFieldInstance) {.
+    error.}
 proc toJsonHook*(source: LdtkFieldInstance): JsonNode
+proc `=copy`(a: var LdtkTile; b: LdtkTile) {.error.}
 proc toJsonHook*(source: LdtkTile): JsonNode
+proc `=copy`(a: var LdtkEntityInstance;
+             b: LdtkEntityInstance) {.error.}
 proc toJsonHook*(source: LdtkEntityInstance): JsonNode
+proc `=copy`(a: var LdtkIntGridValueInstance;
+             b: LdtkIntGridValueInstance) {.error.}
 proc toJsonHook*(source: LdtkIntGridValueInstance): JsonNode
+proc `=copy`(a: var LdtkLayerInstance; b: LdtkLayerInstance) {.
+    error.}
 proc toJsonHook*(source: LdtkLayerInstance): JsonNode
+proc `=copy`(a: var LdtkLevel; b: LdtkLevel) {.error.}
 proc toJsonHook*(source: LdtkLevel): JsonNode
+proc `=copy`(a: var LdtkWorld; b: LdtkWorld) {.error.}
 proc toJsonHook*(source: LdtkWorld): JsonNode
+proc `=copy`(a: var LdtkEntityReferenceInfos;
+             b: LdtkEntityReferenceInfos) {.error.}
 proc toJsonHook*(source: LdtkEntityReferenceInfos): JsonNode
+proc `=copy`(a: var LdtkTocInstanceData;
+             b: LdtkTocInstanceData) {.error.}
 proc toJsonHook*(source: LdtkTocInstanceData): JsonNode
+proc `=copy`(a: var LdtkTableOfContentEntry;
+             b: LdtkTableOfContentEntry) {.error.}
 proc toJsonHook*(source: LdtkTableOfContentEntry): JsonNode
+proc `=copy`(a: var LdtkCustomCommand;
+             b: LdtkCustomCommand) {.error.}
 proc toJsonHook*(source: LdtkCustomCommand): JsonNode
+proc `=copy`(a: var LdtkTileCustomMetadata;
+             b: LdtkTileCustomMetadata) {.error.}
 proc toJsonHook*(source: LdtkTileCustomMetadata): JsonNode
+proc `=copy`(a: var LdtkEnumTagValue; b: LdtkEnumTagValue) {.
+    error.}
 proc toJsonHook*(source: LdtkEnumTagValue): JsonNode
+proc `=copy`(a: var LdtkTilesetDef; b: LdtkTilesetDef) {.
+    error.}
 proc toJsonHook*(source: LdtkTilesetDef): JsonNode
+proc `=copy`(a: var LdtkIntGridValueGroupDef;
+             b: LdtkIntGridValueGroupDef) {.error.}
 proc toJsonHook*(source: LdtkIntGridValueGroupDef): JsonNode
+proc `=copy`(a: var LdtkIntGridValueDef;
+             b: LdtkIntGridValueDef) {.error.}
 proc toJsonHook*(source: LdtkIntGridValueDef): JsonNode
+proc `=copy`(a: var LdtkAutoRuleDef; b: LdtkAutoRuleDef) {.
+    error.}
 proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode
+proc `=copy`(a: var LdtkAutoLayerRuleGroup;
+             b: LdtkAutoLayerRuleGroup) {.error.}
 proc toJsonHook*(source: LdtkAutoLayerRuleGroup): JsonNode
+proc `=copy`(a: var LdtkLayerDef; b: LdtkLayerDef) {.error.}
 proc toJsonHook*(source: LdtkLayerDef): JsonNode
+proc `=copy`(a: var LdtkFieldDef; b: LdtkFieldDef) {.error.}
 proc toJsonHook*(source: LdtkFieldDef): JsonNode
+proc `=copy`(a: var LdtkEnumDefValues;
+             b: LdtkEnumDefValues) {.error.}
 proc toJsonHook*(source: LdtkEnumDefValues): JsonNode
+proc `=copy`(a: var LdtkEnumDef; b: LdtkEnumDef) {.error.}
 proc toJsonHook*(source: LdtkEnumDef): JsonNode
+proc `=copy`(a: var LdtkEntityDef; b: LdtkEntityDef) {.
+    error.}
 proc toJsonHook*(source: LdtkEntityDef): JsonNode
+proc `=copy`(a: var LdtkDefinitions; b: LdtkDefinitions) {.
+    error.}
 proc toJsonHook*(source: LdtkDefinitions): JsonNode
+proc `=copy`(a: var LdtkGridPoint; b: LdtkGridPoint) {.
+    error.}
 proc toJsonHook*(source: LdtkGridPoint): JsonNode
+proc `=copy`(a: var Ldtk_FORCED_REFS; b: Ldtk_FORCED_REFS) {.
+    error.}
 proc toJsonHook*(source: Ldtk_FORCED_REFS): JsonNode
+proc `=copy`(a: var LdtkLdtkJsonRoot; b: LdtkLdtkJsonRoot) {.
+    error.}
 proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode
 proc equals(_: typedesc[LdtkNeighbourLevel]; a, b: LdtkNeighbourLevel): bool =
   equals(typeof(a.levelIid), a.levelIid, b.levelIid) and
@@ -564,18 +618,21 @@ proc fromJsonHook*(target: var LdtkLevelBgPosInfos; source: JsonNode) =
 proc toJsonHook*(source: LdtkLevelBgPosInfos): JsonNode =
   result = newJObject()
   result{"cropRect"} = block:
+    let cursor {.cursor.} = source.cropRect
     var output = newJArray()
-    for entry in source.cropRect:
+    for entry in cursor:
       output.add(newJFloat(entry))
     output
   result{"scale"} = block:
+    let cursor {.cursor.} = source.scale
     var output = newJArray()
-    for entry in source.scale:
+    for entry in cursor:
       output.add(newJFloat(entry))
     output
   result{"topLeftPx"} = block:
+    let cursor {.cursor.} = source.topLeftPx
     var output = newJArray()
-    for entry in source.topLeftPx:
+    for entry in cursor:
       output.add(newJInt(entry))
     output
 
@@ -678,8 +735,9 @@ proc toJsonHook*(source: LdtkFieldInstance): JsonNode =
   if isSome(source.tile):
     result{"__tile"} = toJsonHook(unsafeGet(source.tile))
   result{"realEditorValues"} = block:
+    let cursor {.cursor.} = source.realEditorValues
     var output = newJArray()
-    for entry in source.realEditorValues:
+    for entry in cursor:
       output.add(entry)
     output
   result{"__value"} = source.value
@@ -724,20 +782,23 @@ proc toJsonHook*(source: LdtkTile): JsonNode =
   result = newJObject()
   result{"t"} = newJInt(source.t)
   result{"d"} = block:
+    let cursor {.cursor.} = source.d
     var output = newJArray()
-    for entry in source.d:
+    for entry in cursor:
       output.add(newJInt(entry))
     output
   result{"px"} = block:
+    let cursor {.cursor.} = source.px
     var output = newJArray()
-    for entry in source.px:
+    for entry in cursor:
       output.add(newJInt(entry))
     output
   result{"a"} = newJFloat(source.a)
   result{"f"} = newJInt(source.f)
   result{"src"} = block:
+    let cursor {.cursor.} = source.src
     var output = newJArray()
-    for entry in source.src:
+    for entry in cursor:
       output.add(newJInt(entry))
     output
 
@@ -834,8 +895,9 @@ proc toJsonHook*(source: LdtkEntityInstance): JsonNode =
   if isSome(source.tile):
     result{"__tile"} = toJsonHook(unsafeGet(source.tile))
   result{"px"} = block:
+    let cursor {.cursor.} = source.px
     var output = newJArray()
-    for entry in source.px:
+    for entry in cursor:
       output.add(newJInt(entry))
     output
   if isSome(source.worldX):
@@ -844,24 +906,28 @@ proc toJsonHook*(source: LdtkEntityInstance): JsonNode =
     result{"__worldY"} = newJInt(unsafeGet(source.worldY))
   result{"__smartColor"} = newJString(source.smartColor)
   result{"__grid"} = block:
+    let cursor {.cursor.} = source.grid
     var output = newJArray()
-    for entry in source.grid:
+    for entry in cursor:
       output.add(newJInt(entry))
     output
   result{"__pivot"} = block:
+    let cursor {.cursor.} = source.pivot
     var output = newJArray()
-    for entry in source.pivot:
+    for entry in cursor:
       output.add(newJFloat(entry))
     output
   result{"fieldInstances"} = block:
+    let cursor {.cursor.} = source.fieldInstances
     var output = newJArray()
-    for entry in source.fieldInstances:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"height"} = newJInt(source.height)
   result{"__tags"} = block:
+    let cursor {.cursor.} = source.tags
     var output = newJArray()
-    for entry in source.tags:
+    for entry in cursor:
       output.add(newJString(entry))
     output
   result{"width"} = newJInt(source.width)
@@ -1059,29 +1125,33 @@ proc toJsonHook*(source: LdtkLayerInstance): JsonNode =
   result{"levelId"} = newJInt(source.levelId)
   result{"__type"} = newJString(source.`type`)
   result{"autoLayerTiles"} = block:
+    let cursor {.cursor.} = source.autoLayerTiles
     var output = newJArray()
-    for entry in source.autoLayerTiles:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"optionalRules"} = block:
+    let cursor {.cursor.} = source.optionalRules
     var output = newJArray()
-    for entry in source.optionalRules:
+    for entry in cursor:
       output.add(newJInt(entry))
     output
   result{"__identifier"} = newJString(source.identifier)
   result{"__gridSize"} = newJInt(source.gridSize)
   result{"__pxTotalOffsetY"} = newJInt(source.pxTotalOffsetY)
   result{"intGridCsv"} = block:
+    let cursor {.cursor.} = source.intGridCsv
     var output = newJArray()
-    for entry in source.intGridCsv:
+    for entry in cursor:
       output.add(newJInt(entry))
     output
   if isSome(source.overrideTilesetUid):
     result{"overrideTilesetUid"} = newJInt(unsafeGet(source.overrideTilesetUid))
   result{"visible"} = newJBool(source.visible)
   result{"entityInstances"} = block:
+    let cursor {.cursor.} = source.entityInstances
     var output = newJArray()
-    for entry in source.entityInstances:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"__opacity"} = newJFloat(source.opacity)
@@ -1093,14 +1163,16 @@ proc toJsonHook*(source: LdtkLayerInstance): JsonNode =
   if isSome(source.tilesetDefUid):
     result{"__tilesetDefUid"} = newJInt(unsafeGet(source.tilesetDefUid))
   result{"gridTiles"} = block:
+    let cursor {.cursor.} = source.gridTiles
     var output = newJArray()
-    for entry in source.gridTiles:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   if isSome(source.intGrid):
     result{"intGrid"} = block:
+      let cursor {.cursor.} = unsafeGet(source.intGrid)
       var output = newJArray()
-      for entry in unsafeGet(source.intGrid):
+      for entry in cursor:
         output.add(toJsonHook(entry))
       output
 
@@ -1232,8 +1304,9 @@ proc fromJsonHook*(target: var LdtkLevel; source: JsonNode) =
 proc toJsonHook*(source: LdtkLevel): JsonNode =
   result = newJObject()
   result{"__neighbours"} = block:
+    let cursor {.cursor.} = source.neighbours
     var output = newJArray()
-    for entry in source.neighbours:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"__bgColor"} = newJString(source.bgColor)
@@ -1253,8 +1326,9 @@ proc toJsonHook*(source: LdtkLevel): JsonNode =
   result{"uid"} = newJInt(source.uid)
   result{"__smartColor"} = newJString(source.smartColor)
   result{"fieldInstances"} = block:
+    let cursor {.cursor.} = source.fieldInstances
     var output = newJArray()
-    for entry in source.fieldInstances:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"pxWid"} = newJInt(source.pxWid)
@@ -1263,8 +1337,9 @@ proc toJsonHook*(source: LdtkLevel): JsonNode =
   result{"bgPivotX"} = newJFloat(source.bgPivotX)
   if isSome(source.layerInstances):
     result{"layerInstances"} = block:
+      let cursor {.cursor.} = unsafeGet(source.layerInstances)
       var output = newJArray()
-      for entry in unsafeGet(source.layerInstances):
+      for entry in cursor:
         output.add(toJsonHook(entry))
       output
   if isSome(source.bgRelPath):
@@ -1344,8 +1419,9 @@ proc toJsonHook*(source: LdtkWorld): JsonNode =
     newJNull()
   result{"defaultLevelWidth"} = newJInt(source.defaultLevelWidth)
   result{"levels"} = block:
+    let cursor {.cursor.} = source.levels
     var output = newJArray()
-    for entry in source.levels:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"defaultLevelHeight"} = newJInt(source.defaultLevelHeight)
@@ -1482,14 +1558,16 @@ proc toJsonHook*(source: LdtkTableOfContentEntry): JsonNode =
   result = newJObject()
   result{"identifier"} = newJString(source.identifier)
   result{"instancesData"} = block:
+    let cursor {.cursor.} = source.instancesData
     var output = newJArray()
-    for entry in source.instancesData:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   if isSome(source.instances):
     result{"instances"} = block:
+      let cursor {.cursor.} = unsafeGet(source.instances)
       var output = newJArray()
-      for entry in unsafeGet(source.instances):
+      for entry in cursor:
         output.add(toJsonHook(entry))
       output
 
@@ -1576,8 +1654,9 @@ proc fromJsonHook*(target: var LdtkEnumTagValue; source: JsonNode) =
 proc toJsonHook*(source: LdtkEnumTagValue): JsonNode =
   result = newJObject()
   result{"tileIds"} = block:
+    let cursor {.cursor.} = source.tileIds
     var output = newJArray()
-    for entry in source.tileIds:
+    for entry in cursor:
       output.add(newJInt(entry))
     output
   result{"enumValueId"} = newJString(source.enumValueId)
@@ -1691,16 +1770,18 @@ proc toJsonHook*(source: LdtkTilesetDef): JsonNode =
   result = newJObject()
   if isSome(source.cachedPixelData):
     result{"cachedPixelData"} = block:
+      let cursor {.cursor.} = unsafeGet(source.cachedPixelData)
       var output = newJObject()
-      for key, entry in pairs(
-          unsafeGet(source.cachedPixelData)):
-        output[key] = entry
+      for key in keys(cursor):
+        output[key] = cursor[
+            key]
       output
   result{"__cHei"} = newJInt(source.cHei)
   result{"pxHei"} = newJInt(source.pxHei)
   result{"customData"} = block:
+    let cursor {.cursor.} = source.customData
     var output = newJArray()
-    for entry in source.customData:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   if isSome(source.tagsSourceEnumUid):
@@ -1708,8 +1789,9 @@ proc toJsonHook*(source: LdtkTilesetDef): JsonNode =
   result{"uid"} = newJInt(source.uid)
   result{"padding"} = newJInt(source.padding)
   result{"enumTags"} = block:
+    let cursor {.cursor.} = source.enumTags
     var output = newJArray()
-    for entry in source.enumTags:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"pxWid"} = newJInt(source.pxWid)
@@ -1717,17 +1799,21 @@ proc toJsonHook*(source: LdtkTilesetDef): JsonNode =
   result{"spacing"} = newJInt(source.spacing)
   result{"identifier"} = newJString(source.identifier)
   result{"savedSelections"} = block:
+    let cursor {.cursor.} = source.savedSelections
     var output = newJArray()
-    for entry in source.savedSelections:
+    for entry in cursor:
       output.add(block:
+        let cursor {.cursor.} = entry
         var output = newJObject()
-        for key, entry in pairs(entry):
-          output[key] = entry
+        for key in keys(cursor):
+          output[key] = cursor[
+              key]
         output)
     output
   result{"tags"} = block:
+    let cursor {.cursor.} = source.tags
     var output = newJArray()
-    for entry in source.tags:
+    for entry in cursor:
       output.add(newJString(entry))
     output
   if isSome(source.embedAtlas):
@@ -2009,11 +2095,13 @@ proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode =
   result{"pivotX"} = newJFloat(source.pivotX)
   result{"perlinActive"} = newJBool(source.perlinActive)
   result{"tileRectsIds"} = block:
+    let cursor {.cursor.} = source.tileRectsIds
     var output = newJArray()
-    for entry in source.tileRectsIds:
+    for entry in cursor:
       output.add(block:
+        let cursor {.cursor.} = entry
         var output = newJArray()
-        for entry in entry:
+        for entry in cursor:
           output.add(newJInt(entry))
         output)
     output
@@ -2021,8 +2109,9 @@ proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode =
   if isSome(source.outOfBoundsValue):
     result{"outOfBoundsValue"} = newJInt(unsafeGet(source.outOfBoundsValue))
   result{"pattern"} = block:
+    let cursor {.cursor.} = source.pattern
     var output = newJArray()
-    for entry in source.pattern:
+    for entry in cursor:
       output.add(newJInt(entry))
     output
   result{"tileRandomXMin"} = newJInt(source.tileRandomXMin)
@@ -2030,8 +2119,9 @@ proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode =
   result{"perlinOctaves"} = newJFloat(source.perlinOctaves)
   if isSome(source.tileIds):
     result{"tileIds"} = block:
+      let cursor {.cursor.} = unsafeGet(source.tileIds)
       var output = newJArray()
-      for entry in unsafeGet(source.tileIds):
+      for entry in cursor:
         output.add(newJInt(entry))
       output
   result{"alpha"} = newJFloat(source.alpha)
@@ -2146,14 +2236,16 @@ proc toJsonHook*(source: LdtkAutoLayerRuleGroup): JsonNode =
   result{"usesWizard"} = newJBool(source.usesWizard)
   result{"uid"} = newJInt(source.uid)
   result{"requiredBiomeValues"} = block:
+    let cursor {.cursor.} = source.requiredBiomeValues
     var output = newJArray()
-    for entry in source.requiredBiomeValues:
+    for entry in cursor:
       output.add(newJString(entry))
     output
   result{"active"} = newJBool(source.active)
   result{"rules"} = block:
+    let cursor {.cursor.} = source.rules
     var output = newJArray()
-    for entry in source.rules:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
 
@@ -2390,8 +2482,9 @@ proc toJsonHook*(source: LdtkLayerDef): JsonNode =
   result{"pxOffsetX"} = newJInt(source.pxOffsetX)
   result{"tilePivotX"} = newJFloat(source.tilePivotX)
   result{"uiFilterTags"} = block:
+    let cursor {.cursor.} = source.uiFilterTags
     var output = newJArray()
-    for entry in source.uiFilterTags:
+    for entry in cursor:
       output.add(newJString(entry))
     output
   result{"displayOpacity"} = newJFloat(source.displayOpacity)
@@ -2415,34 +2508,39 @@ proc toJsonHook*(source: LdtkLayerDef): JsonNode =
   result{"parallaxScaling"} = newJBool(source.parallaxScaling)
   result{"renderInWorldView"} = newJBool(source.renderInWorldView)
   result{"intGridValuesGroups"} = block:
+    let cursor {.cursor.} = source.intGridValuesGroups
     var output = newJArray()
-    for entry in source.intGridValuesGroups:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"inactiveOpacity"} = newJFloat(source.inactiveOpacity)
   result{"uid"} = newJInt(source.uid)
   result{"excludedTags"} = block:
+    let cursor {.cursor.} = source.excludedTags
     var output = newJArray()
-    for entry in source.excludedTags:
+    for entry in cursor:
       output.add(newJString(entry))
     output
   result{"hideFieldsWhenInactive"} = newJBool(source.hideFieldsWhenInactive)
   result{"intGridValues"} = block:
+    let cursor {.cursor.} = source.intGridValues
     var output = newJArray()
-    for entry in source.intGridValues:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"autoRuleGroups"} = block:
+    let cursor {.cursor.} = source.autoRuleGroups
     var output = newJArray()
-    for entry in source.autoRuleGroups:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"type"} = `%`(source.type1)
   result{"identifier"} = newJString(source.identifier)
   result{"guideGridWid"} = newJInt(source.guideGridWid)
   result{"requiredTags"} = block:
+    let cursor {.cursor.} = source.requiredTags
     var output = newJArray()
-    for entry in source.requiredTags:
+    for entry in cursor:
       output.add(newJString(entry))
     output
   result{"pxOffsetY"} = newJInt(source.pxOffsetY)
@@ -2691,8 +2789,9 @@ proc toJsonHook*(source: LdtkFieldDef): JsonNode =
   result = newJObject()
   if isSome(source.acceptFileTypes):
     result{"acceptFileTypes"} = block:
+      let cursor {.cursor.} = unsafeGet(source.acceptFileTypes)
       var output = newJArray()
-      for entry in unsafeGet(source.acceptFileTypes):
+      for entry in cursor:
         output.add(newJString(entry))
       output
   result{"editorDisplayScale"} = newJFloat(source.editorDisplayScale)
@@ -2722,8 +2821,9 @@ proc toJsonHook*(source: LdtkFieldDef): JsonNode =
   if isSome(source.tilesetUid):
     result{"tilesetUid"} = newJInt(unsafeGet(source.tilesetUid))
   result{"allowedRefTags"} = block:
+    let cursor {.cursor.} = source.allowedRefTags
     var output = newJArray()
-    for entry in source.allowedRefTags:
+    for entry in cursor:
       output.add(newJString(entry))
     output
   result{"symmetricalRef"} = newJBool(source.symmetricalRef)
@@ -2798,8 +2898,9 @@ proc toJsonHook*(source: LdtkEnumDefValues): JsonNode =
   result{"id"} = newJString(source.id)
   if isSome(source.tileSrcRect):
     result{"__tileSrcRect"} = block:
+      let cursor {.cursor.} = unsafeGet(source.tileSrcRect)
       var output = newJArray()
-      for entry in unsafeGet(source.tileSrcRect):
+      for entry in cursor:
         output.add(newJInt(entry))
       output
 
@@ -2867,16 +2968,18 @@ proc toJsonHook*(source: LdtkEnumDef): JsonNode =
     result{"externalRelPath"} = newJString(unsafeGet(source.externalRelPath))
   result{"uid"} = newJInt(source.uid)
   result{"values"} = block:
+    let cursor {.cursor.} = source.values
     var output = newJArray()
-    for entry in source.values:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   if isSome(source.iconTilesetUid):
     result{"iconTilesetUid"} = newJInt(unsafeGet(source.iconTilesetUid))
   result{"identifier"} = newJString(source.identifier)
   result{"tags"} = block:
+    let cursor {.cursor.} = source.tags
     var output = newJArray()
-    for entry in source.tags:
+    for entry in cursor:
       output.add(newJString(entry))
     output
 
@@ -3096,16 +3199,18 @@ proc toJsonHook*(source: LdtkEntityDef): JsonNode =
   if isSome(source.doc):
     result{"doc"} = newJString(unsafeGet(source.doc))
   result{"fieldDefs"} = block:
+    let cursor {.cursor.} = source.fieldDefs
     var output = newJArray()
-    for entry in source.fieldDefs:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"tileRenderMode"} = `%`(source.tileRenderMode)
   result{"limitBehavior"} = `%`(source.limitBehavior)
   result{"tileOpacity"} = newJFloat(source.tileOpacity)
   result{"nineSliceBorders"} = block:
+    let cursor {.cursor.} = source.nineSliceBorders
     var output = newJArray()
-    for entry in source.nineSliceBorders:
+    for entry in cursor:
       output.add(newJInt(entry))
     output
   result{"resizableX"} = newJBool(source.resizableX)
@@ -3123,8 +3228,9 @@ proc toJsonHook*(source: LdtkEntityDef): JsonNode =
   result{"pivotY"} = newJFloat(source.pivotY)
   result{"renderMode"} = `%`(source.renderMode)
   result{"tags"} = block:
+    let cursor {.cursor.} = source.tags
     var output = newJArray()
-    for entry in source.tags:
+    for entry in cursor:
       output.add(newJString(entry))
     output
   result{"width"} = newJInt(source.width)
@@ -3177,33 +3283,39 @@ proc fromJsonHook*(target: var LdtkDefinitions; source: JsonNode) =
 proc toJsonHook*(source: LdtkDefinitions): JsonNode =
   result = newJObject()
   result{"tilesets"} = block:
+    let cursor {.cursor.} = source.tilesets
     var output = newJArray()
-    for entry in source.tilesets:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"layers"} = block:
+    let cursor {.cursor.} = source.layers
     var output = newJArray()
-    for entry in source.layers:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"levelFields"} = block:
+    let cursor {.cursor.} = source.levelFields
     var output = newJArray()
-    for entry in source.levelFields:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"enums"} = block:
+    let cursor {.cursor.} = source.enums
     var output = newJArray()
-    for entry in source.enums:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"entities"} = block:
+    let cursor {.cursor.} = source.entities
     var output = newJArray()
-    for entry in source.entities:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"externalEnums"} = block:
+    let cursor {.cursor.} = source.externalEnums
     var output = newJArray()
-    for entry in source.externalEnums:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
 
@@ -3750,13 +3862,15 @@ proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode =
   result{"defaultLevelBgColor"} = newJString(source.defaultLevelBgColor)
   result{"bgColor"} = newJString(source.bgColor)
   result{"worlds"} = block:
+    let cursor {.cursor.} = source.worlds
     var output = newJArray()
-    for entry in source.worlds:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"toc"} = block:
+    let cursor {.cursor.} = source.toc
     var output = newJArray()
-    for entry in source.toc:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"nextUid"} = newJInt(source.nextUid)
@@ -3765,8 +3879,9 @@ proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode =
   result{"defaultPivotY"} = newJFloat(source.defaultPivotY)
   result{"dummyWorldIid"} = newJString(source.dummyWorldIid)
   result{"customCommands"} = block:
+    let cursor {.cursor.} = source.customCommands
     var output = newJArray()
-    for entry in source.customCommands:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   if isSome(source.worldGridHeight):
@@ -3776,8 +3891,9 @@ proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode =
   if isSome(source.worldLayout):
     result{"worldLayout"} = `%`(unsafeGet(source.worldLayout))
   result{"flags"} = block:
+    let cursor {.cursor.} = source.flags
     var output = newJArray()
-    for entry in source.flags:
+    for entry in cursor:
       output.add(`%`(entry))
     output
   result{"levelNamePattern"} = newJString(source.levelNamePattern)
@@ -3792,8 +3908,9 @@ proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode =
   result{"exportTiled"} = newJBool(source.exportTiled)
   result{"defs"} = toJsonHook(source.defs)
   result{"levels"} = block:
+    let cursor {.cursor.} = source.levels
     var output = newJArray()
-    for entry in source.levels:
+    for entry in cursor:
       output.add(toJsonHook(entry))
     output
   result{"jsonVersion"} = newJString(source.jsonVersion)

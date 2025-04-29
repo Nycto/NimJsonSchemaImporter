@@ -9,7 +9,11 @@ type
   EcommerceOrderSchema* = object
     orderId*: Option[string]
     items*: Option[seq[EcommerceProductSchema]]
+proc `=copy`(a: var EcommerceProductSchema;
+             b: EcommerceProductSchema) {.error.}
 proc toJsonHook*(source: EcommerceProductSchema): JsonNode
+proc `=copy`(a: var EcommerceOrderSchema;
+             b: EcommerceOrderSchema) {.error.}
 proc toJsonHook*(source: EcommerceOrderSchema): JsonNode
 proc equals(_: typedesc[EcommerceProductSchema]; a, b: EcommerceProductSchema): bool =
   equals(typeof(a.name), a.name, b.name) and
@@ -68,8 +72,9 @@ proc toJsonHook*(source: EcommerceOrderSchema): JsonNode =
     result{"orderId"} = newJString(unsafeGet(source.orderId))
   if isSome(source.items):
     result{"items"} = block:
+      let cursor {.cursor.} = unsafeGet(source.items)
       var output = newJArray()
-      for entry in unsafeGet(source.items):
+      for entry in cursor:
         output.add(toJsonHook(entry))
       output
 {.pop.}
