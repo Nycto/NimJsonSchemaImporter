@@ -23,8 +23,7 @@ proc hash(node: NimNode): Hash =
 
 let source {.compileTime.} = ident("source")
 
-proc add(ctx: GenContext, name, typ: NimNode) =
-  name.expectKind({nnkIdent, nnkAccQuoted})
+proc addType(ctx: GenContext, name, typ: NimNode) =
   ctx.usedNames.incl(name.getName.toUpperAscii)
   ctx.types.incl(nnkTypeDef.newTree(postfix(name, "*"), newEmptyNode(), typ))
 
@@ -55,7 +54,7 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
       )
     )
 
-  ctx.add(result, nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), records))
+  ctx.addType(result, nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), records))
 
   let copyProc = nnkAccQuoted.newTree(ident("=copy"))
   ctx.declarations.add quote do:
@@ -81,7 +80,7 @@ proc genEnum(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   for value in typ.values:
     enumTyp.add(nnkEnumFieldDef.newTree(safeTypeName(value), value.newLit))
 
-  ctx.add(result, enumTyp)
+  ctx.addType(result, enumTyp)
 
 proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   ## Generates the type required to represent a union type
@@ -111,7 +110,7 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
 
     ctx.procs.add(buildUnionPacker(i, subtypeNode, result))
 
-  ctx.add(
+  ctx.addType(
     result,
     nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), nnkRecList.newTree(cases)),
   )
