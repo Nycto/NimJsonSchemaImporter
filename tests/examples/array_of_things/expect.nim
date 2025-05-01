@@ -3,10 +3,10 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  Array_of_thingsVeggie* = object
+  Array_of_thingsVeggie* {.byref.} = object
     veggieName*: string
     veggieLike*: bool
-  Array_of_things* = object
+  Array_of_things* {.byref.} = object
     fruits*: Option[seq[string]]
     vegetables*: Option[seq[Array_of_thingsVeggie]]
 proc `=copy`(a: var Array_of_thingsVeggie;

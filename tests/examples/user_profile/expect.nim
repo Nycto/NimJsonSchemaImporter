@@ -3,7 +3,7 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  User_profile* = object
+  User_profile* {.byref.} = object
     username*: string
     email*: string
     fullName*: Option[string]

@@ -3,7 +3,7 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  Location* = object
+  Location* {.byref.} = object
     latitude*: BiggestFloat
     longitude*: BiggestFloat
 proc `=copy`(a: var Location; b: Location) {.error.}

@@ -3,10 +3,10 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  HealthEmergencyContact* = object
+  HealthEmergencyContact* {.byref.} = object
     username*: Option[string]
     email*: Option[string]
-  Health* = object
+  Health* {.byref.} = object
     patientName*: string
     dateOfBirth*: string
     bloodType*: string

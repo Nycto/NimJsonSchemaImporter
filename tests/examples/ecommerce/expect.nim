@@ -3,10 +3,10 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  EcommerceProductSchema* = object
+  EcommerceProductSchema* {.byref.} = object
     name*: Option[string]
     price*: Option[BiggestFloat]
-  EcommerceOrderSchema* = object
+  EcommerceOrderSchema* {.byref.} = object
     orderId*: Option[string]
     items*: Option[seq[EcommerceProductSchema]]
 proc `=copy`(a: var EcommerceProductSchema;

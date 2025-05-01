@@ -3,7 +3,7 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  Enumerated_values* = object
+  Enumerated_values* {.byref.} = object
     data*: Option[JsonNode]
 proc `=copy`(a: var Enumerated_values; b: Enumerated_values) {.
     error.}

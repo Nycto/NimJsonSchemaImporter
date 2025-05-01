@@ -3,7 +3,7 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  Basic* = object
+  Basic* {.byref.} = object
     firstName*: Option[string]
     lastName*: Option[string]
     age*: Option[BiggestInt]

@@ -3,7 +3,7 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  Address* = object
+  Address* {.byref.} = object
     postOfficeBox*: Option[string]
     extendedAddress*: Option[string]
     streetAddress*: Option[string]

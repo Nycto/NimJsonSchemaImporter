@@ -6,38 +6,38 @@ type
   LdtkWorldLayout* = enum
     Free = "Free", GridVania = "GridVania",
     LinearHorizontal = "LinearHorizontal", LinearVertical = "LinearVertical"
-  LdtkNeighbourLevel* = object
+  LdtkNeighbourLevel* {.byref.} = object
     levelIid*: string
     levelUid*: Option[BiggestInt]
     dir*: string
   LdtkBgPos* = enum
     Unscaled = "Unscaled", Contain = "Contain", Cover = "Cover",
     CoverDirty = "CoverDirty", Repeat = "Repeat"
-  LdtkLevelBgPosInfos* = object
+  LdtkLevelBgPosInfos* {.byref.} = object
     cropRect*: seq[BiggestFloat]
     scale*: seq[BiggestFloat]
     topLeftPx*: seq[BiggestInt]
-  LdtkTilesetRect* = object
+  LdtkTilesetRect* {.byref.} = object
     tilesetUid*: BiggestInt
     h*: BiggestInt
     x*: BiggestInt
     y*: BiggestInt
     w*: BiggestInt
-  LdtkFieldInstance* = object
+  LdtkFieldInstance* {.byref.} = object
     `type`*: string
     defUid*: BiggestInt
     identifier*: string
     tile*: Option[LdtkTilesetRect]
     realEditorValues*: seq[JsonNode]
     value*: JsonNode
-  LdtkTile* = object
+  LdtkTile* {.byref.} = object
     t*: BiggestInt
     d*: seq[BiggestInt]
     px*: seq[BiggestInt]
     a*: BiggestFloat
     f*: BiggestInt
     src*: seq[BiggestInt]
-  LdtkEntityInstance* = object
+  LdtkEntityInstance* {.byref.} = object
     iid*: string
     defUid*: BiggestInt
     identifier*: string
@@ -52,10 +52,10 @@ type
     height*: BiggestInt
     tags*: seq[string]
     width*: BiggestInt
-  LdtkIntGridValueInstance* = object
+  LdtkIntGridValueInstance* {.byref.} = object
     v*: BiggestInt
     coordId*: BiggestInt
-  LdtkLayerInstance* = object
+  LdtkLayerInstance* {.byref.} = object
     cHei*: BiggestInt
     pxOffsetX*: BiggestInt
     tilesetRelPath*: Option[string]
@@ -80,7 +80,7 @@ type
     tilesetDefUid*: Option[BiggestInt]
     gridTiles*: seq[LdtkTile]
     intGrid*: Option[seq[LdtkIntGridValueInstance]]
-  LdtkLevel* = object
+  LdtkLevel* {.byref.} = object
     neighbours*: seq[LdtkNeighbourLevel]
     bgColor*: string
     worldX*: BiggestInt
@@ -102,7 +102,7 @@ type
     layerInstances*: Option[seq[LdtkLayerInstance]]
     bgRelPath*: Option[string]
     worldDepth*: BiggestInt
-  LdtkWorld* = object
+  LdtkWorld* {.byref.} = object
     worldGridWidth*: BiggestInt
     iid*: string
     worldGridHeight*: BiggestInt
@@ -111,19 +111,19 @@ type
     levels*: seq[LdtkLevel]
     defaultLevelHeight*: BiggestInt
     identifier*: string
-  LdtkEntityReferenceInfos* = object
+  LdtkEntityReferenceInfos* {.byref.} = object
     worldIid*: string
     entityIid*: string
     layerIid*: string
     levelIid*: string
-  LdtkTocInstanceData* = object
+  LdtkTocInstanceData* {.byref.} = object
     worldX*: BiggestInt
     widPx*: BiggestInt
     worldY*: BiggestInt
     heiPx*: BiggestInt
     fields*: JsonNode
     iids*: LdtkEntityReferenceInfos
-  LdtkTableOfContentEntry* = object
+  LdtkTableOfContentEntry* {.byref.} = object
     identifier*: string
     instancesData*: seq[LdtkTocInstanceData]
     instances*: Option[seq[LdtkEntityReferenceInfos]]
@@ -136,7 +136,7 @@ type
   LdtkWhen* = enum
     Manual = "Manual", AfterLoad = "AfterLoad", BeforeSave = "BeforeSave",
     AfterSave = "AfterSave"
-  LdtkCustomCommand* = object
+  LdtkCustomCommand* {.byref.} = object
     `when`*: LdtkWhen
     command*: string
   LdtkWorldLayout2* = enum
@@ -149,15 +149,15 @@ type
     IgnoreBackupSuggest = "IgnoreBackupSuggest",
     PrependIndexToLevelFileNames = "PrependIndexToLevelFileNames",
     MultiWorlds = "MultiWorlds", UseMultilinesType = "UseMultilinesType"
-  LdtkTileCustomMetadata* = object
+  LdtkTileCustomMetadata* {.byref.} = object
     tileId*: BiggestInt
     data*: string
-  LdtkEnumTagValue* = object
+  LdtkEnumTagValue* {.byref.} = object
     tileIds*: seq[BiggestInt]
     enumValueId*: string
   LdtkEmbedAtlas* = enum
     LdtkIcons = "LdtkIcons"
-  LdtkTilesetDef* = object
+  LdtkTilesetDef* {.byref.} = object
     cachedPixelData*: Option[OrderedTable[string, JsonNode]]
     cHei*: BiggestInt
     pxHei*: BiggestInt
@@ -175,11 +175,11 @@ type
     embedAtlas*: Option[LdtkEmbedAtlas]
     relPath*: Option[string]
     tileGridSize*: BiggestInt
-  LdtkIntGridValueGroupDef* = object
+  LdtkIntGridValueGroupDef* {.byref.} = object
     color*: Option[string]
     uid*: BiggestInt
     identifier*: Option[string]
-  LdtkIntGridValueDef* = object
+  LdtkIntGridValueDef* {.byref.} = object
     tile*: Option[LdtkTilesetRect]
     color*: string
     identifier*: Option[string]
@@ -189,7 +189,7 @@ type
     None = "None", Horizontal = "Horizontal", Vertical = "Vertical"
   LdtkTileMode* = enum
     Single = "Single", Stamp = "Stamp"
-  LdtkAutoRuleDef* = object
+  LdtkAutoRuleDef* {.byref.} = object
     flipX*: bool
     pivotX*: BiggestFloat
     perlinActive*: bool
@@ -221,7 +221,7 @@ type
     yModulo*: BiggestInt
     active*: bool
     xOffset*: BiggestInt
-  LdtkAutoLayerRuleGroup* = object
+  LdtkAutoLayerRuleGroup* {.byref.} = object
     name*: string
     collapsed*: Option[bool]
     biomeRequirementMode*: BiggestInt
@@ -236,7 +236,7 @@ type
   LdtkType* = enum
     IntGrid = "IntGrid", Entities = "Entities", Tiles = "Tiles",
     AutoLayer = "AutoLayer"
-  LdtkLayerDef* = object
+  LdtkLayerDef* {.byref.} = object
     pxOffsetX*: BiggestInt
     tilePivotX*: BiggestFloat
     uiFilterTags*: seq[string]
@@ -294,7 +294,7 @@ type
     ZigZag = "ZigZag", StraightArrow = "StraightArrow",
     CurvedArrow = "CurvedArrow", ArrowsLine = "ArrowsLine",
     DashedLine = "DashedLine"
-  LdtkFieldDef* = object
+  LdtkFieldDef* {.byref.} = object
     acceptFileTypes*: Option[seq[string]]
     editorDisplayScale*: BiggestFloat
     searchable*: bool
@@ -330,13 +330,13 @@ type
     type1*: string
     identifier*: string
     arrayMaxLength*: Option[BiggestInt]
-  LdtkEnumDefValues* = object
+  LdtkEnumDefValues* {.byref.} = object
     tileId*: Option[BiggestInt]
     color*: BiggestInt
     tileRect*: Option[LdtkTilesetRect]
     id*: string
     tileSrcRect*: Option[seq[BiggestInt]]
-  LdtkEnumDef* = object
+  LdtkEnumDef* {.byref.} = object
     externalFileChecksum*: Option[string]
     externalRelPath*: Option[string]
     uid*: BiggestInt
@@ -355,7 +355,7 @@ type
     MoveLastOne = "MoveLastOne"
   LdtkRenderMode* = enum
     Rectangle = "Rectangle", Ellipse = "Ellipse", Tile = "Tile", Cross = "Cross"
-  LdtkEntityDef* = object
+  LdtkEntityDef* {.byref.} = object
     tileId*: Option[BiggestInt]
     showName*: bool
     tilesetId*: Option[BiggestInt]
@@ -390,17 +390,17 @@ type
     renderMode*: LdtkRenderMode
     tags*: seq[string]
     width*: BiggestInt
-  LdtkDefinitions* = object
+  LdtkDefinitions* {.byref.} = object
     tilesets*: seq[LdtkTilesetDef]
     layers*: seq[LdtkLayerDef]
     levelFields*: seq[LdtkFieldDef]
     enums*: seq[LdtkEnumDef]
     entities*: seq[LdtkEntityDef]
     externalEnums*: seq[LdtkEnumDef]
-  LdtkGridPoint* = object
+  LdtkGridPoint* {.byref.} = object
     cy*: BiggestInt
     cx*: BiggestInt
-  Ldtk_FORCED_REFS* = object
+  Ldtk_FORCED_REFS* {.byref.} = object
     TilesetRect*: Option[LdtkTilesetRect]
     FieldInstance*: Option[LdtkFieldInstance]
     EntityInstance*: Option[LdtkEntityInstance]
@@ -429,7 +429,7 @@ type
     EnumDef*: Option[LdtkEnumDef]
     GridPoint*: Option[LdtkGridPoint]
     IntGridValueDef*: Option[LdtkIntGridValueDef]
-  LdtkLdtkJsonRoot* = object
+  LdtkLdtkJsonRoot* {.byref.} = object
     backupLimit*: BiggestInt
     defaultEntityWidth*: BiggestInt
     backupOnSave*: bool

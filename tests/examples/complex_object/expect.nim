@@ -3,12 +3,12 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  Complex_objectAddress* = object
+  Complex_objectAddress* {.byref.} = object
     street*: string
     city*: string
     state*: string
     postalCode*: string
-  Complex_object* = object
+  Complex_object* {.byref.} = object
     name*: string
     age*: BiggestInt
     address*: Option[Complex_objectAddress]

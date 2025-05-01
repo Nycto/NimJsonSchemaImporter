@@ -3,10 +3,10 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  BlogAuthor* = object
+  BlogAuthor* {.byref.} = object
     username*: Option[string]
     email*: Option[string]
-  Blog* = object
+  Blog* {.byref.} = object
     title*: string
     content*: string
     publishedDate*: Option[string]

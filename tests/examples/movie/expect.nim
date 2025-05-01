@@ -6,7 +6,7 @@ type
   MovieGenre* = enum
     Action = "Action", Comedy = "Comedy", Drama = "Drama",
     `Science Fiction` = "Science Fiction"
-  Movie* = object
+  Movie* {.byref.} = object
     title*: string
     director*: string
     releaseDate*: string

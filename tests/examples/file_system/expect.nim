@@ -5,26 +5,26 @@ import json_schema_import/private/[stringify, equality, bin]
 type
   File_systemType* = enum
     Disk = "disk"
-  File_systemDiskDevice* = object
+  File_systemDiskDevice* {.byref.} = object
     `type`*: File_systemType
     device*: string
   File_systemStorageType* = enum
     Disk = "disk"
-  File_systemDiskUUID* = object
+  File_systemDiskUUID* {.byref.} = object
     `type`*: File_systemStorageType
     label*: string
   File_systemStorageType2* = enum
     Nfs = "nfs"
-  File_systemNfs* = object
+  File_systemNfs* {.byref.} = object
     `type`*: File_systemStorageType2
     remotePath*: string
     server*: string
   File_systemStorageType3* = enum
     Tmpfs = "tmpfs"
-  File_systemTmpfs* = object
+  File_systemTmpfs* {.byref.} = object
     `type`*: File_systemStorageType3
     sizeInMB*: BiggestInt
-  File_systemUnion* = object
+  File_systemUnion* {.byref.} = object
     case kind*: range[0 .. 3]
     of 0:
       key0*: File_systemDiskDevice
@@ -36,7 +36,7 @@ type
       key3*: File_systemTmpfs
   File_systemFstype* = enum
     Ext3 = "ext3", Ext4 = "ext4", Btrfs = "btrfs"
-  File_system* = object
+  File_system* {.byref.} = object
     storage*: File_systemUnion
     fstype*: Option[File_systemFstype]
     options*: Option[seq[string]]

@@ -25,7 +25,7 @@ let source {.compileTime.} = ident("source")
 
 proc addType(ctx: GenContext, name, typ: NimNode) =
   ctx.usedNames.incl(name.getName.toUpperAscii)
-  ctx.types.incl(nnkTypeDef.newTree(postfix(name, "*"), newEmptyNode(), typ))
+  ctx.types.incl(nnkTypeDef.newTree(name.markPublic, newEmptyNode(), typ))
 
 proc genName(ctx: GenContext, name: NameChain, typ: TypeDef): NimNode =
   for name in typ.proposeNames(ctx.prefix, name):
@@ -54,7 +54,7 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
       )
     )
 
-  ctx.addType(result, nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), records))
+  ctx.addType(result.withByRef(), nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), records))
 
   let copyProc = nnkAccQuoted.newTree(ident("=copy"))
   ctx.declarations.add quote do:
@@ -111,7 +111,7 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     ctx.procs.add(buildUnionPacker(i, subtypeNode, result))
 
   ctx.addType(
-    result,
+    result.withByRef(),
     nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), nnkRecList.newTree(cases)),
   )
 

@@ -3,7 +3,7 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  UnionUnion* = object
+  UnionUnion* {.byref.} = object
     case kind*: range[0 .. 3]
     of 0:
       key0*: string
@@ -13,11 +13,11 @@ type
       key2*: bool
     of 3:
       key3*: BiggestFloat
-  UnionKey3* = object
+  UnionKey3* {.byref.} = object
     foo*: Option[string]
   UnionKey32* = enum
     A = "a", B = "b", C = "c"
-  UnionKey3Union* = object
+  UnionKey3Union* {.byref.} = object
     case kind*: range[0 .. 4]
     of 0:
       key0*: UnionKey3
@@ -29,7 +29,7 @@ type
       key3*: UnionKey32
     of 4:
       key4*: string
-  Union* = object
+  Union* {.byref.} = object
     key1*: Option[UnionUnion]
     key2*: string
     key3*: Option[UnionKey3Union]

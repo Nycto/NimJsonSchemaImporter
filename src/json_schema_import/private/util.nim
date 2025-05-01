@@ -17,12 +17,12 @@ proc cleanupIdent*(name: string): string =
 
 proc getName*(node: NimNode): string =
   case node.kind
-  of nnkAccQuoted:
+  of nnkAccQuoted, nnkPragmaExpr:
     return node[0].getName
   of nnkIdent, nnkSym:
     return node.strVal
   else:
-    node.expectKind({nnkAccQuoted, nnkIdent, nnkSym})
+    node.expectKind({nnkAccQuoted, nnkIdent, nnkSym, nnkPragmaExpr})
 
 # https://nim-lang.org/docs/manual.html#lexical-analysis-identifiers-amp-keywords
 let nimKeywords {.compileTime.} = toHashSet[string](
@@ -64,3 +64,13 @@ proc parentDir*(path: string): string =
       path
     else:
       path[0 .. pos]
+
+proc withByRef*(ident: NimNode): NimNode =
+  nnkPragmaExpr.newTree(ident, nnkPragma.newTree(ident("byref")))
+
+proc markPublic*(ident: NimNode): NimNode =
+  if ident.kind == nnkPragmaExpr:
+    result = ident.copyNimTree
+    result[0] = ident[0].markPublic
+  else:
+    return postfix(ident, "*")

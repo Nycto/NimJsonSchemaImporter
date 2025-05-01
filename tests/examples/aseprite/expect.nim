@@ -3,22 +3,22 @@ import std/[json, jsonutils, tables, options]
 import json_schema_import/private/[stringify, equality, bin]
 
 type
-  AsepriteRectangle* = object
+  AsepriteRectangle* {.byref.} = object
     h*: BiggestFloat
     w*: BiggestFloat
     x*: BiggestFloat
     y*: BiggestFloat
-  AsepriteSize* = object
+  AsepriteSize* {.byref.} = object
     h*: BiggestFloat
     w*: BiggestFloat
-  AsepriteFrame* = object
+  AsepriteFrame* {.byref.} = object
     duration*: BiggestFloat
     frame*: AsepriteRectangle
     rotated*: bool
     sourceSize*: AsepriteSize
     spriteSourceSize*: AsepriteRectangle
     trimmed*: bool
-  AsepriteArrayFrame* = object
+  AsepriteArrayFrame* {.byref.} = object
     duration*: BiggestFloat
     filename*: string
     frame*: AsepriteRectangle
@@ -26,7 +26,7 @@ type
     sourceSize*: AsepriteSize
     spriteSourceSize*: AsepriteRectangle
     trimmed*: bool
-  AsepriteUnion* = object
+  AsepriteUnion* {.byref.} = object
     case kind*: range[0 .. 1]
     of 0:
       key0*: OrderedTable[string, AsepriteFrame]
@@ -36,7 +36,7 @@ type
     RGBA8888 = "RGBA8888", I8 = "I8"
   AsepriteDirection* = enum
     Forward = "forward", Reverse = "reverse", Pingpong = "pingpong"
-  AsepriteFrameTag* = object
+  AsepriteFrameTag* {.byref.} = object
     direction*: AsepriteDirection
     `from`*: BiggestFloat
     name*: string
@@ -49,27 +49,27 @@ type
     Difference = "difference", Exclusion = "exclusion", Subtract = "subtract",
     Divide = "divide", Hsl_hue = "hsl_hue", Hsl_saturation = "hsl_saturation",
     Hsl_color = "hsl_color", Hsl_luminosity = "hsl_luminosity"
-  AsepriteLayer* = object
+  AsepriteLayer* {.byref.} = object
     blendMode*: Option[AsepriteBlendMode]
     color*: Option[string]
     data*: Option[string]
     group*: Option[string]
     name*: string
     opacity*: Option[BiggestFloat]
-  AsepritePoint* = object
+  AsepritePoint* {.byref.} = object
     x*: BiggestFloat
     y*: BiggestFloat
-  AsepriteSliceKey* = object
+  AsepriteSliceKey* {.byref.} = object
     bounds*: AsepriteRectangle
     center*: Option[AsepriteRectangle]
     frame*: BiggestFloat
     pivot*: Option[AsepritePoint]
-  AsepriteSlice* = object
+  AsepriteSlice* {.byref.} = object
     color*: Option[string]
     data*: Option[string]
     keys*: seq[AsepriteSliceKey]
     name*: string
-  AsepriteMeta* = object
+  AsepriteMeta* {.byref.} = object
     app*: string
     format*: AsepriteFormat
     frameTags*: Option[seq[AsepriteFrameTag]]
@@ -79,7 +79,7 @@ type
     size*: AsepriteSize
     slices*: Option[seq[AsepriteSlice]]
     version*: string
-  AsepriteSpriteSheet* = object
+  AsepriteSpriteSheet* {.byref.} = object
     frames*: AsepriteUnion
     meta*: AsepriteMeta
 proc `=copy`(a: var AsepriteRectangle;
