@@ -90,39 +90,17 @@ proc fromBinary*(_: typedesc[float64], source: string, idx: var int): float64 =
   ## Deserializes a 64-bit floating-point value from binary format in the source string.
   cast[float64](fromBinary(uint64, source, idx))
 
-proc toBinary*[T: object | tuple](target: var string, source: T) =
-  ## Serializes an object or tuple into binary format and appends it to the target string.
-  for _, value in source.fieldPairs:
-    toBinary(target, value)
-
-proc fromBinary*[T: object | tuple](_: typedesc[T], source: string, idx: var int): T =
-  ## Deserializes an object or tuple from binary format in the source string.
-  for _, value in result.fieldPairs:
-    value = fromBinary(typeof(value), source, idx)
-
-proc toBinary*[T: ref object | ref tuple](target: var string, source: T) =
-  ## Serializes a reference object or tuple into binary format and appends it to the target string.
-  toBinary(target, source[])
-
-proc fromBinary*[T: ref object | ref tuple](
-    _: typedesc[T], source: string, idx: var int
-): T =
-  ## Deserializes a reference object or tuple from binary format in the source string.
-  result = new(T)
-  for _, value in result[].fieldPairs:
-    value = fromBinary(typeof(value), source, idx)
-
 type SomeTable[K, V] = Table[K, V] | OrderedTable[K, V]
   ## A type alias for tables, supporting both `Table` and `OrderedTable`.
 
-proc toBinary*[K, V](target: var string, source: SomeTable[K, V]) =
+proc tableToBinary[K, V](target: var string, source: SomeTable[K, V]) =
   ## Serializes a table into binary format and appends it to the target string.
   toBinary(target, source.len.int32)
   for key, value in tables.pairs(source):
     toBinary(target, key)
     toBinary(target, value)
 
-proc fromBinary*[K; V; T: SomeTable[K, V]](
+proc tableFromBinary[K; V; T: SomeTable[K, V]](
     _: typedesc[T], source: string, idx: var int
 ): T =
   ## Deserializes a table from binary format in the source string.
@@ -136,6 +114,34 @@ proc fromBinary*[K; V; T: SomeTable[K, V]](
   for _ in 0 ..< size:
     let key = fromBinary(K, source, idx)
     result[key] = fromBinary(V, source, idx)
+
+proc toBinary*[T: object | tuple](target: var string, source: T) =
+  ## Serializes an object or tuple into binary format and appends it to the target string.
+  when T is SomeTable:
+    tableToBinary(target, source)
+  else:
+    for _, value in source.fieldPairs:
+      toBinary(target, value)
+
+proc fromBinary*[T: object | tuple](_: typedesc[T], source: string, idx: var int): T =
+  ## Deserializes an object or tuple from binary format in the source string.
+  when T is SomeTable:
+    return tableFromBinary(T, source, idx)
+  else:
+    for _, value in result.fieldPairs:
+      value = fromBinary(typeof(value), source, idx)
+
+proc toBinary*[T: ref object | ref tuple](target: var string, source: T) =
+  ## Serializes a reference object or tuple into binary format and appends it to the target string.
+  toBinary(target, source[])
+
+proc fromBinary*[T: ref object | ref tuple](
+    _: typedesc[T], source: string, idx: var int
+): T =
+  ## Deserializes a reference object or tuple from binary format in the source string.
+  result = new(T)
+  for _, value in result[].fieldPairs:
+    value = fromBinary(typeof(value), source, idx)
 
 proc toBinary*(target: var string, source: JsonNode) =
   ## Serializes a JSON node into binary format and appends it to the target string.
