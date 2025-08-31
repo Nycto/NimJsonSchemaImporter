@@ -1,4 +1,3 @@
-
 # https://json-schema.org/learn/json-schema-examples
 buildTest("address", Address)
 buildTest("blog", Blog)

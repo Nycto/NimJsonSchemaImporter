@@ -4,6 +4,6 @@ importJsonSchema "examples/address/schema.json"
 importJsonSchema "examples/movie/schema.json", "Prefix"
 
 suite "Simple import syntax":
-    test "File should compile":
-        check(declared(Address))
-        check(declared(PrefixMovie))
+  test "File should compile":
+    check(declared(Address))
+    check(declared(PrefixMovie))

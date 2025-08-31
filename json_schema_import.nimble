@@ -1,10 +1,10 @@
 # Package
 
-version       = "0.1.0"
-author        = "Nycto"
-description   = "Converts JSON schema definitions to nim types"
-license       = "MIT"
-srcDir        = "src"
+version = "0.1.0"
+author = "Nycto"
+description = "Converts JSON schema definitions to nim types"
+license = "MIT"
+srcDir = "src"
 
 # Dependencies
 
@@ -16,34 +16,31 @@ requires "regex >= 0.26.1"
 import std/[os, strutils]
 
 task readme, "Compiles code in the readme":
+  let readme = readFile("README.md")
 
-    let readme = readFile("README.md")
+  let tmpDir = nimcacheDir() & "/readme_json_schema_import"
+  mkDir(tmpDir)
 
-    let tmpDir = nimcacheDir() & "/readme_json_schema_import"
-    mkDir(tmpDir)
+  var inCode = false
+  var accum = ""
+  var path = ""
+  for line in readme.split("\n"):
+    if line.startsWith "```":
+      if not inCode:
+        let filename = line.split(' ')[^1]
+        assert(filename != "")
+        path = tmpDir & "/" & filename
+      else:
+        assert(path != "")
+        echo "Creating file ", path
+        writeFile(path, accum)
 
-    var inCode = false
-    var accum = ""
-    var path = ""
-    for line in readme.split("\n"):
-        if line.startsWith "```":
+        if path.endsWith(".nim"):
+          exec("nim c -r -p:" & getCurrentDir() & "/src " & path)
 
-            if not inCode:
-                let filename = line.split(' ')[^1]
-                assert(filename != "")
-                path = tmpDir & "/" & filename
+        path = ""
+        accum = ""
 
-            else:
-                assert(path != "")
-                echo "Creating file ", path
-                writeFile(path, accum)
-
-                if path.endsWith(".nim"):
-                    exec("nim c -r -p:" & getCurrentDir() & "/src " & path)
-
-                path = ""
-                accum = ""
-
-            inCode = not inCode
-        elif inCode:
-            accum &= line & "\n"
+      inCode = not inCode
+    elif inCode:
+      accum &= line & "\n"

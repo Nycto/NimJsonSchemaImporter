@@ -1,13 +1,12 @@
 import std/[unittest, json, strutils], json_schema_import, regex, util
 
-{.push warning[UnusedImport]:off.}
+{.push warning[UnusedImport]: off.}
 
 template buildTest(name: static string, rootType: untyped) =
-    import examples/name/expect
+  import examples/name/expect
 
 include defs
 
 suite "Importing all snapshots":
-    test "Importing snapshots should compile":
-        discard
-
+  test "Importing snapshots should compile":
+    discard

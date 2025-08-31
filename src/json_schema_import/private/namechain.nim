@@ -1,7 +1,6 @@
 import std/strutils
 
-type NameChain* = ref object
-  ## A chain of names
+type NameChain* = ref object ## A chain of names
   name, category: string
   parent: NameChain
 
@@ -31,7 +30,11 @@ proc categorize*(parent: NameChain, category: string): auto =
 
 proc prefixed(name, prefix: string): string =
   ## Adds prefix to name if the name doesn't already start with that prefix
-  return if name.startsWith(prefix): name else: prefix & name
+  return
+    if name.startsWith(prefix):
+      name
+    else:
+      prefix & name
 
 iterator nameOptions*(name: NameChain, prefix: string): string =
   ## Proposes all possible names for a type

@@ -5,22 +5,20 @@ include import_all
 import std/[unittest, json, strformat, jsonutils]
 
 suite "Creating a stringified version of a generated object":
+  template buildTest(name: static string, rootType: typedesc) =
+    let testDir = currentSourcePath.parentDir() & "/examples/" & name
+    let sampleDir = testDir & "/samples"
+    let dollarDir = testDir & "/dollars"
 
-    template buildTest(name: static string, rootType: typedesc) =
+    for (_, path) in walkDir(sampleDir):
+      test name & " parsing: " & path:
+        let stringified = $jsonTo(parseFile(path), rootType)
 
-        let testDir = currentSourcePath.parentDir() & "/examples/" & name
-        let sampleDir = testDir & "/samples"
-        let dollarDir = testDir & "/dollars"
+        let expect = Path(dollarDir) / Path(path).lastPathPart.changeFileExt("txt")
 
-        for (_, path) in walkDir(sampleDir):
-            test name & " parsing: " & path:
-                let stringified = $jsonTo(parseFile(path), rootType)
+        when defined(rebuild):
+          writeFile(expect.string, stringified)
+        else:
+          check(stringified == readFile(expect.string))
 
-                let expect = Path(dollarDir) / Path(path).lastPathPart.changeFileExt("txt")
-
-                when defined(rebuild):
-                    writeFile(expect.string, stringified)
-                else:
-                    check(stringified == readFile(expect.string))
-
-    include defs
+  include defs

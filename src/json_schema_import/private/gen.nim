@@ -54,7 +54,9 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
       )
     )
 
-  ctx.addType(result.withByRef(), nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), records))
+  ctx.addType(
+    result.withByRef(), nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), records)
+  )
 
   let copyProc = nnkAccQuoted.newTree(ident("=copy"))
   ctx.declarations.add quote do:
