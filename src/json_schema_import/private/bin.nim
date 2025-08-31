@@ -96,9 +96,9 @@ type SomeTable[K, V] = Table[K, V] | OrderedTable[K, V]
 proc tableToBinary[K, V](target: var string, source: SomeTable[K, V]) =
   ## Serializes a table into binary format and appends it to the target string.
   toBinary(target, source.len.int32)
-  for key, value in tables.pairs(source):
+  for key in tables.keys(source):
     toBinary(target, key)
-    toBinary(target, value)
+    toBinary(target, source[key])
 
 proc tableFromBinary[K; V; T: SomeTable[K, V]](
     _: typedesc[T], source: string, idx: var int

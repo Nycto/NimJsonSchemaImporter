@@ -16,8 +16,8 @@ proc equals*[T](_: typedesc[seq[T]], a, b: seq[T]): bool =
 
 proc equals*[K, V](_: typedesc[SomeTable[K, V]], a, b: SomeTable[K, V]): bool =
   if a.len == b.len:
-    for key, value in pairs(a):
-      if not b.hasKey(key) or not equals(V, value, b[key]):
+    for key in keys(a):
+      if not b.hasKey(key) or not equals(V, a[key], b[key]):
         return false
     return true
   else:

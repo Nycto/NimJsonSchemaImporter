@@ -37,12 +37,12 @@ proc stringify*[T](_: typedesc[seq[T]], values: seq[T]): string =
 proc stringify*[K, V](_: typedesc[SomeTable[K, V]], values: SomeTable[K, V]): string =
   result = "{"
   var isFirst = true
-  for key, value in pairs(values):
+  for key in keys(values):
     if isFirst:
       isFirst = false
     else:
       result &= ", "
-    result &= stringify(K, key) & ": " & stringify(V, value)
+    result &= stringify(K, key) & ": " & stringify(V, values[key])
   result &= "}"
 
 proc stringifyObj*(name: string, entries: varargs[(string, string)]): string =
