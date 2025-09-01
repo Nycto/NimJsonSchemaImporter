@@ -5,6 +5,7 @@ type
     rootTypeName*: string
     typePrefix*: string
     urlResolver*: UrlResolver
+    noCopies*: bool
 
   UrlResolver* = proc(url: string): JsonNode
     ## Callback that resolves remote URL references to a schema

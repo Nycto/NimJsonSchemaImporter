@@ -15,8 +15,7 @@ proc parseJsonSchema(
 ): GeneratedOutput {.compileTime.} =
   ## Parses a json schema
   let resolver = if conf.urlResolver == nil: defaultUrlResolver else: conf.urlResolver
-  result =
-    parseSchema(schema, resolver).genDeclarations(conf.rootTypeName, conf.typePrefix)
+  result = parseSchema(schema, resolver).genDeclarations(conf)
   when defined(dump):
     echo result.code.formatCodeDump
 
@@ -58,6 +57,10 @@ macro importJsonSchema*(path, prefix: string) =
   let rootDir = path.getRootDir
   quote:
     realImportJsonSchema(`rootDir`, `path`, JsonSchemaConfig(typePrefix: `prefix`))
+
+macro jsonSchema*(conf: static JsonSchemaConfig, schema: static JsonNode) =
+  ## Converts a direct json reference to nim as if it were a json schema
+  parseJsonSchema(schema, conf).code
 
 macro jsonSchema*(schema: static JsonNode) =
   ## Converts a direct json reference to nim as if it were a json schema

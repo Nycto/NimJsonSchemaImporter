@@ -1,14 +1,15 @@
 import
+  std/[macros, tables, sets, json, options, hashes, strutils],
+  ../config,
   types, schemaRef, marshalling, util, unpack, namechain, equalsgen, dollargen, bingen
-import std/[macros, tables, sets, json, options, hashes, strutils]
 
 type
   GenContext = ref object
+    conf: JsonSchemaConfig
     types: OrderedSet[NimNode]
     declarations: NimNode
     procs: NimNode
     nextId: uint
-    prefix: string
     cache: Table[SchemaRef, NimNode]
     usedNames: HashSet[string]
 
@@ -28,7 +29,7 @@ proc addType(ctx: GenContext, name, typ: NimNode) =
   ctx.types.incl(nnkTypeDef.newTree(name.markPublic, newEmptyNode(), typ))
 
 proc genName(ctx: GenContext, name: NameChain, typ: TypeDef): NimNode =
-  for name in typ.proposeNames(ctx.prefix, name):
+  for name in typ.proposeNames(ctx.conf.typePrefix, name):
     let upperName = name.toUpperAscii
     if upperName notin ctx.usedNames:
       ctx.usedNames.incl(upperName)
@@ -58,9 +59,12 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     result.withByRef(), nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), records)
   )
 
-  let copyProc = nnkAccQuoted.newTree(ident("=copy"))
+  if ctx.conf.noCopies:
+    let copyProc = nnkAccQuoted.newTree(ident("=copy"))
+    ctx.declarations.add quote do:
+      proc `copyProc`(a: var `result`, b: `result`) {.error.}
+
   ctx.declarations.add quote do:
-    proc `copyProc`(a: var `result`, b: `result`) {.error.}
     proc toJsonHook*(`source`: `result`): JsonNode
 
   ctx.procs.add(
@@ -172,16 +176,16 @@ proc genType(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   if not typ.sref.isNil:
     ctx.cache[typ.sref] = result
 
-proc genDeclarations*(schema: JsonSchema, name, namePrefix: string): GeneratedOutput =
+proc genDeclarations*(schema: JsonSchema, conf: JsonSchemaConfig): GeneratedOutput =
   let ctx = GenContext(
+    conf: conf,
     types: initOrderedSet[NimNode](),
-    prefix: namePrefix,
     cache: initTable[SchemaRef, NimNode](),
     declarations: newStmtList(),
     procs: newStmtList(),
   )
 
-  result.rootType = schema.rootType.genType(rootName(name), ctx)
+  result.rootType = schema.rootType.genType(rootName(conf.rootTypeName), ctx)
 
   var types = nnkTypeSection.newTree()
   for typ in ctx.types:

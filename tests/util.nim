@@ -12,7 +12,10 @@ proc testResolver*(uri: string): JsonNode =
 
 proc conf*(rootTypeName: string): auto =
   return JsonSchemaConfig(
-    rootTypeName: rootTypeName, typePrefix: rootTypeName, urlResolver: testResolver
+    rootTypeName: rootTypeName,
+    typePrefix: rootTypeName,
+    urlResolver: testResolver,
+    noCopies: true,
   )
 
 proc compareLines*(expect, found, path: string) =
