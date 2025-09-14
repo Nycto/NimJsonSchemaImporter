@@ -1,4 +1,4 @@
-import std/[macros, tables, sets, json, jsonutils, options]
+import std/[macros, tables, sets, json, jsonutils, options, sequtils]
 import types, util
 
 proc isJsonKind(value: NimNode, kind: JsonNodeKind): NimNode =
@@ -10,6 +10,25 @@ proc hasAllProps(base, value: NimNode, typ: TypeDef): NimNode =
   for key, (_, _, required) in typ.properties:
     if required:
       result = infix(base, "and", newCall(bindSym("hasKey"), value, key.newLit))
+
+proc toLiteral(json: JsonNode): NimNode =
+  ## Creates an expression that knows how to define a literal type from a JSON value
+  return case json.kind
+  of JNull:
+    newCall(bindSym("newJNull"))
+  of JBool:
+    newCall(bindSym("newJBool"), newLit(json.getBool))
+  of JInt:
+    newCall(bindSym("newJInt"), newLit(json.getInt))
+  of JFloat:
+    newCall(bindSym("newJFloat"), newLit(json.getFloat))
+  of JString:
+    newCall(bindSym("newJString"), newLit(json.getStr))
+  of JArray:
+    newCall(bindSym("%*"), nnkBracket.newTree(json.mapIt(toLiteral(it))))
+  of JObject:
+    let table = json.pairs.toSeq.mapIt(nnkExprColonExpr.newTree(it.key.newLit, toLiteral(it.val)))
+    newCall(bindSym("%*"), nnkTableConstr.newTree(table))
 
 proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
   ## Creates an expression that knows how to json encode a type
@@ -59,6 +78,8 @@ proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
     return newCall(bindSym("newJNull"))
   of JsonType:
     return input
+  of ConstValueType:
+    return typ.value.toLiteral()
 
 proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
   case typ.kind
@@ -86,6 +107,8 @@ proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
     raiseAssert("Unions should not contain other unions")
   of RefType:
     raiseAssert("Unions are not supported in ref types")
+  of ConstValueType:
+    raiseAssert("Unimplemented")
 
 let source {.compileTime.} = ident("source")
 let target {.compileTime.} = ident("target")
@@ -134,6 +157,9 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
   let typeNameStr = typeName.getName.newLit
 
   for key, (propName, subtype, required) in typ.properties:
+    if not subtype.hasRealField:
+      continue
+
     let safeKey = safePropName(propName)
     if required:
       decodeKeys.add quote do:
@@ -156,7 +182,7 @@ proc buildObjectEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
 
   for key, (propName, propType, required) in typ.properties:
     let readProp = newDotExpr(source, safePropName(propName))
-    if required:
+    if required or not propType.hasRealField:
       let encode = readProp.createEncodeExpr(propType)
       encodeKeys.add quote do:
         result{`key`} = `encode`

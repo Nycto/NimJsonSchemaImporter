@@ -1,0 +1,41 @@
+{
+  "$id": "https://example.com/consts.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "nonConstField": {
+      "type": "string"
+    },
+    "nil": {
+      "const": null
+    },
+    "integer": {
+      "const": 42
+    },
+    "str": {
+      "const": "example"
+    },
+    "float": {
+      "const": 3.14
+    },
+    "bool": {
+      "const": true
+    },
+    "list": {
+      "const": [1, 2, 3]
+    },
+    "obj": {
+      "const": {
+        "key": "value",
+        "key2": "value2"
+      }
+    },
+    "emptyObj": {
+      "const": {}
+    },
+    "emptyArray": {
+      "const": []
+    }
+  },
+  "required": ["integer", "str", "float", "bool", "list", "obj"]
+}

@@ -1,4 +1,4 @@
-import std/[sets, tables, strformat, hashes, strutils, uri], schemaRef, namechain
+import std/[sets, tables, strformat, hashes, strutils, uri, json], schemaRef, namechain
 
 type
   TypeDefKind* = enum
@@ -15,6 +15,7 @@ type
     JsonType
     MapType
     OptionalType
+    ConstValueType
 
   PropDef* = tuple[propName: string, typ: TypeDef, required: bool]
     ## The details of an object property
@@ -39,10 +40,19 @@ type
       subtype*: TypeDef
     of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
       discard
+    of ConstValueType:
+      value*: JsonNode
 
   JsonSchema* = ref object
     rootType*: TypeDef
     defs*: OrderedTable[string, TypeDef]
+
+proc hasRealField*(typ: TypeDef): bool =
+  ## Returns whether the given type actually requires a field on internal object
+  return case typ.kind
+  of ConstValueType: false
+  of OptionalType: hasRealField(typ.subtype)
+  else: true
 
 proc hash*(typ: TypeDef): Hash {.noSideEffect.} =
   result = hash(typ.kind) !& hash(typ.sref)
@@ -64,6 +74,8 @@ proc hash*(typ: TypeDef): Hash {.noSideEffect.} =
     result = result !& hash(typ.subtype)
   of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
     discard
+  of ConstValueType:
+    result = result !& hash(typ.value)
 
 proc `==`*(a, b: TypeDef): bool {.noSideEffect.} =
   if a.kind != b.kind:
@@ -84,7 +96,7 @@ proc `==`*(a, b: TypeDef): bool {.noSideEffect.} =
     return a.entries == b.entries
   of OptionalType:
     return a.subtype == b.subtype
-  of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
+  of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, ConstValueType:
     return true
 
 proc `$`*(typ: TypeDef): string =
@@ -115,15 +127,17 @@ proc `$`*(typ: TypeDef): string =
     result = "(Null)"
   of JsonType:
     result = "(Json)"
+  of ConstValueType:
+    result = fmt"(Const {typ.value})"
 
   if not typ.sref.isNil:
     result = fmt"({typ.sref} {result})"
 
 proc optional*(typ: TypeDef): TypeDef =
-  if typ.kind == OptionalType:
-    typ
-  else:
-    TypeDef(kind: OptionalType, subtype: typ)
+  return case typ.kind
+  of OptionalType: typ
+  of ConstValueType: typ
+  else: TypeDef(kind: OptionalType, subtype: typ)
 
 proc abbrev*(typ: TypeDef): string =
   ## Returns an abbreviated name of a type
@@ -145,6 +159,7 @@ proc abbrev*(typ: TypeDef): string =
     of BoolType: "Bool"
     of NullType: "Null"
     of JsonType: "Json"
+    of ConstValueType: "Const"
 
 iterator nameFragments*(typ: TypeDef): string =
   ## Produces fragments of a descriptive name for a type
@@ -168,7 +183,7 @@ iterator nameFragments*(typ: TypeDef): string =
     of OptionalType:
       yield fmt"Of{typ.subtype.abbrev}"
     of EnumType, RefType, IntegerType, StringType, NumberType, BoolType, NullType,
-        JsonType:
+        JsonType, ConstValueType:
       discard
 
 proc chooseName*(typ: TypeDef): string =

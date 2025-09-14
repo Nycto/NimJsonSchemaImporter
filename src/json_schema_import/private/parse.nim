@@ -237,6 +237,8 @@ proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     return parseTyped(node, ctx, history)
   elif "format" in node:
     return parseTypeStr("string", history)
+  elif "const" in node:
+    return TypeDef(kind: ConstValueType, value: node{"const"})
   else:
     return TypeDef(kind: JsonType, id: id(node))
 

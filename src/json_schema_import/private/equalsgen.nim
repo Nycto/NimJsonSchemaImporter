@@ -10,14 +10,15 @@ proc keysEqual(key: NimNode): NimNode =
 proc buildObjEquals(typ: TypeDef, typeName: NimNode): NimNode =
   assert(typ.kind == ObjType)
   var output = newEmptyNode()
-  for _, (propName, _, _) in typ.properties:
-    let compare = keysEqual(safePropName(propName))
-    output =
-      if output.kind == nnkEmpty:
-        compare
-      else:
-        infix(output, "and", compare)
-  return output or newLit(false)
+  for _, (propName, typ, _) in typ.properties:
+    if typ.hasRealField:
+      let compare = keysEqual(safePropName(propName))
+      output =
+        if output.kind == nnkEmpty:
+          compare
+        else:
+          infix(output, "and", compare)
+  return output or newLit(true)
 
 proc buildUnionEquals(typ: TypeDef, typeName: NimNode): NimNode =
   assert(typ.kind == UnionType)

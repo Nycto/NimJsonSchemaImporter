@@ -1,4 +1,4 @@
-import types, util, stringify, std/[macros, genasts, tables]
+import types, util, stringify, std/[macros, genasts, tables, json]
 
 let value {.compileTime.} = ident("value")
 
@@ -7,8 +7,12 @@ proc buildObjDollar(typ: TypeDef, typeName: NimNode): NimNode =
   result = newCall(bindSym("stringifyObj"), typeName.getName.newLit)
   for _, (propName, subtype, _) in typ.properties:
     let propRef = safePropName(propName)
-    let propStr = quote:
-      stringify(typeof(`value`.`propRef`), `value`.`propRef`)
+
+    let propStr = if subtype.kind == ConstValueType:
+      newLit($subtype.value)
+    else:
+      quote:
+        stringify(typeof(`value`.`propRef`), `value`.`propRef`)
 
     result.add(nnkTupleConstr.newTree(propName.newLit, propStr))
 
