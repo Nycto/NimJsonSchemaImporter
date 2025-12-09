@@ -1,4 +1,4 @@
-import json_schema_import, std/[json, unittest, tables]
+import json_schema_import, std/[json, unittest]
 
 jsonSchema(
   JsonSchemaConfig(noCopies: true),
