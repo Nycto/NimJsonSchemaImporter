@@ -8,11 +8,12 @@ proc buildObjDollar(typ: TypeDef, typeName: NimNode): NimNode =
   for _, (propName, subtype, _) in typ.properties:
     let propRef = safePropName(propName)
 
-    let propStr = if subtype.kind == ConstValueType:
-      newLit($subtype.value)
-    else:
-      quote:
-        stringify(typeof(`value`.`propRef`), `value`.`propRef`)
+    let propStr =
+      if subtype.kind == ConstValueType:
+        newLit($subtype.value)
+      else:
+        quote:
+          stringify(typeof(`value`.`propRef`), `value`.`propRef`)
 
     result.add(nnkTupleConstr.newTree(propName.newLit, propStr))
 

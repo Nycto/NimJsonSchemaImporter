@@ -1,7 +1,15 @@
 import
   std/[macros, tables, sets, json, options, hashes, strutils],
   ../config,
-  types, schemaRef, marshalling, util, unpack, namechain, equalsgen, dollargen, bingen
+  types,
+  schemaRef,
+  marshalling,
+  util,
+  unpack,
+  namechain,
+  equalsgen,
+  dollargen,
+  bingen
 
 type
   GenContext = ref object

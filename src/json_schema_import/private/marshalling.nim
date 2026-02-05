@@ -13,22 +13,25 @@ proc hasAllProps(base, value: NimNode, typ: TypeDef): NimNode =
 
 proc toLiteral(json: JsonNode): NimNode =
   ## Creates an expression that knows how to define a literal type from a JSON value
-  return case json.kind
-  of JNull:
-    newCall(bindSym("newJNull"))
-  of JBool:
-    newCall(bindSym("newJBool"), newLit(json.getBool))
-  of JInt:
-    newCall(bindSym("newJInt"), newLit(json.getInt))
-  of JFloat:
-    newCall(bindSym("newJFloat"), newLit(json.getFloat))
-  of JString:
-    newCall(bindSym("newJString"), newLit(json.getStr))
-  of JArray:
-    newCall(bindSym("%*"), nnkBracket.newTree(json.mapIt(toLiteral(it))))
-  of JObject:
-    let table = json.pairs.toSeq.mapIt(nnkExprColonExpr.newTree(it.key.newLit, toLiteral(it.val)))
-    newCall(bindSym("%*"), nnkTableConstr.newTree(table))
+  return
+    case json.kind
+    of JNull:
+      newCall(bindSym("newJNull"))
+    of JBool:
+      newCall(bindSym("newJBool"), newLit(json.getBool))
+    of JInt:
+      newCall(bindSym("newJInt"), newLit(json.getInt))
+    of JFloat:
+      newCall(bindSym("newJFloat"), newLit(json.getFloat))
+    of JString:
+      newCall(bindSym("newJString"), newLit(json.getStr))
+    of JArray:
+      newCall(bindSym("%*"), nnkBracket.newTree(json.mapIt(toLiteral(it))))
+    of JObject:
+      let table = json.pairs.toSeq.mapIt(
+        nnkExprColonExpr.newTree(it.key.newLit, toLiteral(it.val))
+      )
+      newCall(bindSym("%*"), nnkTableConstr.newTree(table))
 
 proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
   ## Creates an expression that knows how to json encode a type

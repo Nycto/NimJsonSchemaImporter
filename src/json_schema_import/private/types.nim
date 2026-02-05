@@ -49,10 +49,14 @@ type
 
 proc hasRealField*(typ: TypeDef): bool =
   ## Returns whether the given type actually requires a field on internal object
-  return case typ.kind
-  of ConstValueType: false
-  of OptionalType: hasRealField(typ.subtype)
-  else: true
+  return
+    case typ.kind
+    of ConstValueType:
+      false
+    of OptionalType:
+      hasRealField(typ.subtype)
+    else:
+      true
 
 proc hash*(typ: TypeDef): Hash {.noSideEffect.} =
   result = hash(typ.kind) !& hash(typ.sref)
@@ -134,10 +138,14 @@ proc `$`*(typ: TypeDef): string =
     result = fmt"({typ.sref} {result})"
 
 proc optional*(typ: TypeDef): TypeDef =
-  return case typ.kind
-  of OptionalType: typ
-  of ConstValueType: typ
-  else: TypeDef(kind: OptionalType, subtype: typ)
+  return
+    case typ.kind
+    of OptionalType:
+      typ
+    of ConstValueType:
+      typ
+    else:
+      TypeDef(kind: OptionalType, subtype: typ)
 
 proc abbrev*(typ: TypeDef): string =
   ## Returns an abbreviated name of a type
