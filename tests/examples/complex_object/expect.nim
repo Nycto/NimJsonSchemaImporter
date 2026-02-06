@@ -12,7 +12,7 @@ type
     name*: string
     age*: BiggestInt
     address*: Option[Complex_objectAddress]
-    hobbies*: Option[seq[string]]
+    hobbies*: seq[string]
 proc `=copy`(a: var Complex_objectAddress;
              b: Complex_objectAddress) {.error.}
 proc toJsonHook*(source: Complex_objectAddress): JsonNode
@@ -88,8 +88,7 @@ proc fromJsonHook*(target: var Complex_object; source: JsonNode) =
     target.address = some(jsonTo(source{"address"},
                                  typeof(unsafeGet(target.address))))
   if hasKey(source, "hobbies") and source{"hobbies"}.kind != JNull:
-    target.hobbies = some(jsonTo(source{"hobbies"},
-                                 typeof(unsafeGet(target.hobbies))))
+    target.hobbies = jsonTo(source{"hobbies"}, typeof(target.hobbies))
 
 proc toJsonHook*(source: Complex_object): JsonNode =
   result = newJObject()
@@ -97,9 +96,9 @@ proc toJsonHook*(source: Complex_object): JsonNode =
   result{"age"} = newJInt(source.age)
   if isSome(source.address):
     result{"address"} = toJsonHook(unsafeGet(source.address))
-  if isSome(source.hobbies):
+  if len(source.hobbies) > 0:
     result{"hobbies"} = block:
-      let cursor {.cursor.} = unsafeGet(source.hobbies)
+      let cursor {.cursor.} = source.hobbies
       var output = newJArray()
       for entry in cursor:
         output.add(newJString(entry))

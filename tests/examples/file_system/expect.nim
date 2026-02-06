@@ -39,7 +39,7 @@ type
   File_system* {.byref.} = object
     storage*: File_systemUnion
     fstype*: Option[File_systemFstype]
-    options*: Option[seq[string]]
+    options*: seq[string]
     readonly*: Option[bool]
 proc `=copy`(a: var File_systemDiskDevice;
              b: File_systemDiskDevice) {.error.}
@@ -321,8 +321,7 @@ proc fromJsonHook*(target: var File_system; source: JsonNode) =
     target.fstype = some(jsonTo(source{"fstype"},
                                 typeof(unsafeGet(target.fstype))))
   if hasKey(source, "options") and source{"options"}.kind != JNull:
-    target.options = some(jsonTo(source{"options"},
-                                 typeof(unsafeGet(target.options))))
+    target.options = jsonTo(source{"options"}, typeof(target.options))
   if hasKey(source, "readonly") and source{"readonly"}.kind != JNull:
     target.readonly = some(jsonTo(source{"readonly"},
                                   typeof(unsafeGet(target.readonly))))
@@ -332,9 +331,9 @@ proc toJsonHook*(source: File_system): JsonNode =
   result{"storage"} = toJsonHook(source.storage)
   if isSome(source.fstype):
     result{"fstype"} = `%`(unsafeGet(source.fstype))
-  if isSome(source.options):
+  if len(source.options) > 0:
     result{"options"} = block:
-      let cursor {.cursor.} = unsafeGet(source.options)
+      let cursor {.cursor.} = source.options
       var output = newJArray()
       for entry in cursor:
         output.add(newJString(entry))

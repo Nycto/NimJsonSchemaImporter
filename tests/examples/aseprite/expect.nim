@@ -72,12 +72,12 @@ type
   AsepriteMeta* {.byref.} = object
     app*: string
     format*: AsepriteFormat
-    frameTags*: Option[seq[AsepriteFrameTag]]
+    frameTags*: seq[AsepriteFrameTag]
     image*: string
-    layers*: Option[seq[AsepriteLayer]]
+    layers*: seq[AsepriteLayer]
     scale*: string
     size*: AsepriteSize
-    slices*: Option[seq[AsepriteSlice]]
+    slices*: seq[AsepriteSlice]
     version*: string
   AsepriteSpriteSheet* {.byref.} = object
     frames*: AsepriteUnion
@@ -576,9 +576,8 @@ proc fromJsonHook*(target: var AsepriteSlice; source: JsonNode) =
     target.color = some(jsonTo(source{"color"}, typeof(unsafeGet(target.color))))
   if hasKey(source, "data") and source{"data"}.kind != JNull:
     target.data = some(jsonTo(source{"data"}, typeof(unsafeGet(target.data))))
-  assert(hasKey(source, "keys"),
-         "keys" & " is missing while decoding " & "AsepriteSlice")
-  target.keys = jsonTo(source{"keys"}, typeof(target.keys))
+  if hasKey(source, "keys") and source{"keys"}.kind != JNull:
+    target.keys = jsonTo(source{"keys"}, typeof(target.keys))
   assert(hasKey(source, "name"),
          "name" & " is missing while decoding " & "AsepriteSlice")
   target.name = jsonTo(source{"name"}, typeof(target.name))
@@ -589,12 +588,13 @@ proc toJsonHook*(source: AsepriteSlice): JsonNode =
     result{"color"} = newJString(unsafeGet(source.color))
   if isSome(source.data):
     result{"data"} = newJString(unsafeGet(source.data))
-  result{"keys"} = block:
-    let cursor {.cursor.} = source.keys
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.keys) > 0:
+    result{"keys"} = block:
+      let cursor {.cursor.} = source.keys
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   result{"name"} = newJString(source.name)
 
 proc equals(_: typedesc[AsepriteMeta]; a, b: AsepriteMeta): bool =
@@ -634,14 +634,12 @@ proc fromJsonHook*(target: var AsepriteMeta; source: JsonNode) =
          "format" & " is missing while decoding " & "AsepriteMeta")
   target.format = jsonTo(source{"format"}, typeof(target.format))
   if hasKey(source, "frameTags") and source{"frameTags"}.kind != JNull:
-    target.frameTags = some(jsonTo(source{"frameTags"},
-                                   typeof(unsafeGet(target.frameTags))))
+    target.frameTags = jsonTo(source{"frameTags"}, typeof(target.frameTags))
   assert(hasKey(source, "image"),
          "image" & " is missing while decoding " & "AsepriteMeta")
   target.image = jsonTo(source{"image"}, typeof(target.image))
   if hasKey(source, "layers") and source{"layers"}.kind != JNull:
-    target.layers = some(jsonTo(source{"layers"},
-                                typeof(unsafeGet(target.layers))))
+    target.layers = jsonTo(source{"layers"}, typeof(target.layers))
   assert(hasKey(source, "scale"),
          "scale" & " is missing while decoding " & "AsepriteMeta")
   target.scale = jsonTo(source{"scale"}, typeof(target.scale))
@@ -649,8 +647,7 @@ proc fromJsonHook*(target: var AsepriteMeta; source: JsonNode) =
          "size" & " is missing while decoding " & "AsepriteMeta")
   target.size = jsonTo(source{"size"}, typeof(target.size))
   if hasKey(source, "slices") and source{"slices"}.kind != JNull:
-    target.slices = some(jsonTo(source{"slices"},
-                                typeof(unsafeGet(target.slices))))
+    target.slices = jsonTo(source{"slices"}, typeof(target.slices))
   assert(hasKey(source, "version"),
          "version" & " is missing while decoding " & "AsepriteMeta")
   target.version = jsonTo(source{"version"}, typeof(target.version))
@@ -659,26 +656,26 @@ proc toJsonHook*(source: AsepriteMeta): JsonNode =
   result = newJObject()
   result{"app"} = newJString(source.app)
   result{"format"} = `%`(source.format)
-  if isSome(source.frameTags):
+  if len(source.frameTags) > 0:
     result{"frameTags"} = block:
-      let cursor {.cursor.} = unsafeGet(source.frameTags)
+      let cursor {.cursor.} = source.frameTags
       var output = newJArray()
       for entry in cursor:
         output.add(toJsonHook(entry))
       output
   result{"image"} = newJString(source.image)
-  if isSome(source.layers):
+  if len(source.layers) > 0:
     result{"layers"} = block:
-      let cursor {.cursor.} = unsafeGet(source.layers)
+      let cursor {.cursor.} = source.layers
       var output = newJArray()
       for entry in cursor:
         output.add(toJsonHook(entry))
       output
   result{"scale"} = newJString(source.scale)
   result{"size"} = toJsonHook(source.size)
-  if isSome(source.slices):
+  if len(source.slices) > 0:
     result{"slices"} = block:
-      let cursor {.cursor.} = unsafeGet(source.slices)
+      let cursor {.cursor.} = source.slices
       var output = newJArray()
       for entry in cursor:
         output.add(toJsonHook(entry))

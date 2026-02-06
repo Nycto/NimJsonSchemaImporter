@@ -11,7 +11,7 @@ type
     content*: string
     publishedDate*: Option[string]
     author*: BlogAuthor
-    tags*: Option[seq[string]]
+    tags*: seq[string]
 proc `=copy`(a: var BlogAuthor; b: BlogAuthor) {.error.}
 proc toJsonHook*(source: BlogAuthor): JsonNode
 proc `=copy`(a: var Blog; b: Blog) {.error.}
@@ -81,7 +81,7 @@ proc fromJsonHook*(target: var Blog; source: JsonNode) =
          "author" & " is missing while decoding " & "Blog")
   target.author = jsonTo(source{"author"}, typeof(target.author))
   if hasKey(source, "tags") and source{"tags"}.kind != JNull:
-    target.tags = some(jsonTo(source{"tags"}, typeof(unsafeGet(target.tags))))
+    target.tags = jsonTo(source{"tags"}, typeof(target.tags))
 
 proc toJsonHook*(source: Blog): JsonNode =
   result = newJObject()
@@ -90,9 +90,9 @@ proc toJsonHook*(source: Blog): JsonNode =
   if isSome(source.publishedDate):
     result{"publishedDate"} = newJString(unsafeGet(source.publishedDate))
   result{"author"} = toJsonHook(source.author)
-  if isSome(source.tags):
+  if len(source.tags) > 0:
     result{"tags"} = block:
-      let cursor {.cursor.} = unsafeGet(source.tags)
+      let cursor {.cursor.} = source.tags
       var output = newJArray()
       for entry in cursor:
         output.add(newJString(entry))

@@ -79,7 +79,7 @@ type
     pxOffsetY*: BiggestInt
     tilesetDefUid*: Option[BiggestInt]
     gridTiles*: seq[LdtkTile]
-    intGrid*: Option[seq[LdtkIntGridValueInstance]]
+    intGrid*: seq[LdtkIntGridValueInstance]
   LdtkLevel* {.byref.} = object
     neighbours*: seq[LdtkNeighbourLevel]
     bgColor*: string
@@ -99,7 +99,7 @@ type
     identifier*: string
     bgPivotY*: BiggestFloat
     bgPivotX*: BiggestFloat
-    layerInstances*: Option[seq[LdtkLayerInstance]]
+    layerInstances*: seq[LdtkLayerInstance]
     bgRelPath*: Option[string]
     worldDepth*: BiggestInt
   LdtkWorld* {.byref.} = object
@@ -126,7 +126,7 @@ type
   LdtkTableOfContentEntry* {.byref.} = object
     identifier*: string
     instancesData*: seq[LdtkTocInstanceData]
-    instances*: Option[seq[LdtkEntityReferenceInfos]]
+    instances*: seq[LdtkEntityReferenceInfos]
   LdtkImageExportMode* = enum
     None = "None", OneImagePerLayer = "OneImagePerLayer",
     OneImagePerLevel = "OneImagePerLevel", LayersAndLevels = "LayersAndLevels"
@@ -158,7 +158,7 @@ type
   LdtkEmbedAtlas* = enum
     LdtkIcons = "LdtkIcons"
   LdtkTilesetDef* {.byref.} = object
-    cachedPixelData*: Option[OrderedTable[string, JsonNode]]
+    cachedPixelData*: OrderedTable[string, JsonNode]
     cHei*: BiggestInt
     pxHei*: BiggestInt
     customData*: seq[LdtkTileCustomMetadata]
@@ -200,7 +200,7 @@ type
     tileRandomXMin*: BiggestInt
     checker*: LdtkChecker
     perlinOctaves*: BiggestFloat
-    tileIds*: Option[seq[BiggestInt]]
+    tileIds*: seq[BiggestInt]
     alpha*: BiggestFloat
     tileXOffset*: BiggestInt
     invalidated*: bool
@@ -295,7 +295,7 @@ type
     CurvedArrow = "CurvedArrow", ArrowsLine = "ArrowsLine",
     DashedLine = "DashedLine"
   LdtkFieldDef* {.byref.} = object
-    acceptFileTypes*: Option[seq[string]]
+    acceptFileTypes*: seq[string]
     editorDisplayScale*: BiggestFloat
     searchable*: bool
     useForSmartColor*: bool
@@ -335,7 +335,7 @@ type
     color*: BiggestInt
     tileRect*: Option[LdtkTilesetRect]
     id*: string
-    tileSrcRect*: Option[seq[BiggestInt]]
+    tileSrcRect*: seq[BiggestInt]
   LdtkEnumDef* {.byref.} = object
     externalFileChecksum*: Option[string]
     externalRelPath*: Option[string]
@@ -605,36 +605,36 @@ proc `$`*(value: LdtkLevelBgPosInfos): string =
   stringify(LdtkLevelBgPosInfos, value)
 
 proc fromJsonHook*(target: var LdtkLevelBgPosInfos; source: JsonNode) =
-  assert(hasKey(source, "cropRect"),
-         "cropRect" & " is missing while decoding " & "LdtkLevelBgPosInfos")
-  target.cropRect = jsonTo(source{"cropRect"}, typeof(target.cropRect))
-  assert(hasKey(source, "scale"),
-         "scale" & " is missing while decoding " & "LdtkLevelBgPosInfos")
-  target.scale = jsonTo(source{"scale"}, typeof(target.scale))
-  assert(hasKey(source, "topLeftPx"),
-         "topLeftPx" & " is missing while decoding " & "LdtkLevelBgPosInfos")
-  target.topLeftPx = jsonTo(source{"topLeftPx"}, typeof(target.topLeftPx))
+  if hasKey(source, "cropRect") and source{"cropRect"}.kind != JNull:
+    target.cropRect = jsonTo(source{"cropRect"}, typeof(target.cropRect))
+  if hasKey(source, "scale") and source{"scale"}.kind != JNull:
+    target.scale = jsonTo(source{"scale"}, typeof(target.scale))
+  if hasKey(source, "topLeftPx") and source{"topLeftPx"}.kind != JNull:
+    target.topLeftPx = jsonTo(source{"topLeftPx"}, typeof(target.topLeftPx))
 
 proc toJsonHook*(source: LdtkLevelBgPosInfos): JsonNode =
   result = newJObject()
-  result{"cropRect"} = block:
-    let cursor {.cursor.} = source.cropRect
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJFloat(entry))
-    output
-  result{"scale"} = block:
-    let cursor {.cursor.} = source.scale
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJFloat(entry))
-    output
-  result{"topLeftPx"} = block:
-    let cursor {.cursor.} = source.topLeftPx
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJInt(entry))
-    output
+  if len(source.cropRect) > 0:
+    result{"cropRect"} = block:
+      let cursor {.cursor.} = source.cropRect
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJFloat(entry))
+      output
+  if len(source.scale) > 0:
+    result{"scale"} = block:
+      let cursor {.cursor.} = source.scale
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJFloat(entry))
+      output
+  if len(source.topLeftPx) > 0:
+    result{"topLeftPx"} = block:
+      let cursor {.cursor.} = source.topLeftPx
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJInt(entry))
+      output
 
 proc equals(_: typedesc[LdtkTilesetRect]; a, b: LdtkTilesetRect): bool =
   equals(typeof(a.tilesetUid), a.tilesetUid, b.tilesetUid) and
@@ -718,11 +718,10 @@ proc fromJsonHook*(target: var LdtkFieldInstance; source: JsonNode) =
   target.identifier = jsonTo(source{"__identifier"}, typeof(target.identifier))
   if hasKey(source, "__tile") and source{"__tile"}.kind != JNull:
     target.tile = some(jsonTo(source{"__tile"}, typeof(unsafeGet(target.tile))))
-  assert(hasKey(source, "realEditorValues"), "realEditorValues" &
-      " is missing while decoding " &
-      "LdtkFieldInstance")
-  target.realEditorValues = jsonTo(source{"realEditorValues"},
-                                   typeof(target.realEditorValues))
+  if hasKey(source, "realEditorValues") and
+      source{"realEditorValues"}.kind != JNull:
+    target.realEditorValues = jsonTo(source{"realEditorValues"},
+                                     typeof(target.realEditorValues))
   assert(hasKey(source, "__value"),
          "__value" & " is missing while decoding " & "LdtkFieldInstance")
   target.value = jsonTo(source{"__value"}, typeof(target.value))
@@ -734,12 +733,13 @@ proc toJsonHook*(source: LdtkFieldInstance): JsonNode =
   result{"__identifier"} = newJString(source.identifier)
   if isSome(source.tile):
     result{"__tile"} = toJsonHook(unsafeGet(source.tile))
-  result{"realEditorValues"} = block:
-    let cursor {.cursor.} = source.realEditorValues
-    var output = newJArray()
-    for entry in cursor:
-      output.add(entry)
-    output
+  if len(source.realEditorValues) > 0:
+    result{"realEditorValues"} = block:
+      let cursor {.cursor.} = source.realEditorValues
+      var output = newJArray()
+      for entry in cursor:
+        output.add(entry)
+      output
   result{"__value"} = source.value
 
 proc equals(_: typedesc[LdtkTile]; a, b: LdtkTile): bool =
@@ -766,41 +766,43 @@ proc `$`*(value: LdtkTile): string =
 proc fromJsonHook*(target: var LdtkTile; source: JsonNode) =
   assert(hasKey(source, "t"), "t" & " is missing while decoding " & "LdtkTile")
   target.t = jsonTo(source{"t"}, typeof(target.t))
-  assert(hasKey(source, "d"), "d" & " is missing while decoding " & "LdtkTile")
-  target.d = jsonTo(source{"d"}, typeof(target.d))
-  assert(hasKey(source, "px"), "px" & " is missing while decoding " & "LdtkTile")
-  target.px = jsonTo(source{"px"}, typeof(target.px))
+  if hasKey(source, "d") and source{"d"}.kind != JNull:
+    target.d = jsonTo(source{"d"}, typeof(target.d))
+  if hasKey(source, "px") and source{"px"}.kind != JNull:
+    target.px = jsonTo(source{"px"}, typeof(target.px))
   assert(hasKey(source, "a"), "a" & " is missing while decoding " & "LdtkTile")
   target.a = jsonTo(source{"a"}, typeof(target.a))
   assert(hasKey(source, "f"), "f" & " is missing while decoding " & "LdtkTile")
   target.f = jsonTo(source{"f"}, typeof(target.f))
-  assert(hasKey(source, "src"),
-         "src" & " is missing while decoding " & "LdtkTile")
-  target.src = jsonTo(source{"src"}, typeof(target.src))
+  if hasKey(source, "src") and source{"src"}.kind != JNull:
+    target.src = jsonTo(source{"src"}, typeof(target.src))
 
 proc toJsonHook*(source: LdtkTile): JsonNode =
   result = newJObject()
   result{"t"} = newJInt(source.t)
-  result{"d"} = block:
-    let cursor {.cursor.} = source.d
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJInt(entry))
-    output
-  result{"px"} = block:
-    let cursor {.cursor.} = source.px
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJInt(entry))
-    output
+  if len(source.d) > 0:
+    result{"d"} = block:
+      let cursor {.cursor.} = source.d
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJInt(entry))
+      output
+  if len(source.px) > 0:
+    result{"px"} = block:
+      let cursor {.cursor.} = source.px
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJInt(entry))
+      output
   result{"a"} = newJFloat(source.a)
   result{"f"} = newJInt(source.f)
-  result{"src"} = block:
-    let cursor {.cursor.} = source.src
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJInt(entry))
-    output
+  if len(source.src) > 0:
+    result{"src"} = block:
+      let cursor {.cursor.} = source.src
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJInt(entry))
+      output
 
 proc equals(_: typedesc[LdtkEntityInstance]; a, b: LdtkEntityInstance): bool =
   equals(typeof(a.iid), a.iid, b.iid) and
@@ -854,9 +856,8 @@ proc fromJsonHook*(target: var LdtkEntityInstance; source: JsonNode) =
   target.identifier = jsonTo(source{"__identifier"}, typeof(target.identifier))
   if hasKey(source, "__tile") and source{"__tile"}.kind != JNull:
     target.tile = some(jsonTo(source{"__tile"}, typeof(unsafeGet(target.tile))))
-  assert(hasKey(source, "px"),
-         "px" & " is missing while decoding " & "LdtkEntityInstance")
-  target.px = jsonTo(source{"px"}, typeof(target.px))
+  if hasKey(source, "px") and source{"px"}.kind != JNull:
+    target.px = jsonTo(source{"px"}, typeof(target.px))
   if hasKey(source, "__worldX") and source{"__worldX"}.kind != JNull:
     target.worldX = some(jsonTo(source{"__worldX"},
                                 typeof(unsafeGet(target.worldX))))
@@ -866,23 +867,19 @@ proc fromJsonHook*(target: var LdtkEntityInstance; source: JsonNode) =
   assert(hasKey(source, "__smartColor"),
          "__smartColor" & " is missing while decoding " & "LdtkEntityInstance")
   target.smartColor = jsonTo(source{"__smartColor"}, typeof(target.smartColor))
-  assert(hasKey(source, "__grid"),
-         "__grid" & " is missing while decoding " & "LdtkEntityInstance")
-  target.grid = jsonTo(source{"__grid"}, typeof(target.grid))
-  assert(hasKey(source, "__pivot"),
-         "__pivot" & " is missing while decoding " & "LdtkEntityInstance")
-  target.pivot = jsonTo(source{"__pivot"}, typeof(target.pivot))
-  assert(hasKey(source, "fieldInstances"), "fieldInstances" &
-      " is missing while decoding " &
-      "LdtkEntityInstance")
-  target.fieldInstances = jsonTo(source{"fieldInstances"},
-                                 typeof(target.fieldInstances))
+  if hasKey(source, "__grid") and source{"__grid"}.kind != JNull:
+    target.grid = jsonTo(source{"__grid"}, typeof(target.grid))
+  if hasKey(source, "__pivot") and source{"__pivot"}.kind != JNull:
+    target.pivot = jsonTo(source{"__pivot"}, typeof(target.pivot))
+  if hasKey(source, "fieldInstances") and
+      source{"fieldInstances"}.kind != JNull:
+    target.fieldInstances = jsonTo(source{"fieldInstances"},
+                                   typeof(target.fieldInstances))
   assert(hasKey(source, "height"),
          "height" & " is missing while decoding " & "LdtkEntityInstance")
   target.height = jsonTo(source{"height"}, typeof(target.height))
-  assert(hasKey(source, "__tags"),
-         "__tags" & " is missing while decoding " & "LdtkEntityInstance")
-  target.tags = jsonTo(source{"__tags"}, typeof(target.tags))
+  if hasKey(source, "__tags") and source{"__tags"}.kind != JNull:
+    target.tags = jsonTo(source{"__tags"}, typeof(target.tags))
   assert(hasKey(source, "width"),
          "width" & " is missing while decoding " & "LdtkEntityInstance")
   target.width = jsonTo(source{"width"}, typeof(target.width))
@@ -894,42 +891,47 @@ proc toJsonHook*(source: LdtkEntityInstance): JsonNode =
   result{"__identifier"} = newJString(source.identifier)
   if isSome(source.tile):
     result{"__tile"} = toJsonHook(unsafeGet(source.tile))
-  result{"px"} = block:
-    let cursor {.cursor.} = source.px
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJInt(entry))
-    output
+  if len(source.px) > 0:
+    result{"px"} = block:
+      let cursor {.cursor.} = source.px
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJInt(entry))
+      output
   if isSome(source.worldX):
     result{"__worldX"} = newJInt(unsafeGet(source.worldX))
   if isSome(source.worldY):
     result{"__worldY"} = newJInt(unsafeGet(source.worldY))
   result{"__smartColor"} = newJString(source.smartColor)
-  result{"__grid"} = block:
-    let cursor {.cursor.} = source.grid
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJInt(entry))
-    output
-  result{"__pivot"} = block:
-    let cursor {.cursor.} = source.pivot
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJFloat(entry))
-    output
-  result{"fieldInstances"} = block:
-    let cursor {.cursor.} = source.fieldInstances
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.grid) > 0:
+    result{"__grid"} = block:
+      let cursor {.cursor.} = source.grid
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJInt(entry))
+      output
+  if len(source.pivot) > 0:
+    result{"__pivot"} = block:
+      let cursor {.cursor.} = source.pivot
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJFloat(entry))
+      output
+  if len(source.fieldInstances) > 0:
+    result{"fieldInstances"} = block:
+      let cursor {.cursor.} = source.fieldInstances
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   result{"height"} = newJInt(source.height)
-  result{"__tags"} = block:
-    let cursor {.cursor.} = source.tags
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJString(entry))
-    output
+  if len(source.tags) > 0:
+    result{"__tags"} = block:
+      let cursor {.cursor.} = source.tags
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJString(entry))
+      output
   result{"width"} = newJInt(source.width)
 
 proc equals(_: typedesc[LdtkIntGridValueInstance];
@@ -1050,14 +1052,14 @@ proc fromJsonHook*(target: var LdtkLayerInstance; source: JsonNode) =
   assert(hasKey(source, "__type"),
          "__type" & " is missing while decoding " & "LdtkLayerInstance")
   target.`type` = jsonTo(source{"__type"}, typeof(target.`type`))
-  assert(hasKey(source, "autoLayerTiles"),
-         "autoLayerTiles" & " is missing while decoding " & "LdtkLayerInstance")
-  target.autoLayerTiles = jsonTo(source{"autoLayerTiles"},
-                                 typeof(target.autoLayerTiles))
-  assert(hasKey(source, "optionalRules"),
-         "optionalRules" & " is missing while decoding " & "LdtkLayerInstance")
-  target.optionalRules = jsonTo(source{"optionalRules"},
-                                typeof(target.optionalRules))
+  if hasKey(source, "autoLayerTiles") and
+      source{"autoLayerTiles"}.kind != JNull:
+    target.autoLayerTiles = jsonTo(source{"autoLayerTiles"},
+                                   typeof(target.autoLayerTiles))
+  if hasKey(source, "optionalRules") and
+      source{"optionalRules"}.kind != JNull:
+    target.optionalRules = jsonTo(source{"optionalRules"},
+                                  typeof(target.optionalRules))
   assert(hasKey(source, "__identifier"),
          "__identifier" & " is missing while decoding " & "LdtkLayerInstance")
   target.identifier = jsonTo(source{"__identifier"}, typeof(target.identifier))
@@ -1069,9 +1071,8 @@ proc fromJsonHook*(target: var LdtkLayerInstance; source: JsonNode) =
       "LdtkLayerInstance")
   target.pxTotalOffsetY = jsonTo(source{"__pxTotalOffsetY"},
                                  typeof(target.pxTotalOffsetY))
-  assert(hasKey(source, "intGridCsv"),
-         "intGridCsv" & " is missing while decoding " & "LdtkLayerInstance")
-  target.intGridCsv = jsonTo(source{"intGridCsv"}, typeof(target.intGridCsv))
+  if hasKey(source, "intGridCsv") and source{"intGridCsv"}.kind != JNull:
+    target.intGridCsv = jsonTo(source{"intGridCsv"}, typeof(target.intGridCsv))
   if hasKey(source, "overrideTilesetUid") and
       source{"overrideTilesetUid"}.kind != JNull:
     target.overrideTilesetUid = some(jsonTo(source{"overrideTilesetUid"},
@@ -1079,11 +1080,10 @@ proc fromJsonHook*(target: var LdtkLayerInstance; source: JsonNode) =
   assert(hasKey(source, "visible"),
          "visible" & " is missing while decoding " & "LdtkLayerInstance")
   target.visible = jsonTo(source{"visible"}, typeof(target.visible))
-  assert(hasKey(source, "entityInstances"), "entityInstances" &
-      " is missing while decoding " &
-      "LdtkLayerInstance")
-  target.entityInstances = jsonTo(source{"entityInstances"},
-                                  typeof(target.entityInstances))
+  if hasKey(source, "entityInstances") and
+      source{"entityInstances"}.kind != JNull:
+    target.entityInstances = jsonTo(source{"entityInstances"},
+                                    typeof(target.entityInstances))
   assert(hasKey(source, "__opacity"),
          "__opacity" & " is missing while decoding " & "LdtkLayerInstance")
   target.opacity = jsonTo(source{"__opacity"}, typeof(target.opacity))
@@ -1108,12 +1108,10 @@ proc fromJsonHook*(target: var LdtkLayerInstance; source: JsonNode) =
       source{"__tilesetDefUid"}.kind != JNull:
     target.tilesetDefUid = some(jsonTo(source{"__tilesetDefUid"},
                                        typeof(unsafeGet(target.tilesetDefUid))))
-  assert(hasKey(source, "gridTiles"),
-         "gridTiles" & " is missing while decoding " & "LdtkLayerInstance")
-  target.gridTiles = jsonTo(source{"gridTiles"}, typeof(target.gridTiles))
+  if hasKey(source, "gridTiles") and source{"gridTiles"}.kind != JNull:
+    target.gridTiles = jsonTo(source{"gridTiles"}, typeof(target.gridTiles))
   if hasKey(source, "intGrid") and source{"intGrid"}.kind != JNull:
-    target.intGrid = some(jsonTo(source{"intGrid"},
-                                 typeof(unsafeGet(target.intGrid))))
+    target.intGrid = jsonTo(source{"intGrid"}, typeof(target.intGrid))
 
 proc toJsonHook*(source: LdtkLayerInstance): JsonNode =
   result = newJObject()
@@ -1124,36 +1122,40 @@ proc toJsonHook*(source: LdtkLayerInstance): JsonNode =
   result{"iid"} = newJString(source.iid)
   result{"levelId"} = newJInt(source.levelId)
   result{"__type"} = newJString(source.`type`)
-  result{"autoLayerTiles"} = block:
-    let cursor {.cursor.} = source.autoLayerTiles
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
-  result{"optionalRules"} = block:
-    let cursor {.cursor.} = source.optionalRules
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJInt(entry))
-    output
+  if len(source.autoLayerTiles) > 0:
+    result{"autoLayerTiles"} = block:
+      let cursor {.cursor.} = source.autoLayerTiles
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
+  if len(source.optionalRules) > 0:
+    result{"optionalRules"} = block:
+      let cursor {.cursor.} = source.optionalRules
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJInt(entry))
+      output
   result{"__identifier"} = newJString(source.identifier)
   result{"__gridSize"} = newJInt(source.gridSize)
   result{"__pxTotalOffsetY"} = newJInt(source.pxTotalOffsetY)
-  result{"intGridCsv"} = block:
-    let cursor {.cursor.} = source.intGridCsv
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJInt(entry))
-    output
+  if len(source.intGridCsv) > 0:
+    result{"intGridCsv"} = block:
+      let cursor {.cursor.} = source.intGridCsv
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJInt(entry))
+      output
   if isSome(source.overrideTilesetUid):
     result{"overrideTilesetUid"} = newJInt(unsafeGet(source.overrideTilesetUid))
   result{"visible"} = newJBool(source.visible)
-  result{"entityInstances"} = block:
-    let cursor {.cursor.} = source.entityInstances
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.entityInstances) > 0:
+    result{"entityInstances"} = block:
+      let cursor {.cursor.} = source.entityInstances
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   result{"__opacity"} = newJFloat(source.opacity)
   result{"seed"} = newJInt(source.seed)
   result{"layerDefUid"} = newJInt(source.layerDefUid)
@@ -1162,15 +1164,16 @@ proc toJsonHook*(source: LdtkLayerInstance): JsonNode =
   result{"pxOffsetY"} = newJInt(source.pxOffsetY)
   if isSome(source.tilesetDefUid):
     result{"__tilesetDefUid"} = newJInt(unsafeGet(source.tilesetDefUid))
-  result{"gridTiles"} = block:
-    let cursor {.cursor.} = source.gridTiles
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
-  if isSome(source.intGrid):
+  if len(source.gridTiles) > 0:
+    result{"gridTiles"} = block:
+      let cursor {.cursor.} = source.gridTiles
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
+  if len(source.intGrid) > 0:
     result{"intGrid"} = block:
-      let cursor {.cursor.} = unsafeGet(source.intGrid)
+      let cursor {.cursor.} = source.intGrid
       var output = newJArray()
       for entry in cursor:
         output.add(toJsonHook(entry))
@@ -1234,9 +1237,8 @@ proc `$`*(value: LdtkLevel): string =
   stringify(LdtkLevel, value)
 
 proc fromJsonHook*(target: var LdtkLevel; source: JsonNode) =
-  assert(hasKey(source, "__neighbours"),
-         "__neighbours" & " is missing while decoding " & "LdtkLevel")
-  target.neighbours = jsonTo(source{"__neighbours"}, typeof(target.neighbours))
+  if hasKey(source, "__neighbours") and source{"__neighbours"}.kind != JNull:
+    target.neighbours = jsonTo(source{"__neighbours"}, typeof(target.neighbours))
   assert(hasKey(source, "__bgColor"),
          "__bgColor" & " is missing while decoding " & "LdtkLevel")
   target.bgColor = jsonTo(source{"__bgColor"}, typeof(target.bgColor))
@@ -1274,10 +1276,10 @@ proc fromJsonHook*(target: var LdtkLevel; source: JsonNode) =
   assert(hasKey(source, "__smartColor"),
          "__smartColor" & " is missing while decoding " & "LdtkLevel")
   target.smartColor = jsonTo(source{"__smartColor"}, typeof(target.smartColor))
-  assert(hasKey(source, "fieldInstances"),
-         "fieldInstances" & " is missing while decoding " & "LdtkLevel")
-  target.fieldInstances = jsonTo(source{"fieldInstances"},
-                                 typeof(target.fieldInstances))
+  if hasKey(source, "fieldInstances") and
+      source{"fieldInstances"}.kind != JNull:
+    target.fieldInstances = jsonTo(source{"fieldInstances"},
+                                   typeof(target.fieldInstances))
   assert(hasKey(source, "pxWid"),
          "pxWid" & " is missing while decoding " & "LdtkLevel")
   target.pxWid = jsonTo(source{"pxWid"}, typeof(target.pxWid))
@@ -1292,8 +1294,8 @@ proc fromJsonHook*(target: var LdtkLevel; source: JsonNode) =
   target.bgPivotX = jsonTo(source{"bgPivotX"}, typeof(target.bgPivotX))
   if hasKey(source, "layerInstances") and
       source{"layerInstances"}.kind != JNull:
-    target.layerInstances = some(jsonTo(source{"layerInstances"}, typeof(
-        unsafeGet(target.layerInstances))))
+    target.layerInstances = jsonTo(source{"layerInstances"},
+                                   typeof(target.layerInstances))
   if hasKey(source, "bgRelPath") and source{"bgRelPath"}.kind != JNull:
     target.bgRelPath = some(jsonTo(source{"bgRelPath"},
                                    typeof(unsafeGet(target.bgRelPath))))
@@ -1303,12 +1305,13 @@ proc fromJsonHook*(target: var LdtkLevel; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkLevel): JsonNode =
   result = newJObject()
-  result{"__neighbours"} = block:
-    let cursor {.cursor.} = source.neighbours
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.neighbours) > 0:
+    result{"__neighbours"} = block:
+      let cursor {.cursor.} = source.neighbours
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   result{"__bgColor"} = newJString(source.bgColor)
   result{"worldX"} = newJInt(source.worldX)
   if isSome(source.externalRelPath):
@@ -1325,19 +1328,20 @@ proc toJsonHook*(source: LdtkLevel): JsonNode =
     result{"__bgPos"} = toJsonHook(unsafeGet(source.bgPos1))
   result{"uid"} = newJInt(source.uid)
   result{"__smartColor"} = newJString(source.smartColor)
-  result{"fieldInstances"} = block:
-    let cursor {.cursor.} = source.fieldInstances
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.fieldInstances) > 0:
+    result{"fieldInstances"} = block:
+      let cursor {.cursor.} = source.fieldInstances
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   result{"pxWid"} = newJInt(source.pxWid)
   result{"identifier"} = newJString(source.identifier)
   result{"bgPivotY"} = newJFloat(source.bgPivotY)
   result{"bgPivotX"} = newJFloat(source.bgPivotX)
-  if isSome(source.layerInstances):
+  if len(source.layerInstances) > 0:
     result{"layerInstances"} = block:
-      let cursor {.cursor.} = unsafeGet(source.layerInstances)
+      let cursor {.cursor.} = source.layerInstances
       var output = newJArray()
       for entry in cursor:
         output.add(toJsonHook(entry))
@@ -1397,9 +1401,8 @@ proc fromJsonHook*(target: var LdtkWorld; source: JsonNode) =
          "defaultLevelWidth" & " is missing while decoding " & "LdtkWorld")
   target.defaultLevelWidth = jsonTo(source{"defaultLevelWidth"},
                                     typeof(target.defaultLevelWidth))
-  assert(hasKey(source, "levels"),
-         "levels" & " is missing while decoding " & "LdtkWorld")
-  target.levels = jsonTo(source{"levels"}, typeof(target.levels))
+  if hasKey(source, "levels") and source{"levels"}.kind != JNull:
+    target.levels = jsonTo(source{"levels"}, typeof(target.levels))
   assert(hasKey(source, "defaultLevelHeight"),
          "defaultLevelHeight" & " is missing while decoding " & "LdtkWorld")
   target.defaultLevelHeight = jsonTo(source{"defaultLevelHeight"},
@@ -1418,12 +1421,13 @@ proc toJsonHook*(source: LdtkWorld): JsonNode =
   else:
     newJNull()
   result{"defaultLevelWidth"} = newJInt(source.defaultLevelWidth)
-  result{"levels"} = block:
-    let cursor {.cursor.} = source.levels
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.levels) > 0:
+    result{"levels"} = block:
+      let cursor {.cursor.} = source.levels
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   result{"defaultLevelHeight"} = newJInt(source.defaultLevelHeight)
   result{"identifier"} = newJString(source.identifier)
 
@@ -1545,27 +1549,26 @@ proc fromJsonHook*(target: var LdtkTableOfContentEntry; source: JsonNode) =
       " is missing while decoding " &
       "LdtkTableOfContentEntry")
   target.identifier = jsonTo(source{"identifier"}, typeof(target.identifier))
-  assert(hasKey(source, "instancesData"), "instancesData" &
-      " is missing while decoding " &
-      "LdtkTableOfContentEntry")
-  target.instancesData = jsonTo(source{"instancesData"},
-                                typeof(target.instancesData))
+  if hasKey(source, "instancesData") and
+      source{"instancesData"}.kind != JNull:
+    target.instancesData = jsonTo(source{"instancesData"},
+                                  typeof(target.instancesData))
   if hasKey(source, "instances") and source{"instances"}.kind != JNull:
-    target.instances = some(jsonTo(source{"instances"},
-                                   typeof(unsafeGet(target.instances))))
+    target.instances = jsonTo(source{"instances"}, typeof(target.instances))
 
 proc toJsonHook*(source: LdtkTableOfContentEntry): JsonNode =
   result = newJObject()
   result{"identifier"} = newJString(source.identifier)
-  result{"instancesData"} = block:
-    let cursor {.cursor.} = source.instancesData
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
-  if isSome(source.instances):
+  if len(source.instancesData) > 0:
+    result{"instancesData"} = block:
+      let cursor {.cursor.} = source.instancesData
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
+  if len(source.instances) > 0:
     result{"instances"} = block:
-      let cursor {.cursor.} = unsafeGet(source.instances)
+      let cursor {.cursor.} = source.instances
       var output = newJArray()
       for entry in cursor:
         output.add(toJsonHook(entry))
@@ -1644,21 +1647,21 @@ proc `$`*(value: LdtkEnumTagValue): string =
   stringify(LdtkEnumTagValue, value)
 
 proc fromJsonHook*(target: var LdtkEnumTagValue; source: JsonNode) =
-  assert(hasKey(source, "tileIds"),
-         "tileIds" & " is missing while decoding " & "LdtkEnumTagValue")
-  target.tileIds = jsonTo(source{"tileIds"}, typeof(target.tileIds))
+  if hasKey(source, "tileIds") and source{"tileIds"}.kind != JNull:
+    target.tileIds = jsonTo(source{"tileIds"}, typeof(target.tileIds))
   assert(hasKey(source, "enumValueId"),
          "enumValueId" & " is missing while decoding " & "LdtkEnumTagValue")
   target.enumValueId = jsonTo(source{"enumValueId"}, typeof(target.enumValueId))
 
 proc toJsonHook*(source: LdtkEnumTagValue): JsonNode =
   result = newJObject()
-  result{"tileIds"} = block:
-    let cursor {.cursor.} = source.tileIds
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJInt(entry))
-    output
+  if len(source.tileIds) > 0:
+    result{"tileIds"} = block:
+      let cursor {.cursor.} = source.tileIds
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJInt(entry))
+      output
   result{"enumValueId"} = newJString(source.enumValueId)
 
 proc equals(_: typedesc[LdtkTilesetDef]; a, b: LdtkTilesetDef): bool =
@@ -1712,17 +1715,16 @@ proc `$`*(value: LdtkTilesetDef): string =
 proc fromJsonHook*(target: var LdtkTilesetDef; source: JsonNode) =
   if hasKey(source, "cachedPixelData") and
       source{"cachedPixelData"}.kind != JNull:
-    target.cachedPixelData = some(jsonTo(source{"cachedPixelData"},
-        typeof(unsafeGet(target.cachedPixelData))))
+    target.cachedPixelData = jsonTo(source{"cachedPixelData"},
+                                    typeof(target.cachedPixelData))
   assert(hasKey(source, "__cHei"),
          "__cHei" & " is missing while decoding " & "LdtkTilesetDef")
   target.cHei = jsonTo(source{"__cHei"}, typeof(target.cHei))
   assert(hasKey(source, "pxHei"),
          "pxHei" & " is missing while decoding " & "LdtkTilesetDef")
   target.pxHei = jsonTo(source{"pxHei"}, typeof(target.pxHei))
-  assert(hasKey(source, "customData"),
-         "customData" & " is missing while decoding " & "LdtkTilesetDef")
-  target.customData = jsonTo(source{"customData"}, typeof(target.customData))
+  if hasKey(source, "customData") and source{"customData"}.kind != JNull:
+    target.customData = jsonTo(source{"customData"}, typeof(target.customData))
   if hasKey(source, "tagsSourceEnumUid") and
       source{"tagsSourceEnumUid"}.kind != JNull:
     target.tagsSourceEnumUid = some(jsonTo(source{"tagsSourceEnumUid"},
@@ -1733,9 +1735,8 @@ proc fromJsonHook*(target: var LdtkTilesetDef; source: JsonNode) =
   assert(hasKey(source, "padding"),
          "padding" & " is missing while decoding " & "LdtkTilesetDef")
   target.padding = jsonTo(source{"padding"}, typeof(target.padding))
-  assert(hasKey(source, "enumTags"),
-         "enumTags" & " is missing while decoding " & "LdtkTilesetDef")
-  target.enumTags = jsonTo(source{"enumTags"}, typeof(target.enumTags))
+  if hasKey(source, "enumTags") and source{"enumTags"}.kind != JNull:
+    target.enumTags = jsonTo(source{"enumTags"}, typeof(target.enumTags))
   assert(hasKey(source, "pxWid"),
          "pxWid" & " is missing while decoding " & "LdtkTilesetDef")
   target.pxWid = jsonTo(source{"pxWid"}, typeof(target.pxWid))
@@ -1748,13 +1749,12 @@ proc fromJsonHook*(target: var LdtkTilesetDef; source: JsonNode) =
   assert(hasKey(source, "identifier"),
          "identifier" & " is missing while decoding " & "LdtkTilesetDef")
   target.identifier = jsonTo(source{"identifier"}, typeof(target.identifier))
-  assert(hasKey(source, "savedSelections"),
-         "savedSelections" & " is missing while decoding " & "LdtkTilesetDef")
-  target.savedSelections = jsonTo(source{"savedSelections"},
-                                  typeof(target.savedSelections))
-  assert(hasKey(source, "tags"),
-         "tags" & " is missing while decoding " & "LdtkTilesetDef")
-  target.tags = jsonTo(source{"tags"}, typeof(target.tags))
+  if hasKey(source, "savedSelections") and
+      source{"savedSelections"}.kind != JNull:
+    target.savedSelections = jsonTo(source{"savedSelections"},
+                                    typeof(target.savedSelections))
+  if hasKey(source, "tags") and source{"tags"}.kind != JNull:
+    target.tags = jsonTo(source{"tags"}, typeof(target.tags))
   if hasKey(source, "embedAtlas") and source{"embedAtlas"}.kind != JNull:
     target.embedAtlas = some(jsonTo(source{"embedAtlas"},
                                     typeof(unsafeGet(target.embedAtlas))))
@@ -1768,9 +1768,9 @@ proc fromJsonHook*(target: var LdtkTilesetDef; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkTilesetDef): JsonNode =
   result = newJObject()
-  if isSome(source.cachedPixelData):
+  if len(source.cachedPixelData) > 0:
     result{"cachedPixelData"} = block:
-      let cursor {.cursor.} = unsafeGet(source.cachedPixelData)
+      let cursor {.cursor.} = source.cachedPixelData
       var output = newJObject()
       for key in keys(cursor):
         output[key] = cursor[
@@ -1778,44 +1778,48 @@ proc toJsonHook*(source: LdtkTilesetDef): JsonNode =
       output
   result{"__cHei"} = newJInt(source.cHei)
   result{"pxHei"} = newJInt(source.pxHei)
-  result{"customData"} = block:
-    let cursor {.cursor.} = source.customData
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.customData) > 0:
+    result{"customData"} = block:
+      let cursor {.cursor.} = source.customData
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   if isSome(source.tagsSourceEnumUid):
     result{"tagsSourceEnumUid"} = newJInt(unsafeGet(source.tagsSourceEnumUid))
   result{"uid"} = newJInt(source.uid)
   result{"padding"} = newJInt(source.padding)
-  result{"enumTags"} = block:
-    let cursor {.cursor.} = source.enumTags
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.enumTags) > 0:
+    result{"enumTags"} = block:
+      let cursor {.cursor.} = source.enumTags
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   result{"pxWid"} = newJInt(source.pxWid)
   result{"__cWid"} = newJInt(source.cWid)
   result{"spacing"} = newJInt(source.spacing)
   result{"identifier"} = newJString(source.identifier)
-  result{"savedSelections"} = block:
-    let cursor {.cursor.} = source.savedSelections
-    var output = newJArray()
-    for entry in cursor:
-      output.add(block:
-        let cursor {.cursor.} = entry
-        var output = newJObject()
-        for key in keys(cursor):
-          output[key] = cursor[
-              key]
-        output)
-    output
-  result{"tags"} = block:
-    let cursor {.cursor.} = source.tags
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJString(entry))
-    output
+  if len(source.savedSelections) > 0:
+    result{"savedSelections"} = block:
+      let cursor {.cursor.} = source.savedSelections
+      var output = newJArray()
+      for entry in cursor:
+        output.add(block:
+          let cursor {.cursor.} = entry
+          var output = newJObject()
+          for key in keys(cursor):
+            output[key] = cursor[
+                key]
+          output)
+      output
+  if len(source.tags) > 0:
+    result{"tags"} = block:
+      let cursor {.cursor.} = source.tags
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJString(entry))
+      output
   if isSome(source.embedAtlas):
     result{"embedAtlas"} = `%`(unsafeGet(source.embedAtlas))
   if isSome(source.relPath):
@@ -1996,10 +2000,9 @@ proc fromJsonHook*(target: var LdtkAutoRuleDef; source: JsonNode) =
          "perlinActive" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.perlinActive = jsonTo(source{"perlinActive"},
                                typeof(target.perlinActive))
-  assert(hasKey(source, "tileRectsIds"),
-         "tileRectsIds" & " is missing while decoding " & "LdtkAutoRuleDef")
-  target.tileRectsIds = jsonTo(source{"tileRectsIds"},
-                               typeof(target.tileRectsIds))
+  if hasKey(source, "tileRectsIds") and source{"tileRectsIds"}.kind != JNull:
+    target.tileRectsIds = jsonTo(source{"tileRectsIds"},
+                                 typeof(target.tileRectsIds))
   assert(hasKey(source, "perlinScale"),
          "perlinScale" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.perlinScale = jsonTo(source{"perlinScale"}, typeof(target.perlinScale))
@@ -2007,9 +2010,8 @@ proc fromJsonHook*(target: var LdtkAutoRuleDef; source: JsonNode) =
       source{"outOfBoundsValue"}.kind != JNull:
     target.outOfBoundsValue = some(jsonTo(source{"outOfBoundsValue"},
         typeof(unsafeGet(target.outOfBoundsValue))))
-  assert(hasKey(source, "pattern"),
-         "pattern" & " is missing while decoding " & "LdtkAutoRuleDef")
-  target.pattern = jsonTo(source{"pattern"}, typeof(target.pattern))
+  if hasKey(source, "pattern") and source{"pattern"}.kind != JNull:
+    target.pattern = jsonTo(source{"pattern"}, typeof(target.pattern))
   assert(hasKey(source, "tileRandomXMin"),
          "tileRandomXMin" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.tileRandomXMin = jsonTo(source{"tileRandomXMin"},
@@ -2022,8 +2024,7 @@ proc fromJsonHook*(target: var LdtkAutoRuleDef; source: JsonNode) =
   target.perlinOctaves = jsonTo(source{"perlinOctaves"},
                                 typeof(target.perlinOctaves))
   if hasKey(source, "tileIds") and source{"tileIds"}.kind != JNull:
-    target.tileIds = some(jsonTo(source{"tileIds"},
-                                 typeof(unsafeGet(target.tileIds))))
+    target.tileIds = jsonTo(source{"tileIds"}, typeof(target.tileIds))
   assert(hasKey(source, "alpha"),
          "alpha" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.alpha = jsonTo(source{"alpha"}, typeof(target.alpha))
@@ -2094,32 +2095,34 @@ proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode =
   result{"flipX"} = newJBool(source.flipX)
   result{"pivotX"} = newJFloat(source.pivotX)
   result{"perlinActive"} = newJBool(source.perlinActive)
-  result{"tileRectsIds"} = block:
-    let cursor {.cursor.} = source.tileRectsIds
-    var output = newJArray()
-    for entry in cursor:
-      output.add(block:
-        let cursor {.cursor.} = entry
-        var output = newJArray()
-        for entry in cursor:
-          output.add(newJInt(entry))
-        output)
-    output
+  if len(source.tileRectsIds) > 0:
+    result{"tileRectsIds"} = block:
+      let cursor {.cursor.} = source.tileRectsIds
+      var output = newJArray()
+      for entry in cursor:
+        output.add(block:
+          let cursor {.cursor.} = entry
+          var output = newJArray()
+          for entry in cursor:
+            output.add(newJInt(entry))
+          output)
+      output
   result{"perlinScale"} = newJFloat(source.perlinScale)
   if isSome(source.outOfBoundsValue):
     result{"outOfBoundsValue"} = newJInt(unsafeGet(source.outOfBoundsValue))
-  result{"pattern"} = block:
-    let cursor {.cursor.} = source.pattern
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJInt(entry))
-    output
+  if len(source.pattern) > 0:
+    result{"pattern"} = block:
+      let cursor {.cursor.} = source.pattern
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJInt(entry))
+      output
   result{"tileRandomXMin"} = newJInt(source.tileRandomXMin)
   result{"checker"} = `%`(source.checker)
   result{"perlinOctaves"} = newJFloat(source.perlinOctaves)
-  if isSome(source.tileIds):
+  if len(source.tileIds) > 0:
     result{"tileIds"} = block:
-      let cursor {.cursor.} = unsafeGet(source.tileIds)
+      let cursor {.cursor.} = source.tileIds
       var output = newJArray()
       for entry in cursor:
         output.add(newJInt(entry))
@@ -2210,17 +2213,15 @@ proc fromJsonHook*(target: var LdtkAutoLayerRuleGroup; source: JsonNode) =
   assert(hasKey(source, "uid"),
          "uid" & " is missing while decoding " & "LdtkAutoLayerRuleGroup")
   target.uid = jsonTo(source{"uid"}, typeof(target.uid))
-  assert(hasKey(source, "requiredBiomeValues"), "requiredBiomeValues" &
-      " is missing while decoding " &
-      "LdtkAutoLayerRuleGroup")
-  target.requiredBiomeValues = jsonTo(source{"requiredBiomeValues"},
-                                      typeof(target.requiredBiomeValues))
+  if hasKey(source, "requiredBiomeValues") and
+      source{"requiredBiomeValues"}.kind != JNull:
+    target.requiredBiomeValues = jsonTo(source{"requiredBiomeValues"},
+                                        typeof(target.requiredBiomeValues))
   assert(hasKey(source, "active"),
          "active" & " is missing while decoding " & "LdtkAutoLayerRuleGroup")
   target.active = jsonTo(source{"active"}, typeof(target.active))
-  assert(hasKey(source, "rules"),
-         "rules" & " is missing while decoding " & "LdtkAutoLayerRuleGroup")
-  target.rules = jsonTo(source{"rules"}, typeof(target.rules))
+  if hasKey(source, "rules") and source{"rules"}.kind != JNull:
+    target.rules = jsonTo(source{"rules"}, typeof(target.rules))
 
 proc toJsonHook*(source: LdtkAutoLayerRuleGroup): JsonNode =
   result = newJObject()
@@ -2235,19 +2236,21 @@ proc toJsonHook*(source: LdtkAutoLayerRuleGroup): JsonNode =
     result{"icon"} = toJsonHook(unsafeGet(source.icon))
   result{"usesWizard"} = newJBool(source.usesWizard)
   result{"uid"} = newJInt(source.uid)
-  result{"requiredBiomeValues"} = block:
-    let cursor {.cursor.} = source.requiredBiomeValues
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJString(entry))
-    output
+  if len(source.requiredBiomeValues) > 0:
+    result{"requiredBiomeValues"} = block:
+      let cursor {.cursor.} = source.requiredBiomeValues
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJString(entry))
+      output
   result{"active"} = newJBool(source.active)
-  result{"rules"} = block:
-    let cursor {.cursor.} = source.rules
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.rules) > 0:
+    result{"rules"} = block:
+      let cursor {.cursor.} = source.rules
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
 
 proc equals(_: typedesc[LdtkLayerDef]; a, b: LdtkLayerDef): bool =
   equals(typeof(a.pxOffsetX), a.pxOffsetX, b.pxOffsetX) and
@@ -2355,10 +2358,9 @@ proc fromJsonHook*(target: var LdtkLayerDef; source: JsonNode) =
   assert(hasKey(source, "tilePivotX"),
          "tilePivotX" & " is missing while decoding " & "LdtkLayerDef")
   target.tilePivotX = jsonTo(source{"tilePivotX"}, typeof(target.tilePivotX))
-  assert(hasKey(source, "uiFilterTags"),
-         "uiFilterTags" & " is missing while decoding " & "LdtkLayerDef")
-  target.uiFilterTags = jsonTo(source{"uiFilterTags"},
-                               typeof(target.uiFilterTags))
+  if hasKey(source, "uiFilterTags") and source{"uiFilterTags"}.kind != JNull:
+    target.uiFilterTags = jsonTo(source{"uiFilterTags"},
+                                 typeof(target.uiFilterTags))
   assert(hasKey(source, "displayOpacity"),
          "displayOpacity" & " is missing while decoding " & "LdtkLayerDef")
   target.displayOpacity = jsonTo(source{"displayOpacity"},
@@ -2412,10 +2414,10 @@ proc fromJsonHook*(target: var LdtkLayerDef; source: JsonNode) =
          "renderInWorldView" & " is missing while decoding " & "LdtkLayerDef")
   target.renderInWorldView = jsonTo(source{"renderInWorldView"},
                                     typeof(target.renderInWorldView))
-  assert(hasKey(source, "intGridValuesGroups"),
-         "intGridValuesGroups" & " is missing while decoding " & "LdtkLayerDef")
-  target.intGridValuesGroups = jsonTo(source{"intGridValuesGroups"},
-                                      typeof(target.intGridValuesGroups))
+  if hasKey(source, "intGridValuesGroups") and
+      source{"intGridValuesGroups"}.kind != JNull:
+    target.intGridValuesGroups = jsonTo(source{"intGridValuesGroups"},
+                                        typeof(target.intGridValuesGroups))
   assert(hasKey(source, "inactiveOpacity"),
          "inactiveOpacity" & " is missing while decoding " & "LdtkLayerDef")
   target.inactiveOpacity = jsonTo(source{"inactiveOpacity"},
@@ -2423,23 +2425,22 @@ proc fromJsonHook*(target: var LdtkLayerDef; source: JsonNode) =
   assert(hasKey(source, "uid"),
          "uid" & " is missing while decoding " & "LdtkLayerDef")
   target.uid = jsonTo(source{"uid"}, typeof(target.uid))
-  assert(hasKey(source, "excludedTags"),
-         "excludedTags" & " is missing while decoding " & "LdtkLayerDef")
-  target.excludedTags = jsonTo(source{"excludedTags"},
-                               typeof(target.excludedTags))
+  if hasKey(source, "excludedTags") and source{"excludedTags"}.kind != JNull:
+    target.excludedTags = jsonTo(source{"excludedTags"},
+                                 typeof(target.excludedTags))
   assert(hasKey(source, "hideFieldsWhenInactive"), "hideFieldsWhenInactive" &
       " is missing while decoding " &
       "LdtkLayerDef")
   target.hideFieldsWhenInactive = jsonTo(source{"hideFieldsWhenInactive"},
       typeof(target.hideFieldsWhenInactive))
-  assert(hasKey(source, "intGridValues"),
-         "intGridValues" & " is missing while decoding " & "LdtkLayerDef")
-  target.intGridValues = jsonTo(source{"intGridValues"},
-                                typeof(target.intGridValues))
-  assert(hasKey(source, "autoRuleGroups"),
-         "autoRuleGroups" & " is missing while decoding " & "LdtkLayerDef")
-  target.autoRuleGroups = jsonTo(source{"autoRuleGroups"},
-                                 typeof(target.autoRuleGroups))
+  if hasKey(source, "intGridValues") and
+      source{"intGridValues"}.kind != JNull:
+    target.intGridValues = jsonTo(source{"intGridValues"},
+                                  typeof(target.intGridValues))
+  if hasKey(source, "autoRuleGroups") and
+      source{"autoRuleGroups"}.kind != JNull:
+    target.autoRuleGroups = jsonTo(source{"autoRuleGroups"},
+                                   typeof(target.autoRuleGroups))
   assert(hasKey(source, "type"),
          "type" & " is missing while decoding " & "LdtkLayerDef")
   target.type1 = jsonTo(source{"type"}, typeof(target.type1))
@@ -2450,10 +2451,9 @@ proc fromJsonHook*(target: var LdtkLayerDef; source: JsonNode) =
          "guideGridWid" & " is missing while decoding " & "LdtkLayerDef")
   target.guideGridWid = jsonTo(source{"guideGridWid"},
                                typeof(target.guideGridWid))
-  assert(hasKey(source, "requiredTags"),
-         "requiredTags" & " is missing while decoding " & "LdtkLayerDef")
-  target.requiredTags = jsonTo(source{"requiredTags"},
-                               typeof(target.requiredTags))
+  if hasKey(source, "requiredTags") and source{"requiredTags"}.kind != JNull:
+    target.requiredTags = jsonTo(source{"requiredTags"},
+                                 typeof(target.requiredTags))
   assert(hasKey(source, "pxOffsetY"),
          "pxOffsetY" & " is missing while decoding " & "LdtkLayerDef")
   target.pxOffsetY = jsonTo(source{"pxOffsetY"}, typeof(target.pxOffsetY))
@@ -2481,12 +2481,13 @@ proc toJsonHook*(source: LdtkLayerDef): JsonNode =
   result = newJObject()
   result{"pxOffsetX"} = newJInt(source.pxOffsetX)
   result{"tilePivotX"} = newJFloat(source.tilePivotX)
-  result{"uiFilterTags"} = block:
-    let cursor {.cursor.} = source.uiFilterTags
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJString(entry))
-    output
+  if len(source.uiFilterTags) > 0:
+    result{"uiFilterTags"} = block:
+      let cursor {.cursor.} = source.uiFilterTags
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJString(entry))
+      output
   result{"displayOpacity"} = newJFloat(source.displayOpacity)
   result{"parallaxFactorY"} = newJFloat(source.parallaxFactorY)
   result{"hideInList"} = newJBool(source.hideInList)
@@ -2507,42 +2508,47 @@ proc toJsonHook*(source: LdtkLayerDef): JsonNode =
     result{"autoTilesetDefUid"} = newJInt(unsafeGet(source.autoTilesetDefUid))
   result{"parallaxScaling"} = newJBool(source.parallaxScaling)
   result{"renderInWorldView"} = newJBool(source.renderInWorldView)
-  result{"intGridValuesGroups"} = block:
-    let cursor {.cursor.} = source.intGridValuesGroups
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.intGridValuesGroups) > 0:
+    result{"intGridValuesGroups"} = block:
+      let cursor {.cursor.} = source.intGridValuesGroups
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   result{"inactiveOpacity"} = newJFloat(source.inactiveOpacity)
   result{"uid"} = newJInt(source.uid)
-  result{"excludedTags"} = block:
-    let cursor {.cursor.} = source.excludedTags
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJString(entry))
-    output
+  if len(source.excludedTags) > 0:
+    result{"excludedTags"} = block:
+      let cursor {.cursor.} = source.excludedTags
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJString(entry))
+      output
   result{"hideFieldsWhenInactive"} = newJBool(source.hideFieldsWhenInactive)
-  result{"intGridValues"} = block:
-    let cursor {.cursor.} = source.intGridValues
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
-  result{"autoRuleGroups"} = block:
-    let cursor {.cursor.} = source.autoRuleGroups
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.intGridValues) > 0:
+    result{"intGridValues"} = block:
+      let cursor {.cursor.} = source.intGridValues
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
+  if len(source.autoRuleGroups) > 0:
+    result{"autoRuleGroups"} = block:
+      let cursor {.cursor.} = source.autoRuleGroups
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   result{"type"} = `%`(source.type1)
   result{"identifier"} = newJString(source.identifier)
   result{"guideGridWid"} = newJInt(source.guideGridWid)
-  result{"requiredTags"} = block:
-    let cursor {.cursor.} = source.requiredTags
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJString(entry))
-    output
+  if len(source.requiredTags) > 0:
+    result{"requiredTags"} = block:
+      let cursor {.cursor.} = source.requiredTags
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJString(entry))
+      output
   result{"pxOffsetY"} = newJInt(source.pxOffsetY)
   result{"tilePivotY"} = newJFloat(source.tilePivotY)
   if isSome(source.biomeFieldUid):
@@ -2663,8 +2669,8 @@ proc `$`*(value: LdtkFieldDef): string =
 proc fromJsonHook*(target: var LdtkFieldDef; source: JsonNode) =
   if hasKey(source, "acceptFileTypes") and
       source{"acceptFileTypes"}.kind != JNull:
-    target.acceptFileTypes = some(jsonTo(source{"acceptFileTypes"},
-        typeof(unsafeGet(target.acceptFileTypes))))
+    target.acceptFileTypes = jsonTo(source{"acceptFileTypes"},
+                                    typeof(target.acceptFileTypes))
   assert(hasKey(source, "editorDisplayScale"),
          "editorDisplayScale" & " is missing while decoding " & "LdtkFieldDef")
   target.editorDisplayScale = jsonTo(source{"editorDisplayScale"},
@@ -2725,10 +2731,10 @@ proc fromJsonHook*(target: var LdtkFieldDef; source: JsonNode) =
   if hasKey(source, "tilesetUid") and source{"tilesetUid"}.kind != JNull:
     target.tilesetUid = some(jsonTo(source{"tilesetUid"},
                                     typeof(unsafeGet(target.tilesetUid))))
-  assert(hasKey(source, "allowedRefTags"),
-         "allowedRefTags" & " is missing while decoding " & "LdtkFieldDef")
-  target.allowedRefTags = jsonTo(source{"allowedRefTags"},
-                                 typeof(target.allowedRefTags))
+  if hasKey(source, "allowedRefTags") and
+      source{"allowedRefTags"}.kind != JNull:
+    target.allowedRefTags = jsonTo(source{"allowedRefTags"},
+                                   typeof(target.allowedRefTags))
   assert(hasKey(source, "symmetricalRef"),
          "symmetricalRef" & " is missing while decoding " & "LdtkFieldDef")
   target.symmetricalRef = jsonTo(source{"symmetricalRef"},
@@ -2787,9 +2793,9 @@ proc fromJsonHook*(target: var LdtkFieldDef; source: JsonNode) =
 
 proc toJsonHook*(source: LdtkFieldDef): JsonNode =
   result = newJObject()
-  if isSome(source.acceptFileTypes):
+  if len(source.acceptFileTypes) > 0:
     result{"acceptFileTypes"} = block:
-      let cursor {.cursor.} = unsafeGet(source.acceptFileTypes)
+      let cursor {.cursor.} = source.acceptFileTypes
       var output = newJArray()
       for entry in cursor:
         output.add(newJString(entry))
@@ -2820,12 +2826,13 @@ proc toJsonHook*(source: LdtkFieldDef): JsonNode =
         unsafeGet(source.allowedRefsEntityUid))
   if isSome(source.tilesetUid):
     result{"tilesetUid"} = newJInt(unsafeGet(source.tilesetUid))
-  result{"allowedRefTags"} = block:
-    let cursor {.cursor.} = source.allowedRefTags
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJString(entry))
-    output
+  if len(source.allowedRefTags) > 0:
+    result{"allowedRefTags"} = block:
+      let cursor {.cursor.} = source.allowedRefTags
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJString(entry))
+      output
   result{"symmetricalRef"} = newJBool(source.symmetricalRef)
   result{"uid"} = newJInt(source.uid)
   if isSome(source.editorTextPrefix):
@@ -2885,8 +2892,8 @@ proc fromJsonHook*(target: var LdtkEnumDefValues; source: JsonNode) =
   target.id = jsonTo(source{"id"}, typeof(target.id))
   if hasKey(source, "__tileSrcRect") and
       source{"__tileSrcRect"}.kind != JNull:
-    target.tileSrcRect = some(jsonTo(source{"__tileSrcRect"},
-                                     typeof(unsafeGet(target.tileSrcRect))))
+    target.tileSrcRect = jsonTo(source{"__tileSrcRect"},
+                                typeof(target.tileSrcRect))
 
 proc toJsonHook*(source: LdtkEnumDefValues): JsonNode =
   result = newJObject()
@@ -2896,9 +2903,9 @@ proc toJsonHook*(source: LdtkEnumDefValues): JsonNode =
   if isSome(source.tileRect):
     result{"tileRect"} = toJsonHook(unsafeGet(source.tileRect))
   result{"id"} = newJString(source.id)
-  if isSome(source.tileSrcRect):
+  if len(source.tileSrcRect) > 0:
     result{"__tileSrcRect"} = block:
-      let cursor {.cursor.} = unsafeGet(source.tileSrcRect)
+      let cursor {.cursor.} = source.tileSrcRect
       var output = newJArray()
       for entry in cursor:
         output.add(newJInt(entry))
@@ -2945,9 +2952,8 @@ proc fromJsonHook*(target: var LdtkEnumDef; source: JsonNode) =
   assert(hasKey(source, "uid"),
          "uid" & " is missing while decoding " & "LdtkEnumDef")
   target.uid = jsonTo(source{"uid"}, typeof(target.uid))
-  assert(hasKey(source, "values"),
-         "values" & " is missing while decoding " & "LdtkEnumDef")
-  target.values = jsonTo(source{"values"}, typeof(target.values))
+  if hasKey(source, "values") and source{"values"}.kind != JNull:
+    target.values = jsonTo(source{"values"}, typeof(target.values))
   if hasKey(source, "iconTilesetUid") and
       source{"iconTilesetUid"}.kind != JNull:
     target.iconTilesetUid = some(jsonTo(source{"iconTilesetUid"}, typeof(
@@ -2955,9 +2961,8 @@ proc fromJsonHook*(target: var LdtkEnumDef; source: JsonNode) =
   assert(hasKey(source, "identifier"),
          "identifier" & " is missing while decoding " & "LdtkEnumDef")
   target.identifier = jsonTo(source{"identifier"}, typeof(target.identifier))
-  assert(hasKey(source, "tags"),
-         "tags" & " is missing while decoding " & "LdtkEnumDef")
-  target.tags = jsonTo(source{"tags"}, typeof(target.tags))
+  if hasKey(source, "tags") and source{"tags"}.kind != JNull:
+    target.tags = jsonTo(source{"tags"}, typeof(target.tags))
 
 proc toJsonHook*(source: LdtkEnumDef): JsonNode =
   result = newJObject()
@@ -2967,21 +2972,23 @@ proc toJsonHook*(source: LdtkEnumDef): JsonNode =
   if isSome(source.externalRelPath):
     result{"externalRelPath"} = newJString(unsafeGet(source.externalRelPath))
   result{"uid"} = newJInt(source.uid)
-  result{"values"} = block:
-    let cursor {.cursor.} = source.values
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.values) > 0:
+    result{"values"} = block:
+      let cursor {.cursor.} = source.values
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   if isSome(source.iconTilesetUid):
     result{"iconTilesetUid"} = newJInt(unsafeGet(source.iconTilesetUid))
   result{"identifier"} = newJString(source.identifier)
-  result{"tags"} = block:
-    let cursor {.cursor.} = source.tags
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJString(entry))
-    output
+  if len(source.tags) > 0:
+    result{"tags"} = block:
+      let cursor {.cursor.} = source.tags
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJString(entry))
+      output
 
 proc equals(_: typedesc[LdtkEntityDef]; a, b: LdtkEntityDef): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -3113,9 +3120,8 @@ proc fromJsonHook*(target: var LdtkEntityDef; source: JsonNode) =
                                   typeof(unsafeGet(target.tileRect))))
   if hasKey(source, "doc") and source{"doc"}.kind != JNull:
     target.doc = some(jsonTo(source{"doc"}, typeof(unsafeGet(target.doc))))
-  assert(hasKey(source, "fieldDefs"),
-         "fieldDefs" & " is missing while decoding " & "LdtkEntityDef")
-  target.fieldDefs = jsonTo(source{"fieldDefs"}, typeof(target.fieldDefs))
+  if hasKey(source, "fieldDefs") and source{"fieldDefs"}.kind != JNull:
+    target.fieldDefs = jsonTo(source{"fieldDefs"}, typeof(target.fieldDefs))
   assert(hasKey(source, "tileRenderMode"),
          "tileRenderMode" & " is missing while decoding " & "LdtkEntityDef")
   target.tileRenderMode = jsonTo(source{"tileRenderMode"},
@@ -3127,10 +3133,10 @@ proc fromJsonHook*(target: var LdtkEntityDef; source: JsonNode) =
   assert(hasKey(source, "tileOpacity"),
          "tileOpacity" & " is missing while decoding " & "LdtkEntityDef")
   target.tileOpacity = jsonTo(source{"tileOpacity"}, typeof(target.tileOpacity))
-  assert(hasKey(source, "nineSliceBorders"),
-         "nineSliceBorders" & " is missing while decoding " & "LdtkEntityDef")
-  target.nineSliceBorders = jsonTo(source{"nineSliceBorders"},
-                                   typeof(target.nineSliceBorders))
+  if hasKey(source, "nineSliceBorders") and
+      source{"nineSliceBorders"}.kind != JNull:
+    target.nineSliceBorders = jsonTo(source{"nineSliceBorders"},
+                                     typeof(target.nineSliceBorders))
   assert(hasKey(source, "resizableX"),
          "resizableX" & " is missing while decoding " & "LdtkEntityDef")
   target.resizableX = jsonTo(source{"resizableX"}, typeof(target.resizableX))
@@ -3167,9 +3173,8 @@ proc fromJsonHook*(target: var LdtkEntityDef; source: JsonNode) =
   assert(hasKey(source, "renderMode"),
          "renderMode" & " is missing while decoding " & "LdtkEntityDef")
   target.renderMode = jsonTo(source{"renderMode"}, typeof(target.renderMode))
-  assert(hasKey(source, "tags"),
-         "tags" & " is missing while decoding " & "LdtkEntityDef")
-  target.tags = jsonTo(source{"tags"}, typeof(target.tags))
+  if hasKey(source, "tags") and source{"tags"}.kind != JNull:
+    target.tags = jsonTo(source{"tags"}, typeof(target.tags))
   assert(hasKey(source, "width"),
          "width" & " is missing while decoding " & "LdtkEntityDef")
   target.width = jsonTo(source{"width"}, typeof(target.width))
@@ -3198,21 +3203,23 @@ proc toJsonHook*(source: LdtkEntityDef): JsonNode =
     result{"tileRect"} = toJsonHook(unsafeGet(source.tileRect))
   if isSome(source.doc):
     result{"doc"} = newJString(unsafeGet(source.doc))
-  result{"fieldDefs"} = block:
-    let cursor {.cursor.} = source.fieldDefs
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.fieldDefs) > 0:
+    result{"fieldDefs"} = block:
+      let cursor {.cursor.} = source.fieldDefs
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   result{"tileRenderMode"} = `%`(source.tileRenderMode)
   result{"limitBehavior"} = `%`(source.limitBehavior)
   result{"tileOpacity"} = newJFloat(source.tileOpacity)
-  result{"nineSliceBorders"} = block:
-    let cursor {.cursor.} = source.nineSliceBorders
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJInt(entry))
-    output
+  if len(source.nineSliceBorders) > 0:
+    result{"nineSliceBorders"} = block:
+      let cursor {.cursor.} = source.nineSliceBorders
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJInt(entry))
+      output
   result{"resizableX"} = newJBool(source.resizableX)
   if isSome(source.uiTileRect):
     result{"uiTileRect"} = toJsonHook(unsafeGet(source.uiTileRect))
@@ -3227,12 +3234,13 @@ proc toJsonHook*(source: LdtkEntityDef): JsonNode =
   result{"identifier"} = newJString(source.identifier)
   result{"pivotY"} = newJFloat(source.pivotY)
   result{"renderMode"} = `%`(source.renderMode)
-  result{"tags"} = block:
-    let cursor {.cursor.} = source.tags
-    var output = newJArray()
-    for entry in cursor:
-      output.add(newJString(entry))
-    output
+  if len(source.tags) > 0:
+    result{"tags"} = block:
+      let cursor {.cursor.} = source.tags
+      var output = newJArray()
+      for entry in cursor:
+        output.add(newJString(entry))
+      output
   result{"width"} = newJInt(source.width)
 
 proc equals(_: typedesc[LdtkDefinitions]; a, b: LdtkDefinitions): bool =
@@ -3260,64 +3268,66 @@ proc `$`*(value: LdtkDefinitions): string =
   stringify(LdtkDefinitions, value)
 
 proc fromJsonHook*(target: var LdtkDefinitions; source: JsonNode) =
-  assert(hasKey(source, "tilesets"),
-         "tilesets" & " is missing while decoding " & "LdtkDefinitions")
-  target.tilesets = jsonTo(source{"tilesets"}, typeof(target.tilesets))
-  assert(hasKey(source, "layers"),
-         "layers" & " is missing while decoding " & "LdtkDefinitions")
-  target.layers = jsonTo(source{"layers"}, typeof(target.layers))
-  assert(hasKey(source, "levelFields"),
-         "levelFields" & " is missing while decoding " & "LdtkDefinitions")
-  target.levelFields = jsonTo(source{"levelFields"}, typeof(target.levelFields))
-  assert(hasKey(source, "enums"),
-         "enums" & " is missing while decoding " & "LdtkDefinitions")
-  target.enums = jsonTo(source{"enums"}, typeof(target.enums))
-  assert(hasKey(source, "entities"),
-         "entities" & " is missing while decoding " & "LdtkDefinitions")
-  target.entities = jsonTo(source{"entities"}, typeof(target.entities))
-  assert(hasKey(source, "externalEnums"),
-         "externalEnums" & " is missing while decoding " & "LdtkDefinitions")
-  target.externalEnums = jsonTo(source{"externalEnums"},
-                                typeof(target.externalEnums))
+  if hasKey(source, "tilesets") and source{"tilesets"}.kind != JNull:
+    target.tilesets = jsonTo(source{"tilesets"}, typeof(target.tilesets))
+  if hasKey(source, "layers") and source{"layers"}.kind != JNull:
+    target.layers = jsonTo(source{"layers"}, typeof(target.layers))
+  if hasKey(source, "levelFields") and source{"levelFields"}.kind != JNull:
+    target.levelFields = jsonTo(source{"levelFields"},
+                                typeof(target.levelFields))
+  if hasKey(source, "enums") and source{"enums"}.kind != JNull:
+    target.enums = jsonTo(source{"enums"}, typeof(target.enums))
+  if hasKey(source, "entities") and source{"entities"}.kind != JNull:
+    target.entities = jsonTo(source{"entities"}, typeof(target.entities))
+  if hasKey(source, "externalEnums") and
+      source{"externalEnums"}.kind != JNull:
+    target.externalEnums = jsonTo(source{"externalEnums"},
+                                  typeof(target.externalEnums))
 
 proc toJsonHook*(source: LdtkDefinitions): JsonNode =
   result = newJObject()
-  result{"tilesets"} = block:
-    let cursor {.cursor.} = source.tilesets
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
-  result{"layers"} = block:
-    let cursor {.cursor.} = source.layers
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
-  result{"levelFields"} = block:
-    let cursor {.cursor.} = source.levelFields
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
-  result{"enums"} = block:
-    let cursor {.cursor.} = source.enums
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
-  result{"entities"} = block:
-    let cursor {.cursor.} = source.entities
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
-  result{"externalEnums"} = block:
-    let cursor {.cursor.} = source.externalEnums
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.tilesets) > 0:
+    result{"tilesets"} = block:
+      let cursor {.cursor.} = source.tilesets
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
+  if len(source.layers) > 0:
+    result{"layers"} = block:
+      let cursor {.cursor.} = source.layers
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
+  if len(source.levelFields) > 0:
+    result{"levelFields"} = block:
+      let cursor {.cursor.} = source.levelFields
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
+  if len(source.enums) > 0:
+    result{"enums"} = block:
+      let cursor {.cursor.} = source.enums
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
+  if len(source.entities) > 0:
+    result{"entities"} = block:
+      let cursor {.cursor.} = source.entities
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
+  if len(source.externalEnums) > 0:
+    result{"externalEnums"} = block:
+      let cursor {.cursor.} = source.externalEnums
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
 
 proc equals(_: typedesc[LdtkGridPoint]; a, b: LdtkGridPoint): bool =
   equals(typeof(a.cy), a.cy, b.cy) and equals(typeof(a.cx), a.cx, b.cx)
@@ -3736,12 +3746,10 @@ proc fromJsonHook*(target: var LdtkLdtkJsonRoot; source: JsonNode) =
   assert(hasKey(source, "bgColor"),
          "bgColor" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.bgColor = jsonTo(source{"bgColor"}, typeof(target.bgColor))
-  assert(hasKey(source, "worlds"),
-         "worlds" & " is missing while decoding " & "LdtkLdtkJsonRoot")
-  target.worlds = jsonTo(source{"worlds"}, typeof(target.worlds))
-  assert(hasKey(source, "toc"),
-         "toc" & " is missing while decoding " & "LdtkLdtkJsonRoot")
-  target.toc = jsonTo(source{"toc"}, typeof(target.toc))
+  if hasKey(source, "worlds") and source{"worlds"}.kind != JNull:
+    target.worlds = jsonTo(source{"worlds"}, typeof(target.worlds))
+  if hasKey(source, "toc") and source{"toc"}.kind != JNull:
+    target.toc = jsonTo(source{"toc"}, typeof(target.toc))
   assert(hasKey(source, "nextUid"),
          "nextUid" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.nextUid = jsonTo(source{"nextUid"}, typeof(target.nextUid))
@@ -3761,10 +3769,10 @@ proc fromJsonHook*(target: var LdtkLdtkJsonRoot; source: JsonNode) =
          "dummyWorldIid" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.dummyWorldIid = jsonTo(source{"dummyWorldIid"},
                                 typeof(target.dummyWorldIid))
-  assert(hasKey(source, "customCommands"),
-         "customCommands" & " is missing while decoding " & "LdtkLdtkJsonRoot")
-  target.customCommands = jsonTo(source{"customCommands"},
-                                 typeof(target.customCommands))
+  if hasKey(source, "customCommands") and
+      source{"customCommands"}.kind != JNull:
+    target.customCommands = jsonTo(source{"customCommands"},
+                                   typeof(target.customCommands))
   if hasKey(source, "worldGridHeight") and
       source{"worldGridHeight"}.kind != JNull:
     target.worldGridHeight = some(jsonTo(source{"worldGridHeight"},
@@ -3779,9 +3787,8 @@ proc fromJsonHook*(target: var LdtkLdtkJsonRoot; source: JsonNode) =
   if hasKey(source, "worldLayout") and source{"worldLayout"}.kind != JNull:
     target.worldLayout = some(jsonTo(source{"worldLayout"},
                                      typeof(unsafeGet(target.worldLayout))))
-  assert(hasKey(source, "flags"),
-         "flags" & " is missing while decoding " & "LdtkLdtkJsonRoot")
-  target.flags = jsonTo(source{"flags"}, typeof(target.flags))
+  if hasKey(source, "flags") and source{"flags"}.kind != JNull:
+    target.flags = jsonTo(source{"flags"}, typeof(target.flags))
   assert(hasKey(source, "levelNamePattern"), "levelNamePattern" &
       " is missing while decoding " &
       "LdtkLdtkJsonRoot")
@@ -3808,9 +3815,8 @@ proc fromJsonHook*(target: var LdtkLdtkJsonRoot; source: JsonNode) =
   assert(hasKey(source, "defs"),
          "defs" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.defs = jsonTo(source{"defs"}, typeof(target.defs))
-  assert(hasKey(source, "levels"),
-         "levels" & " is missing while decoding " & "LdtkLdtkJsonRoot")
-  target.levels = jsonTo(source{"levels"}, typeof(target.levels))
+  if hasKey(source, "levels") and source{"levels"}.kind != JNull:
+    target.levels = jsonTo(source{"levels"}, typeof(target.levels))
   assert(hasKey(source, "jsonVersion"),
          "jsonVersion" & " is missing while decoding " & "LdtkLdtkJsonRoot")
   target.jsonVersion = jsonTo(source{"jsonVersion"}, typeof(target.jsonVersion))
@@ -3861,41 +3867,45 @@ proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode =
   result{"iid"} = newJString(source.iid)
   result{"defaultLevelBgColor"} = newJString(source.defaultLevelBgColor)
   result{"bgColor"} = newJString(source.bgColor)
-  result{"worlds"} = block:
-    let cursor {.cursor.} = source.worlds
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
-  result{"toc"} = block:
-    let cursor {.cursor.} = source.toc
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.worlds) > 0:
+    result{"worlds"} = block:
+      let cursor {.cursor.} = source.worlds
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
+  if len(source.toc) > 0:
+    result{"toc"} = block:
+      let cursor {.cursor.} = source.toc
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   result{"nextUid"} = newJInt(source.nextUid)
   result{"imageExportMode"} = `%`(source.imageExportMode)
   result{"identifierStyle"} = `%`(source.identifierStyle)
   result{"defaultPivotY"} = newJFloat(source.defaultPivotY)
   result{"dummyWorldIid"} = newJString(source.dummyWorldIid)
-  result{"customCommands"} = block:
-    let cursor {.cursor.} = source.customCommands
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.customCommands) > 0:
+    result{"customCommands"} = block:
+      let cursor {.cursor.} = source.customCommands
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   if isSome(source.worldGridHeight):
     result{"worldGridHeight"} = newJInt(unsafeGet(source.worldGridHeight))
   result{"appBuildId"} = newJFloat(source.appBuildId)
   result{"defaultGridSize"} = newJInt(source.defaultGridSize)
   if isSome(source.worldLayout):
     result{"worldLayout"} = `%`(unsafeGet(source.worldLayout))
-  result{"flags"} = block:
-    let cursor {.cursor.} = source.flags
-    var output = newJArray()
-    for entry in cursor:
-      output.add(`%`(entry))
-    output
+  if len(source.flags) > 0:
+    result{"flags"} = block:
+      let cursor {.cursor.} = source.flags
+      var output = newJArray()
+      for entry in cursor:
+        output.add(`%`(entry))
+      output
   result{"levelNamePattern"} = newJString(source.levelNamePattern)
   if isSome(source.exportPng):
     result{"exportPng"} = newJBool(unsafeGet(source.exportPng))
@@ -3907,12 +3917,13 @@ proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode =
     result{"__FORCED_REFS"} = toJsonHook(unsafeGet(source.FORCED_REFS))
   result{"exportTiled"} = newJBool(source.exportTiled)
   result{"defs"} = toJsonHook(source.defs)
-  result{"levels"} = block:
-    let cursor {.cursor.} = source.levels
-    var output = newJArray()
-    for entry in cursor:
-      output.add(toJsonHook(entry))
-    output
+  if len(source.levels) > 0:
+    result{"levels"} = block:
+      let cursor {.cursor.} = source.levels
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
   result{"jsonVersion"} = newJString(source.jsonVersion)
   result{"defaultEntityHeight"} = newJInt(source.defaultEntityHeight)
   result{"defaultPivotX"} = newJFloat(source.defaultPivotX)

@@ -164,7 +164,11 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
       continue
 
     let safeKey = safePropName(propName)
-    if required:
+    if subtype.kind in SELF_OPTIONAL:
+      decodeKeys.add quote do:
+        if hasKey(`source`, `key`) and `source`{`key`}.kind != JNull:
+          `target`.`safeKey` = jsonTo(`source`{`key`}, typeof(`target`.`safeKey`))
+    elif required:
       decodeKeys.add quote do:
         assert(
           hasKey(`source`, `key`), `key` & " is missing while decoding " & `typeNameStr`
@@ -185,10 +189,18 @@ proc buildObjectEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
 
   for key, (propName, propType, required) in typ.properties:
     let readProp = newDotExpr(source, safePropName(propName))
-    if required or not propType.hasRealField:
+
+    if propType.kind in SELF_OPTIONAL:
+      let encode = readProp.createEncodeExpr(propType)
+      encodeKeys.add quote do:
+        if len(`readProp`) > 0:
+          result{`key`} = `encode`
+
+    elif required or not propType.hasRealField:
       let encode = readProp.createEncodeExpr(propType)
       encodeKeys.add quote do:
         result{`key`} = `encode`
+
     else:
       assert(propType.kind == OptionalType)
 

@@ -8,7 +8,7 @@ type
     price*: Option[BiggestFloat]
   EcommerceOrderSchema* {.byref.} = object
     orderId*: Option[string]
-    items*: Option[seq[EcommerceProductSchema]]
+    items*: seq[EcommerceProductSchema]
 proc `=copy`(a: var EcommerceProductSchema;
              b: EcommerceProductSchema) {.error.}
 proc toJsonHook*(source: EcommerceProductSchema): JsonNode
@@ -64,15 +64,15 @@ proc fromJsonHook*(target: var EcommerceOrderSchema; source: JsonNode) =
     target.orderId = some(jsonTo(source{"orderId"},
                                  typeof(unsafeGet(target.orderId))))
   if hasKey(source, "items") and source{"items"}.kind != JNull:
-    target.items = some(jsonTo(source{"items"}, typeof(unsafeGet(target.items))))
+    target.items = jsonTo(source{"items"}, typeof(target.items))
 
 proc toJsonHook*(source: EcommerceOrderSchema): JsonNode =
   result = newJObject()
   if isSome(source.orderId):
     result{"orderId"} = newJString(unsafeGet(source.orderId))
-  if isSome(source.items):
+  if len(source.items) > 0:
     result{"items"} = block:
-      let cursor {.cursor.} = unsafeGet(source.items)
+      let cursor {.cursor.} = source.items
       var output = newJArray()
       for entry in cursor:
         output.add(toJsonHook(entry))

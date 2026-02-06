@@ -10,9 +10,9 @@ type
     patientName*: string
     dateOfBirth*: string
     bloodType*: string
-    allergies*: Option[seq[string]]
-    conditions*: Option[seq[string]]
-    medications*: Option[seq[string]]
+    allergies*: seq[string]
+    conditions*: seq[string]
+    medications*: seq[string]
     emergencyContact*: Option[HealthEmergencyContact]
 proc `=copy`(a: var HealthEmergencyContact;
              b: HealthEmergencyContact) {.error.}
@@ -86,14 +86,12 @@ proc fromJsonHook*(target: var Health; source: JsonNode) =
          "bloodType" & " is missing while decoding " & "Health")
   target.bloodType = jsonTo(source{"bloodType"}, typeof(target.bloodType))
   if hasKey(source, "allergies") and source{"allergies"}.kind != JNull:
-    target.allergies = some(jsonTo(source{"allergies"},
-                                   typeof(unsafeGet(target.allergies))))
+    target.allergies = jsonTo(source{"allergies"}, typeof(target.allergies))
   if hasKey(source, "conditions") and source{"conditions"}.kind != JNull:
-    target.conditions = some(jsonTo(source{"conditions"},
-                                    typeof(unsafeGet(target.conditions))))
+    target.conditions = jsonTo(source{"conditions"}, typeof(target.conditions))
   if hasKey(source, "medications") and source{"medications"}.kind != JNull:
-    target.medications = some(jsonTo(source{"medications"},
-                                     typeof(unsafeGet(target.medications))))
+    target.medications = jsonTo(source{"medications"},
+                                typeof(target.medications))
   if hasKey(source, "emergencyContact") and
       source{"emergencyContact"}.kind != JNull:
     target.emergencyContact = some(jsonTo(source{"emergencyContact"},
@@ -104,23 +102,23 @@ proc toJsonHook*(source: Health): JsonNode =
   result{"patientName"} = newJString(source.patientName)
   result{"dateOfBirth"} = newJString(source.dateOfBirth)
   result{"bloodType"} = newJString(source.bloodType)
-  if isSome(source.allergies):
+  if len(source.allergies) > 0:
     result{"allergies"} = block:
-      let cursor {.cursor.} = unsafeGet(source.allergies)
+      let cursor {.cursor.} = source.allergies
       var output = newJArray()
       for entry in cursor:
         output.add(newJString(entry))
       output
-  if isSome(source.conditions):
+  if len(source.conditions) > 0:
     result{"conditions"} = block:
-      let cursor {.cursor.} = unsafeGet(source.conditions)
+      let cursor {.cursor.} = source.conditions
       var output = newJArray()
       for entry in cursor:
         output.add(newJString(entry))
       output
-  if isSome(source.medications):
+  if len(source.medications) > 0:
     result{"medications"} = block:
-      let cursor {.cursor.} = unsafeGet(source.medications)
+      let cursor {.cursor.} = source.medications
       var output = newJArray()
       for entry in cursor:
         output.add(newJString(entry))

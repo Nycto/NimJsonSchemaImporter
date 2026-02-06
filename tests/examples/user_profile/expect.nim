@@ -9,7 +9,7 @@ type
     fullName*: Option[string]
     age*: Option[BiggestInt]
     location*: Option[string]
-    interests*: Option[seq[string]]
+    interests*: seq[string]
 proc `=copy`(a: var User_profile; b: User_profile) {.error.}
 proc toJsonHook*(source: User_profile): JsonNode
 proc equals(_: typedesc[User_profile]; a, b: User_profile): bool =
@@ -50,8 +50,7 @@ proc fromJsonHook*(target: var User_profile; source: JsonNode) =
     target.location = some(jsonTo(source{"location"},
                                   typeof(unsafeGet(target.location))))
   if hasKey(source, "interests") and source{"interests"}.kind != JNull:
-    target.interests = some(jsonTo(source{"interests"},
-                                   typeof(unsafeGet(target.interests))))
+    target.interests = jsonTo(source{"interests"}, typeof(target.interests))
 
 proc toJsonHook*(source: User_profile): JsonNode =
   result = newJObject()
@@ -63,9 +62,9 @@ proc toJsonHook*(source: User_profile): JsonNode =
     result{"age"} = newJInt(unsafeGet(source.age))
   if isSome(source.location):
     result{"location"} = newJString(unsafeGet(source.location))
-  if isSome(source.interests):
+  if len(source.interests) > 0:
     result{"interests"} = block:
-      let cursor {.cursor.} = unsafeGet(source.interests)
+      let cursor {.cursor.} = source.interests
       var output = newJArray()
       for entry in cursor:
         output.add(newJString(entry))

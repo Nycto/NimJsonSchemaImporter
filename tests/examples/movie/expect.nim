@@ -12,7 +12,7 @@ type
     releaseDate*: string
     genre*: Option[MovieGenre]
     duration*: Option[string]
-    `cast`*: Option[seq[string]]
+    `cast`*: seq[string]
 proc `=copy`(a: var Movie; b: Movie) {.error.}
 proc toJsonHook*(source: Movie): JsonNode
 proc equals(_: typedesc[Movie]; a, b: Movie): bool =
@@ -53,7 +53,7 @@ proc fromJsonHook*(target: var Movie; source: JsonNode) =
     target.duration = some(jsonTo(source{"duration"},
                                   typeof(unsafeGet(target.duration))))
   if hasKey(source, "cast") and source{"cast"}.kind != JNull:
-    target.`cast` = some(jsonTo(source{"cast"}, typeof(unsafeGet(target.`cast`))))
+    target.`cast` = jsonTo(source{"cast"}, typeof(target.`cast`))
 
 proc toJsonHook*(source: Movie): JsonNode =
   result = newJObject()
@@ -64,9 +64,9 @@ proc toJsonHook*(source: Movie): JsonNode =
     result{"genre"} = `%`(unsafeGet(source.genre))
   if isSome(source.duration):
     result{"duration"} = newJString(unsafeGet(source.duration))
-  if isSome(source.`cast`):
+  if len(source.`cast`) > 0:
     result{"cast"} = block:
-      let cursor {.cursor.} = unsafeGet(source.`cast`)
+      let cursor {.cursor.} = source.`cast`
       var output = newJArray()
       for entry in cursor:
         output.add(newJString(entry))

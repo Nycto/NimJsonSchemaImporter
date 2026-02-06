@@ -50,7 +50,6 @@
           },
           "uid": 0,
           "__smartColor": "#7D7D8E",
-          "fieldInstances": [],
           "pxWid": 272,
           "identifier": "West",
           "bgPivotY": 1.0,
@@ -99,7 +98,6 @@
           },
           "uid": 39,
           "__smartColor": "#7D7D8E",
-          "fieldInstances": [],
           "pxWid": 272,
           "identifier": "East",
           "bgPivotY": 0.5,
@@ -144,7 +142,6 @@
           },
           "uid": 40,
           "__smartColor": "#7D7D8E",
-          "fieldInstances": [],
           "pxWid": 224,
           "identifier": "Pit",
           "bgPivotY": 0.5,
@@ -185,7 +182,6 @@
           },
           "uid": 41,
           "__smartColor": "#7D7D8E",
-          "fieldInstances": [],
           "pxWid": 160,
           "identifier": "Treasure_room",
           "bgPivotY": 0.5,
@@ -231,7 +227,6 @@
   "identifierStyle": "Capitalize",
   "defaultPivotY": 1.0,
   "dummyWorldIid": "6d9adae0-c640-11ed-b633-01b6d7e2af59",
-  "customCommands": [],
   "appBuildId": 473702.0,
   "defaultGridSize": 8,
   "flags": [
@@ -250,10 +245,8 @@
         },
         "__cHei": 32,
         "pxHei": 256,
-        "customData": [],
         "uid": 1,
         "padding": 0,
-        "enumTags": [],
         "pxWid": 96,
         "__cWid": 12,
         "spacing": 0,
@@ -387,7 +380,6 @@
             "mode": "Random"
           }
         ],
-        "tags": [],
         "relPath": "Cavernas_by_Adam_Saltsman-Extended.png",
         "tileGridSize": 8
       },
@@ -398,16 +390,12 @@
         },
         "__cHei": 8,
         "pxHei": 128,
-        "customData": [],
         "uid": 31,
         "padding": 0,
-        "enumTags": [],
         "pxWid": 176,
         "__cWid": 11,
         "spacing": 0,
         "identifier": "Items",
-        "savedSelections": [],
-        "tags": [],
         "relPath": "RPG_Assets_by_ssugmi.png",
         "tileGridSize": 16
       },
@@ -418,16 +406,12 @@
         },
         "__cHei": 32,
         "pxHei": 256,
-        "customData": [],
         "uid": 58,
         "padding": 0,
-        "enumTags": [],
         "pxWid": 96,
         "__cWid": 12,
         "spacing": 0,
         "identifier": "Cavernas_by_Adam_Saltsman_Extended_hued",
-        "savedSelections": [],
-        "tags": [],
         "relPath": "Cavernas_by_Adam_Saltsman-Extended_hued.png",
         "tileGridSize": 8
       }
@@ -436,7 +420,6 @@
       {
         "pxOffsetX": 0,
         "tilePivotX": 0.0,
-        "uiFilterTags": [],
         "displayOpacity": 1.0,
         "parallaxFactorY": 0.0,
         "hideInList": false,
@@ -446,17 +429,12 @@
         "useAsyncRender": false,
         "parallaxScaling": true,
         "renderInWorldView": true,
-        "intGridValuesGroups": [],
         "inactiveOpacity": 0.6,
         "uid": 28,
-        "excludedTags": [],
         "hideFieldsWhenInactive": true,
-        "intGridValues": [],
-        "autoRuleGroups": [],
         "type": "Entities",
         "identifier": "Entities",
         "guideGridWid": 0,
-        "requiredTags": [],
         "pxOffsetY": 0,
         "tilePivotY": 0.0,
         "gridSize": 8,
@@ -465,7 +443,6 @@
       {
         "pxOffsetX": 0,
         "tilePivotX": 0.0,
-        "uiFilterTags": [],
         "displayOpacity": 1.0,
         "parallaxFactorY": 0.0,
         "hideInList": false,
@@ -476,17 +453,12 @@
         "useAsyncRender": false,
         "parallaxScaling": true,
         "renderInWorldView": true,
-        "intGridValuesGroups": [],
         "inactiveOpacity": 1.0,
         "uid": 34,
-        "excludedTags": [],
         "hideFieldsWhenInactive": true,
-        "intGridValues": [],
-        "autoRuleGroups": [],
         "type": "Tiles",
         "identifier": "Custom_tiles",
         "guideGridWid": 0,
-        "requiredTags": [],
         "pxOffsetY": 0,
         "tilePivotY": 0.0,
         "gridSize": 8,
@@ -495,7 +467,6 @@
       {
         "pxOffsetX": 0,
         "tilePivotX": 0.0,
-        "uiFilterTags": [],
         "displayOpacity": 1.0,
         "parallaxFactorY": 0.0,
         "hideInList": false,
@@ -506,10 +477,8 @@
         "useAsyncRender": false,
         "parallaxScaling": true,
         "renderInWorldView": true,
-        "intGridValuesGroups": [],
         "inactiveOpacity": 1.0,
         "uid": 2,
-        "excludedTags": [],
         "hideFieldsWhenInactive": true,
         "intGridValues": [
           {
@@ -538,7 +507,6 @@
             "isOptional": false,
             "usesWizard": false,
             "uid": 42,
-            "requiredBiomeValues": [],
             "active": true,
             "rules": [
               {
@@ -631,7 +599,6 @@
             "isOptional": false,
             "usesWizard": false,
             "uid": 16,
-            "requiredBiomeValues": [],
             "active": true,
             "rules": [
               {
@@ -724,7 +691,6 @@
             "isOptional": false,
             "usesWizard": false,
             "uid": 10,
-            "requiredBiomeValues": [],
             "active": true,
             "rules": [
               {
@@ -970,7 +936,6 @@
             "isOptional": false,
             "usesWizard": false,
             "uid": 3,
-            "requiredBiomeValues": [],
             "active": true,
             "rules": [
               {
@@ -1297,7 +1262,6 @@
         "type": "IntGrid",
         "identifier": "Collisions",
         "guideGridWid": 0,
-        "requiredTags": [],
         "pxOffsetY": 0,
         "tilePivotY": 0.0,
         "gridSize": 8,
@@ -1306,7 +1270,6 @@
       {
         "pxOffsetX": 0,
         "tilePivotX": 0.0,
-        "uiFilterTags": [],
         "displayOpacity": 1.0,
         "parallaxFactorY": 0.0,
         "hideInList": false,
@@ -1317,10 +1280,8 @@
         "useAsyncRender": false,
         "parallaxScaling": true,
         "renderInWorldView": true,
-        "intGridValuesGroups": [],
         "inactiveOpacity": 1.0,
         "uid": 48,
-        "excludedTags": [],
         "hideFieldsWhenInactive": true,
         "intGridValues": [
           {
@@ -1337,7 +1298,6 @@
             "isOptional": false,
             "usesWizard": false,
             "uid": 49,
-            "requiredBiomeValues": [],
             "active": true,
             "rules": [
               {
@@ -1615,14 +1575,12 @@
         "type": "IntGrid",
         "identifier": "Cavern_background",
         "guideGridWid": 0,
-        "requiredTags": [],
         "pxOffsetY": 0,
         "tilePivotY": 0.0,
         "gridSize": 8,
         "parallaxFactorX": 0.0
       }
     ],
-    "levelFields": [],
     "enums": [
       {
         "uid": 30,
@@ -1662,8 +1620,7 @@
           }
         ],
         "iconTilesetUid": 31,
-        "identifier": "Items",
-        "tags": []
+        "identifier": "Items"
       }
     ],
     "entities": [
@@ -1676,11 +1633,9 @@
         "hollow": false,
         "keepAspectRatio": false,
         "color": "#00BFFF",
-        "fieldDefs": [],
         "tileRenderMode": "Stretch",
         "limitBehavior": "MoveLastOne",
         "tileOpacity": 1.0,
-        "nineSliceBorders": [],
         "resizableX": false,
         "uid": 27,
         "lineOpacity": 1.0,
@@ -1691,7 +1646,6 @@
         "identifier": "Player",
         "pivotY": 1.0,
         "renderMode": "Rectangle",
-        "tags": [],
         "width": 8
       },
       {
@@ -1715,7 +1669,6 @@
             "editorDisplayMode": "EntityTile",
             "canBeNull": false,
             "autoChainRef": true,
-            "allowedRefTags": [],
             "symmetricalRef": false,
             "uid": 32,
             "isArray": false,
@@ -1731,7 +1684,6 @@
         "tileRenderMode": "Stretch",
         "limitBehavior": "DiscardOldOnes",
         "tileOpacity": 1.0,
-        "nineSliceBorders": [],
         "resizableX": false,
         "uid": 29,
         "lineOpacity": 1.0,
@@ -1742,13 +1694,10 @@
         "identifier": "Item",
         "pivotY": 1.0,
         "renderMode": "Rectangle",
-        "tags": [],
         "width": 10
       }
-    ],
-    "externalEnums": []
+    ]
   },
-  "levels": [],
   "jsonVersion": "1.5.3",
   "defaultEntityHeight": 16,
   "defaultPivotX": 0.5,

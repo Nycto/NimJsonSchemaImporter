@@ -137,12 +137,12 @@ proc `$`*(typ: TypeDef): string =
   if not typ.sref.isNil:
     result = fmt"({typ.sref} {result})"
 
+const SELF_OPTIONAL* = {MapType, ArrayType}
+  ## These are field types that don't need to be wrapped in optional values
+
 proc optional*(typ: TypeDef): TypeDef =
   return
-    case typ.kind
-    of OptionalType:
-      typ
-    of ConstValueType:
+    if typ.kind in SELF_OPTIONAL or typ.kind in {ConstValueType, OptionalType}:
       typ
     else:
       TypeDef(kind: OptionalType, subtype: typ)

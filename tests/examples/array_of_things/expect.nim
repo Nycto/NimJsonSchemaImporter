@@ -7,8 +7,8 @@ type
     veggieName*: string
     veggieLike*: bool
   Array_of_things* {.byref.} = object
-    fruits*: Option[seq[string]]
-    vegetables*: Option[seq[Array_of_thingsVeggie]]
+    fruits*: seq[string]
+    vegetables*: seq[Array_of_thingsVeggie]
 proc `=copy`(a: var Array_of_thingsVeggie;
              b: Array_of_thingsVeggie) {.error.}
 proc toJsonHook*(source: Array_of_thingsVeggie): JsonNode
@@ -60,24 +60,22 @@ proc `$`*(value: Array_of_things): string =
 
 proc fromJsonHook*(target: var Array_of_things; source: JsonNode) =
   if hasKey(source, "fruits") and source{"fruits"}.kind != JNull:
-    target.fruits = some(jsonTo(source{"fruits"},
-                                typeof(unsafeGet(target.fruits))))
+    target.fruits = jsonTo(source{"fruits"}, typeof(target.fruits))
   if hasKey(source, "vegetables") and source{"vegetables"}.kind != JNull:
-    target.vegetables = some(jsonTo(source{"vegetables"},
-                                    typeof(unsafeGet(target.vegetables))))
+    target.vegetables = jsonTo(source{"vegetables"}, typeof(target.vegetables))
 
 proc toJsonHook*(source: Array_of_things): JsonNode =
   result = newJObject()
-  if isSome(source.fruits):
+  if len(source.fruits) > 0:
     result{"fruits"} = block:
-      let cursor {.cursor.} = unsafeGet(source.fruits)
+      let cursor {.cursor.} = source.fruits
       var output = newJArray()
       for entry in cursor:
         output.add(newJString(entry))
       output
-  if isSome(source.vegetables):
+  if len(source.vegetables) > 0:
     result{"vegetables"} = block:
-      let cursor {.cursor.} = unsafeGet(source.vegetables)
+      let cursor {.cursor.} = source.vegetables
       var output = newJArray()
       for entry in cursor:
         output.add(toJsonHook(entry))
