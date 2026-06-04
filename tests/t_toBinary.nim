@@ -61,6 +61,10 @@ suite "toBinary and fromBinary conversions":
   checkValues(seq[string], @[], @["a"], @["a", "b", "c"])
   checkValues(seq[int], @[], @[0], @[0, 1, 2])
 
+  checkValues(array[0, int], [])
+  checkValues(array[3, int], [0, 0, 0], [1, 2, 3], [-1, 100, -100])
+  checkValues(array[3, string], ["", "", ""], ["a", "b", "c"])
+
   checkValues(
     Table[string, int],
     initTable[string, int](),

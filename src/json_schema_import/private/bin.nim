@@ -74,6 +74,16 @@ proc fromBinary*[T](_: typedesc[seq[T]], source: string, idx: var int): seq[T] =
   for i in 0 ..< len:
     result.add(fromBinary(T, source, idx))
 
+proc toBinary*[I; T](target: var string, source: array[I, T]) =
+  for item in source:
+    toBinary(target, item)
+
+proc fromBinary*[I; T](
+    _: typedesc[array[I, T]], source: string, idx: var int
+): array[I, T] =
+  for i in low(result) .. high(result):
+    result[i] = fromBinary(T, source, idx)
+
 proc toBinary*(target: var string, source: float32) =
   ## Serializes a 32-bit floating-point value into binary format and appends it to the target string.
   toBinary(target, cast[uint32](source))
