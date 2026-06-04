@@ -74,6 +74,23 @@ proc fromBinary*[T](_: typedesc[seq[T]], source: string, idx: var int): seq[T] =
   for i in 0 ..< len:
     result.add(fromBinary(T, source, idx))
 
+proc toBinary*[T: set](target: var string, source: T) =
+  var bits: uint64 = 0
+  for item in source:
+    bits = bits or (1'u64 shl item.int)
+  toBinary(target, bits)
+
+proc fromBinary*[T: set](_: typedesc[T], source: string, idx: var int): T =
+  let bits = fromBinary(uint64, source, idx)
+  type ElemT = typeof(
+    for x in default(T):
+      x
+  )
+
+  for i in 0 ..< sizeof(T) * 8:
+    if ((bits shr i) and 1'u64) != 0'u64:
+      result.incl(ElemT(i))
+
 proc toBinary*[I; T](target: var string, source: array[I, T]) =
   for item in source:
     toBinary(target, item)

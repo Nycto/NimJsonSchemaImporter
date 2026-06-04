@@ -65,6 +65,8 @@ suite "toBinary and fromBinary conversions":
   checkValues(array[3, int], [0, 0, 0], [1, 2, 3], [-1, 100, -100])
   checkValues(array[3, string], ["", "", ""], ["a", "b", "c"])
 
+  checkValues(set[EnumValue], {}, {a}, {a, b, c})
+
   checkValues(
     Table[string, int],
     initTable[string, int](),
