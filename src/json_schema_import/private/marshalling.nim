@@ -195,12 +195,10 @@ proc buildObjectEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
       encodeKeys.add quote do:
         if len(`readProp`) > 0:
           result{`key`} = `encode`
-
     elif required or not propType.hasRealField:
       let encode = readProp.createEncodeExpr(propType)
       encodeKeys.add quote do:
         result{`key`} = `encode`
-
     else:
       assert(propType.kind == OptionalType)
 

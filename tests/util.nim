@@ -2,11 +2,10 @@ import std/[json, strformat, strutils, unittest], json_schema_import
 
 proc testResolver*(uri: string): JsonNode =
   if uri == "https://example.com/user-profile.schema.json":
-    return
-      %*{
-        "type": "object",
-        "properties": {"username": {"type": "string"}, "email": {"type": "string"}},
-      }
+    return %*{
+      "type": "object",
+      "properties": {"username": {"type": "string"}, "email": {"type": "string"}},
+    }
   else:
     raiseAssert(fmt"Unsupported test uri: {uri}")
 

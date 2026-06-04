@@ -141,8 +141,8 @@ proc collapseUnion(typ: TypeDef, history: History): TypeDef =
   return
     if markOptional:
       TypeDef(kind: UnionType, subtypes: subtypes, id: typ.id)
-      .collapseUnion(history)
-      .optional()
+        .collapseUnion(history)
+        .optional()
     elif nestedUnion:
       TypeDef(kind: UnionType, subtypes: subtypes, id: typ.id).collapseUnion(history)
     else:
