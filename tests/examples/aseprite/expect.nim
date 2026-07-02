@@ -82,12 +82,13 @@ type
   AsepriteSpriteSheet* {.byref.} = object
     frames*: AsepriteUnion
     meta*: AsepriteMeta
-proc `=copy`(a: var AsepriteRectangle; b: AsepriteRectangle) {.
-    error.}
+proc `=copy`(a: var AsepriteRectangle;
+             b: AsepriteRectangle) {.error.}
 proc toJsonHook*(source: AsepriteRectangle): JsonNode
 proc `=copy`(a: var AsepriteSize; b: AsepriteSize) {.error.}
 proc toJsonHook*(source: AsepriteSize): JsonNode
-proc `=copy`(a: var AsepriteFrame; b: AsepriteFrame) {.error.}
+proc `=copy`(a: var AsepriteFrame; b: AsepriteFrame) {.
+    error.}
 proc toJsonHook*(source: AsepriteFrame): JsonNode
 proc `=copy`(a: var AsepriteArrayFrame;
              b: AsepriteArrayFrame) {.error.}

@@ -21,5 +21,5 @@ buildTest("union", Union)
 buildTest("consts", Consts)
 #
 # # Specific applications
-# buildTest("ldtk", LdtkJsonRoot)
+buildTest("ldtk", LdtkJsonRoot)
 buildTest("aseprite", AsepriteSpriteSheet)

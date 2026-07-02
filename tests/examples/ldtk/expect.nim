@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   LdtkWorldLayout* = enum
@@ -488,8 +488,8 @@ proc toJsonHook*(source: LdtkEntityInstance): JsonNode
 proc `=copy`(a: var LdtkIntGridValueInstance;
              b: LdtkIntGridValueInstance) {.error.}
 proc toJsonHook*(source: LdtkIntGridValueInstance): JsonNode
-proc `=copy`(a: var LdtkLayerInstance; b: LdtkLayerInstance) {.
-    error.}
+proc `=copy`(a: var LdtkLayerInstance;
+             b: LdtkLayerInstance) {.error.}
 proc toJsonHook*(source: LdtkLayerInstance): JsonNode
 proc `=copy`(a: var LdtkLevel; b: LdtkLevel) {.error.}
 proc toJsonHook*(source: LdtkLevel): JsonNode
@@ -587,6 +587,49 @@ proc toJsonHook*(source: LdtkNeighbourLevel): JsonNode =
     result{"levelUid"} = newJInt(unsafeGet(source.levelUid))
   result{"dir"} = newJString(source.dir)
 
+proc toStream*(source: LdtkNeighbourLevel; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("levelIid"))
+  write(target, ':')
+  toStream(source.levelIid, target)
+  if isSome(source.levelUid):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("levelUid"))
+    write(target, ':')
+    toStream(unsafeGet(source.levelUid), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("dir"))
+  write(target, ':')
+  toStream(source.dir, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkNeighbourLevel];
+                 source: var JsonParser): LdtkNeighbourLevel =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "levelIid":
+      result.levelIid = fromStream(typeof(result.levelIid), source)
+    of "levelUid":
+      result.levelUid = some(fromStream(typeof(unsafeGet(result.levelUid)),
+                                        source))
+    of "dir":
+      result.dir = fromStream(typeof(result.dir), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[LdtkLevelBgPosInfos]; a, b: LdtkLevelBgPosInfos): bool =
   equals(typeof(a.cropRect), a.cropRect, b.cropRect) and
       equals(typeof(a.scale), a.scale, b.scale) and
@@ -636,6 +679,50 @@ proc toJsonHook*(source: LdtkLevelBgPosInfos): JsonNode =
         output.add(newJInt(entry))
       output
 
+proc toStream*(source: LdtkLevelBgPosInfos; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if len(source.cropRect) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("cropRect"))
+    write(target, ':')
+    toStream(source.cropRect, target)
+  if len(source.scale) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("scale"))
+    write(target, ':')
+    toStream(source.scale, target)
+  if len(source.topLeftPx) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("topLeftPx"))
+    write(target, ':')
+    toStream(source.topLeftPx, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkLevelBgPosInfos];
+                 source: var JsonParser): LdtkLevelBgPosInfos =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "cropRect":
+      result.cropRect = fromStream(typeof(result.cropRect), source)
+    of "scale":
+      result.scale = fromStream(typeof(result.scale), source)
+    of "topLeftPx":
+      result.topLeftPx = fromStream(typeof(result.topLeftPx), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[LdtkTilesetRect]; a, b: LdtkTilesetRect): bool =
   equals(typeof(a.tilesetUid), a.tilesetUid, b.tilesetUid) and
       equals(typeof(a.h), a.h, b.h) and
@@ -681,6 +768,59 @@ proc toJsonHook*(source: LdtkTilesetRect): JsonNode =
   result{"x"} = newJInt(source.x)
   result{"y"} = newJInt(source.y)
   result{"w"} = newJInt(source.w)
+
+proc toStream*(source: LdtkTilesetRect; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("tilesetUid"))
+  write(target, ':')
+  toStream(source.tilesetUid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("h"))
+  write(target, ':')
+  toStream(source.h, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("x"))
+  write(target, ':')
+  toStream(source.x, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("y"))
+  write(target, ':')
+  toStream(source.y, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("w"))
+  write(target, ':')
+  toStream(source.w, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkTilesetRect];
+                 source: var JsonParser): LdtkTilesetRect =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "tilesetUid":
+      result.tilesetUid = fromStream(typeof(result.tilesetUid), source)
+    of "h":
+      result.h = fromStream(typeof(result.h), source)
+    of "x":
+      result.x = fromStream(typeof(result.x), source)
+    of "y":
+      result.y = fromStream(typeof(result.y), source)
+    of "w":
+      result.w = fromStream(typeof(result.w), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[LdtkFieldInstance]; a, b: LdtkFieldInstance): bool =
   equals(typeof(a.`type`), a.`type`, b.`type`) and
@@ -741,6 +881,68 @@ proc toJsonHook*(source: LdtkFieldInstance): JsonNode =
         output.add(entry)
       output
   result{"__value"} = source.value
+
+proc toStream*(source: LdtkFieldInstance; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__type"))
+  write(target, ':')
+  toStream(source.`type`, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("defUid"))
+  write(target, ':')
+  toStream(source.defUid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__identifier"))
+  write(target, ':')
+  toStream(source.identifier, target)
+  if isSome(source.tile):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("__tile"))
+    write(target, ':')
+    toStream(unsafeGet(source.tile), target)
+  if len(source.realEditorValues) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("realEditorValues"))
+    write(target, ':')
+    toStream(source.realEditorValues, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__value"))
+  write(target, ':')
+  toStream(source.value, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkFieldInstance];
+                 source: var JsonParser): LdtkFieldInstance =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "__type":
+      result.`type` = fromStream(typeof(result.`type`), source)
+    of "defUid":
+      result.defUid = fromStream(typeof(result.defUid), source)
+    of "__identifier":
+      result.identifier = fromStream(typeof(result.identifier), source)
+    of "__tile":
+      result.tile = some(fromStream(typeof(unsafeGet(result.tile)), source))
+    of "realEditorValues":
+      result.realEditorValues = fromStream(typeof(result.realEditorValues),
+          source)
+    of "__value":
+      result.value = fromStream(typeof(result.value), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[LdtkTile]; a, b: LdtkTile): bool =
   equals(typeof(a.t), a.t, b.t) and equals(typeof(a.d), a.d, b.d) and
@@ -803,6 +1005,67 @@ proc toJsonHook*(source: LdtkTile): JsonNode =
       for entry in cursor:
         output.add(newJInt(entry))
       output
+
+proc toStream*(source: LdtkTile; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("t"))
+  write(target, ':')
+  toStream(source.t, target)
+  if len(source.d) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("d"))
+    write(target, ':')
+    toStream(source.d, target)
+  if len(source.px) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("px"))
+    write(target, ':')
+    toStream(source.px, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("a"))
+  write(target, ':')
+  toStream(source.a, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("f"))
+  write(target, ':')
+  toStream(source.f, target)
+  if len(source.src) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("src"))
+    write(target, ':')
+    toStream(source.src, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkTile]; source: var JsonParser): LdtkTile =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "t":
+      result.t = fromStream(typeof(result.t), source)
+    of "d":
+      result.d = fromStream(typeof(result.d), source)
+    of "px":
+      result.px = fromStream(typeof(result.px), source)
+    of "a":
+      result.a = fromStream(typeof(result.a), source)
+    of "f":
+      result.f = fromStream(typeof(result.f), source)
+    of "src":
+      result.src = fromStream(typeof(result.src), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[LdtkEntityInstance]; a, b: LdtkEntityInstance): bool =
   equals(typeof(a.iid), a.iid, b.iid) and
@@ -934,6 +1197,121 @@ proc toJsonHook*(source: LdtkEntityInstance): JsonNode =
       output
   result{"width"} = newJInt(source.width)
 
+proc toStream*(source: LdtkEntityInstance; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("iid"))
+  write(target, ':')
+  toStream(source.iid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("defUid"))
+  write(target, ':')
+  toStream(source.defUid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__identifier"))
+  write(target, ':')
+  toStream(source.identifier, target)
+  if isSome(source.tile):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("__tile"))
+    write(target, ':')
+    toStream(unsafeGet(source.tile), target)
+  if len(source.px) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("px"))
+    write(target, ':')
+    toStream(source.px, target)
+  if isSome(source.worldX):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("__worldX"))
+    write(target, ':')
+    toStream(unsafeGet(source.worldX), target)
+  if isSome(source.worldY):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("__worldY"))
+    write(target, ':')
+    toStream(unsafeGet(source.worldY), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__smartColor"))
+  write(target, ':')
+  toStream(source.smartColor, target)
+  if len(source.grid) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("__grid"))
+    write(target, ':')
+    toStream(source.grid, target)
+  if len(source.pivot) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("__pivot"))
+    write(target, ':')
+    toStream(source.pivot, target)
+  if len(source.fieldInstances) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("fieldInstances"))
+    write(target, ':')
+    toStream(source.fieldInstances, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("height"))
+  write(target, ':')
+  toStream(source.height, target)
+  if len(source.tags) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("__tags"))
+    write(target, ':')
+    toStream(source.tags, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("width"))
+  write(target, ':')
+  toStream(source.width, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkEntityInstance];
+                 source: var JsonParser): LdtkEntityInstance =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "iid":
+      result.iid = fromStream(typeof(result.iid), source)
+    of "defUid":
+      result.defUid = fromStream(typeof(result.defUid), source)
+    of "__identifier":
+      result.identifier = fromStream(typeof(result.identifier), source)
+    of "__tile":
+      result.tile = some(fromStream(typeof(unsafeGet(result.tile)), source))
+    of "px":
+      result.px = fromStream(typeof(result.px), source)
+    of "__worldX":
+      result.worldX = some(fromStream(typeof(unsafeGet(result.worldX)), source))
+    of "__worldY":
+      result.worldY = some(fromStream(typeof(unsafeGet(result.worldY)), source))
+    of "__smartColor":
+      result.smartColor = fromStream(typeof(result.smartColor), source)
+    of "__grid":
+      result.grid = fromStream(typeof(result.grid), source)
+    of "__pivot":
+      result.pivot = fromStream(typeof(result.pivot), source)
+    of "fieldInstances":
+      result.fieldInstances = fromStream(typeof(result.fieldInstances), source)
+    of "height":
+      result.height = fromStream(typeof(result.height), source)
+    of "__tags":
+      result.tags = fromStream(typeof(result.tags), source)
+    of "width":
+      result.width = fromStream(typeof(result.width), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[LdtkIntGridValueInstance];
             a, b: LdtkIntGridValueInstance): bool =
   equals(typeof(a.v), a.v, b.v) and
@@ -963,6 +1341,41 @@ proc toJsonHook*(source: LdtkIntGridValueInstance): JsonNode =
   result = newJObject()
   result{"v"} = newJInt(source.v)
   result{"coordId"} = newJInt(source.coordId)
+
+proc toStream*(source: LdtkIntGridValueInstance; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("v"))
+  write(target, ':')
+  toStream(source.v, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("coordId"))
+  write(target, ':')
+  toStream(source.coordId, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkIntGridValueInstance];
+                 source: var JsonParser): LdtkIntGridValueInstance =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "v":
+      result.v = fromStream(typeof(result.v), source)
+    of "coordId":
+      result.coordId = fromStream(typeof(result.coordId), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[LdtkLayerInstance]; a, b: LdtkLayerInstance): bool =
   equals(typeof(a.cHei), a.cHei, b.cHei) and
@@ -1179,6 +1592,185 @@ proc toJsonHook*(source: LdtkLayerInstance): JsonNode =
         output.add(toJsonHook(entry))
       output
 
+proc toStream*(source: LdtkLayerInstance; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__cHei"))
+  write(target, ':')
+  toStream(source.cHei, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("pxOffsetX"))
+  write(target, ':')
+  toStream(source.pxOffsetX, target)
+  if isSome(source.tilesetRelPath):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("__tilesetRelPath"))
+    write(target, ':')
+    toStream(unsafeGet(source.tilesetRelPath), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("iid"))
+  write(target, ':')
+  toStream(source.iid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("levelId"))
+  write(target, ':')
+  toStream(source.levelId, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__type"))
+  write(target, ':')
+  toStream(source.`type`, target)
+  if len(source.autoLayerTiles) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("autoLayerTiles"))
+    write(target, ':')
+    toStream(source.autoLayerTiles, target)
+  if len(source.optionalRules) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("optionalRules"))
+    write(target, ':')
+    toStream(source.optionalRules, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__identifier"))
+  write(target, ':')
+  toStream(source.identifier, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__gridSize"))
+  write(target, ':')
+  toStream(source.gridSize, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__pxTotalOffsetY"))
+  write(target, ':')
+  toStream(source.pxTotalOffsetY, target)
+  if len(source.intGridCsv) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("intGridCsv"))
+    write(target, ':')
+    toStream(source.intGridCsv, target)
+  if isSome(source.overrideTilesetUid):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("overrideTilesetUid"))
+    write(target, ':')
+    toStream(unsafeGet(source.overrideTilesetUid), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("visible"))
+  write(target, ':')
+  toStream(source.visible, target)
+  if len(source.entityInstances) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("entityInstances"))
+    write(target, ':')
+    toStream(source.entityInstances, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__opacity"))
+  write(target, ':')
+  toStream(source.opacity, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("seed"))
+  write(target, ':')
+  toStream(source.seed, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("layerDefUid"))
+  write(target, ':')
+  toStream(source.layerDefUid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__pxTotalOffsetX"))
+  write(target, ':')
+  toStream(source.pxTotalOffsetX, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__cWid"))
+  write(target, ':')
+  toStream(source.cWid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("pxOffsetY"))
+  write(target, ':')
+  toStream(source.pxOffsetY, target)
+  if isSome(source.tilesetDefUid):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("__tilesetDefUid"))
+    write(target, ':')
+    toStream(unsafeGet(source.tilesetDefUid), target)
+  if len(source.gridTiles) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("gridTiles"))
+    write(target, ':')
+    toStream(source.gridTiles, target)
+  if len(source.intGrid) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("intGrid"))
+    write(target, ':')
+    toStream(source.intGrid, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkLayerInstance];
+                 source: var JsonParser): LdtkLayerInstance =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "__cHei":
+      result.cHei = fromStream(typeof(result.cHei), source)
+    of "pxOffsetX":
+      result.pxOffsetX = fromStream(typeof(result.pxOffsetX), source)
+    of "__tilesetRelPath":
+      result.tilesetRelPath = some(fromStream(
+          typeof(unsafeGet(result.tilesetRelPath)), source))
+    of "iid":
+      result.iid = fromStream(typeof(result.iid), source)
+    of "levelId":
+      result.levelId = fromStream(typeof(result.levelId), source)
+    of "__type":
+      result.`type` = fromStream(typeof(result.`type`), source)
+    of "autoLayerTiles":
+      result.autoLayerTiles = fromStream(typeof(result.autoLayerTiles), source)
+    of "optionalRules":
+      result.optionalRules = fromStream(typeof(result.optionalRules), source)
+    of "__identifier":
+      result.identifier = fromStream(typeof(result.identifier), source)
+    of "__gridSize":
+      result.gridSize = fromStream(typeof(result.gridSize), source)
+    of "__pxTotalOffsetY":
+      result.pxTotalOffsetY = fromStream(typeof(result.pxTotalOffsetY), source)
+    of "intGridCsv":
+      result.intGridCsv = fromStream(typeof(result.intGridCsv), source)
+    of "overrideTilesetUid":
+      result.overrideTilesetUid = some(fromStream(
+          typeof(unsafeGet(result.overrideTilesetUid)), source))
+    of "visible":
+      result.visible = fromStream(typeof(result.visible), source)
+    of "entityInstances":
+      result.entityInstances = fromStream(typeof(result.entityInstances), source)
+    of "__opacity":
+      result.opacity = fromStream(typeof(result.opacity), source)
+    of "seed":
+      result.seed = fromStream(typeof(result.seed), source)
+    of "layerDefUid":
+      result.layerDefUid = fromStream(typeof(result.layerDefUid), source)
+    of "__pxTotalOffsetX":
+      result.pxTotalOffsetX = fromStream(typeof(result.pxTotalOffsetX), source)
+    of "__cWid":
+      result.cWid = fromStream(typeof(result.cWid), source)
+    of "pxOffsetY":
+      result.pxOffsetY = fromStream(typeof(result.pxOffsetY), source)
+    of "__tilesetDefUid":
+      result.tilesetDefUid = some(fromStream(
+          typeof(unsafeGet(result.tilesetDefUid)), source))
+    of "gridTiles":
+      result.gridTiles = fromStream(typeof(result.gridTiles), source)
+    of "intGrid":
+      result.intGrid = fromStream(typeof(result.intGrid), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[LdtkLevel]; a, b: LdtkLevel): bool =
   equals(typeof(a.neighbours), a.neighbours, b.neighbours) and
       equals(typeof(a.bgColor), a.bgColor, b.bgColor) and
@@ -1350,6 +1942,166 @@ proc toJsonHook*(source: LdtkLevel): JsonNode =
     result{"bgRelPath"} = newJString(unsafeGet(source.bgRelPath))
   result{"worldDepth"} = newJInt(source.worldDepth)
 
+proc toStream*(source: LdtkLevel; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if len(source.neighbours) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("__neighbours"))
+    write(target, ':')
+    toStream(source.neighbours, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__bgColor"))
+  write(target, ':')
+  toStream(source.bgColor, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("worldX"))
+  write(target, ':')
+  toStream(source.worldX, target)
+  if isSome(source.externalRelPath):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("externalRelPath"))
+    write(target, ':')
+    toStream(unsafeGet(source.externalRelPath), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("useAutoIdentifier"))
+  write(target, ':')
+  toStream(source.useAutoIdentifier, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("iid"))
+  write(target, ':')
+  toStream(source.iid, target)
+  if isSome(source.bgColor1):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("bgColor"))
+    write(target, ':')
+    toStream(unsafeGet(source.bgColor1), target)
+  if isSome(source.bgPos):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("bgPos"))
+    write(target, ':')
+    toStream(unsafeGet(source.bgPos), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("pxHei"))
+  write(target, ':')
+  toStream(source.pxHei, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("worldY"))
+  write(target, ':')
+  toStream(source.worldY, target)
+  if isSome(source.bgPos1):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("__bgPos"))
+    write(target, ':')
+    toStream(unsafeGet(source.bgPos1), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("uid"))
+  write(target, ':')
+  toStream(source.uid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__smartColor"))
+  write(target, ':')
+  toStream(source.smartColor, target)
+  if len(source.fieldInstances) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("fieldInstances"))
+    write(target, ':')
+    toStream(source.fieldInstances, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("pxWid"))
+  write(target, ':')
+  toStream(source.pxWid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("identifier"))
+  write(target, ':')
+  toStream(source.identifier, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("bgPivotY"))
+  write(target, ':')
+  toStream(source.bgPivotY, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("bgPivotX"))
+  write(target, ':')
+  toStream(source.bgPivotX, target)
+  if len(source.layerInstances) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("layerInstances"))
+    write(target, ':')
+    toStream(source.layerInstances, target)
+  if isSome(source.bgRelPath):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("bgRelPath"))
+    write(target, ':')
+    toStream(unsafeGet(source.bgRelPath), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("worldDepth"))
+  write(target, ':')
+  toStream(source.worldDepth, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkLevel]; source: var JsonParser): LdtkLevel =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "__neighbours":
+      result.neighbours = fromStream(typeof(result.neighbours), source)
+    of "__bgColor":
+      result.bgColor = fromStream(typeof(result.bgColor), source)
+    of "worldX":
+      result.worldX = fromStream(typeof(result.worldX), source)
+    of "externalRelPath":
+      result.externalRelPath = some(fromStream(
+          typeof(unsafeGet(result.externalRelPath)), source))
+    of "useAutoIdentifier":
+      result.useAutoIdentifier = fromStream(typeof(result.useAutoIdentifier),
+          source)
+    of "iid":
+      result.iid = fromStream(typeof(result.iid), source)
+    of "bgColor":
+      result.bgColor1 = some(fromStream(typeof(unsafeGet(result.bgColor1)),
+                                        source))
+    of "bgPos":
+      result.bgPos = some(fromStream(typeof(unsafeGet(result.bgPos)), source))
+    of "pxHei":
+      result.pxHei = fromStream(typeof(result.pxHei), source)
+    of "worldY":
+      result.worldY = fromStream(typeof(result.worldY), source)
+    of "__bgPos":
+      result.bgPos1 = some(fromStream(typeof(unsafeGet(result.bgPos1)), source))
+    of "uid":
+      result.uid = fromStream(typeof(result.uid), source)
+    of "__smartColor":
+      result.smartColor = fromStream(typeof(result.smartColor), source)
+    of "fieldInstances":
+      result.fieldInstances = fromStream(typeof(result.fieldInstances), source)
+    of "pxWid":
+      result.pxWid = fromStream(typeof(result.pxWid), source)
+    of "identifier":
+      result.identifier = fromStream(typeof(result.identifier), source)
+    of "bgPivotY":
+      result.bgPivotY = fromStream(typeof(result.bgPivotY), source)
+    of "bgPivotX":
+      result.bgPivotX = fromStream(typeof(result.bgPivotX), source)
+    of "layerInstances":
+      result.layerInstances = fromStream(typeof(result.layerInstances), source)
+    of "bgRelPath":
+      result.bgRelPath = some(fromStream(typeof(unsafeGet(result.bgRelPath)),
+          source))
+    of "worldDepth":
+      result.worldDepth = fromStream(typeof(result.worldDepth), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[LdtkWorld]; a, b: LdtkWorld): bool =
   equals(typeof(a.worldGridWidth), a.worldGridWidth, b.worldGridWidth) and
       equals(typeof(a.iid), a.iid, b.iid) and
@@ -1431,6 +2183,79 @@ proc toJsonHook*(source: LdtkWorld): JsonNode =
   result{"defaultLevelHeight"} = newJInt(source.defaultLevelHeight)
   result{"identifier"} = newJString(source.identifier)
 
+proc toStream*(source: LdtkWorld; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("worldGridWidth"))
+  write(target, ':')
+  toStream(source.worldGridWidth, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("iid"))
+  write(target, ':')
+  toStream(source.iid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("worldGridHeight"))
+  write(target, ':')
+  toStream(source.worldGridHeight, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("worldLayout"))
+  write(target, ':')
+  toStream(source.worldLayout, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("defaultLevelWidth"))
+  write(target, ':')
+  toStream(source.defaultLevelWidth, target)
+  if len(source.levels) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("levels"))
+    write(target, ':')
+    toStream(source.levels, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("defaultLevelHeight"))
+  write(target, ':')
+  toStream(source.defaultLevelHeight, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("identifier"))
+  write(target, ':')
+  toStream(source.identifier, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkWorld]; source: var JsonParser): LdtkWorld =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "worldGridWidth":
+      result.worldGridWidth = fromStream(typeof(result.worldGridWidth), source)
+    of "iid":
+      result.iid = fromStream(typeof(result.iid), source)
+    of "worldGridHeight":
+      result.worldGridHeight = fromStream(typeof(result.worldGridHeight), source)
+    of "worldLayout":
+      result.worldLayout = fromStream(typeof(result.worldLayout), source)
+    of "defaultLevelWidth":
+      result.defaultLevelWidth = fromStream(typeof(result.defaultLevelWidth),
+          source)
+    of "levels":
+      result.levels = fromStream(typeof(result.levels), source)
+    of "defaultLevelHeight":
+      result.defaultLevelHeight = fromStream(typeof(result.defaultLevelHeight),
+          source)
+    of "identifier":
+      result.identifier = fromStream(typeof(result.identifier), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[LdtkEntityReferenceInfos];
             a, b: LdtkEntityReferenceInfos): bool =
   equals(typeof(a.worldIid), a.worldIid, b.worldIid) and
@@ -1473,6 +2298,53 @@ proc toJsonHook*(source: LdtkEntityReferenceInfos): JsonNode =
   result{"entityIid"} = newJString(source.entityIid)
   result{"layerIid"} = newJString(source.layerIid)
   result{"levelIid"} = newJString(source.levelIid)
+
+proc toStream*(source: LdtkEntityReferenceInfos; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("worldIid"))
+  write(target, ':')
+  toStream(source.worldIid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("entityIid"))
+  write(target, ':')
+  toStream(source.entityIid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("layerIid"))
+  write(target, ':')
+  toStream(source.layerIid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("levelIid"))
+  write(target, ':')
+  toStream(source.levelIid, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkEntityReferenceInfos];
+                 source: var JsonParser): LdtkEntityReferenceInfos =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "worldIid":
+      result.worldIid = fromStream(typeof(result.worldIid), source)
+    of "entityIid":
+      result.entityIid = fromStream(typeof(result.entityIid), source)
+    of "layerIid":
+      result.layerIid = fromStream(typeof(result.layerIid), source)
+    of "levelIid":
+      result.levelIid = fromStream(typeof(result.levelIid), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[LdtkTocInstanceData]; a, b: LdtkTocInstanceData): bool =
   equals(typeof(a.worldX), a.worldX, b.worldX) and
@@ -1526,6 +2398,65 @@ proc toJsonHook*(source: LdtkTocInstanceData): JsonNode =
   result{"fields"} = source.fields
   result{"iids"} = toJsonHook(source.iids)
 
+proc toStream*(source: LdtkTocInstanceData; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("worldX"))
+  write(target, ':')
+  toStream(source.worldX, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("widPx"))
+  write(target, ':')
+  toStream(source.widPx, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("worldY"))
+  write(target, ':')
+  toStream(source.worldY, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("heiPx"))
+  write(target, ':')
+  toStream(source.heiPx, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("fields"))
+  write(target, ':')
+  toStream(source.fields, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("iids"))
+  write(target, ':')
+  toStream(source.iids, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkTocInstanceData];
+                 source: var JsonParser): LdtkTocInstanceData =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "worldX":
+      result.worldX = fromStream(typeof(result.worldX), source)
+    of "widPx":
+      result.widPx = fromStream(typeof(result.widPx), source)
+    of "worldY":
+      result.worldY = fromStream(typeof(result.worldY), source)
+    of "heiPx":
+      result.heiPx = fromStream(typeof(result.heiPx), source)
+    of "fields":
+      result.fields = fromStream(typeof(result.fields), source)
+    of "iids":
+      result.iids = fromStream(typeof(result.iids), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[LdtkTableOfContentEntry]; a, b: LdtkTableOfContentEntry): bool =
   equals(typeof(a.identifier), a.identifier, b.identifier) and
       equals(typeof(a.instancesData), a.instancesData, b.instancesData) and
@@ -1574,6 +2505,49 @@ proc toJsonHook*(source: LdtkTableOfContentEntry): JsonNode =
         output.add(toJsonHook(entry))
       output
 
+proc toStream*(source: LdtkTableOfContentEntry; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("identifier"))
+  write(target, ':')
+  toStream(source.identifier, target)
+  if len(source.instancesData) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("instancesData"))
+    write(target, ':')
+    toStream(source.instancesData, target)
+  if len(source.instances) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("instances"))
+    write(target, ':')
+    toStream(source.instances, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkTableOfContentEntry];
+                 source: var JsonParser): LdtkTableOfContentEntry =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "identifier":
+      result.identifier = fromStream(typeof(result.identifier), source)
+    of "instancesData":
+      result.instancesData = fromStream(typeof(result.instancesData), source)
+    of "instances":
+      result.instances = fromStream(typeof(result.instances), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[LdtkCustomCommand]; a, b: LdtkCustomCommand): bool =
   equals(typeof(a.`when`), a.`when`, b.`when`) and
       equals(typeof(a.command), a.command, b.command)
@@ -1601,6 +2575,41 @@ proc toJsonHook*(source: LdtkCustomCommand): JsonNode =
   result = newJObject()
   result{"when"} = `%`(source.`when`)
   result{"command"} = newJString(source.command)
+
+proc toStream*(source: LdtkCustomCommand; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("when"))
+  write(target, ':')
+  toStream(source.`when`, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("command"))
+  write(target, ':')
+  toStream(source.command, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkCustomCommand];
+                 source: var JsonParser): LdtkCustomCommand =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "when":
+      result.`when` = fromStream(typeof(result.`when`), source)
+    of "command":
+      result.command = fromStream(typeof(result.command), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[LdtkTileCustomMetadata]; a, b: LdtkTileCustomMetadata): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -1630,6 +2639,41 @@ proc toJsonHook*(source: LdtkTileCustomMetadata): JsonNode =
   result = newJObject()
   result{"tileId"} = newJInt(source.tileId)
   result{"data"} = newJString(source.data)
+
+proc toStream*(source: LdtkTileCustomMetadata; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("tileId"))
+  write(target, ':')
+  toStream(source.tileId, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("data"))
+  write(target, ':')
+  toStream(source.data, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkTileCustomMetadata];
+                 source: var JsonParser): LdtkTileCustomMetadata =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "tileId":
+      result.tileId = fromStream(typeof(result.tileId), source)
+    of "data":
+      result.data = fromStream(typeof(result.data), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[LdtkEnumTagValue]; a, b: LdtkEnumTagValue): bool =
   equals(typeof(a.tileIds), a.tileIds, b.tileIds) and
@@ -1663,6 +2707,42 @@ proc toJsonHook*(source: LdtkEnumTagValue): JsonNode =
         output.add(newJInt(entry))
       output
   result{"enumValueId"} = newJString(source.enumValueId)
+
+proc toStream*(source: LdtkEnumTagValue; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if len(source.tileIds) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tileIds"))
+    write(target, ':')
+    toStream(source.tileIds, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("enumValueId"))
+  write(target, ':')
+  toStream(source.enumValueId, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkEnumTagValue];
+                 source: var JsonParser): LdtkEnumTagValue =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "tileIds":
+      result.tileIds = fromStream(typeof(result.tileIds), source)
+    of "enumValueId":
+      result.enumValueId = fromStream(typeof(result.enumValueId), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[LdtkTilesetDef]; a, b: LdtkTilesetDef): bool =
   equals(typeof(a.cachedPixelData), a.cachedPixelData, b.cachedPixelData) and
@@ -1826,6 +2906,141 @@ proc toJsonHook*(source: LdtkTilesetDef): JsonNode =
     result{"relPath"} = newJString(unsafeGet(source.relPath))
   result{"tileGridSize"} = newJInt(source.tileGridSize)
 
+proc toStream*(source: LdtkTilesetDef; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if len(source.cachedPixelData) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("cachedPixelData"))
+    write(target, ':')
+    toStream(source.cachedPixelData, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__cHei"))
+  write(target, ':')
+  toStream(source.cHei, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("pxHei"))
+  write(target, ':')
+  toStream(source.pxHei, target)
+  if len(source.customData) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("customData"))
+    write(target, ':')
+    toStream(source.customData, target)
+  if isSome(source.tagsSourceEnumUid):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tagsSourceEnumUid"))
+    write(target, ':')
+    toStream(unsafeGet(source.tagsSourceEnumUid), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("uid"))
+  write(target, ':')
+  toStream(source.uid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("padding"))
+  write(target, ':')
+  toStream(source.padding, target)
+  if len(source.enumTags) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("enumTags"))
+    write(target, ':')
+    toStream(source.enumTags, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("pxWid"))
+  write(target, ':')
+  toStream(source.pxWid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__cWid"))
+  write(target, ':')
+  toStream(source.cWid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("spacing"))
+  write(target, ':')
+  toStream(source.spacing, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("identifier"))
+  write(target, ':')
+  toStream(source.identifier, target)
+  if len(source.savedSelections) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("savedSelections"))
+    write(target, ':')
+    toStream(source.savedSelections, target)
+  if len(source.tags) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tags"))
+    write(target, ':')
+    toStream(source.tags, target)
+  if isSome(source.embedAtlas):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("embedAtlas"))
+    write(target, ':')
+    toStream(unsafeGet(source.embedAtlas), target)
+  if isSome(source.relPath):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("relPath"))
+    write(target, ':')
+    toStream(unsafeGet(source.relPath), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("tileGridSize"))
+  write(target, ':')
+  toStream(source.tileGridSize, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkTilesetDef];
+                 source: var JsonParser): LdtkTilesetDef =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "cachedPixelData":
+      result.cachedPixelData = fromStream(typeof(result.cachedPixelData), source)
+    of "__cHei":
+      result.cHei = fromStream(typeof(result.cHei), source)
+    of "pxHei":
+      result.pxHei = fromStream(typeof(result.pxHei), source)
+    of "customData":
+      result.customData = fromStream(typeof(result.customData), source)
+    of "tagsSourceEnumUid":
+      result.tagsSourceEnumUid = some(fromStream(
+          typeof(unsafeGet(result.tagsSourceEnumUid)), source))
+    of "uid":
+      result.uid = fromStream(typeof(result.uid), source)
+    of "padding":
+      result.padding = fromStream(typeof(result.padding), source)
+    of "enumTags":
+      result.enumTags = fromStream(typeof(result.enumTags), source)
+    of "pxWid":
+      result.pxWid = fromStream(typeof(result.pxWid), source)
+    of "__cWid":
+      result.cWid = fromStream(typeof(result.cWid), source)
+    of "spacing":
+      result.spacing = fromStream(typeof(result.spacing), source)
+    of "identifier":
+      result.identifier = fromStream(typeof(result.identifier), source)
+    of "savedSelections":
+      result.savedSelections = fromStream(typeof(result.savedSelections), source)
+    of "tags":
+      result.tags = fromStream(typeof(result.tags), source)
+    of "embedAtlas":
+      result.embedAtlas = some(fromStream(typeof(unsafeGet(result.embedAtlas)),
+          source))
+    of "relPath":
+      result.relPath = some(fromStream(typeof(unsafeGet(result.relPath)), source))
+    of "tileGridSize":
+      result.tileGridSize = fromStream(typeof(result.tileGridSize), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[LdtkIntGridValueGroupDef];
             a, b: LdtkIntGridValueGroupDef): bool =
   equals(typeof(a.color), a.color, b.color) and
@@ -1862,6 +3077,50 @@ proc toJsonHook*(source: LdtkIntGridValueGroupDef): JsonNode =
   result{"uid"} = newJInt(source.uid)
   if isSome(source.identifier):
     result{"identifier"} = newJString(unsafeGet(source.identifier))
+
+proc toStream*(source: LdtkIntGridValueGroupDef; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.color):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("color"))
+    write(target, ':')
+    toStream(unsafeGet(source.color), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("uid"))
+  write(target, ':')
+  toStream(source.uid, target)
+  if isSome(source.identifier):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("identifier"))
+    write(target, ':')
+    toStream(unsafeGet(source.identifier), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkIntGridValueGroupDef];
+                 source: var JsonParser): LdtkIntGridValueGroupDef =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "color":
+      result.color = some(fromStream(typeof(unsafeGet(result.color)), source))
+    of "uid":
+      result.uid = fromStream(typeof(result.uid), source)
+    of "identifier":
+      result.identifier = some(fromStream(typeof(unsafeGet(result.identifier)),
+          source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[LdtkIntGridValueDef]; a, b: LdtkIntGridValueDef): bool =
   equals(typeof(a.tile), a.tile, b.tile) and
@@ -1909,6 +3168,62 @@ proc toJsonHook*(source: LdtkIntGridValueDef): JsonNode =
     result{"identifier"} = newJString(unsafeGet(source.identifier))
   result{"value"} = newJInt(source.value)
   result{"groupUid"} = newJInt(source.groupUid)
+
+proc toStream*(source: LdtkIntGridValueDef; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.tile):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tile"))
+    write(target, ':')
+    toStream(unsafeGet(source.tile), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("color"))
+  write(target, ':')
+  toStream(source.color, target)
+  if isSome(source.identifier):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("identifier"))
+    write(target, ':')
+    toStream(unsafeGet(source.identifier), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("value"))
+  write(target, ':')
+  toStream(source.value, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("groupUid"))
+  write(target, ':')
+  toStream(source.groupUid, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkIntGridValueDef];
+                 source: var JsonParser): LdtkIntGridValueDef =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "tile":
+      result.tile = some(fromStream(typeof(unsafeGet(result.tile)), source))
+    of "color":
+      result.color = fromStream(typeof(result.color), source)
+    of "identifier":
+      result.identifier = some(fromStream(typeof(unsafeGet(result.identifier)),
+          source))
+    of "value":
+      result.value = fromStream(typeof(result.value), source)
+    of "groupUid":
+      result.groupUid = fromStream(typeof(result.groupUid), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[LdtkAutoRuleDef]; a, b: LdtkAutoRuleDef): bool =
   equals(typeof(a.flipX), a.flipX, b.flipX) and
@@ -2148,6 +3463,220 @@ proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode =
   result{"active"} = newJBool(source.active)
   result{"xOffset"} = newJInt(source.xOffset)
 
+proc toStream*(source: LdtkAutoRuleDef; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("flipX"))
+  write(target, ':')
+  toStream(source.flipX, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("pivotX"))
+  write(target, ':')
+  toStream(source.pivotX, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("perlinActive"))
+  write(target, ':')
+  toStream(source.perlinActive, target)
+  if len(source.tileRectsIds) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tileRectsIds"))
+    write(target, ':')
+    toStream(source.tileRectsIds, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("perlinScale"))
+  write(target, ':')
+  toStream(source.perlinScale, target)
+  if isSome(source.outOfBoundsValue):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("outOfBoundsValue"))
+    write(target, ':')
+    toStream(unsafeGet(source.outOfBoundsValue), target)
+  if len(source.pattern) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("pattern"))
+    write(target, ':')
+    toStream(source.pattern, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("tileRandomXMin"))
+  write(target, ':')
+  toStream(source.tileRandomXMin, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("checker"))
+  write(target, ':')
+  toStream(source.checker, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("perlinOctaves"))
+  write(target, ':')
+  toStream(source.perlinOctaves, target)
+  if len(source.tileIds) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tileIds"))
+    write(target, ':')
+    toStream(source.tileIds, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("alpha"))
+  write(target, ':')
+  toStream(source.alpha, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("tileXOffset"))
+  write(target, ':')
+  toStream(source.tileXOffset, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("invalidated"))
+  write(target, ':')
+  toStream(source.invalidated, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("xModulo"))
+  write(target, ':')
+  toStream(source.xModulo, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("size"))
+  write(target, ':')
+  toStream(source.size, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("chance"))
+  write(target, ':')
+  toStream(source.chance, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("breakOnMatch"))
+  write(target, ':')
+  toStream(source.breakOnMatch, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("tileYOffset"))
+  write(target, ':')
+  toStream(source.tileYOffset, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("uid"))
+  write(target, ':')
+  toStream(source.uid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("perlinSeed"))
+  write(target, ':')
+  toStream(source.perlinSeed, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("yOffset"))
+  write(target, ':')
+  toStream(source.yOffset, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("tileRandomYMax"))
+  write(target, ':')
+  toStream(source.tileRandomYMax, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("tileRandomYMin"))
+  write(target, ':')
+  toStream(source.tileRandomYMin, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("tileMode"))
+  write(target, ':')
+  toStream(source.tileMode, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("flipY"))
+  write(target, ':')
+  toStream(source.flipY, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("tileRandomXMax"))
+  write(target, ':')
+  toStream(source.tileRandomXMax, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("pivotY"))
+  write(target, ':')
+  toStream(source.pivotY, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("yModulo"))
+  write(target, ':')
+  toStream(source.yModulo, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("active"))
+  write(target, ':')
+  toStream(source.active, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("xOffset"))
+  write(target, ':')
+  toStream(source.xOffset, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkAutoRuleDef];
+                 source: var JsonParser): LdtkAutoRuleDef =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "flipX":
+      result.flipX = fromStream(typeof(result.flipX), source)
+    of "pivotX":
+      result.pivotX = fromStream(typeof(result.pivotX), source)
+    of "perlinActive":
+      result.perlinActive = fromStream(typeof(result.perlinActive), source)
+    of "tileRectsIds":
+      result.tileRectsIds = fromStream(typeof(result.tileRectsIds), source)
+    of "perlinScale":
+      result.perlinScale = fromStream(typeof(result.perlinScale), source)
+    of "outOfBoundsValue":
+      result.outOfBoundsValue = some(fromStream(
+          typeof(unsafeGet(result.outOfBoundsValue)), source))
+    of "pattern":
+      result.pattern = fromStream(typeof(result.pattern), source)
+    of "tileRandomXMin":
+      result.tileRandomXMin = fromStream(typeof(result.tileRandomXMin), source)
+    of "checker":
+      result.checker = fromStream(typeof(result.checker), source)
+    of "perlinOctaves":
+      result.perlinOctaves = fromStream(typeof(result.perlinOctaves), source)
+    of "tileIds":
+      result.tileIds = fromStream(typeof(result.tileIds), source)
+    of "alpha":
+      result.alpha = fromStream(typeof(result.alpha), source)
+    of "tileXOffset":
+      result.tileXOffset = fromStream(typeof(result.tileXOffset), source)
+    of "invalidated":
+      result.invalidated = fromStream(typeof(result.invalidated), source)
+    of "xModulo":
+      result.xModulo = fromStream(typeof(result.xModulo), source)
+    of "size":
+      result.size = fromStream(typeof(result.size), source)
+    of "chance":
+      result.chance = fromStream(typeof(result.chance), source)
+    of "breakOnMatch":
+      result.breakOnMatch = fromStream(typeof(result.breakOnMatch), source)
+    of "tileYOffset":
+      result.tileYOffset = fromStream(typeof(result.tileYOffset), source)
+    of "uid":
+      result.uid = fromStream(typeof(result.uid), source)
+    of "perlinSeed":
+      result.perlinSeed = fromStream(typeof(result.perlinSeed), source)
+    of "yOffset":
+      result.yOffset = fromStream(typeof(result.yOffset), source)
+    of "tileRandomYMax":
+      result.tileRandomYMax = fromStream(typeof(result.tileRandomYMax), source)
+    of "tileRandomYMin":
+      result.tileRandomYMin = fromStream(typeof(result.tileRandomYMin), source)
+    of "tileMode":
+      result.tileMode = fromStream(typeof(result.tileMode), source)
+    of "flipY":
+      result.flipY = fromStream(typeof(result.flipY), source)
+    of "tileRandomXMax":
+      result.tileRandomXMax = fromStream(typeof(result.tileRandomXMax), source)
+    of "pivotY":
+      result.pivotY = fromStream(typeof(result.pivotY), source)
+    of "yModulo":
+      result.yModulo = fromStream(typeof(result.yModulo), source)
+    of "active":
+      result.active = fromStream(typeof(result.active), source)
+    of "xOffset":
+      result.xOffset = fromStream(typeof(result.xOffset), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[LdtkAutoLayerRuleGroup]; a, b: LdtkAutoLayerRuleGroup): bool =
   equals(typeof(a.name), a.name, b.name) and
       equals(typeof(a.collapsed), a.collapsed, b.collapsed) and
@@ -2251,6 +3780,103 @@ proc toJsonHook*(source: LdtkAutoLayerRuleGroup): JsonNode =
       for entry in cursor:
         output.add(toJsonHook(entry))
       output
+
+proc toStream*(source: LdtkAutoLayerRuleGroup; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("name"))
+  write(target, ':')
+  toStream(source.name, target)
+  if isSome(source.collapsed):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("collapsed"))
+    write(target, ':')
+    toStream(unsafeGet(source.collapsed), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("biomeRequirementMode"))
+  write(target, ':')
+  toStream(source.biomeRequirementMode, target)
+  if isSome(source.color):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("color"))
+    write(target, ':')
+    toStream(unsafeGet(source.color), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("isOptional"))
+  write(target, ':')
+  toStream(source.isOptional, target)
+  if isSome(source.icon):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("icon"))
+    write(target, ':')
+    toStream(unsafeGet(source.icon), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("usesWizard"))
+  write(target, ':')
+  toStream(source.usesWizard, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("uid"))
+  write(target, ':')
+  toStream(source.uid, target)
+  if len(source.requiredBiomeValues) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("requiredBiomeValues"))
+    write(target, ':')
+    toStream(source.requiredBiomeValues, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("active"))
+  write(target, ':')
+  toStream(source.active, target)
+  if len(source.rules) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("rules"))
+    write(target, ':')
+    toStream(source.rules, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkAutoLayerRuleGroup];
+                 source: var JsonParser): LdtkAutoLayerRuleGroup =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "name":
+      result.name = fromStream(typeof(result.name), source)
+    of "collapsed":
+      result.collapsed = some(fromStream(typeof(unsafeGet(result.collapsed)),
+          source))
+    of "biomeRequirementMode":
+      result.biomeRequirementMode = fromStream(
+          typeof(result.biomeRequirementMode), source)
+    of "color":
+      result.color = some(fromStream(typeof(unsafeGet(result.color)), source))
+    of "isOptional":
+      result.isOptional = fromStream(typeof(result.isOptional), source)
+    of "icon":
+      result.icon = some(fromStream(typeof(unsafeGet(result.icon)), source))
+    of "usesWizard":
+      result.usesWizard = fromStream(typeof(result.usesWizard), source)
+    of "uid":
+      result.uid = fromStream(typeof(result.uid), source)
+    of "requiredBiomeValues":
+      result.requiredBiomeValues = fromStream(
+          typeof(result.requiredBiomeValues), source)
+    of "active":
+      result.active = fromStream(typeof(result.active), source)
+    of "rules":
+      result.rules = fromStream(typeof(result.rules), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[LdtkLayerDef]; a, b: LdtkLayerDef): bool =
   equals(typeof(a.pxOffsetX), a.pxOffsetX, b.pxOffsetX) and
@@ -2559,6 +4185,254 @@ proc toJsonHook*(source: LdtkLayerDef): JsonNode =
     result{"autoTilesKilledByOtherLayerUid"} = newJInt(
         unsafeGet(source.autoTilesKilledByOtherLayerUid))
 
+proc toStream*(source: LdtkLayerDef; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("pxOffsetX"))
+  write(target, ':')
+  toStream(source.pxOffsetX, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("tilePivotX"))
+  write(target, ':')
+  toStream(source.tilePivotX, target)
+  if len(source.uiFilterTags) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("uiFilterTags"))
+    write(target, ':')
+    toStream(source.uiFilterTags, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("displayOpacity"))
+  write(target, ':')
+  toStream(source.displayOpacity, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("parallaxFactorY"))
+  write(target, ':')
+  toStream(source.parallaxFactorY, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("hideInList"))
+  write(target, ':')
+  toStream(source.hideInList, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__type"))
+  write(target, ':')
+  toStream(source.`type`, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("guideGridHei"))
+  write(target, ':')
+  toStream(source.guideGridHei, target)
+  if isSome(source.uiColor):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("uiColor"))
+    write(target, ':')
+    toStream(unsafeGet(source.uiColor), target)
+  if isSome(source.doc):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("doc"))
+    write(target, ':')
+    toStream(unsafeGet(source.doc), target)
+  if isSome(source.tilesetDefUid):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tilesetDefUid"))
+    write(target, ':')
+    toStream(unsafeGet(source.tilesetDefUid), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("canSelectWhenInactive"))
+  write(target, ':')
+  toStream(source.canSelectWhenInactive, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("useAsyncRender"))
+  write(target, ':')
+  toStream(source.useAsyncRender, target)
+  if isSome(source.autoSourceLayerDefUid):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("autoSourceLayerDefUid"))
+    write(target, ':')
+    toStream(unsafeGet(source.autoSourceLayerDefUid), target)
+  if isSome(source.autoTilesetDefUid):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("autoTilesetDefUid"))
+    write(target, ':')
+    toStream(unsafeGet(source.autoTilesetDefUid), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("parallaxScaling"))
+  write(target, ':')
+  toStream(source.parallaxScaling, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("renderInWorldView"))
+  write(target, ':')
+  toStream(source.renderInWorldView, target)
+  if len(source.intGridValuesGroups) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("intGridValuesGroups"))
+    write(target, ':')
+    toStream(source.intGridValuesGroups, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("inactiveOpacity"))
+  write(target, ':')
+  toStream(source.inactiveOpacity, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("uid"))
+  write(target, ':')
+  toStream(source.uid, target)
+  if len(source.excludedTags) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("excludedTags"))
+    write(target, ':')
+    toStream(source.excludedTags, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("hideFieldsWhenInactive"))
+  write(target, ':')
+  toStream(source.hideFieldsWhenInactive, target)
+  if len(source.intGridValues) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("intGridValues"))
+    write(target, ':')
+    toStream(source.intGridValues, target)
+  if len(source.autoRuleGroups) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("autoRuleGroups"))
+    write(target, ':')
+    toStream(source.autoRuleGroups, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("type"))
+  write(target, ':')
+  toStream(source.type1, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("identifier"))
+  write(target, ':')
+  toStream(source.identifier, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("guideGridWid"))
+  write(target, ':')
+  toStream(source.guideGridWid, target)
+  if len(source.requiredTags) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("requiredTags"))
+    write(target, ':')
+    toStream(source.requiredTags, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("pxOffsetY"))
+  write(target, ':')
+  toStream(source.pxOffsetY, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("tilePivotY"))
+  write(target, ':')
+  toStream(source.tilePivotY, target)
+  if isSome(source.biomeFieldUid):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("biomeFieldUid"))
+    write(target, ':')
+    toStream(unsafeGet(source.biomeFieldUid), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("gridSize"))
+  write(target, ':')
+  toStream(source.gridSize, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("parallaxFactorX"))
+  write(target, ':')
+  toStream(source.parallaxFactorX, target)
+  if isSome(source.autoTilesKilledByOtherLayerUid):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("autoTilesKilledByOtherLayerUid"))
+    write(target, ':')
+    toStream(unsafeGet(source.autoTilesKilledByOtherLayerUid), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkLayerDef]; source: var JsonParser): LdtkLayerDef =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "pxOffsetX":
+      result.pxOffsetX = fromStream(typeof(result.pxOffsetX), source)
+    of "tilePivotX":
+      result.tilePivotX = fromStream(typeof(result.tilePivotX), source)
+    of "uiFilterTags":
+      result.uiFilterTags = fromStream(typeof(result.uiFilterTags), source)
+    of "displayOpacity":
+      result.displayOpacity = fromStream(typeof(result.displayOpacity), source)
+    of "parallaxFactorY":
+      result.parallaxFactorY = fromStream(typeof(result.parallaxFactorY), source)
+    of "hideInList":
+      result.hideInList = fromStream(typeof(result.hideInList), source)
+    of "__type":
+      result.`type` = fromStream(typeof(result.`type`), source)
+    of "guideGridHei":
+      result.guideGridHei = fromStream(typeof(result.guideGridHei), source)
+    of "uiColor":
+      result.uiColor = some(fromStream(typeof(unsafeGet(result.uiColor)), source))
+    of "doc":
+      result.doc = some(fromStream(typeof(unsafeGet(result.doc)), source))
+    of "tilesetDefUid":
+      result.tilesetDefUid = some(fromStream(
+          typeof(unsafeGet(result.tilesetDefUid)), source))
+    of "canSelectWhenInactive":
+      result.canSelectWhenInactive = fromStream(
+          typeof(result.canSelectWhenInactive), source)
+    of "useAsyncRender":
+      result.useAsyncRender = fromStream(typeof(result.useAsyncRender), source)
+    of "autoSourceLayerDefUid":
+      result.autoSourceLayerDefUid = some(
+          fromStream(typeof(unsafeGet(result.autoSourceLayerDefUid)), source))
+    of "autoTilesetDefUid":
+      result.autoTilesetDefUid = some(fromStream(
+          typeof(unsafeGet(result.autoTilesetDefUid)), source))
+    of "parallaxScaling":
+      result.parallaxScaling = fromStream(typeof(result.parallaxScaling), source)
+    of "renderInWorldView":
+      result.renderInWorldView = fromStream(typeof(result.renderInWorldView),
+          source)
+    of "intGridValuesGroups":
+      result.intGridValuesGroups = fromStream(
+          typeof(result.intGridValuesGroups), source)
+    of "inactiveOpacity":
+      result.inactiveOpacity = fromStream(typeof(result.inactiveOpacity), source)
+    of "uid":
+      result.uid = fromStream(typeof(result.uid), source)
+    of "excludedTags":
+      result.excludedTags = fromStream(typeof(result.excludedTags), source)
+    of "hideFieldsWhenInactive":
+      result.hideFieldsWhenInactive = fromStream(
+          typeof(result.hideFieldsWhenInactive), source)
+    of "intGridValues":
+      result.intGridValues = fromStream(typeof(result.intGridValues), source)
+    of "autoRuleGroups":
+      result.autoRuleGroups = fromStream(typeof(result.autoRuleGroups), source)
+    of "type":
+      result.type1 = fromStream(typeof(result.type1), source)
+    of "identifier":
+      result.identifier = fromStream(typeof(result.identifier), source)
+    of "guideGridWid":
+      result.guideGridWid = fromStream(typeof(result.guideGridWid), source)
+    of "requiredTags":
+      result.requiredTags = fromStream(typeof(result.requiredTags), source)
+    of "pxOffsetY":
+      result.pxOffsetY = fromStream(typeof(result.pxOffsetY), source)
+    of "tilePivotY":
+      result.tilePivotY = fromStream(typeof(result.tilePivotY), source)
+    of "biomeFieldUid":
+      result.biomeFieldUid = some(fromStream(
+          typeof(unsafeGet(result.biomeFieldUid)), source))
+    of "gridSize":
+      result.gridSize = fromStream(typeof(result.gridSize), source)
+    of "parallaxFactorX":
+      result.parallaxFactorX = fromStream(typeof(result.parallaxFactorX), source)
+    of "autoTilesKilledByOtherLayerUid":
+      result.autoTilesKilledByOtherLayerUid = some(fromStream(
+          typeof(unsafeGet(result.autoTilesKilledByOtherLayerUid)), source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[LdtkFieldDef]; a, b: LdtkFieldDef): bool =
   equals(typeof(a.acceptFileTypes), a.acceptFileTypes, b.acceptFileTypes) and
       equals(typeof(a.editorDisplayScale), a.editorDisplayScale,
@@ -2856,6 +4730,270 @@ proc toJsonHook*(source: LdtkFieldDef): JsonNode =
   if isSome(source.arrayMaxLength):
     result{"arrayMaxLength"} = newJInt(unsafeGet(source.arrayMaxLength))
 
+proc toStream*(source: LdtkFieldDef; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if len(source.acceptFileTypes) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("acceptFileTypes"))
+    write(target, ':')
+    toStream(source.acceptFileTypes, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("editorDisplayScale"))
+  write(target, ':')
+  toStream(source.editorDisplayScale, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("searchable"))
+  write(target, ':')
+  toStream(source.searchable, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("useForSmartColor"))
+  write(target, ':')
+  toStream(source.useForSmartColor, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("editorShowInWorld"))
+  write(target, ':')
+  toStream(source.editorShowInWorld, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("allowedRefs"))
+  write(target, ':')
+  toStream(source.allowedRefs, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("editorAlwaysShow"))
+  write(target, ':')
+  toStream(source.editorAlwaysShow, target)
+  if isSome(source.arrayMinLength):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("arrayMinLength"))
+    write(target, ':')
+    toStream(unsafeGet(source.arrayMinLength), target)
+  if isSome(source.editorTextSuffix):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("editorTextSuffix"))
+    write(target, ':')
+    toStream(unsafeGet(source.editorTextSuffix), target)
+  if isSome(source.min):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("min"))
+    write(target, ':')
+    toStream(unsafeGet(source.min), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("__type"))
+  write(target, ':')
+  toStream(source.`type`, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("editorDisplayMode"))
+  write(target, ':')
+  toStream(source.editorDisplayMode, target)
+  if isSome(source.editorDisplayColor):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("editorDisplayColor"))
+    write(target, ':')
+    toStream(unsafeGet(source.editorDisplayColor), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("canBeNull"))
+  write(target, ':')
+  toStream(source.canBeNull, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("autoChainRef"))
+  write(target, ':')
+  toStream(source.autoChainRef, target)
+  if isSome(source.doc):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("doc"))
+    write(target, ':')
+    toStream(unsafeGet(source.doc), target)
+  if isSome(source.allowedRefsEntityUid):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("allowedRefsEntityUid"))
+    write(target, ':')
+    toStream(unsafeGet(source.allowedRefsEntityUid), target)
+  if isSome(source.tilesetUid):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tilesetUid"))
+    write(target, ':')
+    toStream(unsafeGet(source.tilesetUid), target)
+  if len(source.allowedRefTags) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("allowedRefTags"))
+    write(target, ':')
+    toStream(source.allowedRefTags, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("symmetricalRef"))
+  write(target, ':')
+  toStream(source.symmetricalRef, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("uid"))
+  write(target, ':')
+  toStream(source.uid, target)
+  if isSome(source.editorTextPrefix):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("editorTextPrefix"))
+    write(target, ':')
+    toStream(unsafeGet(source.editorTextPrefix), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("isArray"))
+  write(target, ':')
+  toStream(source.isArray, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("exportToToc"))
+  write(target, ':')
+  toStream(source.exportToToc, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("editorDisplayPos"))
+  write(target, ':')
+  toStream(source.editorDisplayPos, target)
+  if isSome(source.textLanguageMode):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("textLanguageMode"))
+    write(target, ':')
+    toStream(unsafeGet(source.textLanguageMode), target)
+  if isSome(source.max):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("max"))
+    write(target, ':')
+    toStream(unsafeGet(source.max), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("allowOutOfLevelRef"))
+  write(target, ':')
+  toStream(source.allowOutOfLevelRef, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("editorCutLongValues"))
+  write(target, ':')
+  toStream(source.editorCutLongValues, target)
+  if isSome(source.defaultOverride):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("defaultOverride"))
+    write(target, ':')
+    toStream(unsafeGet(source.defaultOverride), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("editorLinkStyle"))
+  write(target, ':')
+  toStream(source.editorLinkStyle, target)
+  if isSome(source.regex):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("regex"))
+    write(target, ':')
+    toStream(unsafeGet(source.regex), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("type"))
+  write(target, ':')
+  toStream(source.type1, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("identifier"))
+  write(target, ':')
+  toStream(source.identifier, target)
+  if isSome(source.arrayMaxLength):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("arrayMaxLength"))
+    write(target, ':')
+    toStream(unsafeGet(source.arrayMaxLength), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkFieldDef]; source: var JsonParser): LdtkFieldDef =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "acceptFileTypes":
+      result.acceptFileTypes = fromStream(typeof(result.acceptFileTypes), source)
+    of "editorDisplayScale":
+      result.editorDisplayScale = fromStream(typeof(result.editorDisplayScale),
+          source)
+    of "searchable":
+      result.searchable = fromStream(typeof(result.searchable), source)
+    of "useForSmartColor":
+      result.useForSmartColor = fromStream(typeof(result.useForSmartColor),
+          source)
+    of "editorShowInWorld":
+      result.editorShowInWorld = fromStream(typeof(result.editorShowInWorld),
+          source)
+    of "allowedRefs":
+      result.allowedRefs = fromStream(typeof(result.allowedRefs), source)
+    of "editorAlwaysShow":
+      result.editorAlwaysShow = fromStream(typeof(result.editorAlwaysShow),
+          source)
+    of "arrayMinLength":
+      result.arrayMinLength = some(fromStream(
+          typeof(unsafeGet(result.arrayMinLength)), source))
+    of "editorTextSuffix":
+      result.editorTextSuffix = some(fromStream(
+          typeof(unsafeGet(result.editorTextSuffix)), source))
+    of "min":
+      result.min = some(fromStream(typeof(unsafeGet(result.min)), source))
+    of "__type":
+      result.`type` = fromStream(typeof(result.`type`), source)
+    of "editorDisplayMode":
+      result.editorDisplayMode = fromStream(typeof(result.editorDisplayMode),
+          source)
+    of "editorDisplayColor":
+      result.editorDisplayColor = some(fromStream(
+          typeof(unsafeGet(result.editorDisplayColor)), source))
+    of "canBeNull":
+      result.canBeNull = fromStream(typeof(result.canBeNull), source)
+    of "autoChainRef":
+      result.autoChainRef = fromStream(typeof(result.autoChainRef), source)
+    of "doc":
+      result.doc = some(fromStream(typeof(unsafeGet(result.doc)), source))
+    of "allowedRefsEntityUid":
+      result.allowedRefsEntityUid = some(
+          fromStream(typeof(unsafeGet(result.allowedRefsEntityUid)), source))
+    of "tilesetUid":
+      result.tilesetUid = some(fromStream(typeof(unsafeGet(result.tilesetUid)),
+          source))
+    of "allowedRefTags":
+      result.allowedRefTags = fromStream(typeof(result.allowedRefTags), source)
+    of "symmetricalRef":
+      result.symmetricalRef = fromStream(typeof(result.symmetricalRef), source)
+    of "uid":
+      result.uid = fromStream(typeof(result.uid), source)
+    of "editorTextPrefix":
+      result.editorTextPrefix = some(fromStream(
+          typeof(unsafeGet(result.editorTextPrefix)), source))
+    of "isArray":
+      result.isArray = fromStream(typeof(result.isArray), source)
+    of "exportToToc":
+      result.exportToToc = fromStream(typeof(result.exportToToc), source)
+    of "editorDisplayPos":
+      result.editorDisplayPos = fromStream(typeof(result.editorDisplayPos),
+          source)
+    of "textLanguageMode":
+      result.textLanguageMode = some(fromStream(
+          typeof(unsafeGet(result.textLanguageMode)), source))
+    of "max":
+      result.max = some(fromStream(typeof(unsafeGet(result.max)), source))
+    of "allowOutOfLevelRef":
+      result.allowOutOfLevelRef = fromStream(typeof(result.allowOutOfLevelRef),
+          source)
+    of "editorCutLongValues":
+      result.editorCutLongValues = fromStream(
+          typeof(result.editorCutLongValues), source)
+    of "defaultOverride":
+      result.defaultOverride = some(fromStream(
+          typeof(unsafeGet(result.defaultOverride)), source))
+    of "editorLinkStyle":
+      result.editorLinkStyle = fromStream(typeof(result.editorLinkStyle), source)
+    of "regex":
+      result.regex = some(fromStream(typeof(unsafeGet(result.regex)), source))
+    of "type":
+      result.type1 = fromStream(typeof(result.type1), source)
+    of "identifier":
+      result.identifier = fromStream(typeof(result.identifier), source)
+    of "arrayMaxLength":
+      result.arrayMaxLength = some(fromStream(
+          typeof(unsafeGet(result.arrayMaxLength)), source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[LdtkEnumDefValues]; a, b: LdtkEnumDefValues): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
       equals(typeof(a.color), a.color, b.color) and
@@ -2910,6 +5048,63 @@ proc toJsonHook*(source: LdtkEnumDefValues): JsonNode =
       for entry in cursor:
         output.add(newJInt(entry))
       output
+
+proc toStream*(source: LdtkEnumDefValues; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.tileId):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tileId"))
+    write(target, ':')
+    toStream(unsafeGet(source.tileId), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("color"))
+  write(target, ':')
+  toStream(source.color, target)
+  if isSome(source.tileRect):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tileRect"))
+    write(target, ':')
+    toStream(unsafeGet(source.tileRect), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("id"))
+  write(target, ':')
+  toStream(source.id, target)
+  if len(source.tileSrcRect) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("__tileSrcRect"))
+    write(target, ':')
+    toStream(source.tileSrcRect, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkEnumDefValues];
+                 source: var JsonParser): LdtkEnumDefValues =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "tileId":
+      result.tileId = some(fromStream(typeof(unsafeGet(result.tileId)), source))
+    of "color":
+      result.color = fromStream(typeof(result.color), source)
+    of "tileRect":
+      result.tileRect = some(fromStream(typeof(unsafeGet(result.tileRect)),
+                                        source))
+    of "id":
+      result.id = fromStream(typeof(result.id), source)
+    of "__tileSrcRect":
+      result.tileSrcRect = fromStream(typeof(result.tileSrcRect), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[LdtkEnumDef]; a, b: LdtkEnumDef): bool =
   equals(typeof(a.externalFileChecksum), a.externalFileChecksum,
@@ -2989,6 +5184,78 @@ proc toJsonHook*(source: LdtkEnumDef): JsonNode =
       for entry in cursor:
         output.add(newJString(entry))
       output
+
+proc toStream*(source: LdtkEnumDef; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.externalFileChecksum):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("externalFileChecksum"))
+    write(target, ':')
+    toStream(unsafeGet(source.externalFileChecksum), target)
+  if isSome(source.externalRelPath):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("externalRelPath"))
+    write(target, ':')
+    toStream(unsafeGet(source.externalRelPath), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("uid"))
+  write(target, ':')
+  toStream(source.uid, target)
+  if len(source.values) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("values"))
+    write(target, ':')
+    toStream(source.values, target)
+  if isSome(source.iconTilesetUid):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("iconTilesetUid"))
+    write(target, ':')
+    toStream(unsafeGet(source.iconTilesetUid), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("identifier"))
+  write(target, ':')
+  toStream(source.identifier, target)
+  if len(source.tags) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tags"))
+    write(target, ':')
+    toStream(source.tags, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkEnumDef]; source: var JsonParser): LdtkEnumDef =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "externalFileChecksum":
+      result.externalFileChecksum = some(
+          fromStream(typeof(unsafeGet(result.externalFileChecksum)), source))
+    of "externalRelPath":
+      result.externalRelPath = some(fromStream(
+          typeof(unsafeGet(result.externalRelPath)), source))
+    of "uid":
+      result.uid = fromStream(typeof(result.uid), source)
+    of "values":
+      result.values = fromStream(typeof(result.values), source)
+    of "iconTilesetUid":
+      result.iconTilesetUid = some(fromStream(
+          typeof(unsafeGet(result.iconTilesetUid)), source))
+    of "identifier":
+      result.identifier = fromStream(typeof(result.identifier), source)
+    of "tags":
+      result.tags = fromStream(typeof(result.tags), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[LdtkEntityDef]; a, b: LdtkEntityDef): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -3243,6 +5510,253 @@ proc toJsonHook*(source: LdtkEntityDef): JsonNode =
       output
   result{"width"} = newJInt(source.width)
 
+proc toStream*(source: LdtkEntityDef; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.tileId):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tileId"))
+    write(target, ':')
+    toStream(unsafeGet(source.tileId), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("showName"))
+  write(target, ':')
+  toStream(source.showName, target)
+  if isSome(source.tilesetId):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tilesetId"))
+    write(target, ':')
+    toStream(unsafeGet(source.tilesetId), target)
+  if isSome(source.maxHeight):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("maxHeight"))
+    write(target, ':')
+    toStream(unsafeGet(source.maxHeight), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("limitScope"))
+  write(target, ':')
+  toStream(source.limitScope, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("pivotX"))
+  write(target, ':')
+  toStream(source.pivotX, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("maxCount"))
+  write(target, ':')
+  toStream(source.maxCount, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("allowOutOfBounds"))
+  write(target, ':')
+  toStream(source.allowOutOfBounds, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("hollow"))
+  write(target, ':')
+  toStream(source.hollow, target)
+  if isSome(source.minHeight):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("minHeight"))
+    write(target, ':')
+    toStream(unsafeGet(source.minHeight), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("keepAspectRatio"))
+  write(target, ':')
+  toStream(source.keepAspectRatio, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("color"))
+  write(target, ':')
+  toStream(source.color, target)
+  if isSome(source.minWidth):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("minWidth"))
+    write(target, ':')
+    toStream(unsafeGet(source.minWidth), target)
+  if isSome(source.tileRect):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tileRect"))
+    write(target, ':')
+    toStream(unsafeGet(source.tileRect), target)
+  if isSome(source.doc):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("doc"))
+    write(target, ':')
+    toStream(unsafeGet(source.doc), target)
+  if len(source.fieldDefs) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("fieldDefs"))
+    write(target, ':')
+    toStream(source.fieldDefs, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("tileRenderMode"))
+  write(target, ':')
+  toStream(source.tileRenderMode, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("limitBehavior"))
+  write(target, ':')
+  toStream(source.limitBehavior, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("tileOpacity"))
+  write(target, ':')
+  toStream(source.tileOpacity, target)
+  if len(source.nineSliceBorders) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("nineSliceBorders"))
+    write(target, ':')
+    toStream(source.nineSliceBorders, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("resizableX"))
+  write(target, ':')
+  toStream(source.resizableX, target)
+  if isSome(source.uiTileRect):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("uiTileRect"))
+    write(target, ':')
+    toStream(unsafeGet(source.uiTileRect), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("uid"))
+  write(target, ':')
+  toStream(source.uid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("lineOpacity"))
+  write(target, ':')
+  toStream(source.lineOpacity, target)
+  if isSome(source.maxWidth):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("maxWidth"))
+    write(target, ':')
+    toStream(unsafeGet(source.maxWidth), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("resizableY"))
+  write(target, ':')
+  toStream(source.resizableY, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("exportToToc"))
+  write(target, ':')
+  toStream(source.exportToToc, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("fillOpacity"))
+  write(target, ':')
+  toStream(source.fillOpacity, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("height"))
+  write(target, ':')
+  toStream(source.height, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("identifier"))
+  write(target, ':')
+  toStream(source.identifier, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("pivotY"))
+  write(target, ':')
+  toStream(source.pivotY, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("renderMode"))
+  write(target, ':')
+  toStream(source.renderMode, target)
+  if len(source.tags) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tags"))
+    write(target, ':')
+    toStream(source.tags, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("width"))
+  write(target, ':')
+  toStream(source.width, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkEntityDef]; source: var JsonParser): LdtkEntityDef =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "tileId":
+      result.tileId = some(fromStream(typeof(unsafeGet(result.tileId)), source))
+    of "showName":
+      result.showName = fromStream(typeof(result.showName), source)
+    of "tilesetId":
+      result.tilesetId = some(fromStream(typeof(unsafeGet(result.tilesetId)),
+          source))
+    of "maxHeight":
+      result.maxHeight = some(fromStream(typeof(unsafeGet(result.maxHeight)),
+          source))
+    of "limitScope":
+      result.limitScope = fromStream(typeof(result.limitScope), source)
+    of "pivotX":
+      result.pivotX = fromStream(typeof(result.pivotX), source)
+    of "maxCount":
+      result.maxCount = fromStream(typeof(result.maxCount), source)
+    of "allowOutOfBounds":
+      result.allowOutOfBounds = fromStream(typeof(result.allowOutOfBounds),
+          source)
+    of "hollow":
+      result.hollow = fromStream(typeof(result.hollow), source)
+    of "minHeight":
+      result.minHeight = some(fromStream(typeof(unsafeGet(result.minHeight)),
+          source))
+    of "keepAspectRatio":
+      result.keepAspectRatio = fromStream(typeof(result.keepAspectRatio), source)
+    of "color":
+      result.color = fromStream(typeof(result.color), source)
+    of "minWidth":
+      result.minWidth = some(fromStream(typeof(unsafeGet(result.minWidth)),
+                                        source))
+    of "tileRect":
+      result.tileRect = some(fromStream(typeof(unsafeGet(result.tileRect)),
+                                        source))
+    of "doc":
+      result.doc = some(fromStream(typeof(unsafeGet(result.doc)), source))
+    of "fieldDefs":
+      result.fieldDefs = fromStream(typeof(result.fieldDefs), source)
+    of "tileRenderMode":
+      result.tileRenderMode = fromStream(typeof(result.tileRenderMode), source)
+    of "limitBehavior":
+      result.limitBehavior = fromStream(typeof(result.limitBehavior), source)
+    of "tileOpacity":
+      result.tileOpacity = fromStream(typeof(result.tileOpacity), source)
+    of "nineSliceBorders":
+      result.nineSliceBorders = fromStream(typeof(result.nineSliceBorders),
+          source)
+    of "resizableX":
+      result.resizableX = fromStream(typeof(result.resizableX), source)
+    of "uiTileRect":
+      result.uiTileRect = some(fromStream(typeof(unsafeGet(result.uiTileRect)),
+          source))
+    of "uid":
+      result.uid = fromStream(typeof(result.uid), source)
+    of "lineOpacity":
+      result.lineOpacity = fromStream(typeof(result.lineOpacity), source)
+    of "maxWidth":
+      result.maxWidth = some(fromStream(typeof(unsafeGet(result.maxWidth)),
+                                        source))
+    of "resizableY":
+      result.resizableY = fromStream(typeof(result.resizableY), source)
+    of "exportToToc":
+      result.exportToToc = fromStream(typeof(result.exportToToc), source)
+    of "fillOpacity":
+      result.fillOpacity = fromStream(typeof(result.fillOpacity), source)
+    of "height":
+      result.height = fromStream(typeof(result.height), source)
+    of "identifier":
+      result.identifier = fromStream(typeof(result.identifier), source)
+    of "pivotY":
+      result.pivotY = fromStream(typeof(result.pivotY), source)
+    of "renderMode":
+      result.renderMode = fromStream(typeof(result.renderMode), source)
+    of "tags":
+      result.tags = fromStream(typeof(result.tags), source)
+    of "width":
+      result.width = fromStream(typeof(result.width), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[LdtkDefinitions]; a, b: LdtkDefinitions): bool =
   equals(typeof(a.tilesets), a.tilesets, b.tilesets) and
       equals(typeof(a.layers), a.layers, b.layers) and
@@ -3329,6 +5843,71 @@ proc toJsonHook*(source: LdtkDefinitions): JsonNode =
         output.add(toJsonHook(entry))
       output
 
+proc toStream*(source: LdtkDefinitions; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if len(source.tilesets) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tilesets"))
+    write(target, ':')
+    toStream(source.tilesets, target)
+  if len(source.layers) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("layers"))
+    write(target, ':')
+    toStream(source.layers, target)
+  if len(source.levelFields) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("levelFields"))
+    write(target, ':')
+    toStream(source.levelFields, target)
+  if len(source.enums) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("enums"))
+    write(target, ':')
+    toStream(source.enums, target)
+  if len(source.entities) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("entities"))
+    write(target, ':')
+    toStream(source.entities, target)
+  if len(source.externalEnums) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("externalEnums"))
+    write(target, ':')
+    toStream(source.externalEnums, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkDefinitions];
+                 source: var JsonParser): LdtkDefinitions =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "tilesets":
+      result.tilesets = fromStream(typeof(result.tilesets), source)
+    of "layers":
+      result.layers = fromStream(typeof(result.layers), source)
+    of "levelFields":
+      result.levelFields = fromStream(typeof(result.levelFields), source)
+    of "enums":
+      result.enums = fromStream(typeof(result.enums), source)
+    of "entities":
+      result.entities = fromStream(typeof(result.entities), source)
+    of "externalEnums":
+      result.externalEnums = fromStream(typeof(result.externalEnums), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[LdtkGridPoint]; a, b: LdtkGridPoint): bool =
   equals(typeof(a.cy), a.cy, b.cy) and equals(typeof(a.cx), a.cx, b.cx)
 
@@ -3354,6 +5933,40 @@ proc toJsonHook*(source: LdtkGridPoint): JsonNode =
   result = newJObject()
   result{"cy"} = newJInt(source.cy)
   result{"cx"} = newJInt(source.cx)
+
+proc toStream*(source: LdtkGridPoint; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("cy"))
+  write(target, ':')
+  toStream(source.cy, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("cx"))
+  write(target, ':')
+  toStream(source.cx, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkGridPoint]; source: var JsonParser): LdtkGridPoint =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "cy":
+      result.cy = fromStream(typeof(result.cy), source)
+    of "cx":
+      result.cx = fromStream(typeof(result.cx), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[Ldtk_FORCED_REFS]; a, b: Ldtk_FORCED_REFS): bool =
   equals(typeof(a.TilesetRect), a.TilesetRect, b.TilesetRect) and
@@ -3606,6 +6219,249 @@ proc toJsonHook*(source: Ldtk_FORCED_REFS): JsonNode =
     result{"GridPoint"} = toJsonHook(unsafeGet(source.GridPoint))
   if isSome(source.IntGridValueDef):
     result{"IntGridValueDef"} = toJsonHook(unsafeGet(source.IntGridValueDef))
+
+proc toStream*(source: Ldtk_FORCED_REFS; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.TilesetRect):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("TilesetRect"))
+    write(target, ':')
+    toStream(unsafeGet(source.TilesetRect), target)
+  if isSome(source.FieldInstance):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("FieldInstance"))
+    write(target, ':')
+    toStream(unsafeGet(source.FieldInstance), target)
+  if isSome(source.EntityInstance):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("EntityInstance"))
+    write(target, ':')
+    toStream(unsafeGet(source.EntityInstance), target)
+  if isSome(source.Definitions):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("Definitions"))
+    write(target, ':')
+    toStream(unsafeGet(source.Definitions), target)
+  if isSome(source.EnumTagValue):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("EnumTagValue"))
+    write(target, ':')
+    toStream(unsafeGet(source.EnumTagValue), target)
+  if isSome(source.AutoRuleDef):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("AutoRuleDef"))
+    write(target, ':')
+    toStream(unsafeGet(source.AutoRuleDef), target)
+  if isSome(source.FieldDef):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("FieldDef"))
+    write(target, ':')
+    toStream(unsafeGet(source.FieldDef), target)
+  if isSome(source.CustomCommand):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("CustomCommand"))
+    write(target, ':')
+    toStream(unsafeGet(source.CustomCommand), target)
+  if isSome(source.EntityDef):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("EntityDef"))
+    write(target, ':')
+    toStream(unsafeGet(source.EntityDef), target)
+  if isSome(source.AutoLayerRuleGroup):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("AutoLayerRuleGroup"))
+    write(target, ':')
+    toStream(unsafeGet(source.AutoLayerRuleGroup), target)
+  if isSome(source.IntGridValueGroupDef):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("IntGridValueGroupDef"))
+    write(target, ':')
+    toStream(unsafeGet(source.IntGridValueGroupDef), target)
+  if isSome(source.IntGridValueInstance):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("IntGridValueInstance"))
+    write(target, ':')
+    toStream(unsafeGet(source.IntGridValueInstance), target)
+  if isSome(source.TocInstanceData):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("TocInstanceData"))
+    write(target, ':')
+    toStream(unsafeGet(source.TocInstanceData), target)
+  if isSome(source.NeighbourLevel):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("NeighbourLevel"))
+    write(target, ':')
+    toStream(unsafeGet(source.NeighbourLevel), target)
+  if isSome(source.LayerInstance):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("LayerInstance"))
+    write(target, ':')
+    toStream(unsafeGet(source.LayerInstance), target)
+  if isSome(source.World):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("World"))
+    write(target, ':')
+    toStream(unsafeGet(source.World), target)
+  if isSome(source.EntityReferenceInfos):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("EntityReferenceInfos"))
+    write(target, ':')
+    toStream(unsafeGet(source.EntityReferenceInfos), target)
+  if isSome(source.TileCustomMetadata):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("TileCustomMetadata"))
+    write(target, ':')
+    toStream(unsafeGet(source.TileCustomMetadata), target)
+  if isSome(source.TilesetDef):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("TilesetDef"))
+    write(target, ':')
+    toStream(unsafeGet(source.TilesetDef), target)
+  if isSome(source.EnumDefValues):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("EnumDefValues"))
+    write(target, ':')
+    toStream(unsafeGet(source.EnumDefValues), target)
+  if isSome(source.Tile):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("Tile"))
+    write(target, ':')
+    toStream(unsafeGet(source.Tile), target)
+  if isSome(source.LayerDef):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("LayerDef"))
+    write(target, ':')
+    toStream(unsafeGet(source.LayerDef), target)
+  if isSome(source.LevelBgPosInfos):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("LevelBgPosInfos"))
+    write(target, ':')
+    toStream(unsafeGet(source.LevelBgPosInfos), target)
+  if isSome(source.Level):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("Level"))
+    write(target, ':')
+    toStream(unsafeGet(source.Level), target)
+  if isSome(source.TableOfContentEntry):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("TableOfContentEntry"))
+    write(target, ':')
+    toStream(unsafeGet(source.TableOfContentEntry), target)
+  if isSome(source.EnumDef):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("EnumDef"))
+    write(target, ':')
+    toStream(unsafeGet(source.EnumDef), target)
+  if isSome(source.GridPoint):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("GridPoint"))
+    write(target, ':')
+    toStream(unsafeGet(source.GridPoint), target)
+  if isSome(source.IntGridValueDef):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("IntGridValueDef"))
+    write(target, ':')
+    toStream(unsafeGet(source.IntGridValueDef), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Ldtk_FORCED_REFS];
+                 source: var JsonParser): Ldtk_FORCED_REFS =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "TilesetRect":
+      result.TilesetRect = some(fromStream(
+          typeof(unsafeGet(result.TilesetRect)), source))
+    of "FieldInstance":
+      result.FieldInstance = some(fromStream(
+          typeof(unsafeGet(result.FieldInstance)), source))
+    of "EntityInstance":
+      result.EntityInstance = some(fromStream(
+          typeof(unsafeGet(result.EntityInstance)), source))
+    of "Definitions":
+      result.Definitions = some(fromStream(
+          typeof(unsafeGet(result.Definitions)), source))
+    of "EnumTagValue":
+      result.EnumTagValue = some(fromStream(
+          typeof(unsafeGet(result.EnumTagValue)), source))
+    of "AutoRuleDef":
+      result.AutoRuleDef = some(fromStream(
+          typeof(unsafeGet(result.AutoRuleDef)), source))
+    of "FieldDef":
+      result.FieldDef = some(fromStream(typeof(unsafeGet(result.FieldDef)),
+                                        source))
+    of "CustomCommand":
+      result.CustomCommand = some(fromStream(
+          typeof(unsafeGet(result.CustomCommand)), source))
+    of "EntityDef":
+      result.EntityDef = some(fromStream(typeof(unsafeGet(result.EntityDef)),
+          source))
+    of "AutoLayerRuleGroup":
+      result.AutoLayerRuleGroup = some(fromStream(
+          typeof(unsafeGet(result.AutoLayerRuleGroup)), source))
+    of "IntGridValueGroupDef":
+      result.IntGridValueGroupDef = some(
+          fromStream(typeof(unsafeGet(result.IntGridValueGroupDef)), source))
+    of "IntGridValueInstance":
+      result.IntGridValueInstance = some(
+          fromStream(typeof(unsafeGet(result.IntGridValueInstance)), source))
+    of "TocInstanceData":
+      result.TocInstanceData = some(fromStream(
+          typeof(unsafeGet(result.TocInstanceData)), source))
+    of "NeighbourLevel":
+      result.NeighbourLevel = some(fromStream(
+          typeof(unsafeGet(result.NeighbourLevel)), source))
+    of "LayerInstance":
+      result.LayerInstance = some(fromStream(
+          typeof(unsafeGet(result.LayerInstance)), source))
+    of "World":
+      result.World = some(fromStream(typeof(unsafeGet(result.World)), source))
+    of "EntityReferenceInfos":
+      result.EntityReferenceInfos = some(
+          fromStream(typeof(unsafeGet(result.EntityReferenceInfos)), source))
+    of "TileCustomMetadata":
+      result.TileCustomMetadata = some(fromStream(
+          typeof(unsafeGet(result.TileCustomMetadata)), source))
+    of "TilesetDef":
+      result.TilesetDef = some(fromStream(typeof(unsafeGet(result.TilesetDef)),
+          source))
+    of "EnumDefValues":
+      result.EnumDefValues = some(fromStream(
+          typeof(unsafeGet(result.EnumDefValues)), source))
+    of "Tile":
+      result.Tile = some(fromStream(typeof(unsafeGet(result.Tile)), source))
+    of "LayerDef":
+      result.LayerDef = some(fromStream(typeof(unsafeGet(result.LayerDef)),
+                                        source))
+    of "LevelBgPosInfos":
+      result.LevelBgPosInfos = some(fromStream(
+          typeof(unsafeGet(result.LevelBgPosInfos)), source))
+    of "Level":
+      result.Level = some(fromStream(typeof(unsafeGet(result.Level)), source))
+    of "TableOfContentEntry":
+      result.TableOfContentEntry = some(fromStream(
+          typeof(unsafeGet(result.TableOfContentEntry)), source))
+    of "EnumDef":
+      result.EnumDef = some(fromStream(typeof(unsafeGet(result.EnumDef)), source))
+    of "GridPoint":
+      result.GridPoint = some(fromStream(typeof(unsafeGet(result.GridPoint)),
+          source))
+    of "IntGridValueDef":
+      result.IntGridValueDef = some(fromStream(
+          typeof(unsafeGet(result.IntGridValueDef)), source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[LdtkLdtkJsonRoot]; a, b: LdtkLdtkJsonRoot): bool =
   equals(typeof(a.backupLimit), a.backupLimit, b.backupLimit) and
@@ -3937,4 +6793,285 @@ proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode =
   result{"exportLevelBg"} = newJBool(source.exportLevelBg)
   if isSome(source.backupRelPath):
     result{"backupRelPath"} = newJString(unsafeGet(source.backupRelPath))
+
+proc toStream*(source: LdtkLdtkJsonRoot; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("backupLimit"))
+  write(target, ':')
+  toStream(source.backupLimit, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("defaultEntityWidth"))
+  write(target, ':')
+  toStream(source.defaultEntityWidth, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("backupOnSave"))
+  write(target, ':')
+  toStream(source.backupOnSave, target)
+  if isSome(source.worldGridWidth):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("worldGridWidth"))
+    write(target, ':')
+    toStream(unsafeGet(source.worldGridWidth), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("iid"))
+  write(target, ':')
+  toStream(source.iid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("defaultLevelBgColor"))
+  write(target, ':')
+  toStream(source.defaultLevelBgColor, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("bgColor"))
+  write(target, ':')
+  toStream(source.bgColor, target)
+  if len(source.worlds) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("worlds"))
+    write(target, ':')
+    toStream(source.worlds, target)
+  if len(source.toc) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("toc"))
+    write(target, ':')
+    toStream(source.toc, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("nextUid"))
+  write(target, ':')
+  toStream(source.nextUid, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("imageExportMode"))
+  write(target, ':')
+  toStream(source.imageExportMode, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("identifierStyle"))
+  write(target, ':')
+  toStream(source.identifierStyle, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("defaultPivotY"))
+  write(target, ':')
+  toStream(source.defaultPivotY, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("dummyWorldIid"))
+  write(target, ':')
+  toStream(source.dummyWorldIid, target)
+  if len(source.customCommands) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("customCommands"))
+    write(target, ':')
+    toStream(source.customCommands, target)
+  if isSome(source.worldGridHeight):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("worldGridHeight"))
+    write(target, ':')
+    toStream(unsafeGet(source.worldGridHeight), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("appBuildId"))
+  write(target, ':')
+  toStream(source.appBuildId, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("defaultGridSize"))
+  write(target, ':')
+  toStream(source.defaultGridSize, target)
+  if isSome(source.worldLayout):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("worldLayout"))
+    write(target, ':')
+    toStream(unsafeGet(source.worldLayout), target)
+  if len(source.flags) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("flags"))
+    write(target, ':')
+    toStream(source.flags, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("levelNamePattern"))
+  write(target, ':')
+  toStream(source.levelNamePattern, target)
+  if isSome(source.exportPng):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("exportPng"))
+    write(target, ':')
+    toStream(unsafeGet(source.exportPng), target)
+  if isSome(source.defaultLevelWidth):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("defaultLevelWidth"))
+    write(target, ':')
+    toStream(unsafeGet(source.defaultLevelWidth), target)
+  if isSome(source.pngFilePattern):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("pngFilePattern"))
+    write(target, ':')
+    toStream(unsafeGet(source.pngFilePattern), target)
+  if isSome(source.FORCED_REFS):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("__FORCED_REFS"))
+    write(target, ':')
+    toStream(unsafeGet(source.FORCED_REFS), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("exportTiled"))
+  write(target, ':')
+  toStream(source.exportTiled, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("defs"))
+  write(target, ':')
+  toStream(source.defs, target)
+  if len(source.levels) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("levels"))
+    write(target, ':')
+    toStream(source.levels, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("jsonVersion"))
+  write(target, ':')
+  toStream(source.jsonVersion, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("defaultEntityHeight"))
+  write(target, ':')
+  toStream(source.defaultEntityHeight, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("defaultPivotX"))
+  write(target, ':')
+  toStream(source.defaultPivotX, target)
+  if isSome(source.defaultLevelHeight):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("defaultLevelHeight"))
+    write(target, ':')
+    toStream(unsafeGet(source.defaultLevelHeight), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("simplifiedExport"))
+  write(target, ':')
+  toStream(source.simplifiedExport, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("externalLevels"))
+  write(target, ':')
+  toStream(source.externalLevels, target)
+  if isSome(source.tutorialDesc):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tutorialDesc"))
+    write(target, ':')
+    toStream(unsafeGet(source.tutorialDesc), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("minifyJson"))
+  write(target, ':')
+  toStream(source.minifyJson, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("exportLevelBg"))
+  write(target, ':')
+  toStream(source.exportLevelBg, target)
+  if isSome(source.backupRelPath):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("backupRelPath"))
+    write(target, ':')
+    toStream(unsafeGet(source.backupRelPath), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[LdtkLdtkJsonRoot];
+                 source: var JsonParser): LdtkLdtkJsonRoot =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "backupLimit":
+      result.backupLimit = fromStream(typeof(result.backupLimit), source)
+    of "defaultEntityWidth":
+      result.defaultEntityWidth = fromStream(typeof(result.defaultEntityWidth),
+          source)
+    of "backupOnSave":
+      result.backupOnSave = fromStream(typeof(result.backupOnSave), source)
+    of "worldGridWidth":
+      result.worldGridWidth = some(fromStream(
+          typeof(unsafeGet(result.worldGridWidth)), source))
+    of "iid":
+      result.iid = fromStream(typeof(result.iid), source)
+    of "defaultLevelBgColor":
+      result.defaultLevelBgColor = fromStream(
+          typeof(result.defaultLevelBgColor), source)
+    of "bgColor":
+      result.bgColor = fromStream(typeof(result.bgColor), source)
+    of "worlds":
+      result.worlds = fromStream(typeof(result.worlds), source)
+    of "toc":
+      result.toc = fromStream(typeof(result.toc), source)
+    of "nextUid":
+      result.nextUid = fromStream(typeof(result.nextUid), source)
+    of "imageExportMode":
+      result.imageExportMode = fromStream(typeof(result.imageExportMode), source)
+    of "identifierStyle":
+      result.identifierStyle = fromStream(typeof(result.identifierStyle), source)
+    of "defaultPivotY":
+      result.defaultPivotY = fromStream(typeof(result.defaultPivotY), source)
+    of "dummyWorldIid":
+      result.dummyWorldIid = fromStream(typeof(result.dummyWorldIid), source)
+    of "customCommands":
+      result.customCommands = fromStream(typeof(result.customCommands), source)
+    of "worldGridHeight":
+      result.worldGridHeight = some(fromStream(
+          typeof(unsafeGet(result.worldGridHeight)), source))
+    of "appBuildId":
+      result.appBuildId = fromStream(typeof(result.appBuildId), source)
+    of "defaultGridSize":
+      result.defaultGridSize = fromStream(typeof(result.defaultGridSize), source)
+    of "worldLayout":
+      result.worldLayout = some(fromStream(
+          typeof(unsafeGet(result.worldLayout)), source))
+    of "flags":
+      result.flags = fromStream(typeof(result.flags), source)
+    of "levelNamePattern":
+      result.levelNamePattern = fromStream(typeof(result.levelNamePattern),
+          source)
+    of "exportPng":
+      result.exportPng = some(fromStream(typeof(unsafeGet(result.exportPng)),
+          source))
+    of "defaultLevelWidth":
+      result.defaultLevelWidth = some(fromStream(
+          typeof(unsafeGet(result.defaultLevelWidth)), source))
+    of "pngFilePattern":
+      result.pngFilePattern = some(fromStream(
+          typeof(unsafeGet(result.pngFilePattern)), source))
+    of "__FORCED_REFS":
+      result.FORCED_REFS = some(fromStream(
+          typeof(unsafeGet(result.FORCED_REFS)), source))
+    of "exportTiled":
+      result.exportTiled = fromStream(typeof(result.exportTiled), source)
+    of "defs":
+      result.defs = fromStream(typeof(result.defs), source)
+    of "levels":
+      result.levels = fromStream(typeof(result.levels), source)
+    of "jsonVersion":
+      result.jsonVersion = fromStream(typeof(result.jsonVersion), source)
+    of "defaultEntityHeight":
+      result.defaultEntityHeight = fromStream(
+          typeof(result.defaultEntityHeight), source)
+    of "defaultPivotX":
+      result.defaultPivotX = fromStream(typeof(result.defaultPivotX), source)
+    of "defaultLevelHeight":
+      result.defaultLevelHeight = some(fromStream(
+          typeof(unsafeGet(result.defaultLevelHeight)), source))
+    of "simplifiedExport":
+      result.simplifiedExport = fromStream(typeof(result.simplifiedExport),
+          source)
+    of "externalLevels":
+      result.externalLevels = fromStream(typeof(result.externalLevels), source)
+    of "tutorialDesc":
+      result.tutorialDesc = some(fromStream(
+          typeof(unsafeGet(result.tutorialDesc)), source))
+    of "minifyJson":
+      result.minifyJson = fromStream(typeof(result.minifyJson), source)
+    of "exportLevelBg":
+      result.exportLevelBg = fromStream(typeof(result.exportLevelBg), source)
+    of "backupRelPath":
+      result.backupRelPath = some(fromStream(
+          typeof(unsafeGet(result.backupRelPath)), source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}
