@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   User_profile* {.byref.} = object
@@ -69,4 +69,68 @@ proc toJsonHook*(source: User_profile): JsonNode =
       for entry in cursor:
         output.add(newJString(entry))
       output
+
+proc toStream*(source: User_profile; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("username"))
+  write(target, ':')
+  toStream(source.username, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("email"))
+  write(target, ':')
+  toStream(source.email, target)
+  if isSome(source.fullName):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("fullName"))
+    write(target, ':')
+    toStream(unsafeGet(source.fullName), target)
+  if isSome(source.age):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("age"))
+    write(target, ':')
+    toStream(unsafeGet(source.age), target)
+  if isSome(source.location):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("location"))
+    write(target, ':')
+    toStream(unsafeGet(source.location), target)
+  if len(source.interests) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("interests"))
+    write(target, ':')
+    toStream(source.interests, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[User_profile]; source: var JsonParser): User_profile =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "username":
+      result.username = fromStream(typeof(result.username), source)
+    of "email":
+      result.email = fromStream(typeof(result.email), source)
+    of "fullName":
+      result.fullName = some(fromStream(typeof(unsafeGet(result.fullName)),
+                                        source))
+    of "age":
+      result.age = some(fromStream(typeof(unsafeGet(result.age)), source))
+    of "location":
+      result.location = some(fromStream(typeof(unsafeGet(result.location)),
+                                        source))
+    of "interests":
+      result.interests = fromStream(typeof(result.interests), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}

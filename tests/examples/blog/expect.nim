@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   BlogAuthor* {.byref.} = object
@@ -44,6 +44,43 @@ proc toJsonHook*(source: BlogAuthor): JsonNode =
     result{"username"} = newJString(unsafeGet(source.username))
   if isSome(source.email):
     result{"email"} = newJString(unsafeGet(source.email))
+
+proc toStream*(source: BlogAuthor; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.username):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("username"))
+    write(target, ':')
+    toStream(unsafeGet(source.username), target)
+  if isSome(source.email):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("email"))
+    write(target, ':')
+    toStream(unsafeGet(source.email), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[BlogAuthor]; source: var JsonParser): BlogAuthor =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "username":
+      result.username = some(fromStream(typeof(unsafeGet(result.username)),
+                                        source))
+    of "email":
+      result.email = some(fromStream(typeof(unsafeGet(result.email)), source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[Blog]; a, b: Blog): bool =
   equals(typeof(a.title), a.title, b.title) and
@@ -97,4 +134,59 @@ proc toJsonHook*(source: Blog): JsonNode =
       for entry in cursor:
         output.add(newJString(entry))
       output
+
+proc toStream*(source: Blog; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("title"))
+  write(target, ':')
+  toStream(source.title, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("content"))
+  write(target, ':')
+  toStream(source.content, target)
+  if isSome(source.publishedDate):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("publishedDate"))
+    write(target, ':')
+    toStream(unsafeGet(source.publishedDate), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("author"))
+  write(target, ':')
+  toStream(source.author, target)
+  if len(source.tags) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("tags"))
+    write(target, ':')
+    toStream(source.tags, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Blog]; source: var JsonParser): Blog =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "title":
+      result.title = fromStream(typeof(result.title), source)
+    of "content":
+      result.content = fromStream(typeof(result.content), source)
+    of "publishedDate":
+      result.publishedDate = some(fromStream(
+          typeof(unsafeGet(result.publishedDate)), source))
+    of "author":
+      result.author = fromStream(typeof(result.author), source)
+    of "tags":
+      result.tags = fromStream(typeof(result.tags), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}

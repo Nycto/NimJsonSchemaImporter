@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   Location* {.byref.} = object
@@ -35,4 +35,38 @@ proc toJsonHook*(source: Location): JsonNode =
   result = newJObject()
   result{"latitude"} = newJFloat(source.latitude)
   result{"longitude"} = newJFloat(source.longitude)
+
+proc toStream*(source: Location; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("latitude"))
+  write(target, ':')
+  toStream(source.latitude, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("longitude"))
+  write(target, ':')
+  toStream(source.longitude, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Location]; source: var JsonParser): Location =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "latitude":
+      result.latitude = fromStream(typeof(result.latitude), source)
+    of "longitude":
+      result.longitude = fromStream(typeof(result.longitude), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}

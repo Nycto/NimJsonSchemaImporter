@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   HealthEmergencyContact* {.byref.} = object
@@ -48,6 +48,44 @@ proc toJsonHook*(source: HealthEmergencyContact): JsonNode =
     result{"username"} = newJString(unsafeGet(source.username))
   if isSome(source.email):
     result{"email"} = newJString(unsafeGet(source.email))
+
+proc toStream*(source: HealthEmergencyContact; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.username):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("username"))
+    write(target, ':')
+    toStream(unsafeGet(source.username), target)
+  if isSome(source.email):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("email"))
+    write(target, ':')
+    toStream(unsafeGet(source.email), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[HealthEmergencyContact];
+                 source: var JsonParser): HealthEmergencyContact =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "username":
+      result.username = some(fromStream(typeof(unsafeGet(result.username)),
+                                        source))
+    of "email":
+      result.email = some(fromStream(typeof(unsafeGet(result.email)), source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[Health]; a, b: Health): bool =
   equals(typeof(a.patientName), a.patientName, b.patientName) and
@@ -125,4 +163,73 @@ proc toJsonHook*(source: Health): JsonNode =
       output
   if isSome(source.emergencyContact):
     result{"emergencyContact"} = toJsonHook(unsafeGet(source.emergencyContact))
+
+proc toStream*(source: Health; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("patientName"))
+  write(target, ':')
+  toStream(source.patientName, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("dateOfBirth"))
+  write(target, ':')
+  toStream(source.dateOfBirth, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("bloodType"))
+  write(target, ':')
+  toStream(source.bloodType, target)
+  if len(source.allergies) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("allergies"))
+    write(target, ':')
+    toStream(source.allergies, target)
+  if len(source.conditions) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("conditions"))
+    write(target, ':')
+    toStream(source.conditions, target)
+  if len(source.medications) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("medications"))
+    write(target, ':')
+    toStream(source.medications, target)
+  if isSome(source.emergencyContact):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("emergencyContact"))
+    write(target, ':')
+    toStream(unsafeGet(source.emergencyContact), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Health]; source: var JsonParser): Health =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "patientName":
+      result.patientName = fromStream(typeof(result.patientName), source)
+    of "dateOfBirth":
+      result.dateOfBirth = fromStream(typeof(result.dateOfBirth), source)
+    of "bloodType":
+      result.bloodType = fromStream(typeof(result.bloodType), source)
+    of "allergies":
+      result.allergies = fromStream(typeof(result.allergies), source)
+    of "conditions":
+      result.conditions = fromStream(typeof(result.conditions), source)
+    of "medications":
+      result.medications = fromStream(typeof(result.medications), source)
+    of "emergencyContact":
+      result.emergencyContact = some(fromStream(
+          typeof(unsafeGet(result.emergencyContact)), source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}
