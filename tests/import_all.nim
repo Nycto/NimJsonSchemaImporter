@@ -10,7 +10,7 @@ importJsonSchema("examples/enumerated_values/schema.json", conf("EnumeratedValue
 importJsonSchema("examples/complex_object/schema.json", conf("ComplexObject"))
 # importJsonSchema("examples/union/schema.json", conf("Union"))
 # importJsonSchema("examples/file_system/schema.json", conf("FileSystem"))
-# importJsonSchema("examples/ecommerce/schema.json", conf("Ecommerce"))
+importJsonSchema("examples/ecommerce/schema.json", conf("Ecommerce"))
 # importJsonSchema("examples/ldtk/schema.json", conf("Ldtk"))
 # importJsonSchema("examples/aseprite/schema.json", conf("Aseprite"))
 importJsonSchema("examples/consts/schema.json", conf("Consts"))

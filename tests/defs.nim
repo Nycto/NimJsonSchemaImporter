@@ -1,7 +1,7 @@
 # https://json-schema.org/learn/json-schema-examples
 buildTest("address", Address)
 buildTest("blog", Blog)
-# buildTest("ecommerce", EcommerceOrderSchema)
+buildTest("ecommerce", EcommerceOrderSchema)
 buildTest("location", Location)
 buildTest("health", Health)
 buildTest("movie", Movie)

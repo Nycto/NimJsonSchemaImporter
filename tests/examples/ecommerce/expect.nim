@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   EcommerceProductSchema* {.byref.} = object
@@ -44,6 +44,43 @@ proc toJsonHook*(source: EcommerceProductSchema): JsonNode =
   if isSome(source.price):
     result{"price"} = newJFloat(unsafeGet(source.price))
 
+proc toStream*(source: EcommerceProductSchema; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.name):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("name"))
+    write(target, ':')
+    toStream(unsafeGet(source.name), target)
+  if isSome(source.price):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("price"))
+    write(target, ':')
+    toStream(unsafeGet(source.price), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[EcommerceProductSchema];
+                 source: var JsonParser): EcommerceProductSchema =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "name":
+      result.name = some(fromStream(typeof(unsafeGet(result.name)), source))
+    of "price":
+      result.price = some(fromStream(typeof(unsafeGet(result.price)), source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[EcommerceOrderSchema]; a, b: EcommerceOrderSchema): bool =
   equals(typeof(a.orderId), a.orderId, b.orderId) and
       equals(typeof(a.items), a.items, b.items)
@@ -77,4 +114,41 @@ proc toJsonHook*(source: EcommerceOrderSchema): JsonNode =
       for entry in cursor:
         output.add(toJsonHook(entry))
       output
+
+proc toStream*(source: EcommerceOrderSchema; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.orderId):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("orderId"))
+    write(target, ':')
+    toStream(unsafeGet(source.orderId), target)
+  if len(source.items) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("items"))
+    write(target, ':')
+    toStream(source.items, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[EcommerceOrderSchema];
+                 source: var JsonParser): EcommerceOrderSchema =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "orderId":
+      result.orderId = some(fromStream(typeof(unsafeGet(result.orderId)), source))
+    of "items":
+      result.items = fromStream(typeof(result.items), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}
