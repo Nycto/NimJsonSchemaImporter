@@ -17,7 +17,7 @@ buildTest("complex_object", Complex_object)
 # buildTest("file_system", File_system)
 #
 # # Specific use cases
-# buildTest("union", Union)
+buildTest("union", Union)
 buildTest("consts", Consts)
 #
 # # Specific applications

@@ -141,6 +141,7 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     typ.buildUnionUnpacker(result),
     typ.buildUnionBinSerde(result),
     typ.buildSaxUnionEncoder(result),
+    typ.buildSaxUnionDecoder(result),
   )
 
 proc genMap(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =

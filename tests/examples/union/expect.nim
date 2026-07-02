@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   UnionUnion* {.byref.} = object
@@ -158,6 +158,20 @@ proc fromBinary(_: typedesc[UnionUnion]; source: string; idx: var int): UnionUni
     return UnionUnion(kind: 3,
                       key3: fromBinary(typeof(result.key3), source, idx))
   
+proc toStream*(source: UnionUnion; target: Stream) =
+  case source.kind
+  of 0:
+    toStream(source.key0, target)
+  of 1:
+    toStream(source.key1, target)
+  of 2:
+    toStream(source.key2, target)
+  of 3:
+    toStream(source.key3, target)
+  
+proc fromStream*(typ: typedesc[UnionUnion]; source: var JsonParser): UnionUnion =
+  jsonTo(fromStream(JsonNode, source), UnionUnion)
+
 proc equals(_: typedesc[UnionKey3]; a, b: UnionKey3): bool =
   equals(typeof(a.foo), a.foo, b.foo)
 
@@ -178,6 +192,35 @@ proc toJsonHook*(source: UnionKey3): JsonNode =
   result = newJObject()
   if isSome(source.foo):
     result{"foo"} = newJString(unsafeGet(source.foo))
+
+proc toStream*(source: UnionKey3; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.foo):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("foo"))
+    write(target, ':')
+    toStream(unsafeGet(source.foo), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[UnionKey3]; source: var JsonParser): UnionKey3 =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "foo":
+      result.foo = some(fromStream(typeof(unsafeGet(result.foo)), source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 converter forUnionKey3Union*(value: UnionKey3): UnionKey3Union =
   return UnionKey3Union(kind: 0, key0: value)
@@ -348,6 +391,22 @@ proc fromBinary(_: typedesc[UnionKey3Union]; source: string; idx: var int): Unio
     return UnionKey3Union(kind: 4,
                           key4: fromBinary(typeof(result.key4), source, idx))
   
+proc toStream*(source: UnionKey3Union; target: Stream) =
+  case source.kind
+  of 0:
+    toStream(source.key0, target)
+  of 1:
+    toStream(source.key1, target)
+  of 2:
+    toStream(source.key2, target)
+  of 3:
+    toStream(source.key3, target)
+  of 4:
+    toStream(source.key4, target)
+  
+proc fromStream*(typ: typedesc[UnionKey3Union]; source: var JsonParser): UnionKey3Union =
+  jsonTo(fromStream(JsonNode, source), UnionKey3Union)
+
 proc equals(_: typedesc[Union]; a, b: Union): bool =
   equals(typeof(a.key1), a.key1, b.key1) and
       equals(typeof(a.key2), a.key2, b.key2) and
@@ -386,4 +445,44 @@ proc toJsonHook*(source: Union): JsonNode =
     toJsonHook(unsafeGet(source.key3))
   else:
     newJNull()
+
+proc toStream*(source: Union; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("key1"))
+  write(target, ':')
+  toStream(source.key1, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("key2"))
+  write(target, ':')
+  toStream(source.key2, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("key3"))
+  write(target, ':')
+  toStream(source.key3, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Union]; source: var JsonParser): Union =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "key1":
+      result.key1 = fromStream(typeof(result.key1), source)
+    of "key2":
+      result.key2 = fromStream(typeof(result.key2), source)
+    of "key3":
+      result.key3 = fromStream(typeof(result.key3), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}

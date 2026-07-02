@@ -93,9 +93,30 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
       eat(`source`, tkCurlyRi)
 
 proc buildSaxUnionEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
-  ## Builds the `toJsonHook` function for encoding a union
+  ## Builds the `toStream` proc for encoding a union
   assert(typ.kind == UnionType)
+
+  var cases = nnkCaseStmt.newTree(newDotExpr(source, ident("kind")))
+
+  for i, subtype in typ.subtypes:
+    let key = i.unionKey
+    cases.add(
+      nnkOfBranch.newTree(i.newLit, newCall(toStream, newDotExpr(source, key), target))
+    )
 
   return quote:
     proc toStream*(`source`: `typeName`, `target`: Stream) =
-      discard
+      `cases`
+
+proc buildSaxUnionDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
+  ## Builds the `fromStream` proc for decoding a union type. Rather than
+  ## re-implementing the union's type-disambiguation logic (which can
+  ## require arbitrary lookahead, e.g. checking which required properties
+  ## an object has) against the raw token stream, it buffers the value as a
+  ## `JsonNode` and delegates to the existing `fromJsonHook`-based union
+  ## decoder via `jsonTo`.
+  assert(typ.kind == UnionType)
+
+  return quote:
+    proc fromStream*(typ: typedesc[`typeName`], `source`: var JsonParser): `typeName` =
+      jsonTo(fromStream(JsonNode, `source`), `typeName`)

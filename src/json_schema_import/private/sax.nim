@@ -19,6 +19,8 @@ proc toStream*(source: bool, target: Stream) =
 proc toStream*[T](source: Option[T], target: Stream) =
   if source.isSome:
     toStream(source.unsafeGet, target)
+  else:
+    target.write("null")
 
 proc toStream*(source: string, target: Stream) =
   target.write(source.escapeJson)
