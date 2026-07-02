@@ -34,6 +34,11 @@ proc toStream*[T](source: seq[T], target: Stream) =
 proc toStream*(source: JsonNode, target: Stream) =
   target.write($source)
 
+proc toStream*[T: enum](source: T, target: Stream) =
+  ## Generated enum fields carry the schema's original string as their enum
+  ## field value (see `genEnum`), so `$source` is already the JSON string.
+  toStream($source, target)
+
 proc writeComma*(hasEmitted: var bool, target: Stream) =
   if hasEmitted:
     target.write(',')
@@ -160,6 +165,12 @@ proc fromStream*(typ: typedesc[JsonNode], source: var JsonParser): JsonNode =
     eat(source, tkBracketRi)
   else:
     raiseParseErr(source, "value")
+
+proc fromStream*[T: enum](typ: typedesc[T], source: var JsonParser): T =
+  if source.tok != tkString:
+    raiseParseErr(source, "string")
+  result = parseEnum[T](source.a)
+  discard getTok(source)
 
 proc fromStream*(typ: typedesc, source: Stream, filename: string): typ =
   ## Reads a JSON file to the given type

@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   MovieGenre* = enum
@@ -71,4 +71,66 @@ proc toJsonHook*(source: Movie): JsonNode =
       for entry in cursor:
         output.add(newJString(entry))
       output
+
+proc toStream*(source: Movie; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("title"))
+  write(target, ':')
+  toStream(source.title, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("director"))
+  write(target, ':')
+  toStream(source.director, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("releaseDate"))
+  write(target, ':')
+  toStream(source.releaseDate, target)
+  if isSome(source.genre):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("genre"))
+    write(target, ':')
+    toStream(unsafeGet(source.genre), target)
+  if isSome(source.duration):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("duration"))
+    write(target, ':')
+    toStream(unsafeGet(source.duration), target)
+  if len(source.`cast`) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("cast"))
+    write(target, ':')
+    toStream(source.`cast`, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Movie]; source: var JsonParser): Movie =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "title":
+      result.title = fromStream(typeof(result.title), source)
+    of "director":
+      result.director = fromStream(typeof(result.director), source)
+    of "releaseDate":
+      result.releaseDate = fromStream(typeof(result.releaseDate), source)
+    of "genre":
+      result.genre = some(fromStream(typeof(unsafeGet(result.genre)), source))
+    of "duration":
+      result.duration = some(fromStream(typeof(unsafeGet(result.duration)),
+                                        source))
+    of "cast":
+      result.`cast` = fromStream(typeof(result.`cast`), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}

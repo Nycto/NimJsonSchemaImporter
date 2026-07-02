@@ -4,7 +4,7 @@ buildTest("address", Address)
 # buildTest("ecommerce", EcommerceOrderSchema)
 # buildTest("location", Location)
 # buildTest("health", Health)
-# buildTest("movie", Movie)
+buildTest("movie", Movie)
 # buildTest("user_profile", User_profile)
 
 # https://json-schema.org/learn/miscellaneous-examples
