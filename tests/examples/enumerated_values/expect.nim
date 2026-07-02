@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   Enumerated_values* {.byref.} = object
@@ -29,4 +29,34 @@ proc toJsonHook*(source: Enumerated_values): JsonNode =
   result = newJObject()
   if isSome(source.data):
     result{"data"} = unsafeGet(source.data)
+
+proc toStream*(source: Enumerated_values; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.data):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("data"))
+    write(target, ':')
+    toStream(unsafeGet(source.data), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Enumerated_values];
+                 source: var JsonParser): Enumerated_values =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "data":
+      result.data = some(fromStream(typeof(unsafeGet(result.data)), source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}

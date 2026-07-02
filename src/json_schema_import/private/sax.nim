@@ -31,6 +31,9 @@ proc toStream*[T](source: seq[T], target: Stream) =
     toStream(item, target)
   target.write(']')
 
+proc toStream*(source: JsonNode, target: Stream) =
+  target.write($source)
+
 proc writeComma*(hasEmitted: var bool, target: Stream) =
   if hasEmitted:
     target.write(',')
@@ -107,6 +110,56 @@ proc fromStream*[T](typ: typedesc[seq[T]], source: var JsonParser): seq[T] =
     else:
       break
   eat(source, tkBracketRi)
+
+proc fromStream*(typ: typedesc[JsonNode], source: var JsonParser): JsonNode =
+  ## Parses an arbitrary JSON value into a JsonNode tree, for schemas that
+  ## don't pin down a concrete type (e.g. mixed-type `enum`s).
+  case source.tok
+  of tkString:
+    result = newJString(source.a)
+    discard getTok(source)
+  of tkInt:
+    result = newJInt(parseBiggestInt(source.a))
+    discard getTok(source)
+  of tkFloat:
+    result = newJFloat(parseFloat(source.a))
+    discard getTok(source)
+  of tkTrue:
+    result = newJBool(true)
+    discard getTok(source)
+  of tkFalse:
+    result = newJBool(false)
+    discard getTok(source)
+  of tkNull:
+    result = newJNull()
+    discard getTok(source)
+  of tkCurlyLe:
+    result = newJObject()
+    discard getTok(source)
+    while source.tok != tkCurlyRi:
+      if source.tok != tkString:
+        raiseParseErr(source, "string")
+      let key = source.a
+      discard getTok(source)
+      eat(source, tkColon)
+      result[key] = fromStream(JsonNode, source)
+      if source.tok == tkComma:
+        discard getTok(source)
+      else:
+        break
+    eat(source, tkCurlyRi)
+  of tkBracketLe:
+    result = newJArray()
+    discard getTok(source)
+    while source.tok != tkBracketRi:
+      result.add(fromStream(JsonNode, source))
+      if source.tok == tkComma:
+        discard getTok(source)
+      else:
+        break
+    eat(source, tkBracketRi)
+  else:
+    raiseParseErr(source, "value")
 
 proc fromStream*(typ: typedesc, source: Stream, filename: string): typ =
   ## Reads a JSON file to the given type

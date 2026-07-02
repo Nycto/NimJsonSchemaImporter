@@ -10,7 +10,7 @@ buildTest("address", Address)
 # https://json-schema.org/learn/miscellaneous-examples
 buildTest("basic", Basic)
 buildTest("array_of_things", Array_of_things)
-# buildTest("enumerated_values", Enumerated_values)
+buildTest("enumerated_values", Enumerated_values)
 # buildTest("complex_object", Complex_object)
 
 # # https://json-schema.org/learn/file-system#full-entry
