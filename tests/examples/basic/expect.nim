@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   Basic* {.byref.} = object
@@ -44,4 +44,49 @@ proc toJsonHook*(source: Basic): JsonNode =
     result{"lastName"} = newJString(unsafeGet(source.lastName))
   if isSome(source.age):
     result{"age"} = newJInt(unsafeGet(source.age))
+
+proc toStream*(source: Basic; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.firstName):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("firstName"))
+    write(target, ':')
+    toStream(unsafeGet(source.firstName), target)
+  if isSome(source.lastName):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("lastName"))
+    write(target, ':')
+    toStream(unsafeGet(source.lastName), target)
+  if isSome(source.age):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("age"))
+    write(target, ':')
+    toStream(unsafeGet(source.age), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Basic]; source: var JsonParser): Basic =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "firstName":
+      result.firstName = some(fromStream(typeof(unsafeGet(result.firstName)),
+          source))
+    of "lastName":
+      result.lastName = some(fromStream(typeof(unsafeGet(result.lastName)),
+                                        source))
+    of "age":
+      result.age = some(fromStream(typeof(unsafeGet(result.age)), source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}

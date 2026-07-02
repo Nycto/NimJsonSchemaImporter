@@ -23,6 +23,14 @@ proc toStream*[T](source: Option[T], target: Stream) =
 proc toStream*(source: string, target: Stream) =
   target.write(source.escapeJson)
 
+proc toStream*[T](source: seq[T], target: Stream) =
+  var hasEmitted: bool
+  target.write('[')
+  for item in source:
+    hasEmitted.writeComma(target)
+    toStream(item, target)
+  target.write(']')
+
 proc writeComma*(hasEmitted: var bool, target: Stream) =
   if hasEmitted:
     target.write(',')
@@ -89,6 +97,16 @@ proc fromStream*[T](typ: typedesc[Option[T]], source: var JsonParser): Option[T]
     discard getTok(source)
   else:
     result = some(fromStream(T, source))
+
+proc fromStream*[T](typ: typedesc[seq[T]], source: var JsonParser): seq[T] =
+  eat(source, tkBracketLe)
+  while source.tok != tkBracketRi:
+    result.add(fromStream(T, source))
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkBracketRi)
 
 proc fromStream*(typ: typedesc, source: Stream, filename: string): typ =
   ## Reads a JSON file to the given type

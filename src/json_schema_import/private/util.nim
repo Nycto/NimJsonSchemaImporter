@@ -53,7 +53,7 @@ proc safePropName*(name: string): NimNode =
 proc formatCodeDump*(code: NimNode): string =
   result = "{.push warning[UnusedImport]:off.}\n"
   result &= "import std/[json, jsonutils, tables, options]\n"
-  result &= "import json_schema_import/private/[stringify, equality, bin]\n"
+  result &= "import json_schema_import/private/[stringify, equality, bin, sax]\n"
   result &= code.repr.replace(re2"\`gensym_?\d+", "")
   result &= "{.pop.}\n"
 

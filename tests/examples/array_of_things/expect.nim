@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   Array_of_thingsVeggie* {.byref.} = object
@@ -43,6 +43,41 @@ proc toJsonHook*(source: Array_of_thingsVeggie): JsonNode =
   result{"veggieName"} = newJString(source.veggieName)
   result{"veggieLike"} = newJBool(source.veggieLike)
 
+proc toStream*(source: Array_of_thingsVeggie; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("veggieName"))
+  write(target, ':')
+  toStream(source.veggieName, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("veggieLike"))
+  write(target, ':')
+  toStream(source.veggieLike, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Array_of_thingsVeggie];
+                 source: var JsonParser): Array_of_thingsVeggie =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "veggieName":
+      result.veggieName = fromStream(typeof(result.veggieName), source)
+    of "veggieLike":
+      result.veggieLike = fromStream(typeof(result.veggieLike), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[Array_of_things]; a, b: Array_of_things): bool =
   equals(typeof(a.fruits), a.fruits, b.fruits) and
       equals(typeof(a.vegetables), a.vegetables, b.vegetables)
@@ -80,4 +115,41 @@ proc toJsonHook*(source: Array_of_things): JsonNode =
       for entry in cursor:
         output.add(toJsonHook(entry))
       output
+
+proc toStream*(source: Array_of_things; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if len(source.fruits) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("fruits"))
+    write(target, ':')
+    toStream(source.fruits, target)
+  if len(source.vegetables) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("vegetables"))
+    write(target, ':')
+    toStream(source.vegetables, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Array_of_things];
+                 source: var JsonParser): Array_of_things =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "fruits":
+      result.fruits = fromStream(typeof(result.fruits), source)
+    of "vegetables":
+      result.vegetables = fromStream(typeof(result.vegetables), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}

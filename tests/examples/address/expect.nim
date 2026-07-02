@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   Address* {.byref.} = object
@@ -78,4 +78,76 @@ proc toJsonHook*(source: Address): JsonNode =
   if isSome(source.postalCode):
     result{"postalCode"} = newJString(unsafeGet(source.postalCode))
   result{"countryName"} = newJString(source.countryName)
+
+proc toStream*(source: Address; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.postOfficeBox):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("postOfficeBox"))
+    write(target, ':')
+    toStream(unsafeGet(source.postOfficeBox), target)
+  if isSome(source.extendedAddress):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("extendedAddress"))
+    write(target, ':')
+    toStream(unsafeGet(source.extendedAddress), target)
+  if isSome(source.streetAddress):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("streetAddress"))
+    write(target, ':')
+    toStream(unsafeGet(source.streetAddress), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("locality"))
+  write(target, ':')
+  toStream(source.locality, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("region"))
+  write(target, ':')
+  toStream(source.region, target)
+  if isSome(source.postalCode):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("postalCode"))
+    write(target, ':')
+    toStream(unsafeGet(source.postalCode), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("countryName"))
+  write(target, ':')
+  toStream(source.countryName, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Address]; source: var JsonParser): Address =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "postOfficeBox":
+      result.postOfficeBox = some(fromStream(
+          typeof(unsafeGet(result.postOfficeBox)), source))
+    of "extendedAddress":
+      result.extendedAddress = some(fromStream(
+          typeof(unsafeGet(result.extendedAddress)), source))
+    of "streetAddress":
+      result.streetAddress = some(fromStream(
+          typeof(unsafeGet(result.streetAddress)), source))
+    of "locality":
+      result.locality = fromStream(typeof(result.locality), source)
+    of "region":
+      result.region = fromStream(typeof(result.region), source)
+    of "postalCode":
+      result.postalCode = some(fromStream(typeof(unsafeGet(result.postalCode)),
+          source))
+    of "countryName":
+      result.countryName = fromStream(typeof(result.countryName), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}
