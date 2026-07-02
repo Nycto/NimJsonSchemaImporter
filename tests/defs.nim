@@ -18,7 +18,7 @@ buildTest("array_of_things", Array_of_things)
 #
 # # Specific use cases
 # buildTest("union", Union)
-# buildTest("consts", Consts)
+buildTest("consts", Consts)
 #
 # # Specific applications
 # buildTest("ldtk", LdtkJsonRoot)

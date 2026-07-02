@@ -13,13 +13,25 @@ proc writeKeyValue(key: string, readProp: NimNode): NimNode =
     write(`target`, ':')
     `toStream`(`readProp`, `target`)
 
+proc writeConstKeyValue(key: string, value: JsonNode): NimNode =
+  ## Writes a `const` property's fixed value, computed once at macro
+  ## expansion time since it never varies at runtime.
+  let jsonText = $value
+  return quote:
+    `hasEmitted`.writeComma(`target`)
+    write(`target`, escapeJson(`key`))
+    write(`target`, ':')
+    write(`target`, `jsonText`)
+
 proc buildSaxObjEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
   var encodeKeys = newStmtList()
 
   for key, (propName, propType, required) in typ.properties:
     let readProp = newDotExpr(source, safePropName(propName))
 
-    if propType.kind in SELF_OPTIONAL:
+    if propType.kind == ConstValueType:
+      encodeKeys.add(writeConstKeyValue(key, propType.value))
+    elif propType.kind in SELF_OPTIONAL:
       let encode = writeKeyValue(key, readProp)
       encodeKeys.add quote do:
         if len(`readProp`) > 0:

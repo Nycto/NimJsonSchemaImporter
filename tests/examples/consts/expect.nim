@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   Consts* {.byref.} = object
@@ -43,4 +43,70 @@ proc toJsonHook*(source: Consts): JsonNode =
   result{"obj"} = `%*`({"key": newJString("value"), "key2": newJString("value2")})
   result{"emptyObj"} = `%*`({:})
   result{"emptyArray"} = `%*`([])
+
+proc toStream*(source: Consts; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.nonConstField):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("nonConstField"))
+    write(target, ':')
+    toStream(unsafeGet(source.nonConstField), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("nil"))
+  write(target, ':')
+  write(target, "null")
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("integer"))
+  write(target, ':')
+  write(target, "42")
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("str"))
+  write(target, ':')
+  write(target, "\"example\"")
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("float"))
+  write(target, ':')
+  write(target, "3.14")
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("bool"))
+  write(target, ':')
+  write(target, "true")
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("list"))
+  write(target, ':')
+  write(target, "[1,2,3]")
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("obj"))
+  write(target, ':')
+  write(target, "{\"key\":\"value\",\"key2\":\"value2\"}")
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("emptyObj"))
+  write(target, ':')
+  write(target, "{}")
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("emptyArray"))
+  write(target, ':')
+  write(target, "[]")
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Consts]; source: var JsonParser): Consts =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "nonConstField":
+      result.nonConstField = some(fromStream(
+          typeof(unsafeGet(result.nonConstField)), source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}
