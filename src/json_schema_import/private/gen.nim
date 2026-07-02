@@ -9,7 +9,8 @@ import
   namechain,
   equalsgen,
   dollargen,
-  bingen
+  bingen,
+  saxgen
 
 type
   GenContext = ref object
@@ -81,6 +82,8 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     typ.buildDollars(result),
     typ.buildObjectDecoder(result),
     typ.buildObjectEncoder(result),
+    typ.buildSaxObjEncoder(result),
+    typ.buildSaxObjDecoder(result),
   )
 
 proc genArray(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
@@ -137,6 +140,7 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     typ.buildUnionEncoder(result),
     typ.buildUnionUnpacker(result),
     typ.buildUnionBinSerde(result),
+    typ.buildSaxUnionEncoder(result),
   )
 
 proc genMap(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
