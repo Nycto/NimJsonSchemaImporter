@@ -14,7 +14,7 @@ buildTest("enumerated_values", Enumerated_values)
 buildTest("complex_object", Complex_object)
 
 # # https://json-schema.org/learn/file-system#full-entry
-# buildTest("file_system", File_system)
+buildTest("file_system", File_system)
 #
 # # Specific use cases
 buildTest("union", Union)

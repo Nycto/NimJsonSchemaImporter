@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   File_systemType* = enum
@@ -83,6 +83,41 @@ proc toJsonHook*(source: File_systemDiskDevice): JsonNode =
   result{"type"} = `%`(source.`type`)
   result{"device"} = newJString(source.device)
 
+proc toStream*(source: File_systemDiskDevice; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("type"))
+  write(target, ':')
+  toStream(source.`type`, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("device"))
+  write(target, ':')
+  toStream(source.device, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[File_systemDiskDevice];
+                 source: var JsonParser): File_systemDiskDevice =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "type":
+      result.`type` = fromStream(typeof(result.`type`), source)
+    of "device":
+      result.device = fromStream(typeof(result.device), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 converter forFile_systemUnion*(value: File_systemDiskDevice): File_systemUnion =
   return File_systemUnion(kind: 0, key0: value)
 
@@ -113,6 +148,41 @@ proc toJsonHook*(source: File_systemDiskUUID): JsonNode =
   result = newJObject()
   result{"type"} = `%`(source.`type`)
   result{"label"} = newJString(source.label)
+
+proc toStream*(source: File_systemDiskUUID; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("type"))
+  write(target, ':')
+  toStream(source.`type`, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("label"))
+  write(target, ':')
+  toStream(source.label, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[File_systemDiskUUID];
+                 source: var JsonParser): File_systemDiskUUID =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "type":
+      result.`type` = fromStream(typeof(result.`type`), source)
+    of "label":
+      result.label = fromStream(typeof(result.label), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 converter forFile_systemUnion*(value: File_systemDiskUUID): File_systemUnion =
   return File_systemUnion(kind: 1, key1: value)
@@ -151,6 +221,46 @@ proc toJsonHook*(source: File_systemNfs): JsonNode =
   result{"remotePath"} = newJString(source.remotePath)
   result{"server"} = newJString(source.server)
 
+proc toStream*(source: File_systemNfs; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("type"))
+  write(target, ':')
+  toStream(source.`type`, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("remotePath"))
+  write(target, ':')
+  toStream(source.remotePath, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("server"))
+  write(target, ':')
+  toStream(source.server, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[File_systemNfs]; source: var JsonParser): File_systemNfs =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "type":
+      result.`type` = fromStream(typeof(result.`type`), source)
+    of "remotePath":
+      result.remotePath = fromStream(typeof(result.remotePath), source)
+    of "server":
+      result.server = fromStream(typeof(result.server), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 converter forFile_systemUnion*(value: File_systemNfs): File_systemUnion =
   return File_systemUnion(kind: 2, key2: value)
 
@@ -181,6 +291,41 @@ proc toJsonHook*(source: File_systemTmpfs): JsonNode =
   result = newJObject()
   result{"type"} = `%`(source.`type`)
   result{"sizeInMB"} = newJInt(source.sizeInMB)
+
+proc toStream*(source: File_systemTmpfs; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("type"))
+  write(target, ':')
+  toStream(source.`type`, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("sizeInMB"))
+  write(target, ':')
+  toStream(source.sizeInMB, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[File_systemTmpfs];
+                 source: var JsonParser): File_systemTmpfs =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "type":
+      result.`type` = fromStream(typeof(result.`type`), source)
+    of "sizeInMB":
+      result.sizeInMB = fromStream(typeof(result.sizeInMB), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 converter forFile_systemUnion*(value: File_systemTmpfs): File_systemUnion =
   return File_systemUnion(kind: 3, key3: value)
@@ -294,6 +439,21 @@ proc fromBinary(_: typedesc[File_systemUnion]; source: string; idx: var int): Fi
     return File_systemUnion(kind: 3,
                             key3: fromBinary(typeof(result.key3), source, idx))
   
+proc toStream*(source: File_systemUnion; target: Stream) =
+  case source.kind
+  of 0:
+    toStream(source.key0, target)
+  of 1:
+    toStream(source.key1, target)
+  of 2:
+    toStream(source.key2, target)
+  of 3:
+    toStream(source.key3, target)
+  
+proc fromStream*(typ: typedesc[File_systemUnion];
+                 source: var JsonParser): File_systemUnion =
+  jsonTo(fromStream(JsonNode, source), File_systemUnion)
+
 proc equals(_: typedesc[File_system]; a, b: File_system): bool =
   equals(typeof(a.storage), a.storage, b.storage) and
       equals(typeof(a.fstype), a.fstype, b.fstype) and
@@ -340,4 +500,54 @@ proc toJsonHook*(source: File_system): JsonNode =
       output
   if isSome(source.readonly):
     result{"readonly"} = newJBool(unsafeGet(source.readonly))
+
+proc toStream*(source: File_system; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("storage"))
+  write(target, ':')
+  toStream(source.storage, target)
+  if isSome(source.fstype):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("fstype"))
+    write(target, ':')
+    toStream(unsafeGet(source.fstype), target)
+  if len(source.options) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("options"))
+    write(target, ':')
+    toStream(source.options, target)
+  if isSome(source.readonly):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("readonly"))
+    write(target, ':')
+    toStream(unsafeGet(source.readonly), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[File_system]; source: var JsonParser): File_system =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "storage":
+      result.storage = fromStream(typeof(result.storage), source)
+    of "fstype":
+      result.fstype = some(fromStream(typeof(unsafeGet(result.fstype)), source))
+    of "options":
+      result.options = fromStream(typeof(result.options), source)
+    of "readonly":
+      result.readonly = some(fromStream(typeof(unsafeGet(result.readonly)),
+                                        source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}
