@@ -65,16 +65,22 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
     let safeKey = safePropName(propName)
     let decode =
       if subtype.kind in SELF_OPTIONAL or required:
-        quote do:
+        quote:
           result.`safeKey` = fromStream(typeof(result.`safeKey`), `source`)
       else:
         assert(subtype.kind == OptionalType)
-        quote do:
-          result.`safeKey` = some(fromStream(typeof(unsafeGet(result.`safeKey`)), `source`))
+        quote:
+          result.`safeKey` =
+            some(fromStream(typeof(unsafeGet(result.`safeKey`)), `source`))
 
     cases.add(nnkOfBranch.newTree(newLit(jsonKey), decode))
 
-  cases.add(nnkElse.newTree(quote do: skipValue(`source`)))
+  cases.add(
+    nnkElse.newTree(
+      quote do:
+        skipValue(`source`)
+    )
+  )
 
   return quote:
     proc fromStream*(typ: typedesc[`typeName`], `source`: var JsonParser): `typeName` =
