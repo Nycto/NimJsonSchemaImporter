@@ -33,6 +33,16 @@ proc toStream*[T](source: seq[T], target: Stream) =
     toStream(item, target)
   target.write(']')
 
+proc toStream*[V](source: OrderedTable[string, V], target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  for key in source.keys:
+    hasEmitted.writeComma(target)
+    toStream(key, target)
+    target.write(':')
+    toStream(source[key], target)
+  target.write('}')
+
 proc toStream*(source: JsonNode, target: Stream) =
   target.write($source)
 
@@ -117,6 +127,23 @@ proc fromStream*[T](typ: typedesc[seq[T]], source: var JsonParser): seq[T] =
     else:
       break
   eat(source, tkBracketRi)
+
+proc fromStream*[V](
+    typ: typedesc[OrderedTable[string, V]], source: var JsonParser
+): OrderedTable[string, V] =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    result[key] = fromStream(V, source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc fromStream*(typ: typedesc[JsonNode], source: var JsonParser): JsonNode =
   ## Parses an arbitrary JSON value into a JsonNode tree, for schemas that

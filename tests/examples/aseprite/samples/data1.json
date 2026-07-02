@@ -1,0 +1,57 @@
+{
+  "frames": {
+    "smoke 0.aseprite": {
+      "duration": 250.0,
+      "frame": {
+        "h": 32.0,
+        "w": 16.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      "rotated": false,
+      "sourceSize": {
+        "h": 32.0,
+        "w": 16.0
+      },
+      "spriteSourceSize": {
+        "h": 32.0,
+        "w": 16.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      "trimmed": false
+    },
+    "smoke 1.aseprite": {
+      "duration": 250.0,
+      "frame": {
+        "h": 32.0,
+        "w": 16.0,
+        "x": 16.0,
+        "y": 0.0
+      },
+      "rotated": false,
+      "sourceSize": {
+        "h": 32.0,
+        "w": 16.0
+      },
+      "spriteSourceSize": {
+        "h": 32.0,
+        "w": 16.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      "trimmed": false
+    }
+  },
+  "meta": {
+    "app": "http://www.aseprite.org/",
+    "format": "RGBA8888",
+    "image": "smoke-table-16-32.png",
+    "scale": "1",
+    "size": {
+      "h": 32.0,
+      "w": 32.0
+    },
+    "version": "1.x-dev"
+  }
+}
