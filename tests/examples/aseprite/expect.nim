@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   AsepriteRectangle* {.byref.} = object
@@ -82,13 +82,12 @@ type
   AsepriteSpriteSheet* {.byref.} = object
     frames*: AsepriteUnion
     meta*: AsepriteMeta
-proc `=copy`(a: var AsepriteRectangle;
-             b: AsepriteRectangle) {.error.}
+proc `=copy`(a: var AsepriteRectangle; b: AsepriteRectangle) {.
+    error.}
 proc toJsonHook*(source: AsepriteRectangle): JsonNode
 proc `=copy`(a: var AsepriteSize; b: AsepriteSize) {.error.}
 proc toJsonHook*(source: AsepriteSize): JsonNode
-proc `=copy`(a: var AsepriteFrame; b: AsepriteFrame) {.
-    error.}
+proc `=copy`(a: var AsepriteFrame; b: AsepriteFrame) {.error.}
 proc toJsonHook*(source: AsepriteFrame): JsonNode
 proc `=copy`(a: var AsepriteArrayFrame;
              b: AsepriteArrayFrame) {.error.}
@@ -151,6 +150,53 @@ proc toJsonHook*(source: AsepriteRectangle): JsonNode =
   result{"x"} = newJFloat(source.x)
   result{"y"} = newJFloat(source.y)
 
+proc toStream*(source: AsepriteRectangle; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("h"))
+  write(target, ':')
+  toStream(source.h, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("w"))
+  write(target, ':')
+  toStream(source.w, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("x"))
+  write(target, ':')
+  toStream(source.x, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("y"))
+  write(target, ':')
+  toStream(source.y, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[AsepriteRectangle];
+                 source: var JsonParser): AsepriteRectangle =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "h":
+      result.h = fromStream(typeof(result.h), source)
+    of "w":
+      result.w = fromStream(typeof(result.w), source)
+    of "x":
+      result.x = fromStream(typeof(result.x), source)
+    of "y":
+      result.y = fromStream(typeof(result.y), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[AsepriteSize]; a, b: AsepriteSize): bool =
   equals(typeof(a.h), a.h, b.h) and equals(typeof(a.w), a.w, b.w)
 
@@ -176,6 +222,40 @@ proc toJsonHook*(source: AsepriteSize): JsonNode =
   result = newJObject()
   result{"h"} = newJFloat(source.h)
   result{"w"} = newJFloat(source.w)
+
+proc toStream*(source: AsepriteSize; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("h"))
+  write(target, ':')
+  toStream(source.h, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("w"))
+  write(target, ':')
+  toStream(source.w, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[AsepriteSize]; source: var JsonParser): AsepriteSize =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "h":
+      result.h = fromStream(typeof(result.h), source)
+    of "w":
+      result.w = fromStream(typeof(result.w), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[AsepriteFrame]; a, b: AsepriteFrame): bool =
   equals(typeof(a.duration), a.duration, b.duration) and
@@ -229,6 +309,65 @@ proc toJsonHook*(source: AsepriteFrame): JsonNode =
   result{"sourceSize"} = toJsonHook(source.sourceSize)
   result{"spriteSourceSize"} = toJsonHook(source.spriteSourceSize)
   result{"trimmed"} = newJBool(source.trimmed)
+
+proc toStream*(source: AsepriteFrame; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("duration"))
+  write(target, ':')
+  toStream(source.duration, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("frame"))
+  write(target, ':')
+  toStream(source.frame, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("rotated"))
+  write(target, ':')
+  toStream(source.rotated, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("sourceSize"))
+  write(target, ':')
+  toStream(source.sourceSize, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("spriteSourceSize"))
+  write(target, ':')
+  toStream(source.spriteSourceSize, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("trimmed"))
+  write(target, ':')
+  toStream(source.trimmed, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[AsepriteFrame]; source: var JsonParser): AsepriteFrame =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "duration":
+      result.duration = fromStream(typeof(result.duration), source)
+    of "frame":
+      result.frame = fromStream(typeof(result.frame), source)
+    of "rotated":
+      result.rotated = fromStream(typeof(result.rotated), source)
+    of "sourceSize":
+      result.sourceSize = fromStream(typeof(result.sourceSize), source)
+    of "spriteSourceSize":
+      result.spriteSourceSize = fromStream(typeof(result.spriteSourceSize),
+          source)
+    of "trimmed":
+      result.trimmed = fromStream(typeof(result.trimmed), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 converter forAsepriteUnion*(value: OrderedTable[string, AsepriteFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 0, key0: value)
@@ -293,6 +432,72 @@ proc toJsonHook*(source: AsepriteArrayFrame): JsonNode =
   result{"sourceSize"} = toJsonHook(source.sourceSize)
   result{"spriteSourceSize"} = toJsonHook(source.spriteSourceSize)
   result{"trimmed"} = newJBool(source.trimmed)
+
+proc toStream*(source: AsepriteArrayFrame; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("duration"))
+  write(target, ':')
+  toStream(source.duration, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("filename"))
+  write(target, ':')
+  toStream(source.filename, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("frame"))
+  write(target, ':')
+  toStream(source.frame, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("rotated"))
+  write(target, ':')
+  toStream(source.rotated, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("sourceSize"))
+  write(target, ':')
+  toStream(source.sourceSize, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("spriteSourceSize"))
+  write(target, ':')
+  toStream(source.spriteSourceSize, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("trimmed"))
+  write(target, ':')
+  toStream(source.trimmed, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[AsepriteArrayFrame];
+                 source: var JsonParser): AsepriteArrayFrame =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "duration":
+      result.duration = fromStream(typeof(result.duration), source)
+    of "filename":
+      result.filename = fromStream(typeof(result.filename), source)
+    of "frame":
+      result.frame = fromStream(typeof(result.frame), source)
+    of "rotated":
+      result.rotated = fromStream(typeof(result.rotated), source)
+    of "sourceSize":
+      result.sourceSize = fromStream(typeof(result.sourceSize), source)
+    of "spriteSourceSize":
+      result.spriteSourceSize = fromStream(typeof(result.spriteSourceSize),
+          source)
+    of "trimmed":
+      result.trimmed = fromStream(typeof(result.trimmed), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 converter forAsepriteUnion*(value: seq[AsepriteArrayFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 1, key1: value)
@@ -391,6 +596,16 @@ proc fromBinary(_: typedesc[AsepriteUnion]; source: string; idx: var int): Asepr
     return AsepriteUnion(kind: 1,
                          key1: fromBinary(typeof(result.key1), source, idx))
   
+proc toStream*(source: AsepriteUnion; target: Stream) =
+  case source.kind
+  of 0:
+    toStream(source.key0, target)
+  of 1:
+    toStream(source.key1, target)
+  
+proc fromStream*(typ: typedesc[AsepriteUnion]; source: var JsonParser): AsepriteUnion =
+  jsonTo(fromStream(JsonNode, source), AsepriteUnion)
+
 proc equals(_: typedesc[AsepriteFrameTag]; a, b: AsepriteFrameTag): bool =
   equals(typeof(a.direction), a.direction, b.direction) and
       equals(typeof(a.`from`), a.`from`, b.`from`) and
@@ -430,6 +645,53 @@ proc toJsonHook*(source: AsepriteFrameTag): JsonNode =
   result{"from"} = newJFloat(source.`from`)
   result{"name"} = newJString(source.name)
   result{"to"} = newJFloat(source.to)
+
+proc toStream*(source: AsepriteFrameTag; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("direction"))
+  write(target, ':')
+  toStream(source.direction, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("from"))
+  write(target, ':')
+  toStream(source.`from`, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("name"))
+  write(target, ':')
+  toStream(source.name, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("to"))
+  write(target, ':')
+  toStream(source.to, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[AsepriteFrameTag];
+                 source: var JsonParser): AsepriteFrameTag =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "direction":
+      result.direction = fromStream(typeof(result.direction), source)
+    of "from":
+      result.`from` = fromStream(typeof(result.`from`), source)
+    of "name":
+      result.name = fromStream(typeof(result.name), source)
+    of "to":
+      result.to = fromStream(typeof(result.to), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[AsepriteLayer]; a, b: AsepriteLayer): bool =
   equals(typeof(a.blendMode), a.blendMode, b.blendMode) and
@@ -485,6 +747,70 @@ proc toJsonHook*(source: AsepriteLayer): JsonNode =
   if isSome(source.opacity):
     result{"opacity"} = newJFloat(unsafeGet(source.opacity))
 
+proc toStream*(source: AsepriteLayer; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.blendMode):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("blendMode"))
+    write(target, ':')
+    toStream(unsafeGet(source.blendMode), target)
+  if isSome(source.color):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("color"))
+    write(target, ':')
+    toStream(unsafeGet(source.color), target)
+  if isSome(source.data):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("data"))
+    write(target, ':')
+    toStream(unsafeGet(source.data), target)
+  if isSome(source.group):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("group"))
+    write(target, ':')
+    toStream(unsafeGet(source.group), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("name"))
+  write(target, ':')
+  toStream(source.name, target)
+  if isSome(source.opacity):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("opacity"))
+    write(target, ':')
+    toStream(unsafeGet(source.opacity), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[AsepriteLayer]; source: var JsonParser): AsepriteLayer =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "blendMode":
+      result.blendMode = some(fromStream(typeof(unsafeGet(result.blendMode)),
+          source))
+    of "color":
+      result.color = some(fromStream(typeof(unsafeGet(result.color)), source))
+    of "data":
+      result.data = some(fromStream(typeof(unsafeGet(result.data)), source))
+    of "group":
+      result.group = some(fromStream(typeof(unsafeGet(result.group)), source))
+    of "name":
+      result.name = fromStream(typeof(result.name), source)
+    of "opacity":
+      result.opacity = some(fromStream(typeof(unsafeGet(result.opacity)), source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[AsepritePoint]; a, b: AsepritePoint): bool =
   equals(typeof(a.x), a.x, b.x) and equals(typeof(a.y), a.y, b.y)
 
@@ -510,6 +836,40 @@ proc toJsonHook*(source: AsepritePoint): JsonNode =
   result = newJObject()
   result{"x"} = newJFloat(source.x)
   result{"y"} = newJFloat(source.y)
+
+proc toStream*(source: AsepritePoint; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("x"))
+  write(target, ':')
+  toStream(source.x, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("y"))
+  write(target, ':')
+  toStream(source.y, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[AsepritePoint]; source: var JsonParser): AsepritePoint =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "x":
+      result.x = fromStream(typeof(result.x), source)
+    of "y":
+      result.y = fromStream(typeof(result.y), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[AsepriteSliceKey]; a, b: AsepriteSliceKey): bool =
   equals(typeof(a.bounds), a.bounds, b.bounds) and
@@ -551,6 +911,55 @@ proc toJsonHook*(source: AsepriteSliceKey): JsonNode =
   result{"frame"} = newJFloat(source.frame)
   if isSome(source.pivot):
     result{"pivot"} = toJsonHook(unsafeGet(source.pivot))
+
+proc toStream*(source: AsepriteSliceKey; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("bounds"))
+  write(target, ':')
+  toStream(source.bounds, target)
+  if isSome(source.center):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("center"))
+    write(target, ':')
+    toStream(unsafeGet(source.center), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("frame"))
+  write(target, ':')
+  toStream(source.frame, target)
+  if isSome(source.pivot):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("pivot"))
+    write(target, ':')
+    toStream(unsafeGet(source.pivot), target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[AsepriteSliceKey];
+                 source: var JsonParser): AsepriteSliceKey =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "bounds":
+      result.bounds = fromStream(typeof(result.bounds), source)
+    of "center":
+      result.center = some(fromStream(typeof(unsafeGet(result.center)), source))
+    of "frame":
+      result.frame = fromStream(typeof(result.frame), source)
+    of "pivot":
+      result.pivot = some(fromStream(typeof(unsafeGet(result.pivot)), source))
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[AsepriteSlice]; a, b: AsepriteSlice): bool =
   equals(typeof(a.color), a.color, b.color) and
@@ -596,6 +1005,55 @@ proc toJsonHook*(source: AsepriteSlice): JsonNode =
         output.add(toJsonHook(entry))
       output
   result{"name"} = newJString(source.name)
+
+proc toStream*(source: AsepriteSlice; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  if isSome(source.color):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("color"))
+    write(target, ':')
+    toStream(unsafeGet(source.color), target)
+  if isSome(source.data):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("data"))
+    write(target, ':')
+    toStream(unsafeGet(source.data), target)
+  if len(source.keys) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("keys"))
+    write(target, ':')
+    toStream(source.keys, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("name"))
+  write(target, ':')
+  toStream(source.name, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[AsepriteSlice]; source: var JsonParser): AsepriteSlice =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "color":
+      result.color = some(fromStream(typeof(unsafeGet(result.color)), source))
+    of "data":
+      result.data = some(fromStream(typeof(unsafeGet(result.data)), source))
+    of "keys":
+      result.keys = fromStream(typeof(result.keys), source)
+    of "name":
+      result.name = fromStream(typeof(result.name), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 
 proc equals(_: typedesc[AsepriteMeta]; a, b: AsepriteMeta): bool =
   equals(typeof(a.app), a.app, b.app) and
@@ -682,6 +1140,85 @@ proc toJsonHook*(source: AsepriteMeta): JsonNode =
       output
   result{"version"} = newJString(source.version)
 
+proc toStream*(source: AsepriteMeta; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("app"))
+  write(target, ':')
+  toStream(source.app, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("format"))
+  write(target, ':')
+  toStream(source.format, target)
+  if len(source.frameTags) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("frameTags"))
+    write(target, ':')
+    toStream(source.frameTags, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("image"))
+  write(target, ':')
+  toStream(source.image, target)
+  if len(source.layers) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("layers"))
+    write(target, ':')
+    toStream(source.layers, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("scale"))
+  write(target, ':')
+  toStream(source.scale, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("size"))
+  write(target, ':')
+  toStream(source.size, target)
+  if len(source.slices) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("slices"))
+    write(target, ':')
+    toStream(source.slices, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("version"))
+  write(target, ':')
+  toStream(source.version, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[AsepriteMeta]; source: var JsonParser): AsepriteMeta =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "app":
+      result.app = fromStream(typeof(result.app), source)
+    of "format":
+      result.format = fromStream(typeof(result.format), source)
+    of "frameTags":
+      result.frameTags = fromStream(typeof(result.frameTags), source)
+    of "image":
+      result.image = fromStream(typeof(result.image), source)
+    of "layers":
+      result.layers = fromStream(typeof(result.layers), source)
+    of "scale":
+      result.scale = fromStream(typeof(result.scale), source)
+    of "size":
+      result.size = fromStream(typeof(result.size), source)
+    of "slices":
+      result.slices = fromStream(typeof(result.slices), source)
+    of "version":
+      result.version = fromStream(typeof(result.version), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[AsepriteSpriteSheet]; a, b: AsepriteSpriteSheet): bool =
   equals(typeof(a.frames), a.frames, b.frames) and
       equals(typeof(a.meta), a.meta, b.meta)
@@ -709,4 +1246,39 @@ proc toJsonHook*(source: AsepriteSpriteSheet): JsonNode =
   result = newJObject()
   result{"frames"} = toJsonHook(source.frames)
   result{"meta"} = toJsonHook(source.meta)
+
+proc toStream*(source: AsepriteSpriteSheet; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("frames"))
+  write(target, ':')
+  toStream(source.frames, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("meta"))
+  write(target, ':')
+  toStream(source.meta, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[AsepriteSpriteSheet];
+                 source: var JsonParser): AsepriteSpriteSheet =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "frames":
+      result.frames = fromStream(typeof(result.frames), source)
+    of "meta":
+      result.meta = fromStream(typeof(result.meta), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}

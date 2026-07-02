@@ -22,4 +22,4 @@ buildTest("consts", Consts)
 #
 # # Specific applications
 # buildTest("ldtk", LdtkJsonRoot)
-# buildTest("aseprite", AsepriteSpriteSheet)
+buildTest("aseprite", AsepriteSpriteSheet)
