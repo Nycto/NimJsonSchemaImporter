@@ -1,6 +1,6 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
-import json_schema_import/private/[stringify, equality, bin]
+import json_schema_import/private/[stringify, equality, bin, sax]
 
 type
   Complex_objectAddress* {.byref.} = object
@@ -59,6 +59,53 @@ proc toJsonHook*(source: Complex_objectAddress): JsonNode =
   result{"state"} = newJString(source.state)
   result{"postalCode"} = newJString(source.postalCode)
 
+proc toStream*(source: Complex_objectAddress; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("street"))
+  write(target, ':')
+  toStream(source.street, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("city"))
+  write(target, ':')
+  toStream(source.city, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("state"))
+  write(target, ':')
+  toStream(source.state, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("postalCode"))
+  write(target, ':')
+  toStream(source.postalCode, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Complex_objectAddress];
+                 source: var JsonParser): Complex_objectAddress =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "street":
+      result.street = fromStream(typeof(result.street), source)
+    of "city":
+      result.city = fromStream(typeof(result.city), source)
+    of "state":
+      result.state = fromStream(typeof(result.state), source)
+    of "postalCode":
+      result.postalCode = fromStream(typeof(result.postalCode), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
+
 proc equals(_: typedesc[Complex_object]; a, b: Complex_object): bool =
   equals(typeof(a.name), a.name, b.name) and equals(typeof(a.age), a.age, b.age) and
       equals(typeof(a.address), a.address, b.address) and
@@ -103,4 +150,52 @@ proc toJsonHook*(source: Complex_object): JsonNode =
       for entry in cursor:
         output.add(newJString(entry))
       output
+
+proc toStream*(source: Complex_object; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("name"))
+  write(target, ':')
+  toStream(source.name, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("age"))
+  write(target, ':')
+  toStream(source.age, target)
+  if isSome(source.address):
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("address"))
+    write(target, ':')
+    toStream(unsafeGet(source.address), target)
+  if len(source.hobbies) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("hobbies"))
+    write(target, ':')
+    toStream(source.hobbies, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Complex_object]; source: var JsonParser): Complex_object =
+  eat(source, tkCurlyLe)
+  while source.tok != tkCurlyRi:
+    if source.tok != tkString:
+      raiseParseErr(source, "string")
+    let key = source.a
+    discard getTok(source)
+    eat(source, tkColon)
+    case key
+    of "name":
+      result.name = fromStream(typeof(result.name), source)
+    of "age":
+      result.age = fromStream(typeof(result.age), source)
+    of "address":
+      result.address = some(fromStream(typeof(unsafeGet(result.address)), source))
+    of "hobbies":
+      result.hobbies = fromStream(typeof(result.hobbies), source)
+    else:
+      skipValue(source)
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, tkCurlyRi)
 {.pop.}

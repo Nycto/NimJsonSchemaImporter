@@ -11,7 +11,7 @@ buildTest("movie", Movie)
 buildTest("basic", Basic)
 buildTest("array_of_things", Array_of_things)
 buildTest("enumerated_values", Enumerated_values)
-# buildTest("complex_object", Complex_object)
+buildTest("complex_object", Complex_object)
 
 # # https://json-schema.org/learn/file-system#full-entry
 # buildTest("file_system", File_system)
