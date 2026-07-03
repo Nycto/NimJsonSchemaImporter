@@ -221,7 +221,7 @@ proc fromStream*(typ: typedesc[UnionKey3]; source: var JsonParser): UnionKey3 =
     else:
       break
   eat(source, tkCurlyRi)
-
+  
 converter forUnionKey3Union*(value: UnionKey3): UnionKey3Union =
   return UnionKey3Union(kind: 0, key0: value)
 
@@ -464,6 +464,7 @@ proc toStream*(source: Union; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[Union]; source: var JsonParser): Union =
+  var seen: set[0 .. 2]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -474,10 +475,13 @@ proc fromStream*(typ: typedesc[Union]; source: var JsonParser): Union =
     case key
     of "key1":
       result.key1 = fromStream(typeof(result.key1), source)
+      seen.incl(0)
     of "key2":
       result.key2 = fromStream(typeof(result.key2), source)
+      seen.incl(1)
     of "key3":
       result.key3 = fromStream(typeof(result.key3), source)
+      seen.incl(2)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -485,4 +489,5 @@ proc fromStream*(typ: typedesc[Union]; source: var JsonParser): Union =
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 2})
 {.pop.}

@@ -477,8 +477,8 @@ proc toJsonHook*(source: LdtkLevelBgPosInfos): JsonNode
 proc `=copy`(a: var LdtkTilesetRect; b: LdtkTilesetRect) {.
     error.}
 proc toJsonHook*(source: LdtkTilesetRect): JsonNode
-proc `=copy`(a: var LdtkFieldInstance; b: LdtkFieldInstance) {.
-    error.}
+proc `=copy`(a: var LdtkFieldInstance;
+             b: LdtkFieldInstance) {.error.}
 proc toJsonHook*(source: LdtkFieldInstance): JsonNode
 proc `=copy`(a: var LdtkTile; b: LdtkTile) {.error.}
 proc toJsonHook*(source: LdtkTile): JsonNode
@@ -607,6 +607,7 @@ proc toStream*(source: LdtkNeighbourLevel; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkNeighbourLevel];
                  source: var JsonParser): LdtkNeighbourLevel =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -617,11 +618,13 @@ proc fromStream*(typ: typedesc[LdtkNeighbourLevel];
     case key
     of "levelIid":
       result.levelIid = fromStream(typeof(result.levelIid), source)
+      seen.incl(0)
     of "levelUid":
       result.levelUid = some(fromStream(typeof(unsafeGet(result.levelUid)),
                                         source))
     of "dir":
       result.dir = fromStream(typeof(result.dir), source)
+      seen.incl(1)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -629,6 +632,7 @@ proc fromStream*(typ: typedesc[LdtkNeighbourLevel];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 
 proc equals(_: typedesc[LdtkLevelBgPosInfos]; a, b: LdtkLevelBgPosInfos): bool =
   equals(typeof(a.cropRect), a.cropRect, b.cropRect) and
@@ -722,7 +726,7 @@ proc fromStream*(typ: typedesc[LdtkLevelBgPosInfos];
     else:
       break
   eat(source, tkCurlyRi)
-
+  
 proc equals(_: typedesc[LdtkTilesetRect]; a, b: LdtkTilesetRect): bool =
   equals(typeof(a.tilesetUid), a.tilesetUid, b.tilesetUid) and
       equals(typeof(a.h), a.h, b.h) and
@@ -796,6 +800,7 @@ proc toStream*(source: LdtkTilesetRect; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkTilesetRect];
                  source: var JsonParser): LdtkTilesetRect =
+  var seen: set[0 .. 4]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -806,14 +811,19 @@ proc fromStream*(typ: typedesc[LdtkTilesetRect];
     case key
     of "tilesetUid":
       result.tilesetUid = fromStream(typeof(result.tilesetUid), source)
+      seen.incl(0)
     of "h":
       result.h = fromStream(typeof(result.h), source)
+      seen.incl(1)
     of "x":
       result.x = fromStream(typeof(result.x), source)
+      seen.incl(2)
     of "y":
       result.y = fromStream(typeof(result.y), source)
+      seen.incl(3)
     of "w":
       result.w = fromStream(typeof(result.w), source)
+      seen.incl(4)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -821,6 +831,7 @@ proc fromStream*(typ: typedesc[LdtkTilesetRect];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 4})
 
 proc equals(_: typedesc[LdtkFieldInstance]; a, b: LdtkFieldInstance): bool =
   equals(typeof(a.`type`), a.`type`, b.`type`) and
@@ -915,6 +926,7 @@ proc toStream*(source: LdtkFieldInstance; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkFieldInstance];
                  source: var JsonParser): LdtkFieldInstance =
+  var seen: set[0 .. 3]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -925,10 +937,13 @@ proc fromStream*(typ: typedesc[LdtkFieldInstance];
     case key
     of "__type":
       result.`type` = fromStream(typeof(result.`type`), source)
+      seen.incl(0)
     of "defUid":
       result.defUid = fromStream(typeof(result.defUid), source)
+      seen.incl(1)
     of "__identifier":
       result.identifier = fromStream(typeof(result.identifier), source)
+      seen.incl(2)
     of "__tile":
       result.tile = some(fromStream(typeof(unsafeGet(result.tile)), source))
     of "realEditorValues":
@@ -936,6 +951,7 @@ proc fromStream*(typ: typedesc[LdtkFieldInstance];
           source)
     of "__value":
       result.value = fromStream(typeof(result.value), source)
+      seen.incl(3)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -943,6 +959,7 @@ proc fromStream*(typ: typedesc[LdtkFieldInstance];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 3})
 
 proc equals(_: typedesc[LdtkTile]; a, b: LdtkTile): bool =
   equals(typeof(a.t), a.t, b.t) and equals(typeof(a.d), a.d, b.d) and
@@ -1039,6 +1056,7 @@ proc toStream*(source: LdtkTile; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[LdtkTile]; source: var JsonParser): LdtkTile =
+  var seen: set[0 .. 2]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -1049,14 +1067,17 @@ proc fromStream*(typ: typedesc[LdtkTile]; source: var JsonParser): LdtkTile =
     case key
     of "t":
       result.t = fromStream(typeof(result.t), source)
+      seen.incl(0)
     of "d":
       result.d = fromStream(typeof(result.d), source)
     of "px":
       result.px = fromStream(typeof(result.px), source)
     of "a":
       result.a = fromStream(typeof(result.a), source)
+      seen.incl(1)
     of "f":
       result.f = fromStream(typeof(result.f), source)
+      seen.incl(2)
     of "src":
       result.src = fromStream(typeof(result.src), source)
     else:
@@ -1066,6 +1087,7 @@ proc fromStream*(typ: typedesc[LdtkTile]; source: var JsonParser): LdtkTile =
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 2})
 
 proc equals(_: typedesc[LdtkEntityInstance]; a, b: LdtkEntityInstance): bool =
   equals(typeof(a.iid), a.iid, b.iid) and
@@ -1268,6 +1290,7 @@ proc toStream*(source: LdtkEntityInstance; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkEntityInstance];
                  source: var JsonParser): LdtkEntityInstance =
+  var seen: set[0 .. 5]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -1278,10 +1301,13 @@ proc fromStream*(typ: typedesc[LdtkEntityInstance];
     case key
     of "iid":
       result.iid = fromStream(typeof(result.iid), source)
+      seen.incl(0)
     of "defUid":
       result.defUid = fromStream(typeof(result.defUid), source)
+      seen.incl(1)
     of "__identifier":
       result.identifier = fromStream(typeof(result.identifier), source)
+      seen.incl(2)
     of "__tile":
       result.tile = some(fromStream(typeof(unsafeGet(result.tile)), source))
     of "px":
@@ -1292,6 +1318,7 @@ proc fromStream*(typ: typedesc[LdtkEntityInstance];
       result.worldY = some(fromStream(typeof(unsafeGet(result.worldY)), source))
     of "__smartColor":
       result.smartColor = fromStream(typeof(result.smartColor), source)
+      seen.incl(3)
     of "__grid":
       result.grid = fromStream(typeof(result.grid), source)
     of "__pivot":
@@ -1300,10 +1327,12 @@ proc fromStream*(typ: typedesc[LdtkEntityInstance];
       result.fieldInstances = fromStream(typeof(result.fieldInstances), source)
     of "height":
       result.height = fromStream(typeof(result.height), source)
+      seen.incl(4)
     of "__tags":
       result.tags = fromStream(typeof(result.tags), source)
     of "width":
       result.width = fromStream(typeof(result.width), source)
+      seen.incl(5)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -1311,6 +1340,7 @@ proc fromStream*(typ: typedesc[LdtkEntityInstance];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 5})
 
 proc equals(_: typedesc[LdtkIntGridValueInstance];
             a, b: LdtkIntGridValueInstance): bool =
@@ -1357,6 +1387,7 @@ proc toStream*(source: LdtkIntGridValueInstance; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkIntGridValueInstance];
                  source: var JsonParser): LdtkIntGridValueInstance =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -1367,8 +1398,10 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueInstance];
     case key
     of "v":
       result.v = fromStream(typeof(result.v), source)
+      seen.incl(0)
     of "coordId":
       result.coordId = fromStream(typeof(result.coordId), source)
+      seen.incl(1)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -1376,6 +1409,7 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueInstance];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 
 proc equals(_: typedesc[LdtkLayerInstance]; a, b: LdtkLayerInstance): bool =
   equals(typeof(a.cHei), a.cHei, b.cHei) and
@@ -1704,6 +1738,7 @@ proc toStream*(source: LdtkLayerInstance; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkLayerInstance];
                  source: var JsonParser): LdtkLayerInstance =
+  var seen: set[0 .. 14]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -1714,27 +1749,35 @@ proc fromStream*(typ: typedesc[LdtkLayerInstance];
     case key
     of "__cHei":
       result.cHei = fromStream(typeof(result.cHei), source)
+      seen.incl(0)
     of "pxOffsetX":
       result.pxOffsetX = fromStream(typeof(result.pxOffsetX), source)
+      seen.incl(1)
     of "__tilesetRelPath":
       result.tilesetRelPath = some(fromStream(
           typeof(unsafeGet(result.tilesetRelPath)), source))
     of "iid":
       result.iid = fromStream(typeof(result.iid), source)
+      seen.incl(2)
     of "levelId":
       result.levelId = fromStream(typeof(result.levelId), source)
+      seen.incl(3)
     of "__type":
       result.`type` = fromStream(typeof(result.`type`), source)
+      seen.incl(4)
     of "autoLayerTiles":
       result.autoLayerTiles = fromStream(typeof(result.autoLayerTiles), source)
     of "optionalRules":
       result.optionalRules = fromStream(typeof(result.optionalRules), source)
     of "__identifier":
       result.identifier = fromStream(typeof(result.identifier), source)
+      seen.incl(5)
     of "__gridSize":
       result.gridSize = fromStream(typeof(result.gridSize), source)
+      seen.incl(6)
     of "__pxTotalOffsetY":
       result.pxTotalOffsetY = fromStream(typeof(result.pxTotalOffsetY), source)
+      seen.incl(7)
     of "intGridCsv":
       result.intGridCsv = fromStream(typeof(result.intGridCsv), source)
     of "overrideTilesetUid":
@@ -1742,20 +1785,27 @@ proc fromStream*(typ: typedesc[LdtkLayerInstance];
           typeof(unsafeGet(result.overrideTilesetUid)), source))
     of "visible":
       result.visible = fromStream(typeof(result.visible), source)
+      seen.incl(8)
     of "entityInstances":
       result.entityInstances = fromStream(typeof(result.entityInstances), source)
     of "__opacity":
       result.opacity = fromStream(typeof(result.opacity), source)
+      seen.incl(9)
     of "seed":
       result.seed = fromStream(typeof(result.seed), source)
+      seen.incl(10)
     of "layerDefUid":
       result.layerDefUid = fromStream(typeof(result.layerDefUid), source)
+      seen.incl(11)
     of "__pxTotalOffsetX":
       result.pxTotalOffsetX = fromStream(typeof(result.pxTotalOffsetX), source)
+      seen.incl(12)
     of "__cWid":
       result.cWid = fromStream(typeof(result.cWid), source)
+      seen.incl(13)
     of "pxOffsetY":
       result.pxOffsetY = fromStream(typeof(result.pxOffsetY), source)
+      seen.incl(14)
     of "__tilesetDefUid":
       result.tilesetDefUid = some(fromStream(
           typeof(unsafeGet(result.tilesetDefUid)), source))
@@ -1770,6 +1820,7 @@ proc fromStream*(typ: typedesc[LdtkLayerInstance];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 14})
 
 proc equals(_: typedesc[LdtkLevel]; a, b: LdtkLevel): bool =
   equals(typeof(a.neighbours), a.neighbours, b.neighbours) and
@@ -2040,6 +2091,7 @@ proc toStream*(source: LdtkLevel; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[LdtkLevel]; source: var JsonParser): LdtkLevel =
+  var seen: set[0 .. 12]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -2052,16 +2104,20 @@ proc fromStream*(typ: typedesc[LdtkLevel]; source: var JsonParser): LdtkLevel =
       result.neighbours = fromStream(typeof(result.neighbours), source)
     of "__bgColor":
       result.bgColor = fromStream(typeof(result.bgColor), source)
+      seen.incl(0)
     of "worldX":
       result.worldX = fromStream(typeof(result.worldX), source)
+      seen.incl(1)
     of "externalRelPath":
       result.externalRelPath = some(fromStream(
           typeof(unsafeGet(result.externalRelPath)), source))
     of "useAutoIdentifier":
       result.useAutoIdentifier = fromStream(typeof(result.useAutoIdentifier),
           source)
+      seen.incl(2)
     of "iid":
       result.iid = fromStream(typeof(result.iid), source)
+      seen.incl(3)
     of "bgColor":
       result.bgColor1 = some(fromStream(typeof(unsafeGet(result.bgColor1)),
                                         source))
@@ -2069,24 +2125,32 @@ proc fromStream*(typ: typedesc[LdtkLevel]; source: var JsonParser): LdtkLevel =
       result.bgPos = some(fromStream(typeof(unsafeGet(result.bgPos)), source))
     of "pxHei":
       result.pxHei = fromStream(typeof(result.pxHei), source)
+      seen.incl(4)
     of "worldY":
       result.worldY = fromStream(typeof(result.worldY), source)
+      seen.incl(5)
     of "__bgPos":
       result.bgPos1 = some(fromStream(typeof(unsafeGet(result.bgPos1)), source))
     of "uid":
       result.uid = fromStream(typeof(result.uid), source)
+      seen.incl(6)
     of "__smartColor":
       result.smartColor = fromStream(typeof(result.smartColor), source)
+      seen.incl(7)
     of "fieldInstances":
       result.fieldInstances = fromStream(typeof(result.fieldInstances), source)
     of "pxWid":
       result.pxWid = fromStream(typeof(result.pxWid), source)
+      seen.incl(8)
     of "identifier":
       result.identifier = fromStream(typeof(result.identifier), source)
+      seen.incl(9)
     of "bgPivotY":
       result.bgPivotY = fromStream(typeof(result.bgPivotY), source)
+      seen.incl(10)
     of "bgPivotX":
       result.bgPivotX = fromStream(typeof(result.bgPivotX), source)
+      seen.incl(11)
     of "layerInstances":
       result.layerInstances = fromStream(typeof(result.layerInstances), source)
     of "bgRelPath":
@@ -2094,6 +2158,7 @@ proc fromStream*(typ: typedesc[LdtkLevel]; source: var JsonParser): LdtkLevel =
           source))
     of "worldDepth":
       result.worldDepth = fromStream(typeof(result.worldDepth), source)
+      seen.incl(12)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -2101,6 +2166,7 @@ proc fromStream*(typ: typedesc[LdtkLevel]; source: var JsonParser): LdtkLevel =
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 12})
 
 proc equals(_: typedesc[LdtkWorld]; a, b: LdtkWorld): bool =
   equals(typeof(a.worldGridWidth), a.worldGridWidth, b.worldGridWidth) and
@@ -2222,6 +2288,7 @@ proc toStream*(source: LdtkWorld; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[LdtkWorld]; source: var JsonParser): LdtkWorld =
+  var seen: set[0 .. 6]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -2232,22 +2299,29 @@ proc fromStream*(typ: typedesc[LdtkWorld]; source: var JsonParser): LdtkWorld =
     case key
     of "worldGridWidth":
       result.worldGridWidth = fromStream(typeof(result.worldGridWidth), source)
+      seen.incl(0)
     of "iid":
       result.iid = fromStream(typeof(result.iid), source)
+      seen.incl(1)
     of "worldGridHeight":
       result.worldGridHeight = fromStream(typeof(result.worldGridHeight), source)
+      seen.incl(2)
     of "worldLayout":
       result.worldLayout = fromStream(typeof(result.worldLayout), source)
+      seen.incl(3)
     of "defaultLevelWidth":
       result.defaultLevelWidth = fromStream(typeof(result.defaultLevelWidth),
           source)
+      seen.incl(4)
     of "levels":
       result.levels = fromStream(typeof(result.levels), source)
     of "defaultLevelHeight":
       result.defaultLevelHeight = fromStream(typeof(result.defaultLevelHeight),
           source)
+      seen.incl(5)
     of "identifier":
       result.identifier = fromStream(typeof(result.identifier), source)
+      seen.incl(6)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -2255,6 +2329,7 @@ proc fromStream*(typ: typedesc[LdtkWorld]; source: var JsonParser): LdtkWorld =
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 6})
 
 proc equals(_: typedesc[LdtkEntityReferenceInfos];
             a, b: LdtkEntityReferenceInfos): bool =
@@ -2322,6 +2397,7 @@ proc toStream*(source: LdtkEntityReferenceInfos; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkEntityReferenceInfos];
                  source: var JsonParser): LdtkEntityReferenceInfos =
+  var seen: set[0 .. 3]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -2332,12 +2408,16 @@ proc fromStream*(typ: typedesc[LdtkEntityReferenceInfos];
     case key
     of "worldIid":
       result.worldIid = fromStream(typeof(result.worldIid), source)
+      seen.incl(0)
     of "entityIid":
       result.entityIid = fromStream(typeof(result.entityIid), source)
+      seen.incl(1)
     of "layerIid":
       result.layerIid = fromStream(typeof(result.layerIid), source)
+      seen.incl(2)
     of "levelIid":
       result.levelIid = fromStream(typeof(result.levelIid), source)
+      seen.incl(3)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -2345,6 +2425,7 @@ proc fromStream*(typ: typedesc[LdtkEntityReferenceInfos];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 3})
 
 proc equals(_: typedesc[LdtkTocInstanceData]; a, b: LdtkTocInstanceData): bool =
   equals(typeof(a.worldX), a.worldX, b.worldX) and
@@ -2429,6 +2510,7 @@ proc toStream*(source: LdtkTocInstanceData; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkTocInstanceData];
                  source: var JsonParser): LdtkTocInstanceData =
+  var seen: set[0 .. 5]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -2439,16 +2521,22 @@ proc fromStream*(typ: typedesc[LdtkTocInstanceData];
     case key
     of "worldX":
       result.worldX = fromStream(typeof(result.worldX), source)
+      seen.incl(0)
     of "widPx":
       result.widPx = fromStream(typeof(result.widPx), source)
+      seen.incl(1)
     of "worldY":
       result.worldY = fromStream(typeof(result.worldY), source)
+      seen.incl(2)
     of "heiPx":
       result.heiPx = fromStream(typeof(result.heiPx), source)
+      seen.incl(3)
     of "fields":
       result.fields = fromStream(typeof(result.fields), source)
+      seen.incl(4)
     of "iids":
       result.iids = fromStream(typeof(result.iids), source)
+      seen.incl(5)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -2456,6 +2544,7 @@ proc fromStream*(typ: typedesc[LdtkTocInstanceData];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 5})
 
 proc equals(_: typedesc[LdtkTableOfContentEntry]; a, b: LdtkTableOfContentEntry): bool =
   equals(typeof(a.identifier), a.identifier, b.identifier) and
@@ -2526,6 +2615,7 @@ proc toStream*(source: LdtkTableOfContentEntry; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkTableOfContentEntry];
                  source: var JsonParser): LdtkTableOfContentEntry =
+  var seen: set[0 .. 0]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -2536,6 +2626,7 @@ proc fromStream*(typ: typedesc[LdtkTableOfContentEntry];
     case key
     of "identifier":
       result.identifier = fromStream(typeof(result.identifier), source)
+      seen.incl(0)
     of "instancesData":
       result.instancesData = fromStream(typeof(result.instancesData), source)
     of "instances":
@@ -2547,6 +2638,7 @@ proc fromStream*(typ: typedesc[LdtkTableOfContentEntry];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 0})
 
 proc equals(_: typedesc[LdtkCustomCommand]; a, b: LdtkCustomCommand): bool =
   equals(typeof(a.`when`), a.`when`, b.`when`) and
@@ -2591,6 +2683,7 @@ proc toStream*(source: LdtkCustomCommand; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkCustomCommand];
                  source: var JsonParser): LdtkCustomCommand =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -2601,8 +2694,10 @@ proc fromStream*(typ: typedesc[LdtkCustomCommand];
     case key
     of "when":
       result.`when` = fromStream(typeof(result.`when`), source)
+      seen.incl(0)
     of "command":
       result.command = fromStream(typeof(result.command), source)
+      seen.incl(1)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -2610,6 +2705,7 @@ proc fromStream*(typ: typedesc[LdtkCustomCommand];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 
 proc equals(_: typedesc[LdtkTileCustomMetadata]; a, b: LdtkTileCustomMetadata): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -2655,6 +2751,7 @@ proc toStream*(source: LdtkTileCustomMetadata; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkTileCustomMetadata];
                  source: var JsonParser): LdtkTileCustomMetadata =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -2665,8 +2762,10 @@ proc fromStream*(typ: typedesc[LdtkTileCustomMetadata];
     case key
     of "tileId":
       result.tileId = fromStream(typeof(result.tileId), source)
+      seen.incl(0)
     of "data":
       result.data = fromStream(typeof(result.data), source)
+      seen.incl(1)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -2674,6 +2773,7 @@ proc fromStream*(typ: typedesc[LdtkTileCustomMetadata];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 
 proc equals(_: typedesc[LdtkEnumTagValue]; a, b: LdtkEnumTagValue): bool =
   equals(typeof(a.tileIds), a.tileIds, b.tileIds) and
@@ -2724,6 +2824,7 @@ proc toStream*(source: LdtkEnumTagValue; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkEnumTagValue];
                  source: var JsonParser): LdtkEnumTagValue =
+  var seen: set[0 .. 0]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -2736,6 +2837,7 @@ proc fromStream*(typ: typedesc[LdtkEnumTagValue];
       result.tileIds = fromStream(typeof(result.tileIds), source)
     of "enumValueId":
       result.enumValueId = fromStream(typeof(result.enumValueId), source)
+      seen.incl(0)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -2743,6 +2845,7 @@ proc fromStream*(typ: typedesc[LdtkEnumTagValue];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 0})
 
 proc equals(_: typedesc[LdtkTilesetDef]; a, b: LdtkTilesetDef): bool =
   equals(typeof(a.cachedPixelData), a.cachedPixelData, b.cachedPixelData) and
@@ -2989,6 +3092,7 @@ proc toStream*(source: LdtkTilesetDef; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkTilesetDef];
                  source: var JsonParser): LdtkTilesetDef =
+  var seen: set[0 .. 8]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -3001,8 +3105,10 @@ proc fromStream*(typ: typedesc[LdtkTilesetDef];
       result.cachedPixelData = fromStream(typeof(result.cachedPixelData), source)
     of "__cHei":
       result.cHei = fromStream(typeof(result.cHei), source)
+      seen.incl(0)
     of "pxHei":
       result.pxHei = fromStream(typeof(result.pxHei), source)
+      seen.incl(1)
     of "customData":
       result.customData = fromStream(typeof(result.customData), source)
     of "tagsSourceEnumUid":
@@ -3010,18 +3116,24 @@ proc fromStream*(typ: typedesc[LdtkTilesetDef];
           typeof(unsafeGet(result.tagsSourceEnumUid)), source))
     of "uid":
       result.uid = fromStream(typeof(result.uid), source)
+      seen.incl(2)
     of "padding":
       result.padding = fromStream(typeof(result.padding), source)
+      seen.incl(3)
     of "enumTags":
       result.enumTags = fromStream(typeof(result.enumTags), source)
     of "pxWid":
       result.pxWid = fromStream(typeof(result.pxWid), source)
+      seen.incl(4)
     of "__cWid":
       result.cWid = fromStream(typeof(result.cWid), source)
+      seen.incl(5)
     of "spacing":
       result.spacing = fromStream(typeof(result.spacing), source)
+      seen.incl(6)
     of "identifier":
       result.identifier = fromStream(typeof(result.identifier), source)
+      seen.incl(7)
     of "savedSelections":
       result.savedSelections = fromStream(typeof(result.savedSelections), source)
     of "tags":
@@ -3033,6 +3145,7 @@ proc fromStream*(typ: typedesc[LdtkTilesetDef];
       result.relPath = some(fromStream(typeof(unsafeGet(result.relPath)), source))
     of "tileGridSize":
       result.tileGridSize = fromStream(typeof(result.tileGridSize), source)
+      seen.incl(8)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -3040,6 +3153,7 @@ proc fromStream*(typ: typedesc[LdtkTilesetDef];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 8})
 
 proc equals(_: typedesc[LdtkIntGridValueGroupDef];
             a, b: LdtkIntGridValueGroupDef): bool =
@@ -3099,6 +3213,7 @@ proc toStream*(source: LdtkIntGridValueGroupDef; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkIntGridValueGroupDef];
                  source: var JsonParser): LdtkIntGridValueGroupDef =
+  var seen: set[0 .. 0]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -3111,6 +3226,7 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueGroupDef];
       result.color = some(fromStream(typeof(unsafeGet(result.color)), source))
     of "uid":
       result.uid = fromStream(typeof(result.uid), source)
+      seen.incl(0)
     of "identifier":
       result.identifier = some(fromStream(typeof(unsafeGet(result.identifier)),
           source))
@@ -3121,6 +3237,7 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueGroupDef];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 0})
 
 proc equals(_: typedesc[LdtkIntGridValueDef]; a, b: LdtkIntGridValueDef): bool =
   equals(typeof(a.tile), a.tile, b.tile) and
@@ -3198,6 +3315,7 @@ proc toStream*(source: LdtkIntGridValueDef; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkIntGridValueDef];
                  source: var JsonParser): LdtkIntGridValueDef =
+  var seen: set[0 .. 2]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -3210,13 +3328,16 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueDef];
       result.tile = some(fromStream(typeof(unsafeGet(result.tile)), source))
     of "color":
       result.color = fromStream(typeof(result.color), source)
+      seen.incl(0)
     of "identifier":
       result.identifier = some(fromStream(typeof(unsafeGet(result.identifier)),
           source))
     of "value":
       result.value = fromStream(typeof(result.value), source)
+      seen.incl(1)
     of "groupUid":
       result.groupUid = fromStream(typeof(result.groupUid), source)
+      seen.incl(2)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -3224,6 +3345,7 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueDef];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 2})
 
 proc equals(_: typedesc[LdtkAutoRuleDef]; a, b: LdtkAutoRuleDef): bool =
   equals(typeof(a.flipX), a.flipX, b.flipX) and
@@ -3598,6 +3720,7 @@ proc toStream*(source: LdtkAutoRuleDef; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkAutoRuleDef];
                  source: var JsonParser): LdtkAutoRuleDef =
+  var seen: set[0 .. 26]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -3608,14 +3731,18 @@ proc fromStream*(typ: typedesc[LdtkAutoRuleDef];
     case key
     of "flipX":
       result.flipX = fromStream(typeof(result.flipX), source)
+      seen.incl(0)
     of "pivotX":
       result.pivotX = fromStream(typeof(result.pivotX), source)
+      seen.incl(1)
     of "perlinActive":
       result.perlinActive = fromStream(typeof(result.perlinActive), source)
+      seen.incl(2)
     of "tileRectsIds":
       result.tileRectsIds = fromStream(typeof(result.tileRectsIds), source)
     of "perlinScale":
       result.perlinScale = fromStream(typeof(result.perlinScale), source)
+      seen.incl(3)
     of "outOfBoundsValue":
       result.outOfBoundsValue = some(fromStream(
           typeof(unsafeGet(result.outOfBoundsValue)), source))
@@ -3623,52 +3750,75 @@ proc fromStream*(typ: typedesc[LdtkAutoRuleDef];
       result.pattern = fromStream(typeof(result.pattern), source)
     of "tileRandomXMin":
       result.tileRandomXMin = fromStream(typeof(result.tileRandomXMin), source)
+      seen.incl(4)
     of "checker":
       result.checker = fromStream(typeof(result.checker), source)
+      seen.incl(5)
     of "perlinOctaves":
       result.perlinOctaves = fromStream(typeof(result.perlinOctaves), source)
+      seen.incl(6)
     of "tileIds":
       result.tileIds = fromStream(typeof(result.tileIds), source)
     of "alpha":
       result.alpha = fromStream(typeof(result.alpha), source)
+      seen.incl(7)
     of "tileXOffset":
       result.tileXOffset = fromStream(typeof(result.tileXOffset), source)
+      seen.incl(8)
     of "invalidated":
       result.invalidated = fromStream(typeof(result.invalidated), source)
+      seen.incl(9)
     of "xModulo":
       result.xModulo = fromStream(typeof(result.xModulo), source)
+      seen.incl(10)
     of "size":
       result.size = fromStream(typeof(result.size), source)
+      seen.incl(11)
     of "chance":
       result.chance = fromStream(typeof(result.chance), source)
+      seen.incl(12)
     of "breakOnMatch":
       result.breakOnMatch = fromStream(typeof(result.breakOnMatch), source)
+      seen.incl(13)
     of "tileYOffset":
       result.tileYOffset = fromStream(typeof(result.tileYOffset), source)
+      seen.incl(14)
     of "uid":
       result.uid = fromStream(typeof(result.uid), source)
+      seen.incl(15)
     of "perlinSeed":
       result.perlinSeed = fromStream(typeof(result.perlinSeed), source)
+      seen.incl(16)
     of "yOffset":
       result.yOffset = fromStream(typeof(result.yOffset), source)
+      seen.incl(17)
     of "tileRandomYMax":
       result.tileRandomYMax = fromStream(typeof(result.tileRandomYMax), source)
+      seen.incl(18)
     of "tileRandomYMin":
       result.tileRandomYMin = fromStream(typeof(result.tileRandomYMin), source)
+      seen.incl(19)
     of "tileMode":
       result.tileMode = fromStream(typeof(result.tileMode), source)
+      seen.incl(20)
     of "flipY":
       result.flipY = fromStream(typeof(result.flipY), source)
+      seen.incl(21)
     of "tileRandomXMax":
       result.tileRandomXMax = fromStream(typeof(result.tileRandomXMax), source)
+      seen.incl(22)
     of "pivotY":
       result.pivotY = fromStream(typeof(result.pivotY), source)
+      seen.incl(23)
     of "yModulo":
       result.yModulo = fromStream(typeof(result.yModulo), source)
+      seen.incl(24)
     of "active":
       result.active = fromStream(typeof(result.active), source)
+      seen.incl(25)
     of "xOffset":
       result.xOffset = fromStream(typeof(result.xOffset), source)
+      seen.incl(26)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -3676,6 +3826,7 @@ proc fromStream*(typ: typedesc[LdtkAutoRuleDef];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 26})
 
 proc equals(_: typedesc[LdtkAutoLayerRuleGroup]; a, b: LdtkAutoLayerRuleGroup): bool =
   equals(typeof(a.name), a.name, b.name) and
@@ -3837,6 +3988,7 @@ proc toStream*(source: LdtkAutoLayerRuleGroup; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkAutoLayerRuleGroup];
                  source: var JsonParser): LdtkAutoLayerRuleGroup =
+  var seen: set[0 .. 5]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -3847,27 +3999,33 @@ proc fromStream*(typ: typedesc[LdtkAutoLayerRuleGroup];
     case key
     of "name":
       result.name = fromStream(typeof(result.name), source)
+      seen.incl(0)
     of "collapsed":
       result.collapsed = some(fromStream(typeof(unsafeGet(result.collapsed)),
           source))
     of "biomeRequirementMode":
       result.biomeRequirementMode = fromStream(
           typeof(result.biomeRequirementMode), source)
+      seen.incl(1)
     of "color":
       result.color = some(fromStream(typeof(unsafeGet(result.color)), source))
     of "isOptional":
       result.isOptional = fromStream(typeof(result.isOptional), source)
+      seen.incl(2)
     of "icon":
       result.icon = some(fromStream(typeof(unsafeGet(result.icon)), source))
     of "usesWizard":
       result.usesWizard = fromStream(typeof(result.usesWizard), source)
+      seen.incl(3)
     of "uid":
       result.uid = fromStream(typeof(result.uid), source)
+      seen.incl(4)
     of "requiredBiomeValues":
       result.requiredBiomeValues = fromStream(
           typeof(result.requiredBiomeValues), source)
     of "active":
       result.active = fromStream(typeof(result.active), source)
+      seen.incl(5)
     of "rules":
       result.rules = fromStream(typeof(result.rules), source)
     else:
@@ -3877,6 +4035,7 @@ proc fromStream*(typ: typedesc[LdtkAutoLayerRuleGroup];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 5})
 
 proc equals(_: typedesc[LdtkLayerDef]; a, b: LdtkLayerDef): bool =
   equals(typeof(a.pxOffsetX), a.pxOffsetX, b.pxOffsetX) and
@@ -4340,6 +4499,7 @@ proc toStream*(source: LdtkLayerDef; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[LdtkLayerDef]; source: var JsonParser): LdtkLayerDef =
+  var seen: set[0 .. 20]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -4350,20 +4510,27 @@ proc fromStream*(typ: typedesc[LdtkLayerDef]; source: var JsonParser): LdtkLayer
     case key
     of "pxOffsetX":
       result.pxOffsetX = fromStream(typeof(result.pxOffsetX), source)
+      seen.incl(0)
     of "tilePivotX":
       result.tilePivotX = fromStream(typeof(result.tilePivotX), source)
+      seen.incl(1)
     of "uiFilterTags":
       result.uiFilterTags = fromStream(typeof(result.uiFilterTags), source)
     of "displayOpacity":
       result.displayOpacity = fromStream(typeof(result.displayOpacity), source)
+      seen.incl(2)
     of "parallaxFactorY":
       result.parallaxFactorY = fromStream(typeof(result.parallaxFactorY), source)
+      seen.incl(3)
     of "hideInList":
       result.hideInList = fromStream(typeof(result.hideInList), source)
+      seen.incl(4)
     of "__type":
       result.`type` = fromStream(typeof(result.`type`), source)
+      seen.incl(5)
     of "guideGridHei":
       result.guideGridHei = fromStream(typeof(result.guideGridHei), source)
+      seen.incl(6)
     of "uiColor":
       result.uiColor = some(fromStream(typeof(unsafeGet(result.uiColor)), source))
     of "doc":
@@ -4374,8 +4541,10 @@ proc fromStream*(typ: typedesc[LdtkLayerDef]; source: var JsonParser): LdtkLayer
     of "canSelectWhenInactive":
       result.canSelectWhenInactive = fromStream(
           typeof(result.canSelectWhenInactive), source)
+      seen.incl(7)
     of "useAsyncRender":
       result.useAsyncRender = fromStream(typeof(result.useAsyncRender), source)
+      seen.incl(8)
     of "autoSourceLayerDefUid":
       result.autoSourceLayerDefUid = some(
           fromStream(typeof(unsafeGet(result.autoSourceLayerDefUid)), source))
@@ -4384,44 +4553,56 @@ proc fromStream*(typ: typedesc[LdtkLayerDef]; source: var JsonParser): LdtkLayer
           typeof(unsafeGet(result.autoTilesetDefUid)), source))
     of "parallaxScaling":
       result.parallaxScaling = fromStream(typeof(result.parallaxScaling), source)
+      seen.incl(9)
     of "renderInWorldView":
       result.renderInWorldView = fromStream(typeof(result.renderInWorldView),
           source)
+      seen.incl(10)
     of "intGridValuesGroups":
       result.intGridValuesGroups = fromStream(
           typeof(result.intGridValuesGroups), source)
     of "inactiveOpacity":
       result.inactiveOpacity = fromStream(typeof(result.inactiveOpacity), source)
+      seen.incl(11)
     of "uid":
       result.uid = fromStream(typeof(result.uid), source)
+      seen.incl(12)
     of "excludedTags":
       result.excludedTags = fromStream(typeof(result.excludedTags), source)
     of "hideFieldsWhenInactive":
       result.hideFieldsWhenInactive = fromStream(
           typeof(result.hideFieldsWhenInactive), source)
+      seen.incl(13)
     of "intGridValues":
       result.intGridValues = fromStream(typeof(result.intGridValues), source)
     of "autoRuleGroups":
       result.autoRuleGroups = fromStream(typeof(result.autoRuleGroups), source)
     of "type":
       result.type1 = fromStream(typeof(result.type1), source)
+      seen.incl(14)
     of "identifier":
       result.identifier = fromStream(typeof(result.identifier), source)
+      seen.incl(15)
     of "guideGridWid":
       result.guideGridWid = fromStream(typeof(result.guideGridWid), source)
+      seen.incl(16)
     of "requiredTags":
       result.requiredTags = fromStream(typeof(result.requiredTags), source)
     of "pxOffsetY":
       result.pxOffsetY = fromStream(typeof(result.pxOffsetY), source)
+      seen.incl(17)
     of "tilePivotY":
       result.tilePivotY = fromStream(typeof(result.tilePivotY), source)
+      seen.incl(18)
     of "biomeFieldUid":
       result.biomeFieldUid = some(fromStream(
           typeof(unsafeGet(result.biomeFieldUid)), source))
     of "gridSize":
       result.gridSize = fromStream(typeof(result.gridSize), source)
+      seen.incl(19)
     of "parallaxFactorX":
       result.parallaxFactorX = fromStream(typeof(result.parallaxFactorX), source)
+      seen.incl(20)
     of "autoTilesKilledByOtherLayerUid":
       result.autoTilesKilledByOtherLayerUid = some(fromStream(
           typeof(unsafeGet(result.autoTilesKilledByOtherLayerUid)), source))
@@ -4432,6 +4613,7 @@ proc fromStream*(typ: typedesc[LdtkLayerDef]; source: var JsonParser): LdtkLayer
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 20})
 
 proc equals(_: typedesc[LdtkFieldDef]; a, b: LdtkFieldDef): bool =
   equals(typeof(a.acceptFileTypes), a.acceptFileTypes, b.acceptFileTypes) and
@@ -4891,6 +5073,7 @@ proc toStream*(source: LdtkFieldDef; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[LdtkFieldDef]; source: var JsonParser): LdtkFieldDef =
+  var seen: set[0 .. 19]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -4904,19 +5087,25 @@ proc fromStream*(typ: typedesc[LdtkFieldDef]; source: var JsonParser): LdtkField
     of "editorDisplayScale":
       result.editorDisplayScale = fromStream(typeof(result.editorDisplayScale),
           source)
+      seen.incl(0)
     of "searchable":
       result.searchable = fromStream(typeof(result.searchable), source)
+      seen.incl(1)
     of "useForSmartColor":
       result.useForSmartColor = fromStream(typeof(result.useForSmartColor),
           source)
+      seen.incl(2)
     of "editorShowInWorld":
       result.editorShowInWorld = fromStream(typeof(result.editorShowInWorld),
           source)
+      seen.incl(3)
     of "allowedRefs":
       result.allowedRefs = fromStream(typeof(result.allowedRefs), source)
+      seen.incl(4)
     of "editorAlwaysShow":
       result.editorAlwaysShow = fromStream(typeof(result.editorAlwaysShow),
           source)
+      seen.incl(5)
     of "arrayMinLength":
       result.arrayMinLength = some(fromStream(
           typeof(unsafeGet(result.arrayMinLength)), source))
@@ -4927,16 +5116,20 @@ proc fromStream*(typ: typedesc[LdtkFieldDef]; source: var JsonParser): LdtkField
       result.min = some(fromStream(typeof(unsafeGet(result.min)), source))
     of "__type":
       result.`type` = fromStream(typeof(result.`type`), source)
+      seen.incl(6)
     of "editorDisplayMode":
       result.editorDisplayMode = fromStream(typeof(result.editorDisplayMode),
           source)
+      seen.incl(7)
     of "editorDisplayColor":
       result.editorDisplayColor = some(fromStream(
           typeof(unsafeGet(result.editorDisplayColor)), source))
     of "canBeNull":
       result.canBeNull = fromStream(typeof(result.canBeNull), source)
+      seen.incl(8)
     of "autoChainRef":
       result.autoChainRef = fromStream(typeof(result.autoChainRef), source)
+      seen.incl(9)
     of "doc":
       result.doc = some(fromStream(typeof(unsafeGet(result.doc)), source))
     of "allowedRefsEntityUid":
@@ -4949,18 +5142,23 @@ proc fromStream*(typ: typedesc[LdtkFieldDef]; source: var JsonParser): LdtkField
       result.allowedRefTags = fromStream(typeof(result.allowedRefTags), source)
     of "symmetricalRef":
       result.symmetricalRef = fromStream(typeof(result.symmetricalRef), source)
+      seen.incl(10)
     of "uid":
       result.uid = fromStream(typeof(result.uid), source)
+      seen.incl(11)
     of "editorTextPrefix":
       result.editorTextPrefix = some(fromStream(
           typeof(unsafeGet(result.editorTextPrefix)), source))
     of "isArray":
       result.isArray = fromStream(typeof(result.isArray), source)
+      seen.incl(12)
     of "exportToToc":
       result.exportToToc = fromStream(typeof(result.exportToToc), source)
+      seen.incl(13)
     of "editorDisplayPos":
       result.editorDisplayPos = fromStream(typeof(result.editorDisplayPos),
           source)
+      seen.incl(14)
     of "textLanguageMode":
       result.textLanguageMode = some(fromStream(
           typeof(unsafeGet(result.textLanguageMode)), source))
@@ -4969,20 +5167,25 @@ proc fromStream*(typ: typedesc[LdtkFieldDef]; source: var JsonParser): LdtkField
     of "allowOutOfLevelRef":
       result.allowOutOfLevelRef = fromStream(typeof(result.allowOutOfLevelRef),
           source)
+      seen.incl(15)
     of "editorCutLongValues":
       result.editorCutLongValues = fromStream(
           typeof(result.editorCutLongValues), source)
+      seen.incl(16)
     of "defaultOverride":
       result.defaultOverride = some(fromStream(
           typeof(unsafeGet(result.defaultOverride)), source))
     of "editorLinkStyle":
       result.editorLinkStyle = fromStream(typeof(result.editorLinkStyle), source)
+      seen.incl(17)
     of "regex":
       result.regex = some(fromStream(typeof(unsafeGet(result.regex)), source))
     of "type":
       result.type1 = fromStream(typeof(result.type1), source)
+      seen.incl(18)
     of "identifier":
       result.identifier = fromStream(typeof(result.identifier), source)
+      seen.incl(19)
     of "arrayMaxLength":
       result.arrayMaxLength = some(fromStream(
           typeof(unsafeGet(result.arrayMaxLength)), source))
@@ -4993,6 +5196,7 @@ proc fromStream*(typ: typedesc[LdtkFieldDef]; source: var JsonParser): LdtkField
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 19})
 
 proc equals(_: typedesc[LdtkEnumDefValues]; a, b: LdtkEnumDefValues): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -5079,6 +5283,7 @@ proc toStream*(source: LdtkEnumDefValues; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkEnumDefValues];
                  source: var JsonParser): LdtkEnumDefValues =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -5091,11 +5296,13 @@ proc fromStream*(typ: typedesc[LdtkEnumDefValues];
       result.tileId = some(fromStream(typeof(unsafeGet(result.tileId)), source))
     of "color":
       result.color = fromStream(typeof(result.color), source)
+      seen.incl(0)
     of "tileRect":
       result.tileRect = some(fromStream(typeof(unsafeGet(result.tileRect)),
                                         source))
     of "id":
       result.id = fromStream(typeof(result.id), source)
+      seen.incl(1)
     of "__tileSrcRect":
       result.tileSrcRect = fromStream(typeof(result.tileSrcRect), source)
     else:
@@ -5105,6 +5312,7 @@ proc fromStream*(typ: typedesc[LdtkEnumDefValues];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 
 proc equals(_: typedesc[LdtkEnumDef]; a, b: LdtkEnumDef): bool =
   equals(typeof(a.externalFileChecksum), a.externalFileChecksum,
@@ -5224,6 +5432,7 @@ proc toStream*(source: LdtkEnumDef; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[LdtkEnumDef]; source: var JsonParser): LdtkEnumDef =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -5240,6 +5449,7 @@ proc fromStream*(typ: typedesc[LdtkEnumDef]; source: var JsonParser): LdtkEnumDe
           typeof(unsafeGet(result.externalRelPath)), source))
     of "uid":
       result.uid = fromStream(typeof(result.uid), source)
+      seen.incl(0)
     of "values":
       result.values = fromStream(typeof(result.values), source)
     of "iconTilesetUid":
@@ -5247,6 +5457,7 @@ proc fromStream*(typ: typedesc[LdtkEnumDef]; source: var JsonParser): LdtkEnumDe
           typeof(unsafeGet(result.iconTilesetUid)), source))
     of "identifier":
       result.identifier = fromStream(typeof(result.identifier), source)
+      seen.incl(1)
     of "tags":
       result.tags = fromStream(typeof(result.tags), source)
     else:
@@ -5256,6 +5467,7 @@ proc fromStream*(typ: typedesc[LdtkEnumDef]; source: var JsonParser): LdtkEnumDe
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 
 proc equals(_: typedesc[LdtkEntityDef]; a, b: LdtkEntityDef): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -5664,6 +5876,7 @@ proc toStream*(source: LdtkEntityDef; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[LdtkEntityDef]; source: var JsonParser): LdtkEntityDef =
+  var seen: set[0 .. 21]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -5676,6 +5889,7 @@ proc fromStream*(typ: typedesc[LdtkEntityDef]; source: var JsonParser): LdtkEnti
       result.tileId = some(fromStream(typeof(unsafeGet(result.tileId)), source))
     of "showName":
       result.showName = fromStream(typeof(result.showName), source)
+      seen.incl(0)
     of "tilesetId":
       result.tilesetId = some(fromStream(typeof(unsafeGet(result.tilesetId)),
           source))
@@ -5684,22 +5898,29 @@ proc fromStream*(typ: typedesc[LdtkEntityDef]; source: var JsonParser): LdtkEnti
           source))
     of "limitScope":
       result.limitScope = fromStream(typeof(result.limitScope), source)
+      seen.incl(1)
     of "pivotX":
       result.pivotX = fromStream(typeof(result.pivotX), source)
+      seen.incl(2)
     of "maxCount":
       result.maxCount = fromStream(typeof(result.maxCount), source)
+      seen.incl(3)
     of "allowOutOfBounds":
       result.allowOutOfBounds = fromStream(typeof(result.allowOutOfBounds),
           source)
+      seen.incl(4)
     of "hollow":
       result.hollow = fromStream(typeof(result.hollow), source)
+      seen.incl(5)
     of "minHeight":
       result.minHeight = some(fromStream(typeof(unsafeGet(result.minHeight)),
           source))
     of "keepAspectRatio":
       result.keepAspectRatio = fromStream(typeof(result.keepAspectRatio), source)
+      seen.incl(6)
     of "color":
       result.color = fromStream(typeof(result.color), source)
+      seen.incl(7)
     of "minWidth":
       result.minWidth = some(fromStream(typeof(unsafeGet(result.minWidth)),
                                         source))
@@ -5712,43 +5933,57 @@ proc fromStream*(typ: typedesc[LdtkEntityDef]; source: var JsonParser): LdtkEnti
       result.fieldDefs = fromStream(typeof(result.fieldDefs), source)
     of "tileRenderMode":
       result.tileRenderMode = fromStream(typeof(result.tileRenderMode), source)
+      seen.incl(8)
     of "limitBehavior":
       result.limitBehavior = fromStream(typeof(result.limitBehavior), source)
+      seen.incl(9)
     of "tileOpacity":
       result.tileOpacity = fromStream(typeof(result.tileOpacity), source)
+      seen.incl(10)
     of "nineSliceBorders":
       result.nineSliceBorders = fromStream(typeof(result.nineSliceBorders),
           source)
     of "resizableX":
       result.resizableX = fromStream(typeof(result.resizableX), source)
+      seen.incl(11)
     of "uiTileRect":
       result.uiTileRect = some(fromStream(typeof(unsafeGet(result.uiTileRect)),
           source))
     of "uid":
       result.uid = fromStream(typeof(result.uid), source)
+      seen.incl(12)
     of "lineOpacity":
       result.lineOpacity = fromStream(typeof(result.lineOpacity), source)
+      seen.incl(13)
     of "maxWidth":
       result.maxWidth = some(fromStream(typeof(unsafeGet(result.maxWidth)),
                                         source))
     of "resizableY":
       result.resizableY = fromStream(typeof(result.resizableY), source)
+      seen.incl(14)
     of "exportToToc":
       result.exportToToc = fromStream(typeof(result.exportToToc), source)
+      seen.incl(15)
     of "fillOpacity":
       result.fillOpacity = fromStream(typeof(result.fillOpacity), source)
+      seen.incl(16)
     of "height":
       result.height = fromStream(typeof(result.height), source)
+      seen.incl(17)
     of "identifier":
       result.identifier = fromStream(typeof(result.identifier), source)
+      seen.incl(18)
     of "pivotY":
       result.pivotY = fromStream(typeof(result.pivotY), source)
+      seen.incl(19)
     of "renderMode":
       result.renderMode = fromStream(typeof(result.renderMode), source)
+      seen.incl(20)
     of "tags":
       result.tags = fromStream(typeof(result.tags), source)
     of "width":
       result.width = fromStream(typeof(result.width), source)
+      seen.incl(21)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -5756,6 +5991,7 @@ proc fromStream*(typ: typedesc[LdtkEntityDef]; source: var JsonParser): LdtkEnti
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 21})
 
 proc equals(_: typedesc[LdtkDefinitions]; a, b: LdtkDefinitions): bool =
   equals(typeof(a.tilesets), a.tilesets, b.tilesets) and
@@ -5907,7 +6143,7 @@ proc fromStream*(typ: typedesc[LdtkDefinitions];
     else:
       break
   eat(source, tkCurlyRi)
-
+  
 proc equals(_: typedesc[LdtkGridPoint]; a, b: LdtkGridPoint): bool =
   equals(typeof(a.cy), a.cy, b.cy) and equals(typeof(a.cx), a.cx, b.cx)
 
@@ -5948,6 +6184,7 @@ proc toStream*(source: LdtkGridPoint; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[LdtkGridPoint]; source: var JsonParser): LdtkGridPoint =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -5958,8 +6195,10 @@ proc fromStream*(typ: typedesc[LdtkGridPoint]; source: var JsonParser): LdtkGrid
     case key
     of "cy":
       result.cy = fromStream(typeof(result.cy), source)
+      seen.incl(0)
     of "cx":
       result.cx = fromStream(typeof(result.cx), source)
+      seen.incl(1)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -5967,6 +6206,7 @@ proc fromStream*(typ: typedesc[LdtkGridPoint]; source: var JsonParser): LdtkGrid
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 
 proc equals(_: typedesc[Ldtk_FORCED_REFS]; a, b: Ldtk_FORCED_REFS): bool =
   equals(typeof(a.TilesetRect), a.TilesetRect, b.TilesetRect) and
@@ -6462,7 +6702,7 @@ proc fromStream*(typ: typedesc[Ldtk_FORCED_REFS];
     else:
       break
   eat(source, tkCurlyRi)
-
+  
 proc equals(_: typedesc[LdtkLdtkJsonRoot]; a, b: LdtkLdtkJsonRoot): bool =
   equals(typeof(a.backupLimit), a.backupLimit, b.backupLimit) and
       equals(typeof(a.defaultEntityWidth), a.defaultEntityWidth,
@@ -6968,6 +7208,7 @@ proc toStream*(source: LdtkLdtkJsonRoot; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkLdtkJsonRoot];
                  source: var JsonParser): LdtkLdtkJsonRoot =
+  var seen: set[0 .. 22]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -6978,35 +7219,46 @@ proc fromStream*(typ: typedesc[LdtkLdtkJsonRoot];
     case key
     of "backupLimit":
       result.backupLimit = fromStream(typeof(result.backupLimit), source)
+      seen.incl(0)
     of "defaultEntityWidth":
       result.defaultEntityWidth = fromStream(typeof(result.defaultEntityWidth),
           source)
+      seen.incl(1)
     of "backupOnSave":
       result.backupOnSave = fromStream(typeof(result.backupOnSave), source)
+      seen.incl(2)
     of "worldGridWidth":
       result.worldGridWidth = some(fromStream(
           typeof(unsafeGet(result.worldGridWidth)), source))
     of "iid":
       result.iid = fromStream(typeof(result.iid), source)
+      seen.incl(3)
     of "defaultLevelBgColor":
       result.defaultLevelBgColor = fromStream(
           typeof(result.defaultLevelBgColor), source)
+      seen.incl(4)
     of "bgColor":
       result.bgColor = fromStream(typeof(result.bgColor), source)
+      seen.incl(5)
     of "worlds":
       result.worlds = fromStream(typeof(result.worlds), source)
     of "toc":
       result.toc = fromStream(typeof(result.toc), source)
     of "nextUid":
       result.nextUid = fromStream(typeof(result.nextUid), source)
+      seen.incl(6)
     of "imageExportMode":
       result.imageExportMode = fromStream(typeof(result.imageExportMode), source)
+      seen.incl(7)
     of "identifierStyle":
       result.identifierStyle = fromStream(typeof(result.identifierStyle), source)
+      seen.incl(8)
     of "defaultPivotY":
       result.defaultPivotY = fromStream(typeof(result.defaultPivotY), source)
+      seen.incl(9)
     of "dummyWorldIid":
       result.dummyWorldIid = fromStream(typeof(result.dummyWorldIid), source)
+      seen.incl(10)
     of "customCommands":
       result.customCommands = fromStream(typeof(result.customCommands), source)
     of "worldGridHeight":
@@ -7014,8 +7266,10 @@ proc fromStream*(typ: typedesc[LdtkLdtkJsonRoot];
           typeof(unsafeGet(result.worldGridHeight)), source))
     of "appBuildId":
       result.appBuildId = fromStream(typeof(result.appBuildId), source)
+      seen.incl(11)
     of "defaultGridSize":
       result.defaultGridSize = fromStream(typeof(result.defaultGridSize), source)
+      seen.incl(12)
     of "worldLayout":
       result.worldLayout = some(fromStream(
           typeof(unsafeGet(result.worldLayout)), source))
@@ -7024,6 +7278,7 @@ proc fromStream*(typ: typedesc[LdtkLdtkJsonRoot];
     of "levelNamePattern":
       result.levelNamePattern = fromStream(typeof(result.levelNamePattern),
           source)
+      seen.incl(13)
     of "exportPng":
       result.exportPng = some(fromStream(typeof(unsafeGet(result.exportPng)),
           source))
@@ -7038,32 +7293,41 @@ proc fromStream*(typ: typedesc[LdtkLdtkJsonRoot];
           typeof(unsafeGet(result.FORCED_REFS)), source))
     of "exportTiled":
       result.exportTiled = fromStream(typeof(result.exportTiled), source)
+      seen.incl(14)
     of "defs":
       result.defs = fromStream(typeof(result.defs), source)
+      seen.incl(15)
     of "levels":
       result.levels = fromStream(typeof(result.levels), source)
     of "jsonVersion":
       result.jsonVersion = fromStream(typeof(result.jsonVersion), source)
+      seen.incl(16)
     of "defaultEntityHeight":
       result.defaultEntityHeight = fromStream(
           typeof(result.defaultEntityHeight), source)
+      seen.incl(17)
     of "defaultPivotX":
       result.defaultPivotX = fromStream(typeof(result.defaultPivotX), source)
+      seen.incl(18)
     of "defaultLevelHeight":
       result.defaultLevelHeight = some(fromStream(
           typeof(unsafeGet(result.defaultLevelHeight)), source))
     of "simplifiedExport":
       result.simplifiedExport = fromStream(typeof(result.simplifiedExport),
           source)
+      seen.incl(19)
     of "externalLevels":
       result.externalLevels = fromStream(typeof(result.externalLevels), source)
+      seen.incl(20)
     of "tutorialDesc":
       result.tutorialDesc = some(fromStream(
           typeof(unsafeGet(result.tutorialDesc)), source))
     of "minifyJson":
       result.minifyJson = fromStream(typeof(result.minifyJson), source)
+      seen.incl(21)
     of "exportLevelBg":
       result.exportLevelBg = fromStream(typeof(result.exportLevelBg), source)
+      seen.incl(22)
     of "backupRelPath":
       result.backupRelPath = some(fromStream(
           typeof(unsafeGet(result.backupRelPath)), source))
@@ -7074,4 +7338,5 @@ proc fromStream*(typ: typedesc[LdtkLdtkJsonRoot];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 22})
 {.pop.}

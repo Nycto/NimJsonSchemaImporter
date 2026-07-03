@@ -59,4 +59,4 @@ proc fromStream*(typ: typedesc[Enumerated_values];
     else:
       break
   eat(source, tkCurlyRi)
-{.pop.}
+  {.pop.}

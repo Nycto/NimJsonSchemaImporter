@@ -174,6 +174,7 @@ proc toStream*(source: AsepriteRectangle; target: Stream) =
 
 proc fromStream*(typ: typedesc[AsepriteRectangle];
                  source: var JsonParser): AsepriteRectangle =
+  var seen: set[0 .. 3]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -184,12 +185,16 @@ proc fromStream*(typ: typedesc[AsepriteRectangle];
     case key
     of "h":
       result.h = fromStream(typeof(result.h), source)
+      seen.incl(0)
     of "w":
       result.w = fromStream(typeof(result.w), source)
+      seen.incl(1)
     of "x":
       result.x = fromStream(typeof(result.x), source)
+      seen.incl(2)
     of "y":
       result.y = fromStream(typeof(result.y), source)
+      seen.incl(3)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -197,6 +202,7 @@ proc fromStream*(typ: typedesc[AsepriteRectangle];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 3})
 
 proc equals(_: typedesc[AsepriteSize]; a, b: AsepriteSize): bool =
   equals(typeof(a.h), a.h, b.h) and equals(typeof(a.w), a.w, b.w)
@@ -238,6 +244,7 @@ proc toStream*(source: AsepriteSize; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[AsepriteSize]; source: var JsonParser): AsepriteSize =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -248,8 +255,10 @@ proc fromStream*(typ: typedesc[AsepriteSize]; source: var JsonParser): AsepriteS
     case key
     of "h":
       result.h = fromStream(typeof(result.h), source)
+      seen.incl(0)
     of "w":
       result.w = fromStream(typeof(result.w), source)
+      seen.incl(1)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -257,6 +266,7 @@ proc fromStream*(typ: typedesc[AsepriteSize]; source: var JsonParser): AsepriteS
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 
 proc equals(_: typedesc[AsepriteFrame]; a, b: AsepriteFrame): bool =
   equals(typeof(a.duration), a.duration, b.duration) and
@@ -341,6 +351,7 @@ proc toStream*(source: AsepriteFrame; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[AsepriteFrame]; source: var JsonParser): AsepriteFrame =
+  var seen: set[0 .. 5]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -351,17 +362,23 @@ proc fromStream*(typ: typedesc[AsepriteFrame]; source: var JsonParser): Aseprite
     case key
     of "duration":
       result.duration = fromStream(typeof(result.duration), source)
+      seen.incl(0)
     of "frame":
       result.frame = fromStream(typeof(result.frame), source)
+      seen.incl(1)
     of "rotated":
       result.rotated = fromStream(typeof(result.rotated), source)
+      seen.incl(2)
     of "sourceSize":
       result.sourceSize = fromStream(typeof(result.sourceSize), source)
+      seen.incl(3)
     of "spriteSourceSize":
       result.spriteSourceSize = fromStream(typeof(result.spriteSourceSize),
           source)
+      seen.incl(4)
     of "trimmed":
       result.trimmed = fromStream(typeof(result.trimmed), source)
+      seen.incl(5)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -369,6 +386,7 @@ proc fromStream*(typ: typedesc[AsepriteFrame]; source: var JsonParser): Aseprite
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 5})
 
 converter forAsepriteUnion*(value: OrderedTable[string, AsepriteFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 0, key0: value)
@@ -469,6 +487,7 @@ proc toStream*(source: AsepriteArrayFrame; target: Stream) =
 
 proc fromStream*(typ: typedesc[AsepriteArrayFrame];
                  source: var JsonParser): AsepriteArrayFrame =
+  var seen: set[0 .. 6]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -479,19 +498,26 @@ proc fromStream*(typ: typedesc[AsepriteArrayFrame];
     case key
     of "duration":
       result.duration = fromStream(typeof(result.duration), source)
+      seen.incl(0)
     of "filename":
       result.filename = fromStream(typeof(result.filename), source)
+      seen.incl(1)
     of "frame":
       result.frame = fromStream(typeof(result.frame), source)
+      seen.incl(2)
     of "rotated":
       result.rotated = fromStream(typeof(result.rotated), source)
+      seen.incl(3)
     of "sourceSize":
       result.sourceSize = fromStream(typeof(result.sourceSize), source)
+      seen.incl(4)
     of "spriteSourceSize":
       result.spriteSourceSize = fromStream(typeof(result.spriteSourceSize),
           source)
+      seen.incl(5)
     of "trimmed":
       result.trimmed = fromStream(typeof(result.trimmed), source)
+      seen.incl(6)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -499,6 +525,7 @@ proc fromStream*(typ: typedesc[AsepriteArrayFrame];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 6})
 
 converter forAsepriteUnion*(value: seq[AsepriteArrayFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 1, key1: value)
@@ -670,6 +697,7 @@ proc toStream*(source: AsepriteFrameTag; target: Stream) =
 
 proc fromStream*(typ: typedesc[AsepriteFrameTag];
                  source: var JsonParser): AsepriteFrameTag =
+  var seen: set[0 .. 3]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -680,12 +708,16 @@ proc fromStream*(typ: typedesc[AsepriteFrameTag];
     case key
     of "direction":
       result.direction = fromStream(typeof(result.direction), source)
+      seen.incl(0)
     of "from":
       result.`from` = fromStream(typeof(result.`from`), source)
+      seen.incl(1)
     of "name":
       result.name = fromStream(typeof(result.name), source)
+      seen.incl(2)
     of "to":
       result.to = fromStream(typeof(result.to), source)
+      seen.incl(3)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -693,6 +725,7 @@ proc fromStream*(typ: typedesc[AsepriteFrameTag];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 3})
 
 proc equals(_: typedesc[AsepriteLayer]; a, b: AsepriteLayer): bool =
   equals(typeof(a.blendMode), a.blendMode, b.blendMode) and
@@ -783,6 +816,7 @@ proc toStream*(source: AsepriteLayer; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[AsepriteLayer]; source: var JsonParser): AsepriteLayer =
+  var seen: set[0 .. 0]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -802,6 +836,7 @@ proc fromStream*(typ: typedesc[AsepriteLayer]; source: var JsonParser): Aseprite
       result.group = some(fromStream(typeof(unsafeGet(result.group)), source))
     of "name":
       result.name = fromStream(typeof(result.name), source)
+      seen.incl(0)
     of "opacity":
       result.opacity = some(fromStream(typeof(unsafeGet(result.opacity)), source))
     else:
@@ -811,6 +846,7 @@ proc fromStream*(typ: typedesc[AsepriteLayer]; source: var JsonParser): Aseprite
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 0})
 
 proc equals(_: typedesc[AsepritePoint]; a, b: AsepritePoint): bool =
   equals(typeof(a.x), a.x, b.x) and equals(typeof(a.y), a.y, b.y)
@@ -852,6 +888,7 @@ proc toStream*(source: AsepritePoint; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[AsepritePoint]; source: var JsonParser): AsepritePoint =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -862,8 +899,10 @@ proc fromStream*(typ: typedesc[AsepritePoint]; source: var JsonParser): Aseprite
     case key
     of "x":
       result.x = fromStream(typeof(result.x), source)
+      seen.incl(0)
     of "y":
       result.y = fromStream(typeof(result.y), source)
+      seen.incl(1)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -871,6 +910,7 @@ proc fromStream*(typ: typedesc[AsepritePoint]; source: var JsonParser): Aseprite
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 
 proc equals(_: typedesc[AsepriteSliceKey]; a, b: AsepriteSliceKey): bool =
   equals(typeof(a.bounds), a.bounds, b.bounds) and
@@ -938,6 +978,7 @@ proc toStream*(source: AsepriteSliceKey; target: Stream) =
 
 proc fromStream*(typ: typedesc[AsepriteSliceKey];
                  source: var JsonParser): AsepriteSliceKey =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -948,10 +989,12 @@ proc fromStream*(typ: typedesc[AsepriteSliceKey];
     case key
     of "bounds":
       result.bounds = fromStream(typeof(result.bounds), source)
+      seen.incl(0)
     of "center":
       result.center = some(fromStream(typeof(unsafeGet(result.center)), source))
     of "frame":
       result.frame = fromStream(typeof(result.frame), source)
+      seen.incl(1)
     of "pivot":
       result.pivot = some(fromStream(typeof(unsafeGet(result.pivot)), source))
     else:
@@ -961,6 +1004,7 @@ proc fromStream*(typ: typedesc[AsepriteSliceKey];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 
 proc equals(_: typedesc[AsepriteSlice]; a, b: AsepriteSlice): bool =
   equals(typeof(a.color), a.color, b.color) and
@@ -1032,6 +1076,7 @@ proc toStream*(source: AsepriteSlice; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[AsepriteSlice]; source: var JsonParser): AsepriteSlice =
+  var seen: set[0 .. 0]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -1048,6 +1093,7 @@ proc fromStream*(typ: typedesc[AsepriteSlice]; source: var JsonParser): Aseprite
       result.keys = fromStream(typeof(result.keys), source)
     of "name":
       result.name = fromStream(typeof(result.name), source)
+      seen.incl(0)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -1055,6 +1101,7 @@ proc fromStream*(typ: typedesc[AsepriteSlice]; source: var JsonParser): Aseprite
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 0})
 
 proc equals(_: typedesc[AsepriteMeta]; a, b: AsepriteMeta): bool =
   equals(typeof(a.app), a.app, b.app) and
@@ -1186,6 +1233,7 @@ proc toStream*(source: AsepriteMeta; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[AsepriteMeta]; source: var JsonParser): AsepriteMeta =
+  var seen: set[0 .. 5]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -1196,22 +1244,28 @@ proc fromStream*(typ: typedesc[AsepriteMeta]; source: var JsonParser): AsepriteM
     case key
     of "app":
       result.app = fromStream(typeof(result.app), source)
+      seen.incl(0)
     of "format":
       result.format = fromStream(typeof(result.format), source)
+      seen.incl(1)
     of "frameTags":
       result.frameTags = fromStream(typeof(result.frameTags), source)
     of "image":
       result.image = fromStream(typeof(result.image), source)
+      seen.incl(2)
     of "layers":
       result.layers = fromStream(typeof(result.layers), source)
     of "scale":
       result.scale = fromStream(typeof(result.scale), source)
+      seen.incl(3)
     of "size":
       result.size = fromStream(typeof(result.size), source)
+      seen.incl(4)
     of "slices":
       result.slices = fromStream(typeof(result.slices), source)
     of "version":
       result.version = fromStream(typeof(result.version), source)
+      seen.incl(5)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -1219,6 +1273,7 @@ proc fromStream*(typ: typedesc[AsepriteMeta]; source: var JsonParser): AsepriteM
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 5})
 
 proc equals(_: typedesc[AsepriteSpriteSheet]; a, b: AsepriteSpriteSheet): bool =
   equals(typeof(a.frames), a.frames, b.frames) and
@@ -1263,6 +1318,7 @@ proc toStream*(source: AsepriteSpriteSheet; target: Stream) =
 
 proc fromStream*(typ: typedesc[AsepriteSpriteSheet];
                  source: var JsonParser): AsepriteSpriteSheet =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -1273,8 +1329,10 @@ proc fromStream*(typ: typedesc[AsepriteSpriteSheet];
     case key
     of "frames":
       result.frames = fromStream(typeof(result.frames), source)
+      seen.incl(0)
     of "meta":
       result.meta = fromStream(typeof(result.meta), source)
+      seen.incl(1)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -1282,4 +1340,5 @@ proc fromStream*(typ: typedesc[AsepriteSpriteSheet];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 {.pop.}

@@ -105,6 +105,7 @@ proc toStream*(source: Movie; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[Movie]; source: var JsonParser): Movie =
+  var seen: set[0 .. 2]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -115,10 +116,13 @@ proc fromStream*(typ: typedesc[Movie]; source: var JsonParser): Movie =
     case key
     of "title":
       result.title = fromStream(typeof(result.title), source)
+      seen.incl(0)
     of "director":
       result.director = fromStream(typeof(result.director), source)
+      seen.incl(1)
     of "releaseDate":
       result.releaseDate = fromStream(typeof(result.releaseDate), source)
+      seen.incl(2)
     of "genre":
       result.genre = some(fromStream(typeof(unsafeGet(result.genre)), source))
     of "duration":
@@ -133,4 +137,5 @@ proc fromStream*(typ: typedesc[Movie]; source: var JsonParser): Movie =
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 2})
 {.pop.}

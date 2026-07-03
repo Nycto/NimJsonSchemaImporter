@@ -109,4 +109,4 @@ proc fromStream*(typ: typedesc[Consts]; source: var JsonParser): Consts =
     else:
       break
   eat(source, tkCurlyRi)
-{.pop.}
+  {.pop.}

@@ -81,7 +81,7 @@ proc fromStream*(typ: typedesc[BlogAuthor]; source: var JsonParser): BlogAuthor 
     else:
       break
   eat(source, tkCurlyRi)
-
+  
 proc equals(_: typedesc[Blog]; a, b: Blog): bool =
   equals(typeof(a.title), a.title, b.title) and
       equals(typeof(a.content), a.content, b.content) and
@@ -163,6 +163,7 @@ proc toStream*(source: Blog; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[Blog]; source: var JsonParser): Blog =
+  var seen: set[0 .. 2]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -173,13 +174,16 @@ proc fromStream*(typ: typedesc[Blog]; source: var JsonParser): Blog =
     case key
     of "title":
       result.title = fromStream(typeof(result.title), source)
+      seen.incl(0)
     of "content":
       result.content = fromStream(typeof(result.content), source)
+      seen.incl(1)
     of "publishedDate":
       result.publishedDate = some(fromStream(
           typeof(unsafeGet(result.publishedDate)), source))
     of "author":
       result.author = fromStream(typeof(result.author), source)
+      seen.incl(2)
     of "tags":
       result.tags = fromStream(typeof(result.tags), source)
     else:
@@ -189,4 +193,5 @@ proc fromStream*(typ: typedesc[Blog]; source: var JsonParser): Blog =
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 2})
 {.pop.}

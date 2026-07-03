@@ -86,7 +86,7 @@ proc fromStream*(typ: typedesc[HealthEmergencyContact];
     else:
       break
   eat(source, tkCurlyRi)
-
+  
 proc equals(_: typedesc[Health]; a, b: Health): bool =
   equals(typeof(a.patientName), a.patientName, b.patientName) and
       equals(typeof(a.dateOfBirth), a.dateOfBirth, b.dateOfBirth) and
@@ -202,6 +202,7 @@ proc toStream*(source: Health; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[Health]; source: var JsonParser): Health =
+  var seen: set[0 .. 2]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -212,10 +213,13 @@ proc fromStream*(typ: typedesc[Health]; source: var JsonParser): Health =
     case key
     of "patientName":
       result.patientName = fromStream(typeof(result.patientName), source)
+      seen.incl(0)
     of "dateOfBirth":
       result.dateOfBirth = fromStream(typeof(result.dateOfBirth), source)
+      seen.incl(1)
     of "bloodType":
       result.bloodType = fromStream(typeof(result.bloodType), source)
+      seen.incl(2)
     of "allergies":
       result.allergies = fromStream(typeof(result.allergies), source)
     of "conditions":
@@ -232,4 +236,5 @@ proc fromStream*(typ: typedesc[Health]; source: var JsonParser): Health =
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 2})
 {.pop.}

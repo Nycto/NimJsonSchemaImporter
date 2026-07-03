@@ -80,7 +80,7 @@ proc fromStream*(typ: typedesc[EcommerceProductSchema];
     else:
       break
   eat(source, tkCurlyRi)
-
+  
 proc equals(_: typedesc[EcommerceOrderSchema]; a, b: EcommerceOrderSchema): bool =
   equals(typeof(a.orderId), a.orderId, b.orderId) and
       equals(typeof(a.items), a.items, b.items)
@@ -151,4 +151,4 @@ proc fromStream*(typ: typedesc[EcommerceOrderSchema];
     else:
       break
   eat(source, tkCurlyRi)
-{.pop.}
+  {.pop.}

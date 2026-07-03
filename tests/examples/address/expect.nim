@@ -117,6 +117,7 @@ proc toStream*(source: Address; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[Address]; source: var JsonParser): Address =
+  var seen: set[0 .. 2]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -136,13 +137,16 @@ proc fromStream*(typ: typedesc[Address]; source: var JsonParser): Address =
           typeof(unsafeGet(result.streetAddress)), source))
     of "locality":
       result.locality = fromStream(typeof(result.locality), source)
+      seen.incl(0)
     of "region":
       result.region = fromStream(typeof(result.region), source)
+      seen.incl(1)
     of "postalCode":
       result.postalCode = some(fromStream(typeof(unsafeGet(result.postalCode)),
           source))
     of "countryName":
       result.countryName = fromStream(typeof(result.countryName), source)
+      seen.incl(2)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -150,4 +154,5 @@ proc fromStream*(typ: typedesc[Address]; source: var JsonParser): Address =
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 2})
 {.pop.}

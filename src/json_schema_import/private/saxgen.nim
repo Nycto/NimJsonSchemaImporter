@@ -5,6 +5,7 @@ let target {.compileTime.} = ident("target")
 let toStream {.compileTime.} = ident("toStream")
 let hasEmitted {.compileTime.} = ident("hasEmitted")
 let key {.compileTime.} = ident("key")
+let seen {.compileTime.} = ident("seen")
 
 proc writeKeyValue(key: string, readProp: NimNode): NimNode =
   return quote:
@@ -57,23 +58,38 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
   assert(typ.kind == ObjType)
 
   var cases = nnkCaseStmt.newTree(key)
+  var requiredCount = 0
 
   for jsonKey, (propName, subtype, required) in typ.properties:
     if not subtype.hasRealField:
       continue
 
     let safeKey = safePropName(propName)
-    let decode =
-      if subtype.kind in SELF_OPTIONAL or required:
-        quote:
-          result.`safeKey` = fromStream(typeof(result.`safeKey`), `source`)
-      else:
-        assert(subtype.kind == OptionalType)
-        quote:
-          result.`safeKey` =
-            some(fromStream(typeof(unsafeGet(result.`safeKey`)), `source`))
 
-    cases.add(nnkOfBranch.newTree(newLit(jsonKey), decode))
+    if subtype.kind in SELF_OPTIONAL or required:
+      let decode = quote:
+        result.`safeKey` = fromStream(typeof(result.`safeKey`), `source`)
+
+      if subtype.kind in SELF_OPTIONAL:
+        cases.add(nnkOfBranch.newTree(newLit(jsonKey), decode))
+      else:
+        let index = requiredCount.newLit
+        inc requiredCount
+        cases.add(
+          nnkOfBranch.newTree(
+            newLit(jsonKey),
+            quote do:
+              `decode`
+              `seen`.incl(`index`)
+          )
+        )
+    else:
+      assert(subtype.kind == OptionalType)
+      let decode = quote:
+        result.`safeKey` =
+          some(fromStream(typeof(unsafeGet(result.`safeKey`)), `source`))
+
+      cases.add(nnkOfBranch.newTree(newLit(jsonKey), decode))
 
   cases.add(
     nnkElse.newTree(
@@ -82,8 +98,19 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
     )
   )
 
+  var seenDecl = newStmtList()
+  var seenAssert = newStmtList()
+
+  if requiredCount > 0:
+    let maxIndex = (requiredCount - 1).newLit
+    seenDecl.add quote do:
+      var `seen`: set[0 .. `maxIndex`]
+    seenAssert.add quote do:
+      assert(`seen` == {0 .. `maxIndex`})
+
   return quote:
     proc fromStream*(typ: typedesc[`typeName`], `source`: var JsonParser): `typeName` =
+      `seenDecl`
       eat(`source`, tkCurlyLe)
       while `source`.tok != tkCurlyRi:
         if `source`.tok != tkString:
@@ -97,6 +124,7 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
         else:
           break
       eat(`source`, tkCurlyRi)
+      `seenAssert`
 
 proc buildSaxUnionEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
   ## Builds the `toStream` proc for encoding a union

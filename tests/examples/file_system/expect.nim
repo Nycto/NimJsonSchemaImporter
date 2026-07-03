@@ -98,6 +98,7 @@ proc toStream*(source: File_systemDiskDevice; target: Stream) =
 
 proc fromStream*(typ: typedesc[File_systemDiskDevice];
                  source: var JsonParser): File_systemDiskDevice =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -108,8 +109,10 @@ proc fromStream*(typ: typedesc[File_systemDiskDevice];
     case key
     of "type":
       result.`type` = fromStream(typeof(result.`type`), source)
+      seen.incl(0)
     of "device":
       result.device = fromStream(typeof(result.device), source)
+      seen.incl(1)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -117,6 +120,7 @@ proc fromStream*(typ: typedesc[File_systemDiskDevice];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 
 converter forFile_systemUnion*(value: File_systemDiskDevice): File_systemUnion =
   return File_systemUnion(kind: 0, key0: value)
@@ -164,6 +168,7 @@ proc toStream*(source: File_systemDiskUUID; target: Stream) =
 
 proc fromStream*(typ: typedesc[File_systemDiskUUID];
                  source: var JsonParser): File_systemDiskUUID =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -174,8 +179,10 @@ proc fromStream*(typ: typedesc[File_systemDiskUUID];
     case key
     of "type":
       result.`type` = fromStream(typeof(result.`type`), source)
+      seen.incl(0)
     of "label":
       result.label = fromStream(typeof(result.label), source)
+      seen.incl(1)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -183,6 +190,7 @@ proc fromStream*(typ: typedesc[File_systemDiskUUID];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 
 converter forFile_systemUnion*(value: File_systemDiskUUID): File_systemUnion =
   return File_systemUnion(kind: 1, key1: value)
@@ -239,6 +247,7 @@ proc toStream*(source: File_systemNfs; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[File_systemNfs]; source: var JsonParser): File_systemNfs =
+  var seen: set[0 .. 2]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -249,10 +258,13 @@ proc fromStream*(typ: typedesc[File_systemNfs]; source: var JsonParser): File_sy
     case key
     of "type":
       result.`type` = fromStream(typeof(result.`type`), source)
+      seen.incl(0)
     of "remotePath":
       result.remotePath = fromStream(typeof(result.remotePath), source)
+      seen.incl(1)
     of "server":
       result.server = fromStream(typeof(result.server), source)
+      seen.incl(2)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -260,6 +272,7 @@ proc fromStream*(typ: typedesc[File_systemNfs]; source: var JsonParser): File_sy
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 2})
 
 converter forFile_systemUnion*(value: File_systemNfs): File_systemUnion =
   return File_systemUnion(kind: 2, key2: value)
@@ -307,6 +320,7 @@ proc toStream*(source: File_systemTmpfs; target: Stream) =
 
 proc fromStream*(typ: typedesc[File_systemTmpfs];
                  source: var JsonParser): File_systemTmpfs =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -317,8 +331,10 @@ proc fromStream*(typ: typedesc[File_systemTmpfs];
     case key
     of "type":
       result.`type` = fromStream(typeof(result.`type`), source)
+      seen.incl(0)
     of "sizeInMB":
       result.sizeInMB = fromStream(typeof(result.sizeInMB), source)
+      seen.incl(1)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -326,6 +342,7 @@ proc fromStream*(typ: typedesc[File_systemTmpfs];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 
 converter forFile_systemUnion*(value: File_systemTmpfs): File_systemUnion =
   return File_systemUnion(kind: 3, key3: value)
@@ -526,6 +543,7 @@ proc toStream*(source: File_system; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[File_system]; source: var JsonParser): File_system =
+  var seen: set[0 .. 0]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -536,6 +554,7 @@ proc fromStream*(typ: typedesc[File_system]; source: var JsonParser): File_syste
     case key
     of "storage":
       result.storage = fromStream(typeof(result.storage), source)
+      seen.incl(0)
     of "fstype":
       result.fstype = some(fromStream(typeof(unsafeGet(result.fstype)), source))
     of "options":
@@ -550,4 +569,5 @@ proc fromStream*(typ: typedesc[File_system]; source: var JsonParser): File_syste
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 0})
 {.pop.}

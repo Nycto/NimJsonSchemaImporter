@@ -82,6 +82,7 @@ proc toStream*(source: Complex_objectAddress; target: Stream) =
 
 proc fromStream*(typ: typedesc[Complex_objectAddress];
                  source: var JsonParser): Complex_objectAddress =
+  var seen: set[0 .. 3]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -92,12 +93,16 @@ proc fromStream*(typ: typedesc[Complex_objectAddress];
     case key
     of "street":
       result.street = fromStream(typeof(result.street), source)
+      seen.incl(0)
     of "city":
       result.city = fromStream(typeof(result.city), source)
+      seen.incl(1)
     of "state":
       result.state = fromStream(typeof(result.state), source)
+      seen.incl(2)
     of "postalCode":
       result.postalCode = fromStream(typeof(result.postalCode), source)
+      seen.incl(3)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -105,6 +110,7 @@ proc fromStream*(typ: typedesc[Complex_objectAddress];
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 3})
 
 proc equals(_: typedesc[Complex_object]; a, b: Complex_object): bool =
   equals(typeof(a.name), a.name, b.name) and equals(typeof(a.age), a.age, b.age) and
@@ -175,6 +181,7 @@ proc toStream*(source: Complex_object; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[Complex_object]; source: var JsonParser): Complex_object =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -185,8 +192,10 @@ proc fromStream*(typ: typedesc[Complex_object]; source: var JsonParser): Complex
     case key
     of "name":
       result.name = fromStream(typeof(result.name), source)
+      seen.incl(0)
     of "age":
       result.age = fromStream(typeof(result.age), source)
+      seen.incl(1)
     of "address":
       result.address = some(fromStream(typeof(unsafeGet(result.address)), source))
     of "hobbies":
@@ -198,4 +207,5 @@ proc fromStream*(typ: typedesc[Complex_object]; source: var JsonParser): Complex
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 {.pop.}

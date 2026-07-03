@@ -104,6 +104,7 @@ proc toStream*(source: User_profile; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[User_profile]; source: var JsonParser): User_profile =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -114,8 +115,10 @@ proc fromStream*(typ: typedesc[User_profile]; source: var JsonParser): User_prof
     case key
     of "username":
       result.username = fromStream(typeof(result.username), source)
+      seen.incl(0)
     of "email":
       result.email = fromStream(typeof(result.email), source)
+      seen.incl(1)
     of "fullName":
       result.fullName = some(fromStream(typeof(unsafeGet(result.fullName)),
                                         source))
@@ -133,4 +136,5 @@ proc fromStream*(typ: typedesc[User_profile]; source: var JsonParser): User_prof
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 {.pop.}

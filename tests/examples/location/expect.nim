@@ -50,6 +50,7 @@ proc toStream*(source: Location; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[Location]; source: var JsonParser): Location =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     if source.tok != tkString:
@@ -60,8 +61,10 @@ proc fromStream*(typ: typedesc[Location]; source: var JsonParser): Location =
     case key
     of "latitude":
       result.latitude = fromStream(typeof(result.latitude), source)
+      seen.incl(0)
     of "longitude":
       result.longitude = fromStream(typeof(result.longitude), source)
+      seen.incl(1)
     else:
       skipValue(source)
     if source.tok == tkComma:
@@ -69,4 +72,5 @@ proc fromStream*(typ: typedesc[Location]; source: var JsonParser): Location =
     else:
       break
   eat(source, tkCurlyRi)
+  assert(seen == {0 .. 1})
 {.pop.}
