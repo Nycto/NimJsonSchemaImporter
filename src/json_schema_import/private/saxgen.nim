@@ -32,20 +32,20 @@ proc buildSaxObjEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
 
     if propType.kind == ConstValueType:
       encodeKeys.add(writeConstKeyValue(key, propType.value))
-    elif propType.kind in SELF_OPTIONAL:
-      let encode = writeKeyValue(key, readProp)
-      encodeKeys.add quote do:
-        if len(`readProp`) > 0:
-          `encode`
-    elif required or not propType.hasRealField:
-      encodeKeys.add(writeKeyValue(key, readProp))
     else:
-      assert(propType.kind == OptionalType)
-
-      let encode = writeKeyValue(key, newCall(bindSym("unsafeGet"), readProp))
-      encodeKeys.add quote do:
-        if isSome(`readProp`):
-          `encode`
+      case classify(propType, required)
+      of pcSelfOptional:
+        let encode = writeKeyValue(key, readProp)
+        encodeKeys.add quote do:
+          if len(`readProp`) > 0:
+            `encode`
+      of pcRequired:
+        encodeKeys.add(writeKeyValue(key, readProp))
+      of pcOptional:
+        let encode = writeKeyValue(key, newCall(bindSym("unsafeGet"), readProp))
+        encodeKeys.add quote do:
+          if isSome(`readProp`):
+            `encode`
 
   return quote:
     proc toStream*(`source`: `typeName`, `target`: Stream) =
@@ -66,29 +66,28 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
 
     let safeKey = safePropName(propName)
 
-    if subtype.kind in SELF_OPTIONAL or required:
+    case classify(subtype, required)
+    of pcSelfOptional:
       let decode = quote:
         result.`safeKey` = fromStream(typeof(result.`safeKey`), `source`)
-
-      if subtype.kind in SELF_OPTIONAL:
-        cases.add(nnkOfBranch.newTree(newLit(jsonKey), decode))
-      else:
-        let index = requiredCount.newLit
-        inc requiredCount
-        cases.add(
-          nnkOfBranch.newTree(
-            newLit(jsonKey),
-            quote do:
-              `decode`
-              `seen`.incl(`index`),
-          )
+      cases.add(nnkOfBranch.newTree(newLit(jsonKey), decode))
+    of pcRequired:
+      let decode = quote:
+        result.`safeKey` = fromStream(typeof(result.`safeKey`), `source`)
+      let index = requiredCount.newLit
+      inc requiredCount
+      cases.add(
+        nnkOfBranch.newTree(
+          newLit(jsonKey),
+          quote do:
+            `decode`
+            `seen`.incl(`index`),
         )
-    else:
-      assert(subtype.kind == OptionalType)
+      )
+    of pcOptional:
       let decode = quote:
         result.`safeKey` =
           some(fromStream(typeof(unsafeGet(result.`safeKey`)), `source`))
-
       cases.add(nnkOfBranch.newTree(newLit(jsonKey), decode))
 
   cases.add(

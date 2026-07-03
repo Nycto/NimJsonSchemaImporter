@@ -164,17 +164,18 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
       continue
 
     let safeKey = safePropName(propName)
-    if subtype.kind in SELF_OPTIONAL:
+    case classify(subtype, required)
+    of pcSelfOptional:
       decodeKeys.add quote do:
         if hasKey(`source`, `key`) and `source`{`key`}.kind != JNull:
           `target`.`safeKey` = jsonTo(`source`{`key`}, typeof(`target`.`safeKey`))
-    elif required:
+    of pcRequired:
       decodeKeys.add quote do:
         assert(
           hasKey(`source`, `key`), `key` & " is missing while decoding " & `typeNameStr`
         )
         `target`.`safeKey` = jsonTo(`source`{`key`}, typeof(`target`.`safeKey`))
-    else:
+    of pcOptional:
       decodeKeys.add quote do:
         if hasKey(`source`, `key`) and `source`{`key`}.kind != JNull:
           `target`.`safeKey` =
@@ -190,18 +191,17 @@ proc buildObjectEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
   for key, (propName, propType, required) in typ.properties:
     let readProp = newDotExpr(source, safePropName(propName))
 
-    if propType.kind in SELF_OPTIONAL:
+    case classify(propType, required)
+    of pcSelfOptional:
       let encode = readProp.createEncodeExpr(propType)
       encodeKeys.add quote do:
         if len(`readProp`) > 0:
           result{`key`} = `encode`
-    elif required or not propType.hasRealField:
+    of pcRequired:
       let encode = readProp.createEncodeExpr(propType)
       encodeKeys.add quote do:
         result{`key`} = `encode`
-    else:
-      assert(propType.kind == OptionalType)
-
+    of pcOptional:
       let encode =
         newCall(bindSym("unsafeGet"), readProp).createEncodeExpr(propType.subtype)
       encodeKeys.add quote do:

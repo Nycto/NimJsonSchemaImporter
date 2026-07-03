@@ -50,6 +50,28 @@ proc safeTypeName*(name: string): NimNode =
 proc safePropName*(name: string): NimNode =
   name.cleanupIdent.wrapIdent
 
+type PropCategory* = enum
+  pcSelfOptional
+    ## The type's own zero value (e.g. an empty map/array) already conveys
+    ## "absent", so presence is inferred from that rather than tracked
+    ## separately.
+  pcRequired
+    ## Must always be encoded/decoded: either the schema requires it, or it
+    ## has no real field to be optional about (e.g. a const value).
+  pcOptional
+    ## Wrapped in `Option[T]`; may be entirely absent.
+
+proc classify*(propType: TypeDef, required: bool): PropCategory =
+  ## Classifies an object property for encoder/decoder codegen, matching the
+  ## three cases every `buildObject*`/`buildSaxObj*` builder branches on.
+  if propType.kind in SELF_OPTIONAL:
+    pcSelfOptional
+  elif required or not propType.hasRealField:
+    pcRequired
+  else:
+    assert(propType.kind == OptionalType)
+    pcOptional
+
 proc formatCodeDump*(code: NimNode): string =
   result = "{.push warning[UnusedImport]:off.}\n"
   result &= "import std/[json, jsonutils, tables, options]\n"
