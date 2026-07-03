@@ -1,0 +1,1 @@
+AsepriteSpriteSheet(frames: {}, meta: AsepriteMeta(app: "http://www.aseprite.org/", format: RGBA8888, frameTags: [], image: "empty.png", layers: [], scale: "1", size: AsepriteSize(h: 0.0, w: 0.0), slices: [], version: "1.x-dev"))

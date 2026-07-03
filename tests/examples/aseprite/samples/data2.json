@@ -1,0 +1,14 @@
+{
+  "frames": {},
+  "meta": {
+    "app": "http://www.aseprite.org/",
+    "format": "RGBA8888",
+    "image": "empty.png",
+    "scale": "1",
+    "size": {
+      "h": 0.0,
+      "w": 0.0
+    },
+    "version": "1.x-dev"
+  }
+}
