@@ -234,5 +234,5 @@ proc fromStream*(typ: typedesc[Health]; source: var JsonParser): Health =
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 2})
+  assert(card(seen) == 3)
 {.pop.}

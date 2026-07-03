@@ -631,7 +631,7 @@ proc fromStream*(typ: typedesc[LdtkNeighbourLevel];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 
 proc equals(_: typedesc[LdtkLevelBgPosInfos]; a, b: LdtkLevelBgPosInfos): bool =
   equals(typeof(a.cropRect), a.cropRect, b.cropRect) and
@@ -828,7 +828,7 @@ proc fromStream*(typ: typedesc[LdtkTilesetRect];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 4})
+  assert(card(seen) == 5)
 
 proc equals(_: typedesc[LdtkFieldInstance]; a, b: LdtkFieldInstance): bool =
   equals(typeof(a.`type`), a.`type`, b.`type`) and
@@ -955,7 +955,7 @@ proc fromStream*(typ: typedesc[LdtkFieldInstance];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 3})
+  assert(card(seen) == 4)
 
 proc equals(_: typedesc[LdtkTile]; a, b: LdtkTile): bool =
   equals(typeof(a.t), a.t, b.t) and equals(typeof(a.d), a.d, b.d) and
@@ -1082,7 +1082,7 @@ proc fromStream*(typ: typedesc[LdtkTile]; source: var JsonParser): LdtkTile =
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 2})
+  assert(card(seen) == 3)
 
 proc equals(_: typedesc[LdtkEntityInstance]; a, b: LdtkEntityInstance): bool =
   equals(typeof(a.iid), a.iid, b.iid) and
@@ -1334,7 +1334,7 @@ proc fromStream*(typ: typedesc[LdtkEntityInstance];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 5})
+  assert(card(seen) == 6)
 
 proc equals(_: typedesc[LdtkIntGridValueInstance];
             a, b: LdtkIntGridValueInstance): bool =
@@ -1402,7 +1402,7 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueInstance];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 
 proc equals(_: typedesc[LdtkLayerInstance]; a, b: LdtkLayerInstance): bool =
   equals(typeof(a.cHei), a.cHei, b.cHei) and
@@ -1812,7 +1812,7 @@ proc fromStream*(typ: typedesc[LdtkLayerInstance];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 14})
+  assert(card(seen) == 15)
 
 proc equals(_: typedesc[LdtkLevel]; a, b: LdtkLevel): bool =
   equals(typeof(a.neighbours), a.neighbours, b.neighbours) and
@@ -2157,7 +2157,7 @@ proc fromStream*(typ: typedesc[LdtkLevel]; source: var JsonParser): LdtkLevel =
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 12})
+  assert(card(seen) == 13)
 
 proc equals(_: typedesc[LdtkWorld]; a, b: LdtkWorld): bool =
   equals(typeof(a.worldGridWidth), a.worldGridWidth, b.worldGridWidth) and
@@ -2319,7 +2319,7 @@ proc fromStream*(typ: typedesc[LdtkWorld]; source: var JsonParser): LdtkWorld =
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 6})
+  assert(card(seen) == 7)
 
 proc equals(_: typedesc[LdtkEntityReferenceInfos];
             a, b: LdtkEntityReferenceInfos): bool =
@@ -2414,7 +2414,7 @@ proc fromStream*(typ: typedesc[LdtkEntityReferenceInfos];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 3})
+  assert(card(seen) == 4)
 
 proc equals(_: typedesc[LdtkTocInstanceData]; a, b: LdtkTocInstanceData): bool =
   equals(typeof(a.worldX), a.worldX, b.worldX) and
@@ -2532,7 +2532,7 @@ proc fromStream*(typ: typedesc[LdtkTocInstanceData];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 5})
+  assert(card(seen) == 6)
 
 proc equals(_: typedesc[LdtkTableOfContentEntry]; a, b: LdtkTableOfContentEntry): bool =
   equals(typeof(a.identifier), a.identifier, b.identifier) and
@@ -2625,7 +2625,7 @@ proc fromStream*(typ: typedesc[LdtkTableOfContentEntry];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 0})
+  assert(card(seen) == 1)
 
 proc equals(_: typedesc[LdtkCustomCommand]; a, b: LdtkCustomCommand): bool =
   equals(typeof(a.`when`), a.`when`, b.`when`) and
@@ -2691,7 +2691,7 @@ proc fromStream*(typ: typedesc[LdtkCustomCommand];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 
 proc equals(_: typedesc[LdtkTileCustomMetadata]; a, b: LdtkTileCustomMetadata): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -2758,7 +2758,7 @@ proc fromStream*(typ: typedesc[LdtkTileCustomMetadata];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 
 proc equals(_: typedesc[LdtkEnumTagValue]; a, b: LdtkEnumTagValue): bool =
   equals(typeof(a.tileIds), a.tileIds, b.tileIds) and
@@ -2829,7 +2829,7 @@ proc fromStream*(typ: typedesc[LdtkEnumTagValue];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 0})
+  assert(card(seen) == 1)
 
 proc equals(_: typedesc[LdtkTilesetDef]; a, b: LdtkTilesetDef): bool =
   equals(typeof(a.cachedPixelData), a.cachedPixelData, b.cachedPixelData) and
@@ -3136,7 +3136,7 @@ proc fromStream*(typ: typedesc[LdtkTilesetDef];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 8})
+  assert(card(seen) == 9)
 
 proc equals(_: typedesc[LdtkIntGridValueGroupDef];
             a, b: LdtkIntGridValueGroupDef): bool =
@@ -3219,7 +3219,7 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueGroupDef];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 0})
+  assert(card(seen) == 1)
 
 proc equals(_: typedesc[LdtkIntGridValueDef]; a, b: LdtkIntGridValueDef): bool =
   equals(typeof(a.tile), a.tile, b.tile) and
@@ -3326,7 +3326,7 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueDef];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 2})
+  assert(card(seen) == 3)
 
 proc equals(_: typedesc[LdtkAutoRuleDef]; a, b: LdtkAutoRuleDef): bool =
   equals(typeof(a.flipX), a.flipX, b.flipX) and
@@ -3806,7 +3806,7 @@ proc fromStream*(typ: typedesc[LdtkAutoRuleDef];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 26})
+  assert(card(seen) == 27)
 
 proc equals(_: typedesc[LdtkAutoLayerRuleGroup]; a, b: LdtkAutoLayerRuleGroup): bool =
   equals(typeof(a.name), a.name, b.name) and
@@ -4014,7 +4014,7 @@ proc fromStream*(typ: typedesc[LdtkAutoLayerRuleGroup];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 5})
+  assert(card(seen) == 6)
 
 proc equals(_: typedesc[LdtkLayerDef]; a, b: LdtkLayerDef): bool =
   equals(typeof(a.pxOffsetX), a.pxOffsetX, b.pxOffsetX) and
@@ -4591,7 +4591,7 @@ proc fromStream*(typ: typedesc[LdtkLayerDef]; source: var JsonParser): LdtkLayer
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 20})
+  assert(card(seen) == 21)
 
 proc equals(_: typedesc[LdtkFieldDef]; a, b: LdtkFieldDef): bool =
   equals(typeof(a.acceptFileTypes), a.acceptFileTypes, b.acceptFileTypes) and
@@ -5173,7 +5173,7 @@ proc fromStream*(typ: typedesc[LdtkFieldDef]; source: var JsonParser): LdtkField
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 19})
+  assert(card(seen) == 20)
 
 proc equals(_: typedesc[LdtkEnumDefValues]; a, b: LdtkEnumDefValues): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -5288,7 +5288,7 @@ proc fromStream*(typ: typedesc[LdtkEnumDefValues];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 
 proc equals(_: typedesc[LdtkEnumDef]; a, b: LdtkEnumDef): bool =
   equals(typeof(a.externalFileChecksum), a.externalFileChecksum,
@@ -5442,7 +5442,7 @@ proc fromStream*(typ: typedesc[LdtkEnumDef]; source: var JsonParser): LdtkEnumDe
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 
 proc equals(_: typedesc[LdtkEntityDef]; a, b: LdtkEntityDef): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -5965,7 +5965,7 @@ proc fromStream*(typ: typedesc[LdtkEntityDef]; source: var JsonParser): LdtkEnti
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 21})
+  assert(card(seen) == 22)
 
 proc equals(_: typedesc[LdtkDefinitions]; a, b: LdtkDefinitions): bool =
   equals(typeof(a.tilesets), a.tilesets, b.tilesets) and
@@ -6178,7 +6178,7 @@ proc fromStream*(typ: typedesc[LdtkGridPoint]; source: var JsonParser): LdtkGrid
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 
 proc equals(_: typedesc[Ldtk_FORCED_REFS]; a, b: Ldtk_FORCED_REFS): bool =
   equals(typeof(a.TilesetRect), a.TilesetRect, b.TilesetRect) and
@@ -7308,5 +7308,5 @@ proc fromStream*(typ: typedesc[LdtkLdtkJsonRoot];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 22})
+  assert(card(seen) == 23)
 {.pop.}

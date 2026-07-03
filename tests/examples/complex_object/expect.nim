@@ -109,7 +109,7 @@ proc fromStream*(typ: typedesc[Complex_objectAddress];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 3})
+  assert(card(seen) == 4)
 
 proc equals(_: typedesc[Complex_object]; a, b: Complex_object): bool =
   equals(typeof(a.name), a.name, b.name) and equals(typeof(a.age), a.age, b.age) and
@@ -205,5 +205,5 @@ proc fromStream*(typ: typedesc[Complex_object]; source: var JsonParser): Complex
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 {.pop.}

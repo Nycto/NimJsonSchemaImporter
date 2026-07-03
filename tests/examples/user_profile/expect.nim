@@ -135,5 +135,5 @@ proc fromStream*(typ: typedesc[User_profile]; source: var JsonParser): User_prof
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 {.pop.}

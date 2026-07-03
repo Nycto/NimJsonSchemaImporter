@@ -79,7 +79,7 @@ proc fromStream*(typ: typedesc[Array_of_thingsVeggie];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 
 proc equals(_: typedesc[Array_of_things]; a, b: Array_of_things): bool =
   equals(typeof(a.fruits), a.fruits, b.fruits) and

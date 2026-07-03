@@ -136,5 +136,5 @@ proc fromStream*(typ: typedesc[Movie]; source: var JsonParser): Movie =
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 2})
+  assert(card(seen) == 3)
 {.pop.}

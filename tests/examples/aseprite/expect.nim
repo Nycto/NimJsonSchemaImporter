@@ -201,7 +201,7 @@ proc fromStream*(typ: typedesc[AsepriteRectangle];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 3})
+  assert(card(seen) == 4)
 
 proc equals(_: typedesc[AsepriteSize]; a, b: AsepriteSize): bool =
   equals(typeof(a.h), a.h, b.h) and equals(typeof(a.w), a.w, b.w)
@@ -264,7 +264,7 @@ proc fromStream*(typ: typedesc[AsepriteSize]; source: var JsonParser): AsepriteS
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 
 proc equals(_: typedesc[AsepriteFrame]; a, b: AsepriteFrame): bool =
   equals(typeof(a.duration), a.duration, b.duration) and
@@ -383,7 +383,7 @@ proc fromStream*(typ: typedesc[AsepriteFrame]; source: var JsonParser): Aseprite
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 5})
+  assert(card(seen) == 6)
 
 converter forAsepriteUnion*(value: OrderedTable[string, AsepriteFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 0, key0: value)
@@ -521,7 +521,7 @@ proc fromStream*(typ: typedesc[AsepriteArrayFrame];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 6})
+  assert(card(seen) == 7)
 
 converter forAsepriteUnion*(value: seq[AsepriteArrayFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 1, key1: value)
@@ -720,7 +720,7 @@ proc fromStream*(typ: typedesc[AsepriteFrameTag];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 3})
+  assert(card(seen) == 4)
 
 proc equals(_: typedesc[AsepriteLayer]; a, b: AsepriteLayer): bool =
   equals(typeof(a.blendMode), a.blendMode, b.blendMode) and
@@ -840,7 +840,7 @@ proc fromStream*(typ: typedesc[AsepriteLayer]; source: var JsonParser): Aseprite
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 0})
+  assert(card(seen) == 1)
 
 proc equals(_: typedesc[AsepritePoint]; a, b: AsepritePoint): bool =
   equals(typeof(a.x), a.x, b.x) and equals(typeof(a.y), a.y, b.y)
@@ -903,7 +903,7 @@ proc fromStream*(typ: typedesc[AsepritePoint]; source: var JsonParser): Aseprite
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 
 proc equals(_: typedesc[AsepriteSliceKey]; a, b: AsepriteSliceKey): bool =
   equals(typeof(a.bounds), a.bounds, b.bounds) and
@@ -996,7 +996,7 @@ proc fromStream*(typ: typedesc[AsepriteSliceKey];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 
 proc equals(_: typedesc[AsepriteSlice]; a, b: AsepriteSlice): bool =
   equals(typeof(a.color), a.color, b.color) and
@@ -1092,7 +1092,7 @@ proc fromStream*(typ: typedesc[AsepriteSlice]; source: var JsonParser): Aseprite
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 0})
+  assert(card(seen) == 1)
 
 proc equals(_: typedesc[AsepriteMeta]; a, b: AsepriteMeta): bool =
   equals(typeof(a.app), a.app, b.app) and
@@ -1263,7 +1263,7 @@ proc fromStream*(typ: typedesc[AsepriteMeta]; source: var JsonParser): AsepriteM
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 5})
+  assert(card(seen) == 6)
 
 proc equals(_: typedesc[AsepriteSpriteSheet]; a, b: AsepriteSpriteSheet): bool =
   equals(typeof(a.frames), a.frames, b.frames) and
@@ -1329,5 +1329,5 @@ proc fromStream*(typ: typedesc[AsepriteSpriteSheet];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 {.pop.}

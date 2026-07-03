@@ -103,10 +103,11 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
 
   if requiredCount > 0:
     let maxIndex = (requiredCount - 1).newLit
+    let count = requiredCount.newLit
     seenDecl.add quote do:
       var `seen`: set[0 .. `maxIndex`]
     seenAssert.add quote do:
-      assert(`seen` == {0 .. `maxIndex`})
+      assert(card(`seen`) == `count`)
 
   return quote:
     proc fromStream*(typ: typedesc[`typeName`], `source`: var JsonParser): `typeName` =

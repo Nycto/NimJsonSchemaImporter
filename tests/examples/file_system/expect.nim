@@ -119,7 +119,7 @@ proc fromStream*(typ: typedesc[File_systemDiskDevice];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 
 converter forFile_systemUnion*(value: File_systemDiskDevice): File_systemUnion =
   return File_systemUnion(kind: 0, key0: value)
@@ -188,7 +188,7 @@ proc fromStream*(typ: typedesc[File_systemDiskUUID];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 
 converter forFile_systemUnion*(value: File_systemDiskUUID): File_systemUnion =
   return File_systemUnion(kind: 1, key1: value)
@@ -269,7 +269,7 @@ proc fromStream*(typ: typedesc[File_systemNfs]; source: var JsonParser): File_sy
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 2})
+  assert(card(seen) == 3)
 
 converter forFile_systemUnion*(value: File_systemNfs): File_systemUnion =
   return File_systemUnion(kind: 2, key2: value)
@@ -338,7 +338,7 @@ proc fromStream*(typ: typedesc[File_systemTmpfs];
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 1})
+  assert(card(seen) == 2)
 
 converter forFile_systemUnion*(value: File_systemTmpfs): File_systemUnion =
   return File_systemUnion(kind: 3, key3: value)
@@ -564,5 +564,5 @@ proc fromStream*(typ: typedesc[File_system]; source: var JsonParser): File_syste
     else:
       break
   eat(source, tkCurlyRi)
-  assert(seen == {0 .. 0})
+  assert(card(seen) == 1)
 {.pop.}
