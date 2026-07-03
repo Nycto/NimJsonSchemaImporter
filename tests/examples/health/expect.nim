@@ -66,6 +66,7 @@ proc toStream*(source: HealthEmergencyContact; target: Stream) =
 
 proc fromStream*(typ: typedesc[HealthEmergencyContact];
                  source: var JsonParser): HealthEmergencyContact =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)
@@ -85,7 +86,8 @@ proc fromStream*(typ: typedesc[HealthEmergencyContact];
     else:
       break
   eat(source, tkCurlyRi)
-  
+  assert(card(seen) == 0)
+
 proc equals(_: typedesc[Health]; a, b: Health): bool =
   equals(typeof(a.patientName), a.patientName, b.patientName) and
       equals(typeof(a.dateOfBirth), a.dateOfBirth, b.dateOfBirth) and

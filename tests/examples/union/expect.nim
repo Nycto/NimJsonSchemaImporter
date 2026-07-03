@@ -204,6 +204,7 @@ proc toStream*(source: UnionKey3; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[UnionKey3]; source: var JsonParser): UnionKey3 =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)
@@ -220,7 +221,8 @@ proc fromStream*(typ: typedesc[UnionKey3]; source: var JsonParser): UnionKey3 =
     else:
       break
   eat(source, tkCurlyRi)
-  
+  assert(card(seen) == 0)
+
 converter forUnionKey3Union*(value: UnionKey3): UnionKey3Union =
   return UnionKey3Union(kind: 0, key0: value)
 

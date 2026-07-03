@@ -80,7 +80,7 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
             newLit(jsonKey),
             quote do:
               `decode`
-              `seen`.incl(`index`)
+              `seen`.incl(`index`),
           )
         )
     else:
@@ -98,20 +98,11 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
     )
   )
 
-  var seenDecl = newStmtList()
-  var seenAssert = newStmtList()
-
-  if requiredCount > 0:
-    let maxIndex = (requiredCount - 1).newLit
-    let count = requiredCount.newLit
-    seenDecl.add quote do:
-      var `seen`: set[0 .. `maxIndex`]
-    seenAssert.add quote do:
-      assert(card(`seen`) == `count`)
+  let maxIndex = max(requiredCount - 1, 1).newLit
 
   return quote:
     proc fromStream*(typ: typedesc[`typeName`], `source`: var JsonParser): `typeName` =
-      `seenDecl`
+      var `seen`: set[0 .. `maxIndex`]
       eat(`source`, tkCurlyLe)
       while `source`.tok != tkCurlyRi:
         expectString(`source`)
@@ -124,7 +115,7 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
         else:
           break
       eat(`source`, tkCurlyRi)
-      `seenAssert`
+      assert(card(`seen`) == `requiredCount`)
 
 proc buildSaxUnionEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
   ## Builds the `toStream` proc for encoding a union

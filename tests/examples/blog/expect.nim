@@ -61,6 +61,7 @@ proc toStream*(source: BlogAuthor; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[BlogAuthor]; source: var JsonParser): BlogAuthor =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)
@@ -80,7 +81,8 @@ proc fromStream*(typ: typedesc[BlogAuthor]; source: var JsonParser): BlogAuthor 
     else:
       break
   eat(source, tkCurlyRi)
-  
+  assert(card(seen) == 0)
+
 proc equals(_: typedesc[Blog]; a, b: Blog): bool =
   equals(typeof(a.title), a.title, b.title) and
       equals(typeof(a.content), a.content, b.content) and

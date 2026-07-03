@@ -704,6 +704,7 @@ proc toStream*(source: LdtkLevelBgPosInfos; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkLevelBgPosInfos];
                  source: var JsonParser): LdtkLevelBgPosInfos =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)
@@ -724,7 +725,8 @@ proc fromStream*(typ: typedesc[LdtkLevelBgPosInfos];
     else:
       break
   eat(source, tkCurlyRi)
-  
+  assert(card(seen) == 0)
+
 proc equals(_: typedesc[LdtkTilesetRect]; a, b: LdtkTilesetRect): bool =
   equals(typeof(a.tilesetUid), a.tilesetUid, b.tilesetUid) and
       equals(typeof(a.h), a.h, b.h) and
@@ -2603,7 +2605,7 @@ proc toStream*(source: LdtkTableOfContentEntry; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkTableOfContentEntry];
                  source: var JsonParser): LdtkTableOfContentEntry =
-  var seen: set[0 .. 0]
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)
@@ -2809,7 +2811,7 @@ proc toStream*(source: LdtkEnumTagValue; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkEnumTagValue];
                  source: var JsonParser): LdtkEnumTagValue =
-  var seen: set[0 .. 0]
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)
@@ -3196,7 +3198,7 @@ proc toStream*(source: LdtkIntGridValueGroupDef; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkIntGridValueGroupDef];
                  source: var JsonParser): LdtkIntGridValueGroupDef =
-  var seen: set[0 .. 0]
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)
@@ -6090,6 +6092,7 @@ proc toStream*(source: LdtkDefinitions; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkDefinitions];
                  source: var JsonParser): LdtkDefinitions =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)
@@ -6116,7 +6119,8 @@ proc fromStream*(typ: typedesc[LdtkDefinitions];
     else:
       break
   eat(source, tkCurlyRi)
-  
+  assert(card(seen) == 0)
+
 proc equals(_: typedesc[LdtkGridPoint]; a, b: LdtkGridPoint): bool =
   equals(typeof(a.cy), a.cy, b.cy) and equals(typeof(a.cx), a.cx, b.cx)
 
@@ -6579,6 +6583,7 @@ proc toStream*(source: Ldtk_FORCED_REFS; target: Stream) =
 
 proc fromStream*(typ: typedesc[Ldtk_FORCED_REFS];
                  source: var JsonParser): Ldtk_FORCED_REFS =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)
@@ -6673,7 +6678,8 @@ proc fromStream*(typ: typedesc[Ldtk_FORCED_REFS];
     else:
       break
   eat(source, tkCurlyRi)
-  
+  assert(card(seen) == 0)
+
 proc equals(_: typedesc[LdtkLdtkJsonRoot]; a, b: LdtkLdtkJsonRoot): bool =
   equals(typeof(a.backupLimit), a.backupLimit, b.backupLimit) and
       equals(typeof(a.defaultEntityWidth), a.defaultEntityWidth,

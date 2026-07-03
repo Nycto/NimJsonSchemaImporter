@@ -811,7 +811,7 @@ proc toStream*(source: AsepriteLayer; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[AsepriteLayer]; source: var JsonParser): AsepriteLayer =
-  var seen: set[0 .. 0]
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)
@@ -1068,7 +1068,7 @@ proc toStream*(source: AsepriteSlice; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[AsepriteSlice]; source: var JsonParser): AsepriteSlice =
-  var seen: set[0 .. 0]
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)

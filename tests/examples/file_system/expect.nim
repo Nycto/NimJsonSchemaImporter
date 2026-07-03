@@ -539,7 +539,7 @@ proc toStream*(source: File_system; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[File_system]; source: var JsonParser): File_system =
-  var seen: set[0 .. 0]
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)

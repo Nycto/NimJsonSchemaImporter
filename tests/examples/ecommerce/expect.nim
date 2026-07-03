@@ -61,6 +61,7 @@ proc toStream*(source: EcommerceProductSchema; target: Stream) =
 
 proc fromStream*(typ: typedesc[EcommerceProductSchema];
                  source: var JsonParser): EcommerceProductSchema =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)
@@ -79,7 +80,8 @@ proc fromStream*(typ: typedesc[EcommerceProductSchema];
     else:
       break
   eat(source, tkCurlyRi)
-  
+  assert(card(seen) == 0)
+
 proc equals(_: typedesc[EcommerceOrderSchema]; a, b: EcommerceOrderSchema): bool =
   equals(typeof(a.orderId), a.orderId, b.orderId) and
       equals(typeof(a.items), a.items, b.items)
@@ -131,6 +133,7 @@ proc toStream*(source: EcommerceOrderSchema; target: Stream) =
 
 proc fromStream*(typ: typedesc[EcommerceOrderSchema];
                  source: var JsonParser): EcommerceOrderSchema =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)
@@ -149,4 +152,5 @@ proc fromStream*(typ: typedesc[EcommerceOrderSchema];
     else:
       break
   eat(source, tkCurlyRi)
-  {.pop.}
+  assert(card(seen) == 0)
+{.pop.}

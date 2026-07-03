@@ -91,6 +91,7 @@ proc toStream*(source: Consts; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[Consts]; source: var JsonParser): Consts =
+  var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
     expectString(source)
@@ -108,4 +109,5 @@ proc fromStream*(typ: typedesc[Consts]; source: var JsonParser): Consts =
     else:
       break
   eat(source, tkCurlyRi)
-  {.pop.}
+  assert(card(seen) == 0)
+{.pop.}
