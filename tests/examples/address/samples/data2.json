@@ -1,0 +1,9 @@
+{
+  "postOfficeBox": "123 \"Main\" Box",
+  "extendedAddress": "C:\\path\\to\\file",
+  "streetAddress": "line1\nline2\ttabbed",
+  "locality": "Café City",
+  "region": "日本語",
+  "postalCode": "éA",
+  "countryName": "Country"
+}

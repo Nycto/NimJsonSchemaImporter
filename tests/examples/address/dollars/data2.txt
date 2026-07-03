@@ -1,0 +1,2 @@
+Address(postOfficeBox: "123 "Main" Box", extendedAddress: "C:\path\to\file", streetAddress: "line1
+line2	tabbed", locality: "Café City", region: "日本語", postalCode: "éA", countryName: "Country")
