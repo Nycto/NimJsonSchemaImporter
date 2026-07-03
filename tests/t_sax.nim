@@ -13,7 +13,6 @@ suite "Based encoding of types":
 
         var stream = newStringStream()
         initial.toStream(stream)
-        echo stream.data
         let decoded = rootType.fromStream(stream, "test.json")
         check(initial == decoded)
 
