@@ -175,12 +175,7 @@ proc toStream*(source: AsepriteRectangle; target: Stream) =
 proc fromStream*(typ: typedesc[AsepriteRectangle];
                  source: var JsonParser): AsepriteRectangle =
   var seen: set[0 .. 3]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "h":
       result.h = fromStream(typeof(result.h), source)
@@ -196,11 +191,6 @@ proc fromStream*(typ: typedesc[AsepriteRectangle];
       seen.incl(3)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 4)
 
 proc equals(_: typedesc[AsepriteSize]; a, b: AsepriteSize): bool =
@@ -244,12 +234,7 @@ proc toStream*(source: AsepriteSize; target: Stream) =
 
 proc fromStream*(typ: typedesc[AsepriteSize]; source: var JsonParser): AsepriteSize =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "h":
       result.h = fromStream(typeof(result.h), source)
@@ -259,11 +244,6 @@ proc fromStream*(typ: typedesc[AsepriteSize]; source: var JsonParser): AsepriteS
       seen.incl(1)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 
 proc equals(_: typedesc[AsepriteFrame]; a, b: AsepriteFrame): bool =
@@ -350,12 +330,7 @@ proc toStream*(source: AsepriteFrame; target: Stream) =
 
 proc fromStream*(typ: typedesc[AsepriteFrame]; source: var JsonParser): AsepriteFrame =
   var seen: set[0 .. 5]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "duration":
       result.duration = fromStream(typeof(result.duration), source)
@@ -378,11 +353,6 @@ proc fromStream*(typ: typedesc[AsepriteFrame]; source: var JsonParser): Aseprite
       seen.incl(5)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 6)
 
 converter forAsepriteUnion*(value: OrderedTable[string, AsepriteFrame]): AsepriteUnion =
@@ -485,12 +455,7 @@ proc toStream*(source: AsepriteArrayFrame; target: Stream) =
 proc fromStream*(typ: typedesc[AsepriteArrayFrame];
                  source: var JsonParser): AsepriteArrayFrame =
   var seen: set[0 .. 6]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "duration":
       result.duration = fromStream(typeof(result.duration), source)
@@ -516,11 +481,6 @@ proc fromStream*(typ: typedesc[AsepriteArrayFrame];
       seen.incl(6)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 7)
 
 converter forAsepriteUnion*(value: seq[AsepriteArrayFrame]): AsepriteUnion =
@@ -694,12 +654,7 @@ proc toStream*(source: AsepriteFrameTag; target: Stream) =
 proc fromStream*(typ: typedesc[AsepriteFrameTag];
                  source: var JsonParser): AsepriteFrameTag =
   var seen: set[0 .. 3]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "direction":
       result.direction = fromStream(typeof(result.direction), source)
@@ -715,11 +670,6 @@ proc fromStream*(typ: typedesc[AsepriteFrameTag];
       seen.incl(3)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 4)
 
 proc equals(_: typedesc[AsepriteLayer]; a, b: AsepriteLayer): bool =
@@ -812,12 +762,7 @@ proc toStream*(source: AsepriteLayer; target: Stream) =
 
 proc fromStream*(typ: typedesc[AsepriteLayer]; source: var JsonParser): AsepriteLayer =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "blendMode":
       result.blendMode = some(fromStream(typeof(unsafeGet(result.blendMode)),
@@ -835,11 +780,6 @@ proc fromStream*(typ: typedesc[AsepriteLayer]; source: var JsonParser): Aseprite
       result.opacity = some(fromStream(typeof(unsafeGet(result.opacity)), source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 1)
 
 proc equals(_: typedesc[AsepritePoint]; a, b: AsepritePoint): bool =
@@ -883,12 +823,7 @@ proc toStream*(source: AsepritePoint; target: Stream) =
 
 proc fromStream*(typ: typedesc[AsepritePoint]; source: var JsonParser): AsepritePoint =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "x":
       result.x = fromStream(typeof(result.x), source)
@@ -898,11 +833,6 @@ proc fromStream*(typ: typedesc[AsepritePoint]; source: var JsonParser): Aseprite
       seen.incl(1)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 
 proc equals(_: typedesc[AsepriteSliceKey]; a, b: AsepriteSliceKey): bool =
@@ -972,12 +902,7 @@ proc toStream*(source: AsepriteSliceKey; target: Stream) =
 proc fromStream*(typ: typedesc[AsepriteSliceKey];
                  source: var JsonParser): AsepriteSliceKey =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "bounds":
       result.bounds = fromStream(typeof(result.bounds), source)
@@ -991,11 +916,6 @@ proc fromStream*(typ: typedesc[AsepriteSliceKey];
       result.pivot = some(fromStream(typeof(unsafeGet(result.pivot)), source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 
 proc equals(_: typedesc[AsepriteSlice]; a, b: AsepriteSlice): bool =
@@ -1069,12 +989,7 @@ proc toStream*(source: AsepriteSlice; target: Stream) =
 
 proc fromStream*(typ: typedesc[AsepriteSlice]; source: var JsonParser): AsepriteSlice =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "color":
       result.color = some(fromStream(typeof(unsafeGet(result.color)), source))
@@ -1087,11 +1002,6 @@ proc fromStream*(typ: typedesc[AsepriteSlice]; source: var JsonParser): Aseprite
       seen.incl(0)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 1)
 
 proc equals(_: typedesc[AsepriteMeta]; a, b: AsepriteMeta): bool =
@@ -1225,12 +1135,7 @@ proc toStream*(source: AsepriteMeta; target: Stream) =
 
 proc fromStream*(typ: typedesc[AsepriteMeta]; source: var JsonParser): AsepriteMeta =
   var seen: set[0 .. 5]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "app":
       result.app = fromStream(typeof(result.app), source)
@@ -1258,11 +1163,6 @@ proc fromStream*(typ: typedesc[AsepriteMeta]; source: var JsonParser): AsepriteM
       seen.incl(5)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 6)
 
 proc equals(_: typedesc[AsepriteSpriteSheet]; a, b: AsepriteSpriteSheet): bool =
@@ -1309,12 +1209,7 @@ proc toStream*(source: AsepriteSpriteSheet; target: Stream) =
 proc fromStream*(typ: typedesc[AsepriteSpriteSheet];
                  source: var JsonParser): AsepriteSpriteSheet =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "frames":
       result.frames = fromStream(typeof(result.frames), source)
@@ -1324,10 +1219,5 @@ proc fromStream*(typ: typedesc[AsepriteSpriteSheet];
       seen.incl(1)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 {.pop.}

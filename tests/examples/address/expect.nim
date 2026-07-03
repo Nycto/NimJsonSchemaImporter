@@ -118,12 +118,7 @@ proc toStream*(source: Address; target: Stream) =
 
 proc fromStream*(typ: typedesc[Address]; source: var JsonParser): Address =
   var seen: set[0 .. 2]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "postOfficeBox":
       result.postOfficeBox = some(fromStream(
@@ -148,10 +143,5 @@ proc fromStream*(typ: typedesc[Address]; source: var JsonParser): Address =
       seen.incl(2)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 3)
 {.pop.}

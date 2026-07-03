@@ -83,12 +83,7 @@ proc toStream*(source: Complex_objectAddress; target: Stream) =
 proc fromStream*(typ: typedesc[Complex_objectAddress];
                  source: var JsonParser): Complex_objectAddress =
   var seen: set[0 .. 3]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "street":
       result.street = fromStream(typeof(result.street), source)
@@ -104,11 +99,6 @@ proc fromStream*(typ: typedesc[Complex_objectAddress];
       seen.incl(3)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 4)
 
 proc equals(_: typedesc[Complex_object]; a, b: Complex_object): bool =
@@ -181,12 +171,7 @@ proc toStream*(source: Complex_object; target: Stream) =
 
 proc fromStream*(typ: typedesc[Complex_object]; source: var JsonParser): Complex_object =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "name":
       result.name = fromStream(typeof(result.name), source)
@@ -200,10 +185,5 @@ proc fromStream*(typ: typedesc[Complex_object]; source: var JsonParser): Complex
       result.hobbies = fromStream(typeof(result.hobbies), source)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 {.pop.}

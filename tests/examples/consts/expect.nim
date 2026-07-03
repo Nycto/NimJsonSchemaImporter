@@ -92,22 +92,12 @@ proc toStream*(source: Consts; target: Stream) =
 
 proc fromStream*(typ: typedesc[Consts]; source: var JsonParser): Consts =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "nonConstField":
       result.nonConstField = some(fromStream(
           typeof(unsafeGet(result.nonConstField)), source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 0)
 {.pop.}

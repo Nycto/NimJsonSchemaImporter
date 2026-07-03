@@ -61,6 +61,36 @@ proc expectString*(source: var JsonParser) =
   if source.tok != tkString:
     raiseParseErr(source, "string")
 
+proc consumeText*(source: var JsonParser): string =
+  ## Returns the current token's text, then advances past it.
+  result = source.a
+  discard getTok(source)
+
+iterator delimited*(source: var JsonParser, openTok, closeTok: TokKind): int =
+  ## Iterates a comma-delimited list bracketed by `openTok`/`closeTok` (e.g.
+  ## `[...]` or `{...}`), yielding the (0-based) index of each element.
+  ## Eats `openTok` before the loop and `closeTok` once it ends, so the
+  ## body only needs to consume one element per iteration.
+  eat(source, openTok)
+  var i = 0
+  while source.tok != closeTok:
+    yield i
+    inc i
+    if source.tok == tkComma:
+      discard getTok(source)
+    else:
+      break
+  eat(source, closeTok)
+
+iterator objectKeys*(source: var JsonParser): string =
+  ## Iterates the string keys of a JSON object, leaving `source` positioned
+  ## right after the `:` so the caller can parse the value.
+  for _ in delimited(source, tkCurlyLe, tkCurlyRi):
+    expectString(source)
+    let key = consumeText(source)
+    eat(source, tkColon)
+    yield key
+
 proc skipValue*(source: var JsonParser) =
   ## Consumes and discards one JSON value, recursing into objects/arrays, so
   ## that unrecognized keys don't desync the token stream.
@@ -68,42 +98,28 @@ proc skipValue*(source: var JsonParser) =
   of tkString, tkInt, tkFloat, tkTrue, tkFalse, tkNull:
     discard getTok(source)
   of tkCurlyLe:
-    discard getTok(source)
-    while source.tok != tkCurlyRi:
+    for _ in delimited(source, tkCurlyLe, tkCurlyRi):
       discard getTok(source) # skip key
       eat(source, tkColon)
       skipValue(source)
-      if source.tok == tkComma:
-        discard getTok(source)
-      else:
-        break
-    eat(source, tkCurlyRi)
   of tkBracketLe:
-    discard getTok(source)
-    while source.tok != tkBracketRi:
+    for _ in delimited(source, tkBracketLe, tkBracketRi):
       skipValue(source)
-      if source.tok == tkComma:
-        discard getTok(source)
-      else:
-        break
-    eat(source, tkBracketRi)
   else:
     raiseParseErr(source, "value")
 
 proc fromStream*(typ: typedesc[string], source: var JsonParser): string =
   expectString(source)
-  result = source.a
-  discard getTok(source)
+  return consumeText(source)
 
 proc fromStream*[T: SomeNumber](typ: typedesc[T], source: var JsonParser): T =
   case source.tok
   of tkInt:
-    result = T(parseBiggestInt(source.a))
+    return T(parseBiggestInt(consumeText(source)))
   of tkFloat:
-    result = T(parseFloat(source.a))
+    return T(parseFloat(consumeText(source)))
   else:
     raiseParseErr(source, "number")
-  discard getTok(source)
 
 proc fromStream*(typ: typedesc[bool], source: var JsonParser): bool =
   case source.tok
@@ -122,44 +138,25 @@ proc fromStream*[T](typ: typedesc[Option[T]], source: var JsonParser): Option[T]
     result = some(fromStream(T, source))
 
 proc fromStream*[T](typ: typedesc[seq[T]], source: var JsonParser): seq[T] =
-  eat(source, tkBracketLe)
-  while source.tok != tkBracketRi:
+  for _ in delimited(source, tkBracketLe, tkBracketRi):
     result.add(fromStream(T, source))
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkBracketRi)
 
 proc fromStream*[V](
     typ: typedesc[OrderedTable[string, V]], source: var JsonParser
 ): OrderedTable[string, V] =
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     result[key] = fromStream(V, source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
 
 proc fromStream*(typ: typedesc[JsonNode], source: var JsonParser): JsonNode =
   ## Parses an arbitrary JSON value into a JsonNode tree, for schemas that
   ## don't pin down a concrete type (e.g. mixed-type `enum`s).
   case source.tok
   of tkString:
-    result = newJString(source.a)
-    discard getTok(source)
+    return newJString(consumeText(source))
   of tkInt:
-    result = newJInt(parseBiggestInt(source.a))
-    discard getTok(source)
+    return newJInt(parseBiggestInt(consumeText(source)))
   of tkFloat:
-    result = newJFloat(parseFloat(source.a))
-    discard getTok(source)
+    return newJFloat(parseFloat(consumeText(source)))
   of tkTrue:
     result = newJBool(true)
     discard getTok(source)
@@ -171,35 +168,18 @@ proc fromStream*(typ: typedesc[JsonNode], source: var JsonParser): JsonNode =
     discard getTok(source)
   of tkCurlyLe:
     result = newJObject()
-    discard getTok(source)
-    while source.tok != tkCurlyRi:
-      expectString(source)
-      let key = source.a
-      discard getTok(source)
-      eat(source, tkColon)
+    for key in objectKeys(source):
       result[key] = fromStream(JsonNode, source)
-      if source.tok == tkComma:
-        discard getTok(source)
-      else:
-        break
-    eat(source, tkCurlyRi)
   of tkBracketLe:
     result = newJArray()
-    discard getTok(source)
-    while source.tok != tkBracketRi:
+    for _ in delimited(source, tkBracketLe, tkBracketRi):
       result.add(fromStream(JsonNode, source))
-      if source.tok == tkComma:
-        discard getTok(source)
-      else:
-        break
-    eat(source, tkBracketRi)
   else:
     raiseParseErr(source, "value")
 
 proc fromStream*[T: enum](typ: typedesc[T], source: var JsonParser): T =
   expectString(source)
-  result = parseEnum[T](source.a)
-  discard getTok(source)
+  return parseEnum[T](consumeText(source))
 
 proc fromStream*(typ: typedesc, source: Stream, filename: string): typ =
   ## Reads a JSON file to the given type

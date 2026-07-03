@@ -102,18 +102,8 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
   return quote:
     proc fromStream*(typ: typedesc[`typeName`], `source`: var JsonParser): `typeName` =
       var `seen`: set[0 .. `maxIndex`]
-      eat(`source`, tkCurlyLe)
-      while `source`.tok != tkCurlyRi:
-        expectString(`source`)
-        let `key` = `source`.a
-        discard getTok(`source`)
-        eat(`source`, tkColon)
+      for `key` in objectKeys(`source`):
         `cases`
-        if `source`.tok == tkComma:
-          discard getTok(`source`)
-        else:
-          break
-      eat(`source`, tkCurlyRi)
       assert(card(`seen`) == `requiredCount`)
 
 proc buildSaxUnionEncoder*(typ: TypeDef, typeName: NimNode): NimNode =

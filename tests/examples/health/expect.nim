@@ -67,12 +67,7 @@ proc toStream*(source: HealthEmergencyContact; target: Stream) =
 proc fromStream*(typ: typedesc[HealthEmergencyContact];
                  source: var JsonParser): HealthEmergencyContact =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "username":
       result.username = some(fromStream(typeof(unsafeGet(result.username)),
@@ -81,11 +76,6 @@ proc fromStream*(typ: typedesc[HealthEmergencyContact];
       result.email = some(fromStream(typeof(unsafeGet(result.email)), source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 0)
 
 proc equals(_: typedesc[Health]; a, b: Health): bool =
@@ -204,12 +194,7 @@ proc toStream*(source: Health; target: Stream) =
 
 proc fromStream*(typ: typedesc[Health]; source: var JsonParser): Health =
   var seen: set[0 .. 2]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "patientName":
       result.patientName = fromStream(typeof(result.patientName), source)
@@ -231,10 +216,5 @@ proc fromStream*(typ: typedesc[Health]; source: var JsonParser): Health =
           typeof(unsafeGet(result.emergencyContact)), source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 3)
 {.pop.}

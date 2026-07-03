@@ -67,12 +67,7 @@ proc toStream*(source: Basic; target: Stream) =
 
 proc fromStream*(typ: typedesc[Basic]; source: var JsonParser): Basic =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "firstName":
       result.firstName = some(fromStream(typeof(unsafeGet(result.firstName)),
@@ -84,10 +79,5 @@ proc fromStream*(typ: typedesc[Basic]; source: var JsonParser): Basic =
       result.age = some(fromStream(typeof(unsafeGet(result.age)), source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 0)
 {.pop.}

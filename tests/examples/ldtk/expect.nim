@@ -608,12 +608,7 @@ proc toStream*(source: LdtkNeighbourLevel; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkNeighbourLevel];
                  source: var JsonParser): LdtkNeighbourLevel =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "levelIid":
       result.levelIid = fromStream(typeof(result.levelIid), source)
@@ -626,11 +621,6 @@ proc fromStream*(typ: typedesc[LdtkNeighbourLevel];
       seen.incl(1)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 
 proc equals(_: typedesc[LdtkLevelBgPosInfos]; a, b: LdtkLevelBgPosInfos): bool =
@@ -705,12 +695,7 @@ proc toStream*(source: LdtkLevelBgPosInfos; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkLevelBgPosInfos];
                  source: var JsonParser): LdtkLevelBgPosInfos =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "cropRect":
       result.cropRect = fromStream(typeof(result.cropRect), source)
@@ -720,11 +705,6 @@ proc fromStream*(typ: typedesc[LdtkLevelBgPosInfos];
       result.topLeftPx = fromStream(typeof(result.topLeftPx), source)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 0)
 
 proc equals(_: typedesc[LdtkTilesetRect]; a, b: LdtkTilesetRect): bool =
@@ -801,12 +781,7 @@ proc toStream*(source: LdtkTilesetRect; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkTilesetRect];
                  source: var JsonParser): LdtkTilesetRect =
   var seen: set[0 .. 4]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "tilesetUid":
       result.tilesetUid = fromStream(typeof(result.tilesetUid), source)
@@ -825,11 +800,6 @@ proc fromStream*(typ: typedesc[LdtkTilesetRect];
       seen.incl(4)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 5)
 
 proc equals(_: typedesc[LdtkFieldInstance]; a, b: LdtkFieldInstance): bool =
@@ -926,12 +896,7 @@ proc toStream*(source: LdtkFieldInstance; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkFieldInstance];
                  source: var JsonParser): LdtkFieldInstance =
   var seen: set[0 .. 3]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "__type":
       result.`type` = fromStream(typeof(result.`type`), source)
@@ -952,11 +917,6 @@ proc fromStream*(typ: typedesc[LdtkFieldInstance];
       seen.incl(3)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 4)
 
 proc equals(_: typedesc[LdtkTile]; a, b: LdtkTile): bool =
@@ -1055,12 +1015,7 @@ proc toStream*(source: LdtkTile; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkTile]; source: var JsonParser): LdtkTile =
   var seen: set[0 .. 2]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "t":
       result.t = fromStream(typeof(result.t), source)
@@ -1079,11 +1034,6 @@ proc fromStream*(typ: typedesc[LdtkTile]; source: var JsonParser): LdtkTile =
       result.src = fromStream(typeof(result.src), source)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 3)
 
 proc equals(_: typedesc[LdtkEntityInstance]; a, b: LdtkEntityInstance): bool =
@@ -1288,12 +1238,7 @@ proc toStream*(source: LdtkEntityInstance; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkEntityInstance];
                  source: var JsonParser): LdtkEntityInstance =
   var seen: set[0 .. 5]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "iid":
       result.iid = fromStream(typeof(result.iid), source)
@@ -1331,11 +1276,6 @@ proc fromStream*(typ: typedesc[LdtkEntityInstance];
       seen.incl(5)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 6)
 
 proc equals(_: typedesc[LdtkIntGridValueInstance];
@@ -1384,12 +1324,7 @@ proc toStream*(source: LdtkIntGridValueInstance; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkIntGridValueInstance];
                  source: var JsonParser): LdtkIntGridValueInstance =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "v":
       result.v = fromStream(typeof(result.v), source)
@@ -1399,11 +1334,6 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueInstance];
       seen.incl(1)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 
 proc equals(_: typedesc[LdtkLayerInstance]; a, b: LdtkLayerInstance): bool =
@@ -1734,12 +1664,7 @@ proc toStream*(source: LdtkLayerInstance; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkLayerInstance];
                  source: var JsonParser): LdtkLayerInstance =
   var seen: set[0 .. 14]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "__cHei":
       result.cHei = fromStream(typeof(result.cHei), source)
@@ -1809,11 +1734,6 @@ proc fromStream*(typ: typedesc[LdtkLayerInstance];
       result.intGrid = fromStream(typeof(result.intGrid), source)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 15)
 
 proc equals(_: typedesc[LdtkLevel]; a, b: LdtkLevel): bool =
@@ -2086,12 +2006,7 @@ proc toStream*(source: LdtkLevel; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkLevel]; source: var JsonParser): LdtkLevel =
   var seen: set[0 .. 12]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "__neighbours":
       result.neighbours = fromStream(typeof(result.neighbours), source)
@@ -2154,11 +2069,6 @@ proc fromStream*(typ: typedesc[LdtkLevel]; source: var JsonParser): LdtkLevel =
       seen.incl(12)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 13)
 
 proc equals(_: typedesc[LdtkWorld]; a, b: LdtkWorld): bool =
@@ -2282,12 +2192,7 @@ proc toStream*(source: LdtkWorld; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkWorld]; source: var JsonParser): LdtkWorld =
   var seen: set[0 .. 6]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "worldGridWidth":
       result.worldGridWidth = fromStream(typeof(result.worldGridWidth), source)
@@ -2316,11 +2221,6 @@ proc fromStream*(typ: typedesc[LdtkWorld]; source: var JsonParser): LdtkWorld =
       seen.incl(6)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 7)
 
 proc equals(_: typedesc[LdtkEntityReferenceInfos];
@@ -2390,12 +2290,7 @@ proc toStream*(source: LdtkEntityReferenceInfos; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkEntityReferenceInfos];
                  source: var JsonParser): LdtkEntityReferenceInfos =
   var seen: set[0 .. 3]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "worldIid":
       result.worldIid = fromStream(typeof(result.worldIid), source)
@@ -2411,11 +2306,6 @@ proc fromStream*(typ: typedesc[LdtkEntityReferenceInfos];
       seen.incl(3)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 4)
 
 proc equals(_: typedesc[LdtkTocInstanceData]; a, b: LdtkTocInstanceData): bool =
@@ -2502,12 +2392,7 @@ proc toStream*(source: LdtkTocInstanceData; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkTocInstanceData];
                  source: var JsonParser): LdtkTocInstanceData =
   var seen: set[0 .. 5]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "worldX":
       result.worldX = fromStream(typeof(result.worldX), source)
@@ -2529,11 +2414,6 @@ proc fromStream*(typ: typedesc[LdtkTocInstanceData];
       seen.incl(5)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 6)
 
 proc equals(_: typedesc[LdtkTableOfContentEntry]; a, b: LdtkTableOfContentEntry): bool =
@@ -2606,12 +2486,7 @@ proc toStream*(source: LdtkTableOfContentEntry; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkTableOfContentEntry];
                  source: var JsonParser): LdtkTableOfContentEntry =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "identifier":
       result.identifier = fromStream(typeof(result.identifier), source)
@@ -2622,11 +2497,6 @@ proc fromStream*(typ: typedesc[LdtkTableOfContentEntry];
       result.instances = fromStream(typeof(result.instances), source)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 1)
 
 proc equals(_: typedesc[LdtkCustomCommand]; a, b: LdtkCustomCommand): bool =
@@ -2673,12 +2543,7 @@ proc toStream*(source: LdtkCustomCommand; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkCustomCommand];
                  source: var JsonParser): LdtkCustomCommand =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "when":
       result.`when` = fromStream(typeof(result.`when`), source)
@@ -2688,11 +2553,6 @@ proc fromStream*(typ: typedesc[LdtkCustomCommand];
       seen.incl(1)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 
 proc equals(_: typedesc[LdtkTileCustomMetadata]; a, b: LdtkTileCustomMetadata): bool =
@@ -2740,12 +2600,7 @@ proc toStream*(source: LdtkTileCustomMetadata; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkTileCustomMetadata];
                  source: var JsonParser): LdtkTileCustomMetadata =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "tileId":
       result.tileId = fromStream(typeof(result.tileId), source)
@@ -2755,11 +2610,6 @@ proc fromStream*(typ: typedesc[LdtkTileCustomMetadata];
       seen.incl(1)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 
 proc equals(_: typedesc[LdtkEnumTagValue]; a, b: LdtkEnumTagValue): bool =
@@ -2812,12 +2662,7 @@ proc toStream*(source: LdtkEnumTagValue; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkEnumTagValue];
                  source: var JsonParser): LdtkEnumTagValue =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "tileIds":
       result.tileIds = fromStream(typeof(result.tileIds), source)
@@ -2826,11 +2671,6 @@ proc fromStream*(typ: typedesc[LdtkEnumTagValue];
       seen.incl(0)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 1)
 
 proc equals(_: typedesc[LdtkTilesetDef]; a, b: LdtkTilesetDef): bool =
@@ -3079,12 +2919,7 @@ proc toStream*(source: LdtkTilesetDef; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkTilesetDef];
                  source: var JsonParser): LdtkTilesetDef =
   var seen: set[0 .. 8]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "cachedPixelData":
       result.cachedPixelData = fromStream(typeof(result.cachedPixelData), source)
@@ -3133,11 +2968,6 @@ proc fromStream*(typ: typedesc[LdtkTilesetDef];
       seen.incl(8)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 9)
 
 proc equals(_: typedesc[LdtkIntGridValueGroupDef];
@@ -3199,12 +3029,7 @@ proc toStream*(source: LdtkIntGridValueGroupDef; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkIntGridValueGroupDef];
                  source: var JsonParser): LdtkIntGridValueGroupDef =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "color":
       result.color = some(fromStream(typeof(unsafeGet(result.color)), source))
@@ -3216,11 +3041,6 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueGroupDef];
           source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 1)
 
 proc equals(_: typedesc[LdtkIntGridValueDef]; a, b: LdtkIntGridValueDef): bool =
@@ -3300,12 +3120,7 @@ proc toStream*(source: LdtkIntGridValueDef; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkIntGridValueDef];
                  source: var JsonParser): LdtkIntGridValueDef =
   var seen: set[0 .. 2]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "tile":
       result.tile = some(fromStream(typeof(unsafeGet(result.tile)), source))
@@ -3323,11 +3138,6 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueDef];
       seen.incl(2)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 3)
 
 proc equals(_: typedesc[LdtkAutoRuleDef]; a, b: LdtkAutoRuleDef): bool =
@@ -3704,12 +3514,7 @@ proc toStream*(source: LdtkAutoRuleDef; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkAutoRuleDef];
                  source: var JsonParser): LdtkAutoRuleDef =
   var seen: set[0 .. 26]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "flipX":
       result.flipX = fromStream(typeof(result.flipX), source)
@@ -3803,11 +3608,6 @@ proc fromStream*(typ: typedesc[LdtkAutoRuleDef];
       seen.incl(26)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 27)
 
 proc equals(_: typedesc[LdtkAutoLayerRuleGroup]; a, b: LdtkAutoLayerRuleGroup): bool =
@@ -3971,12 +3771,7 @@ proc toStream*(source: LdtkAutoLayerRuleGroup; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkAutoLayerRuleGroup];
                  source: var JsonParser): LdtkAutoLayerRuleGroup =
   var seen: set[0 .. 5]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "name":
       result.name = fromStream(typeof(result.name), source)
@@ -4011,11 +3806,6 @@ proc fromStream*(typ: typedesc[LdtkAutoLayerRuleGroup];
       result.rules = fromStream(typeof(result.rules), source)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 6)
 
 proc equals(_: typedesc[LdtkLayerDef]; a, b: LdtkLayerDef): bool =
@@ -4481,12 +4271,7 @@ proc toStream*(source: LdtkLayerDef; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkLayerDef]; source: var JsonParser): LdtkLayerDef =
   var seen: set[0 .. 20]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "pxOffsetX":
       result.pxOffsetX = fromStream(typeof(result.pxOffsetX), source)
@@ -4588,11 +4373,6 @@ proc fromStream*(typ: typedesc[LdtkLayerDef]; source: var JsonParser): LdtkLayer
           typeof(unsafeGet(result.autoTilesKilledByOtherLayerUid)), source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 21)
 
 proc equals(_: typedesc[LdtkFieldDef]; a, b: LdtkFieldDef): bool =
@@ -5054,12 +4834,7 @@ proc toStream*(source: LdtkFieldDef; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkFieldDef]; source: var JsonParser): LdtkFieldDef =
   var seen: set[0 .. 19]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "acceptFileTypes":
       result.acceptFileTypes = fromStream(typeof(result.acceptFileTypes), source)
@@ -5170,11 +4945,6 @@ proc fromStream*(typ: typedesc[LdtkFieldDef]; source: var JsonParser): LdtkField
           typeof(unsafeGet(result.arrayMaxLength)), source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 20)
 
 proc equals(_: typedesc[LdtkEnumDefValues]; a, b: LdtkEnumDefValues): bool =
@@ -5263,12 +5033,7 @@ proc toStream*(source: LdtkEnumDefValues; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkEnumDefValues];
                  source: var JsonParser): LdtkEnumDefValues =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "tileId":
       result.tileId = some(fromStream(typeof(unsafeGet(result.tileId)), source))
@@ -5285,11 +5050,6 @@ proc fromStream*(typ: typedesc[LdtkEnumDefValues];
       result.tileSrcRect = fromStream(typeof(result.tileSrcRect), source)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 
 proc equals(_: typedesc[LdtkEnumDef]; a, b: LdtkEnumDef): bool =
@@ -5411,12 +5171,7 @@ proc toStream*(source: LdtkEnumDef; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkEnumDef]; source: var JsonParser): LdtkEnumDef =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "externalFileChecksum":
       result.externalFileChecksum = some(
@@ -5439,11 +5194,6 @@ proc fromStream*(typ: typedesc[LdtkEnumDef]; source: var JsonParser): LdtkEnumDe
       result.tags = fromStream(typeof(result.tags), source)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 
 proc equals(_: typedesc[LdtkEntityDef]; a, b: LdtkEntityDef): bool =
@@ -5854,12 +5604,7 @@ proc toStream*(source: LdtkEntityDef; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkEntityDef]; source: var JsonParser): LdtkEntityDef =
   var seen: set[0 .. 21]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "tileId":
       result.tileId = some(fromStream(typeof(unsafeGet(result.tileId)), source))
@@ -5962,11 +5707,6 @@ proc fromStream*(typ: typedesc[LdtkEntityDef]; source: var JsonParser): LdtkEnti
       seen.incl(21)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 22)
 
 proc equals(_: typedesc[LdtkDefinitions]; a, b: LdtkDefinitions): bool =
@@ -6093,12 +5833,7 @@ proc toStream*(source: LdtkDefinitions; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkDefinitions];
                  source: var JsonParser): LdtkDefinitions =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "tilesets":
       result.tilesets = fromStream(typeof(result.tilesets), source)
@@ -6114,11 +5849,6 @@ proc fromStream*(typ: typedesc[LdtkDefinitions];
       result.externalEnums = fromStream(typeof(result.externalEnums), source)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 0)
 
 proc equals(_: typedesc[LdtkGridPoint]; a, b: LdtkGridPoint): bool =
@@ -6162,12 +5892,7 @@ proc toStream*(source: LdtkGridPoint; target: Stream) =
 
 proc fromStream*(typ: typedesc[LdtkGridPoint]; source: var JsonParser): LdtkGridPoint =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "cy":
       result.cy = fromStream(typeof(result.cy), source)
@@ -6177,11 +5902,6 @@ proc fromStream*(typ: typedesc[LdtkGridPoint]; source: var JsonParser): LdtkGrid
       seen.incl(1)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 
 proc equals(_: typedesc[Ldtk_FORCED_REFS]; a, b: Ldtk_FORCED_REFS): bool =
@@ -6584,12 +6304,7 @@ proc toStream*(source: Ldtk_FORCED_REFS; target: Stream) =
 proc fromStream*(typ: typedesc[Ldtk_FORCED_REFS];
                  source: var JsonParser): Ldtk_FORCED_REFS =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "TilesetRect":
       result.TilesetRect = some(fromStream(
@@ -6673,11 +6388,6 @@ proc fromStream*(typ: typedesc[Ldtk_FORCED_REFS];
           typeof(unsafeGet(result.IntGridValueDef)), source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 0)
 
 proc equals(_: typedesc[LdtkLdtkJsonRoot]; a, b: LdtkLdtkJsonRoot): bool =
@@ -7186,12 +6896,7 @@ proc toStream*(source: LdtkLdtkJsonRoot; target: Stream) =
 proc fromStream*(typ: typedesc[LdtkLdtkJsonRoot];
                  source: var JsonParser): LdtkLdtkJsonRoot =
   var seen: set[0 .. 22]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "backupLimit":
       result.backupLimit = fromStream(typeof(result.backupLimit), source)
@@ -7309,10 +7014,5 @@ proc fromStream*(typ: typedesc[LdtkLdtkJsonRoot];
           typeof(unsafeGet(result.backupRelPath)), source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 23)
 {.pop.}

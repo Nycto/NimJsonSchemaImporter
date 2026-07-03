@@ -105,12 +105,7 @@ proc toStream*(source: User_profile; target: Stream) =
 
 proc fromStream*(typ: typedesc[User_profile]; source: var JsonParser): User_profile =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "username":
       result.username = fromStream(typeof(result.username), source)
@@ -130,10 +125,5 @@ proc fromStream*(typ: typedesc[User_profile]; source: var JsonParser): User_prof
       result.interests = fromStream(typeof(result.interests), source)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 {.pop.}

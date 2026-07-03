@@ -99,12 +99,7 @@ proc toStream*(source: File_systemDiskDevice; target: Stream) =
 proc fromStream*(typ: typedesc[File_systemDiskDevice];
                  source: var JsonParser): File_systemDiskDevice =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "type":
       result.`type` = fromStream(typeof(result.`type`), source)
@@ -114,11 +109,6 @@ proc fromStream*(typ: typedesc[File_systemDiskDevice];
       seen.incl(1)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 
 converter forFile_systemUnion*(value: File_systemDiskDevice): File_systemUnion =
@@ -168,12 +158,7 @@ proc toStream*(source: File_systemDiskUUID; target: Stream) =
 proc fromStream*(typ: typedesc[File_systemDiskUUID];
                  source: var JsonParser): File_systemDiskUUID =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "type":
       result.`type` = fromStream(typeof(result.`type`), source)
@@ -183,11 +168,6 @@ proc fromStream*(typ: typedesc[File_systemDiskUUID];
       seen.incl(1)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 
 converter forFile_systemUnion*(value: File_systemDiskUUID): File_systemUnion =
@@ -246,12 +226,7 @@ proc toStream*(source: File_systemNfs; target: Stream) =
 
 proc fromStream*(typ: typedesc[File_systemNfs]; source: var JsonParser): File_systemNfs =
   var seen: set[0 .. 2]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "type":
       result.`type` = fromStream(typeof(result.`type`), source)
@@ -264,11 +239,6 @@ proc fromStream*(typ: typedesc[File_systemNfs]; source: var JsonParser): File_sy
       seen.incl(2)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 3)
 
 converter forFile_systemUnion*(value: File_systemNfs): File_systemUnion =
@@ -318,12 +288,7 @@ proc toStream*(source: File_systemTmpfs; target: Stream) =
 proc fromStream*(typ: typedesc[File_systemTmpfs];
                  source: var JsonParser): File_systemTmpfs =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "type":
       result.`type` = fromStream(typeof(result.`type`), source)
@@ -333,11 +298,6 @@ proc fromStream*(typ: typedesc[File_systemTmpfs];
       seen.incl(1)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 
 converter forFile_systemUnion*(value: File_systemTmpfs): File_systemUnion =
@@ -540,12 +500,7 @@ proc toStream*(source: File_system; target: Stream) =
 
 proc fromStream*(typ: typedesc[File_system]; source: var JsonParser): File_system =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "storage":
       result.storage = fromStream(typeof(result.storage), source)
@@ -559,10 +514,5 @@ proc fromStream*(typ: typedesc[File_system]; source: var JsonParser): File_syste
                                         source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 1)
 {.pop.}

@@ -205,22 +205,12 @@ proc toStream*(source: UnionKey3; target: Stream) =
 
 proc fromStream*(typ: typedesc[UnionKey3]; source: var JsonParser): UnionKey3 =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "foo":
       result.foo = some(fromStream(typeof(unsafeGet(result.foo)), source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 0)
 
 converter forUnionKey3Union*(value: UnionKey3): UnionKey3Union =
@@ -466,12 +456,7 @@ proc toStream*(source: Union; target: Stream) =
 
 proc fromStream*(typ: typedesc[Union]; source: var JsonParser): Union =
   var seen: set[0 .. 2]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "key1":
       result.key1 = fromStream(typeof(result.key1), source)
@@ -484,10 +469,5 @@ proc fromStream*(typ: typedesc[Union]; source: var JsonParser): Union =
       seen.incl(2)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 3)
 {.pop.}

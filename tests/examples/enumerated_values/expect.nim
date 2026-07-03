@@ -43,21 +43,11 @@ proc toStream*(source: Enumerated_values; target: Stream) =
 proc fromStream*(typ: typedesc[Enumerated_values];
                  source: var JsonParser): Enumerated_values =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "data":
       result.data = some(fromStream(typeof(unsafeGet(result.data)), source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 0)
 {.pop.}

@@ -62,12 +62,7 @@ proc toStream*(source: BlogAuthor; target: Stream) =
 
 proc fromStream*(typ: typedesc[BlogAuthor]; source: var JsonParser): BlogAuthor =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "username":
       result.username = some(fromStream(typeof(unsafeGet(result.username)),
@@ -76,11 +71,6 @@ proc fromStream*(typ: typedesc[BlogAuthor]; source: var JsonParser): BlogAuthor 
       result.email = some(fromStream(typeof(unsafeGet(result.email)), source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 0)
 
 proc equals(_: typedesc[Blog]; a, b: Blog): bool =
@@ -165,12 +155,7 @@ proc toStream*(source: Blog; target: Stream) =
 
 proc fromStream*(typ: typedesc[Blog]; source: var JsonParser): Blog =
   var seen: set[0 .. 2]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "title":
       result.title = fromStream(typeof(result.title), source)
@@ -188,10 +173,5 @@ proc fromStream*(typ: typedesc[Blog]; source: var JsonParser): Blog =
       result.tags = fromStream(typeof(result.tags), source)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 3)
 {.pop.}

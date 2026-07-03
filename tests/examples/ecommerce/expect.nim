@@ -62,12 +62,7 @@ proc toStream*(source: EcommerceProductSchema; target: Stream) =
 proc fromStream*(typ: typedesc[EcommerceProductSchema];
                  source: var JsonParser): EcommerceProductSchema =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "name":
       result.name = some(fromStream(typeof(unsafeGet(result.name)), source))
@@ -75,11 +70,6 @@ proc fromStream*(typ: typedesc[EcommerceProductSchema];
       result.price = some(fromStream(typeof(unsafeGet(result.price)), source))
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 0)
 
 proc equals(_: typedesc[EcommerceOrderSchema]; a, b: EcommerceOrderSchema): bool =
@@ -134,12 +124,7 @@ proc toStream*(source: EcommerceOrderSchema; target: Stream) =
 proc fromStream*(typ: typedesc[EcommerceOrderSchema];
                  source: var JsonParser): EcommerceOrderSchema =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "orderId":
       result.orderId = some(fromStream(typeof(unsafeGet(result.orderId)), source))
@@ -147,10 +132,5 @@ proc fromStream*(typ: typedesc[EcommerceOrderSchema];
       result.items = fromStream(typeof(result.items), source)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 0)
 {.pop.}

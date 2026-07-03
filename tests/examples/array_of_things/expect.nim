@@ -59,12 +59,7 @@ proc toStream*(source: Array_of_thingsVeggie; target: Stream) =
 proc fromStream*(typ: typedesc[Array_of_thingsVeggie];
                  source: var JsonParser): Array_of_thingsVeggie =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "veggieName":
       result.veggieName = fromStream(typeof(result.veggieName), source)
@@ -74,11 +69,6 @@ proc fromStream*(typ: typedesc[Array_of_thingsVeggie];
       seen.incl(1)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 2)
 
 proc equals(_: typedesc[Array_of_things]; a, b: Array_of_things): bool =
@@ -137,12 +127,7 @@ proc toStream*(source: Array_of_things; target: Stream) =
 proc fromStream*(typ: typedesc[Array_of_things];
                  source: var JsonParser): Array_of_things =
   var seen: set[0 .. 1]
-  eat(source, tkCurlyLe)
-  while source.tok != tkCurlyRi:
-    expectString(source)
-    let key = source.a
-    discard getTok(source)
-    eat(source, tkColon)
+  for key in objectKeys(source):
     case key
     of "fruits":
       result.fruits = fromStream(typeof(result.fruits), source)
@@ -150,10 +135,5 @@ proc fromStream*(typ: typedesc[Array_of_things];
       result.vegetables = fromStream(typeof(result.vegetables), source)
     else:
       skipValue(source)
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, tkCurlyRi)
   assert(card(seen) == 0)
 {.pop.}
