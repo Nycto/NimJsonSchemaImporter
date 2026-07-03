@@ -53,8 +53,7 @@ proc fromStream*(typ: typedesc[Location]; source: var JsonParser): Location =
   var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)

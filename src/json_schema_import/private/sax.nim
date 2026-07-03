@@ -57,6 +57,10 @@ proc writeComma*(hasEmitted: var bool, target: Stream) =
   else:
     hasEmitted = true
 
+proc expectString*(source: var JsonParser) =
+  if source.tok != tkString:
+    raiseParseErr(source, "string")
+
 proc skipValue*(source: var JsonParser) =
   ## Consumes and discards one JSON value, recursing into objects/arrays, so
   ## that unrecognized keys don't desync the token stream.
@@ -87,8 +91,7 @@ proc skipValue*(source: var JsonParser) =
     raiseParseErr(source, "value")
 
 proc fromStream*(typ: typedesc[string], source: var JsonParser): string =
-  if source.tok != tkString:
-    raiseParseErr(source, "string")
+  expectString(source)
   result = source.a
   discard getTok(source)
 
@@ -133,8 +136,7 @@ proc fromStream*[V](
 ): OrderedTable[string, V] =
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -171,8 +173,7 @@ proc fromStream*(typ: typedesc[JsonNode], source: var JsonParser): JsonNode =
     result = newJObject()
     discard getTok(source)
     while source.tok != tkCurlyRi:
-      if source.tok != tkString:
-        raiseParseErr(source, "string")
+      expectString(source)
       let key = source.a
       discard getTok(source)
       eat(source, tkColon)
@@ -196,8 +197,7 @@ proc fromStream*(typ: typedesc[JsonNode], source: var JsonParser): JsonNode =
     raiseParseErr(source, "value")
 
 proc fromStream*[T: enum](typ: typedesc[T], source: var JsonParser): T =
-  if source.tok != tkString:
-    raiseParseErr(source, "string")
+  expectString(source)
   result = parseEnum[T](source.a)
   discard getTok(source)
 

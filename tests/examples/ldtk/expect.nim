@@ -610,8 +610,7 @@ proc fromStream*(typ: typedesc[LdtkNeighbourLevel];
   var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -707,8 +706,7 @@ proc fromStream*(typ: typedesc[LdtkLevelBgPosInfos];
                  source: var JsonParser): LdtkLevelBgPosInfos =
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -803,8 +801,7 @@ proc fromStream*(typ: typedesc[LdtkTilesetRect];
   var seen: set[0 .. 4]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -929,8 +926,7 @@ proc fromStream*(typ: typedesc[LdtkFieldInstance];
   var seen: set[0 .. 3]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -1059,8 +1055,7 @@ proc fromStream*(typ: typedesc[LdtkTile]; source: var JsonParser): LdtkTile =
   var seen: set[0 .. 2]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -1293,8 +1288,7 @@ proc fromStream*(typ: typedesc[LdtkEntityInstance];
   var seen: set[0 .. 5]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -1390,8 +1384,7 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueInstance];
   var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -1741,8 +1734,7 @@ proc fromStream*(typ: typedesc[LdtkLayerInstance];
   var seen: set[0 .. 14]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -2094,8 +2086,7 @@ proc fromStream*(typ: typedesc[LdtkLevel]; source: var JsonParser): LdtkLevel =
   var seen: set[0 .. 12]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -2291,8 +2282,7 @@ proc fromStream*(typ: typedesc[LdtkWorld]; source: var JsonParser): LdtkWorld =
   var seen: set[0 .. 6]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -2400,8 +2390,7 @@ proc fromStream*(typ: typedesc[LdtkEntityReferenceInfos];
   var seen: set[0 .. 3]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -2513,8 +2502,7 @@ proc fromStream*(typ: typedesc[LdtkTocInstanceData];
   var seen: set[0 .. 5]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -2618,8 +2606,7 @@ proc fromStream*(typ: typedesc[LdtkTableOfContentEntry];
   var seen: set[0 .. 0]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -2686,8 +2673,7 @@ proc fromStream*(typ: typedesc[LdtkCustomCommand];
   var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -2754,8 +2740,7 @@ proc fromStream*(typ: typedesc[LdtkTileCustomMetadata];
   var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -2827,8 +2812,7 @@ proc fromStream*(typ: typedesc[LdtkEnumTagValue];
   var seen: set[0 .. 0]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -3095,8 +3079,7 @@ proc fromStream*(typ: typedesc[LdtkTilesetDef];
   var seen: set[0 .. 8]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -3216,8 +3199,7 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueGroupDef];
   var seen: set[0 .. 0]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -3318,8 +3300,7 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueDef];
   var seen: set[0 .. 2]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -3723,8 +3704,7 @@ proc fromStream*(typ: typedesc[LdtkAutoRuleDef];
   var seen: set[0 .. 26]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -3991,8 +3971,7 @@ proc fromStream*(typ: typedesc[LdtkAutoLayerRuleGroup];
   var seen: set[0 .. 5]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -4502,8 +4481,7 @@ proc fromStream*(typ: typedesc[LdtkLayerDef]; source: var JsonParser): LdtkLayer
   var seen: set[0 .. 20]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -5076,8 +5054,7 @@ proc fromStream*(typ: typedesc[LdtkFieldDef]; source: var JsonParser): LdtkField
   var seen: set[0 .. 19]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -5286,8 +5263,7 @@ proc fromStream*(typ: typedesc[LdtkEnumDefValues];
   var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -5435,8 +5411,7 @@ proc fromStream*(typ: typedesc[LdtkEnumDef]; source: var JsonParser): LdtkEnumDe
   var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -5879,8 +5854,7 @@ proc fromStream*(typ: typedesc[LdtkEntityDef]; source: var JsonParser): LdtkEnti
   var seen: set[0 .. 21]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -6118,8 +6092,7 @@ proc fromStream*(typ: typedesc[LdtkDefinitions];
                  source: var JsonParser): LdtkDefinitions =
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -6187,8 +6160,7 @@ proc fromStream*(typ: typedesc[LdtkGridPoint]; source: var JsonParser): LdtkGrid
   var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -6609,8 +6581,7 @@ proc fromStream*(typ: typedesc[Ldtk_FORCED_REFS];
                  source: var JsonParser): Ldtk_FORCED_REFS =
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -7211,8 +7182,7 @@ proc fromStream*(typ: typedesc[LdtkLdtkJsonRoot];
   var seen: set[0 .. 22]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)

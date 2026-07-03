@@ -107,8 +107,7 @@ proc fromStream*(typ: typedesc[User_profile]; source: var JsonParser): User_prof
   var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)

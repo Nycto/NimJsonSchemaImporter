@@ -101,8 +101,7 @@ proc fromStream*(typ: typedesc[File_systemDiskDevice];
   var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -171,8 +170,7 @@ proc fromStream*(typ: typedesc[File_systemDiskUUID];
   var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -250,8 +248,7 @@ proc fromStream*(typ: typedesc[File_systemNfs]; source: var JsonParser): File_sy
   var seen: set[0 .. 2]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -323,8 +320,7 @@ proc fromStream*(typ: typedesc[File_systemTmpfs];
   var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -546,8 +542,7 @@ proc fromStream*(typ: typedesc[File_system]; source: var JsonParser): File_syste
   var seen: set[0 .. 0]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)

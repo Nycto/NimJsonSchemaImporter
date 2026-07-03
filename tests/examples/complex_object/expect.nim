@@ -85,8 +85,7 @@ proc fromStream*(typ: typedesc[Complex_objectAddress];
   var seen: set[0 .. 3]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -184,8 +183,7 @@ proc fromStream*(typ: typedesc[Complex_object]; source: var JsonParser): Complex
   var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)

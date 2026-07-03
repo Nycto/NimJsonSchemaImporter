@@ -61,8 +61,7 @@ proc fromStream*(typ: typedesc[Array_of_thingsVeggie];
   var seen: set[0 .. 1]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -139,8 +138,7 @@ proc fromStream*(typ: typedesc[Array_of_things];
                  source: var JsonParser): Array_of_things =
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)

@@ -93,8 +93,7 @@ proc toStream*(source: Consts; target: Stream) =
 proc fromStream*(typ: typedesc[Consts]; source: var JsonParser): Consts =
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)

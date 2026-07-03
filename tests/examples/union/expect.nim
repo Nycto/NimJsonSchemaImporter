@@ -206,8 +206,7 @@ proc toStream*(source: UnionKey3; target: Stream) =
 proc fromStream*(typ: typedesc[UnionKey3]; source: var JsonParser): UnionKey3 =
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -467,8 +466,7 @@ proc fromStream*(typ: typedesc[Union]; source: var JsonParser): Union =
   var seen: set[0 .. 2]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)

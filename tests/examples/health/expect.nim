@@ -68,8 +68,7 @@ proc fromStream*(typ: typedesc[HealthEmergencyContact];
                  source: var JsonParser): HealthEmergencyContact =
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -205,8 +204,7 @@ proc fromStream*(typ: typedesc[Health]; source: var JsonParser): Health =
   var seen: set[0 .. 2]
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)

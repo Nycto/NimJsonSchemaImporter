@@ -63,8 +63,7 @@ proc fromStream*(typ: typedesc[EcommerceProductSchema];
                  source: var JsonParser): EcommerceProductSchema =
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
@@ -134,8 +133,7 @@ proc fromStream*(typ: typedesc[EcommerceOrderSchema];
                  source: var JsonParser): EcommerceOrderSchema =
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)

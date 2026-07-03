@@ -44,8 +44,7 @@ proc fromStream*(typ: typedesc[Enumerated_values];
                  source: var JsonParser): Enumerated_values =
   eat(source, tkCurlyLe)
   while source.tok != tkCurlyRi:
-    if source.tok != tkString:
-      raiseParseErr(source, "string")
+    expectString(source)
     let key = source.a
     discard getTok(source)
     eat(source, tkColon)
