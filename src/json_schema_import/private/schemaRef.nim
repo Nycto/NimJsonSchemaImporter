@@ -132,9 +132,16 @@ proc resolve*(sref: SchemaRef, node: JsonNode, resolveUrl: UrlResolver): JsonNod
     raise newException(ValueError, fmt"Unable to find anchor reference: {sref}")
 
 proc `==`*(a, b: SchemaRef): bool =
-  if a.isNil and b.isNil:
-    return true
-  elif not a.isNil and not b.isNil and a.kind == b.kind:
+  ## Whether two references point at the same place
+  # The tail has to be part of this: every document relative reference starts with the
+  # same `RootRef`, so comparing only the head makes `#/foo` and `#/bar` equal. `hash`
+  # already covers `next`, which is what has been keeping the reference keyed tables
+  # working -- they only fall back to `==` once two references collide.
+  if a.isNil or b.isNil:
+    return a.isNil and b.isNil
+  elif a.kind != b.kind or a.next != b.next:
+    return false
+  else:
     return
       case a.kind
       of RootRef:

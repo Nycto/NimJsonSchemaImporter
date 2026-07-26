@@ -4,6 +4,7 @@ import
 type ParseContext = ref object
   doc: JsonNode
   resolver: UrlResolver
+  refs: Table[SchemaRef, TypeDef]
 
 proc resolve(sref: SchemaRef, ctx: ParseContext): JsonNode =
   resolve(sref, ctx.doc, ctx.resolver)
@@ -94,8 +95,17 @@ proc parseArray(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
 proc parseRef(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JObject)
   let sref = parseRef(node{"$ref"}.getStr)
-  result = sref.resolve(ctx).parseType(ctx, history)
-  result.sref = sref
+
+  # Resolving a reference and parsing whatever it lands on is a pure function of the
+  # reference, and schemas lean on that heavily -- every reference inside a definition
+  # is re-walked once per site that reaches the definition, so the work grows with the
+  # number of paths through the schema rather than its size. Memoizing collapses it
+  # back down. `history` only ever feeds error messages, so it is safe to ignore here.
+  if sref in ctx.refs:
+    return ctx.refs[sref]
+
+  result = sref.resolve(ctx).parseType(ctx, history).withRef(sref)
+  ctx.refs[sref] = result
 
 proc parseTypeStr(typ: string, history: History): TypeDef =
   case typ
@@ -244,7 +254,9 @@ proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
 
 proc parseSchema*(node: JsonNode, resolver: UrlResolver): JsonSchema =
   result = JsonSchema()
-  result.rootType = parseType(node, ParseContext(doc: node, resolver: resolver), nil)
+  let ctx =
+    ParseContext(doc: node, resolver: resolver, refs: initTable[SchemaRef, TypeDef]())
+  result.rootType = parseType(node, ctx, nil)
 
 proc parseSchema*(node: string, resolver: UrlResolver): JsonSchema =
   node.parseJson.parseSchema(resolver)

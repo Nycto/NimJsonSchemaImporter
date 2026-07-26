@@ -137,6 +137,41 @@ proc `$`*(typ: TypeDef): string =
   if not typ.sref.isNil:
     result = fmt"({typ.sref} {result})"
 
+proc withRef*(typ: TypeDef, sref: SchemaRef): TypeDef =
+  ## Labels a type with the reference it was reached through
+  ##
+  ## When `typ` is already labelled it gets copied, because a labelled type is one that
+  ## is memoized under its own reference and relabelling it in place would corrupt that
+  ## entry. Note that the copy has to be built field by field: `result[] = typ[]` looks
+  ## like it would do the job, but the VM aliases the two bodies instead of copying.
+  if typ.sref.isNil:
+    typ.sref = sref
+    return typ
+
+  result =
+    case typ.kind
+    of ObjType:
+      TypeDef(kind: ObjType, properties: typ.properties)
+    of EnumType:
+      TypeDef(kind: EnumType, values: typ.values)
+    of RefType:
+      TypeDef(kind: RefType, schemaRef: typ.schemaRef)
+    of ArrayType:
+      TypeDef(kind: ArrayType, items: typ.items)
+    of UnionType:
+      TypeDef(kind: UnionType, subtypes: typ.subtypes)
+    of MapType:
+      TypeDef(kind: MapType, entries: typ.entries)
+    of OptionalType:
+      TypeDef(kind: OptionalType, subtype: typ.subtype)
+    of ConstValueType:
+      TypeDef(kind: ConstValueType, value: typ.value)
+    of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
+      TypeDef(kind: typ.kind)
+
+  result.id = typ.id
+  result.sref = sref
+
 const SELF_OPTIONAL* = {MapType, ArrayType}
   ## These are field types that don't need to be wrapped in optional values
 
