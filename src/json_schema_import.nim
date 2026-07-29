@@ -3,7 +3,7 @@
 ##
 
 import std/[json, macros, jsonutils, strutils], json_schema_import/config
-import json_schema_import/private/[parse, gen, util, equality, bin, sax]
+import json_schema_import/private/[parse, gen, util, equality, bin, sax, cache]
 
 export JsonSchemaConfig, UrlResolver, json, jsonutils, equality, bin, sax
 
@@ -35,7 +35,9 @@ macro realImportJsonSchema(
       path
     else:
       rootDir & "/" & path
-  parseJsonSchema(slurp($resolvedPath), conf).code
+
+  let contents = slurp($resolvedPath)
+  emitSchema(contents, conf, resolvedPath, parseJsonSchema(contents, conf).code)
 
 proc getRootDir(node: NimNode): NimNode =
   newLit($(lineInfoObj(node).filename.parentDir))
@@ -60,8 +62,9 @@ macro importJsonSchema*(path, prefix: string) =
 
 macro jsonSchema*(conf: static JsonSchemaConfig, schema: static JsonNode) =
   ## Converts a direct json reference to nim as if it were a json schema
-  parseJsonSchema(schema, conf).code
+  emitSchema($schema, conf, inlineSchemaName(conf), parseJsonSchema(schema, conf).code)
 
 macro jsonSchema*(schema: static JsonNode) =
   ## Converts a direct json reference to nim as if it were a json schema
-  parseJsonSchema(schema, JsonSchemaConfig()).code
+  let conf = JsonSchemaConfig()
+  emitSchema($schema, conf, inlineSchemaName(conf), parseJsonSchema(schema, conf).code)

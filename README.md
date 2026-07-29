@@ -105,3 +105,21 @@ block:
 
 To see the exact nim code being generated, you can add the `-d:dump` compile flag. It will cause the generated
 code to be printed during compile.
+
+## Build caching
+
+Generated schema code is cached to disk after the first compile and re-used for subsequent compile passes.
+
+By default the cache lives inside `nimcache`, which means it is cleaned up alongside the rest of nimcache
+and never touches your source tree. Two flags adjust this:
+
+* `-d:jsonSchemaCacheDir=<path>` writes the cache somewhere else. Useful when a project builds several targets,
+  since each target otherwise keeps its own nimcache and therefore its own copy of the cache.
+* `-d:jsonSchemaNoCache` turns caching off entirely.
+
+The cache is keyed by the schema document, every config field that affects the output, the nim version, and the
+version of this library, so any change to those produces a fresh entry rather than a stale hit. Schemas that use
+a `urlResolver` are never cached, because the documents it pulls in are not visible to that key.
+
+Caching is best effort: if the cache directory cannot be written to, the build simply generates the code as it
+otherwise would.
