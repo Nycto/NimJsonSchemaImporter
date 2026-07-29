@@ -75,7 +75,11 @@ proc classify*(propType: TypeDef, required: bool): PropCategory =
 proc formatCodeDump*(code: NimNode): string =
   result = "{.push warning[UnusedImport]:off.}\n"
   result &= "import std/[json, jsonutils, tables, options]\n"
-  result &= "import json_schema_import/private/[stringify, equality, bin, sax]\n"
+  # `stringify` is aliased because the generated code declares procs by that name, and a
+  # module symbol and a proc symbol of the same name cannot coexist in one scope. That
+  # only matters once this dump is `include`d rather than compiled as its own module.
+  result &= "import json_schema_import/private/stringify as jsonSchemaStringify\n"
+  result &= "import json_schema_import/private/[equality, bin, sax]\n"
   result &= code.repr.replace(re2"\`gensym_?\d+", "")
   result &= "{.pop.}\n"
 
