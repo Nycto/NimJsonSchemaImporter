@@ -58,8 +58,7 @@ type PropCategory* = enum
   pcRequired
     ## Must always be encoded/decoded: either the schema requires it, or it
     ## has no real field to be optional about (e.g. a const value).
-  pcOptional
-    ## Wrapped in `Option[T]`; may be entirely absent.
+  pcOptional ## Wrapped in `Option[T]`; may be entirely absent.
 
 proc classify*(propType: TypeDef, required: bool): PropCategory =
   ## Classifies an object property for encoder/decoder codegen, matching the
