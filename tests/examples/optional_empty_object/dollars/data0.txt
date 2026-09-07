@@ -1,0 +1,1 @@
+OptionalEmptyObject(name: "example", custom: OptionalEmptyObjectCustom())

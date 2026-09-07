@@ -1,0 +1,16 @@
+{
+  "$id": "https://example.com/optional_empty_object.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OptionalEmptyObject",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "custom": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  "required": ["name"]
+}

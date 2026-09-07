@@ -20,6 +20,7 @@ buildTest("file_system", File_system)
 buildTest("union", Union)
 buildTest("consts", Consts)
 buildTest("empty_object", EmptyObject)
+buildTest("optional_empty_object", OptionalEmptyObject)
 #
 # # Specific applications
 buildTest("ldtk", LdtkJsonRoot)

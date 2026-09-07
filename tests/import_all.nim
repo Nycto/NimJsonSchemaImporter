@@ -15,3 +15,6 @@ importJsonSchema("examples/ldtk/schema.json", conf("Ldtk"))
 importJsonSchema("examples/aseprite/schema.json", conf("Aseprite"))
 importJsonSchema("examples/consts/schema.json", conf("Consts"))
 importJsonSchema("examples/empty_object/schema.json", conf("EmptyObject"))
+importJsonSchema(
+  "examples/optional_empty_object/schema.json", conf("OptionalEmptyObject")
+)
