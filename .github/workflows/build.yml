@@ -11,3 +11,23 @@ jobs:
     - run: nimble test
     - run: nimble readme
     - run: nim e ./src/json_schema_import.nim
+
+  examples:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Every example is registered for testing
+      run: |
+        status=0
+        for dir in tests/examples/*/; do
+          name=$(basename "$dir")
+          grep -qF "buildTest(\"$name\"," tests/defs.nim || {
+            echo "::error::$name is missing from tests/defs.nim"
+            status=1
+          }
+          grep -qF "\"examples/$name/schema.json\"" tests/import_all.nim || {
+            echo "::error::$name is missing from tests/import_all.nim"
+            status=1
+          }
+        done
+        exit $status
