@@ -31,3 +31,19 @@ jobs:
           }
         done
         exit $status
+
+  version:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Generated code changes bump json_schema_version
+      run: |
+        cache=src/json_schema_import/private/cache.nim
+        hash=$(find tests -name expect.nim | sort | xargs cat | sha1sum | cut -d" " -f1)
+
+        grep -qF "json_schema_version* = \"$hash\"" "$cache" || {
+          echo "::error file=$cache::The code generation snapshots have changed, so"\
+            "warm caches holding the previous output need to be invalidated. Set"\
+            "json_schema_version to \"$hash\""
+          exit 1
+        }

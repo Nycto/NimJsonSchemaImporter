@@ -1,10 +1,19 @@
 import std/[hashes, strutils, compilesettings, staticos, macros], ../config, util
 
 const
-  json_schema_version* = 1
-    ## Version of the generated code produced by this library.
-    ## Bump this whenever a change to the generator alters the code it emits, otherwise
-    ## builds with a warm cache will keep using output from the previous version.
+  json_schema_version* = "65d42ac9efb9ec2b46709ce11faea08de22fa314"
+    ## Version of the generated code produced by this library, which has to
+    ## change whenever the generator emits something different. It is the sha1
+    ## of the checked in code generation snapshots, so it changes when the
+    ## emitted code does.
+    ##
+    ## Regenerate the snapshots with:
+    ##
+    ##   nimble test -d:rebuild
+    ##
+    ## Then regenerate this hash with:
+    ##
+    ##   find tests -name expect.nim | sort | xargs cat | sha1sum
 
   jsonSchemaCacheDir {.strdefine.} = ""
     ## Overrides where generated code is cached, set with `-d:jsonSchemaCacheDir=<path>`
