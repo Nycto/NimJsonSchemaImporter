@@ -181,9 +181,11 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
           `target`.`safeKey` =
             some(jsonTo(`source`{`key`}, typeof(unsafeGet(`target`.`safeKey`))))
 
+  let body = decodeKeys.orDiscard
+
   return quote:
     proc fromJsonHook*(`target`: var `typeName`, `source`: JsonNode) =
-      `decodeKeys`
+      `body`
 
 proc buildObjectEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
   var encodeKeys = newStmtList()

@@ -72,6 +72,13 @@ proc classify*(propType: TypeDef, required: bool): PropCategory =
     assert(propType.kind == OptionalType)
     pcOptional
 
+proc orDiscard*(stmts: NimNode): NimNode =
+  ## Guards a proc body built up from an object's properties
+  if stmts.len == 0:
+    newStmtList(nnkDiscardStmt.newTree(newEmptyNode()))
+  else:
+    stmts
+
 proc formatCodeDump*(code: NimNode): string =
   result = "{.push warning[UnusedImport]:off.}\n"
   result &= "import std/[json, jsonutils, tables, options]\n"
