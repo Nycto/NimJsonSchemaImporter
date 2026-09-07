@@ -3,7 +3,7 @@
 ##
 ##
 
-import std/[streams, parsejson, tables, macros, sets, json, options, hashes, strutils]
+import std/[streams, parsejson, tables, macros, sets, json, options, strutils]
 
 export parsejson, streams
 

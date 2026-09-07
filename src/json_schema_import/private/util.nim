@@ -1,4 +1,4 @@
-import std/[macros, json, sets, strutils, tables, options], regex, types
+import std/[macros, json, sets, strutils, tables], regex, types
 
 type SomeTable*[K, V] = Table[K, V] | OrderedTable[K, V]
 
