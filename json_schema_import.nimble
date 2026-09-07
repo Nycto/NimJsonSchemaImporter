@@ -1,6 +1,6 @@
 # Package
 
-version = "0.5.0"
+version = "0.5.2"
 author = "Nycto"
 description = "Converts JSON schema definitions to nim types"
 license = "MIT"
