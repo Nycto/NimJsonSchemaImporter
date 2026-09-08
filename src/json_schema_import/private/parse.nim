@@ -194,11 +194,10 @@ proc parseEnum(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     result = result.optional()
 
 proc parseStr(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
-  return
-    if "enum" in node:
-      parseEnum(node, ctx, history)
-    else:
-      parseTypeStr("string", history)
+  if "enum" in node:
+    return parseEnum(node, ctx, history)
+  result = parseTypeStr("string", history)
+  result.id = id(node)
 
 proc parseTypedStr(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JObject)
@@ -207,7 +206,10 @@ proc parseTypedStr(node: JsonNode, ctx: ParseContext, history: History): TypeDef
   of "string":
     return parseStr(node, ctx, history)
   of "number", "integer", "boolean", "null":
-    return parseTypeStr(typ, history)
+    # `parseTypeStr` only sees the type name, but the node it came from may carry an
+    # `$id` that the scalar needs to be named after when it sits at the root
+    result = parseTypeStr(typ, history)
+    result.id = id(node)
   of "object":
     return parseObj(node, ctx, history)
   of "array":
@@ -246,7 +248,8 @@ proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   elif "type" in node:
     return parseTyped(node, ctx, history)
   elif "format" in node:
-    return parseTypeStr("string", history)
+    result = parseTypeStr("string", history)
+    result.id = id(node)
   elif "const" in node:
     return TypeDef(kind: ConstValueType, value: node{"const"})
   else:
