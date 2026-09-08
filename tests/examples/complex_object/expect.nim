@@ -187,4 +187,5 @@ proc fromStream*(typ: typedesc[Complex_object]; source: var JsonParser): Complex
     else:
       skipValue(source)
   assert(card(seen) == 2)
+
 {.pop.}

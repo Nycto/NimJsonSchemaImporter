@@ -134,4 +134,5 @@ proc fromStream*(typ: typedesc[EcommerceOrderSchema];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+
 {.pop.}

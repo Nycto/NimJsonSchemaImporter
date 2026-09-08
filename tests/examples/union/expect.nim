@@ -471,4 +471,5 @@ proc fromStream*(typ: typedesc[Union]; source: var JsonParser): Union =
     else:
       skipValue(source)
   assert(card(seen) == 3)
+
 {.pop.}

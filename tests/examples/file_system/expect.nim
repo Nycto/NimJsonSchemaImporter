@@ -516,4 +516,5 @@ proc fromStream*(typ: typedesc[File_system]; source: var JsonParser): File_syste
     else:
       skipValue(source)
   assert(card(seen) == 1)
+
 {.pop.}

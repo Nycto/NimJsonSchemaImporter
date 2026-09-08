@@ -128,4 +128,5 @@ proc fromStream*(typ: typedesc[Movie]; source: var JsonParser): Movie =
     else:
       skipValue(source)
   assert(card(seen) == 3)
+
 {.pop.}

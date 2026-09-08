@@ -7016,4 +7016,5 @@ proc fromStream*(typ: typedesc[LdtkLdtkJsonRoot];
     else:
       skipValue(source)
   assert(card(seen) == 23)
+
 {.pop.}

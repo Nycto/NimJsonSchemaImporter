@@ -137,4 +137,5 @@ proc fromStream*(typ: typedesc[Array_of_things];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+
 {.pop.}

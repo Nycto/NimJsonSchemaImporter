@@ -175,4 +175,5 @@ proc fromStream*(typ: typedesc[Blog]; source: var JsonParser): Blog =
     else:
       skipValue(source)
   assert(card(seen) == 3)
+
 {.pop.}

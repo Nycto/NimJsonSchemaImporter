@@ -87,7 +87,7 @@ proc formatCodeDump*(code: NimNode): string =
   result &= "import json_schema_import/private/stringify as jsonSchemaStringify\n"
   result &= "import json_schema_import/private/[equality, bin, sax]\n"
   result &= code.repr.replace(re2"\`gensym_?\d+", "")
-  result &= "{.pop.}\n"
+  result &= "\n{.pop.}\n"
 
 proc parentDir*(path: string): string =
   let pos = path.rfind('/')

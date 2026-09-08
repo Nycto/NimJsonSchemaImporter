@@ -104,4 +104,5 @@ proc fromStream*(typ: typedesc[Optional_empty_object];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+
 {.pop.}

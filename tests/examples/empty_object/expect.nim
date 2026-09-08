@@ -99,4 +99,5 @@ proc fromStream*(typ: typedesc[Empty_object]; source: var JsonParser): Empty_obj
     else:
       skipValue(source)
   assert(card(seen) == 2)
+
 {.pop.}

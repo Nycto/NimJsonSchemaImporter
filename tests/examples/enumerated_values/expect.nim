@@ -51,4 +51,5 @@ proc fromStream*(typ: typedesc[Enumerated_values];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+
 {.pop.}

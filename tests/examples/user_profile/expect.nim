@@ -127,4 +127,5 @@ proc fromStream*(typ: typedesc[User_profile]; source: var JsonParser): User_prof
     else:
       skipValue(source)
   assert(card(seen) == 2)
+
 {.pop.}

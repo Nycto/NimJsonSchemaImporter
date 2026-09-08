@@ -1221,4 +1221,5 @@ proc fromStream*(typ: typedesc[AsepriteSpriteSheet];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+
 {.pop.}
