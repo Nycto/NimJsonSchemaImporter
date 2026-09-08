@@ -29,18 +29,18 @@ suite "Sax decoding errors":
 
   test "Wrong-typed field raises":
     expect JsonParsingError:
-      discard Basic.fromStream(newStringStream("""{"age": "not a number"}"""), "test.json")
+      discard
+        Basic.fromStream(newStringStream("""{"age": "not a number"}"""), "test.json")
 
   test "Invalid enum value raises":
     expect ValueError:
-      discard
-        AsepriteSpriteSheet.fromStream(
-          newStringStream(
-            """{"frames": {}, "meta": {"app": "a", "format": "bogus",
+      discard AsepriteSpriteSheet.fromStream(
+        newStringStream(
+          """{"frames": {}, "meta": {"app": "a", "format": "bogus",
             "image": "i", "scale": "1", "size": {"h": 0, "w": 0}, "version": "v"}}"""
-          ),
-          "test.json",
-        )
+        ),
+        "test.json",
+      )
 
   test "Missing required field raises":
     expect AssertionDefect:
@@ -66,7 +66,9 @@ suite "Non-object root types":
       "frame": {"h": 0, "w": 0, "x": 0, "y": 0}, "rotated": false,
       "sourceSize": {"h": 0, "w": 0},
       "spriteSourceSize": {"h": 0, "w": 0, "x": 0, "y": 0}, "trimmed": false
-    }]""".parseJson.jsonTo(AsepriteUnion)
+    }]""".parseJson.jsonTo(
+      AsepriteUnion
+    )
 
     var stream = newStringStream()
     initial.toStream(stream)

@@ -1,8 +1,6 @@
 import json_schema_import, std/[unittest, json, jsonutils, options, streams, tables]
 
-jsonSchema %*{
-  "$id": "arrContainer", "type": "array", "items": {"type": "integer"}
-}
+jsonSchema %*{"$id": "arrContainer", "type": "array", "items": {"type": "integer"}}
 
 jsonSchema %*{"$id": "strContainer", "type": "string", "maxLength": 25}
 
@@ -12,9 +10,7 @@ jsonSchema %*{"$id": "mapContainer", "additionalProperties": {"type": "string"}}
 
 jsonSchema(JsonSchemaConfig(rootTypeName: "Flag"), %*{"type": "boolean"})
 
-jsonSchema(
-  JsonSchemaConfig(rootTypeName: "MaybeName"), %*{"type": ["string", "null"]}
-)
+jsonSchema(JsonSchemaConfig(rootTypeName: "MaybeName"), %*{"type": ["string", "null"]})
 
 suite "Schemas rooted at something other than an object":
   test "An array at the root":
