@@ -18,3 +18,5 @@ importJsonSchema("examples/empty_object/schema.json", conf("EmptyObject"))
 importJsonSchema(
   "examples/optional_empty_object/schema.json", conf("OptionalEmptyObject")
 )
+importJsonSchema("examples/array_root/schema.json", conf("ArrayRoot"))
+importJsonSchema("examples/string_root/schema.json", conf("StringRoot"))

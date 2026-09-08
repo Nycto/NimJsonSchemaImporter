@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/array-root.schema.json",
+  "title": "Array root",
+  "description": "A schema whose root is an array rather than an object",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": { "type": "string" },
+      "count": { "type": "integer" }
+    },
+    "required": ["name"]
+  }
+}

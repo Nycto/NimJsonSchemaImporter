@@ -190,6 +190,10 @@ proc genType(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   if not typ.sref.isNil:
     ctx.cache[typ.sref] = result
 
+const namedKinds = {ObjType, EnumType, UnionType}
+  ## Kinds that declare a type of their own, so a schema rooted at one of them already
+  ## has a name to refer to it by
+
 proc genDeclarations*(schema: JsonSchema, conf: JsonSchemaConfig): GeneratedOutput =
   let ctx = GenContext(
     conf: conf,
@@ -199,7 +203,15 @@ proc genDeclarations*(schema: JsonSchema, conf: JsonSchemaConfig): GeneratedOutp
     procs: newStmtList(),
   )
 
-  result.rootType = schema.rootType.genType(rootName(conf.rootTypeName), ctx)
+  let rootChain = rootName(conf.rootTypeName)
+
+  result.rootType =
+    if schema.rootType.kind in namedKinds:
+      schema.rootType.genType(rootChain, ctx)
+    else:
+      let alias = ctx.genName(rootChain, schema.rootType)
+      ctx.addType(alias, schema.rootType.genType(rootChain, ctx))
+      alias
 
   var types = nnkTypeSection.newTree()
   for typ in ctx.types:

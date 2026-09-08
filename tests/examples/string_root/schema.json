@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/string-root.schema.json",
+  "title": "String root",
+  "description": "A schema whose root is a plain string",
+  "type": "string",
+  "maxLength": 25
+}
