@@ -54,9 +54,15 @@ proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     kind: ObjType, properties: initOrderedTable[string, PropDef](), id: id(node)
   )
 
+  # `properties` may be missing entirely, which is how `additionalProperties: false`
+  # describes an object that accepts nothing
+  let properties = node{"properties"}
+  if properties == nil:
+    return
+
   var seen = initHashSet[string]()
 
-  for key, typeDef in node{"properties"}:
+  for key, typeDef in properties:
     let subtype = typeDef.parseType(ctx, history.add("properties").add(key))
     result.properties[key] = (
       propName: key.cleanupIdent.choosePropName(seen),
@@ -207,13 +213,11 @@ proc parseTypedStr(node: JsonNode, ctx: ParseContext, history: History): TypeDef
   case typ
   of "string":
     return parseStr(node, ctx, history)
-  of "number", "integer", "boolean", "null":
+  of "number", "integer", "boolean", "null", "object":
     # `parseTypeStr` only sees the type name, but the node it came from may carry an
-    # `$id` that the scalar needs to be named after when it sits at the root
+    # `$id` that the type needs to be named after when it sits at the root.
     result = parseTypeStr(typ, history)
     result.id = id(node)
-  of "object":
-    return parseObj(node, ctx, history)
   of "array":
     return parseArray(node, ctx, history)
   else:

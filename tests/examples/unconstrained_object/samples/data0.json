@@ -1,0 +1,15 @@
+{
+  "name": "example",
+  "free": {
+    "anything": 1,
+    "goes": [
+      true,
+      null
+    ]
+  },
+  "closed": {},
+  "patterned": {
+    "x-one": "a",
+    "x-two": "b"
+  }
+}

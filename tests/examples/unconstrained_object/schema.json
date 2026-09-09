@@ -1,0 +1,16 @@
+{
+  "$id": "https://example.com/unconstrained_object.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UnconstrainedObject",
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" },
+    "free": { "type": "object" },
+    "closed": { "type": "object", "additionalProperties": false },
+    "patterned": {
+      "type": "object",
+      "patternProperties": { "^x-": { "type": "string" } }
+    }
+  },
+  "required": ["name", "free", "closed", "patterned"]
+}
