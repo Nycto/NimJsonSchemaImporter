@@ -2,5 +2,21 @@
   "narrowed": {
     "b": 2,
     "shared": "second"
+  },
+  "narrowedArray": [
+    {
+      "x": 3,
+      "y": "three"
+    },
+    {
+      "x": 4,
+      "y": "four"
+    }
+  ],
+  "narrowedMap": {
+    "other": {
+      "m": "second",
+      "n": 5
+    }
   }
 }

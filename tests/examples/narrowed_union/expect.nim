@@ -16,14 +16,28 @@ type
       key0*: Narrowed_unionNarrowed
     of 1:
       key1*: Narrowed_unionNarrowed2
+  Narrowed_unionNarrowedArray* {.byref.} = object
+    x*: BiggestInt
+    y*: string
+  Narrowed_unionNarrowedMap* {.byref.} = object
+    m*: string
+    n*: BiggestInt
   Narrowed_union* {.byref.} = object
     narrowed*: Narrowed_unionUnion
+    narrowedArray*: seq[Narrowed_unionNarrowedArray]
+    narrowedMap*: OrderedTable[string, Narrowed_unionNarrowedMap]
 proc `=copy`(a: var Narrowed_unionNarrowed;
              b: Narrowed_unionNarrowed) {.error.}
 proc toJsonHook*(source: Narrowed_unionNarrowed): JsonNode
 proc `=copy`(a: var Narrowed_unionNarrowed2;
              b: Narrowed_unionNarrowed2) {.error.}
 proc toJsonHook*(source: Narrowed_unionNarrowed2): JsonNode
+proc `=copy`(a: var Narrowed_unionNarrowedArray;
+             b: Narrowed_unionNarrowedArray) {.error.}
+proc toJsonHook*(source: Narrowed_unionNarrowedArray): JsonNode
+proc `=copy`(a: var Narrowed_unionNarrowedMap;
+             b: Narrowed_unionNarrowedMap) {.error.}
+proc toJsonHook*(source: Narrowed_unionNarrowedMap): JsonNode
 proc `=copy`(a: var Narrowed_union; b: Narrowed_union) {.
     error.}
 proc toJsonHook*(source: Narrowed_union): JsonNode
@@ -221,15 +235,133 @@ proc fromStream*(typ: typedesc[Narrowed_unionUnion];
                  source: var JsonParser): Narrowed_unionUnion =
   jsonTo(fromStream(JsonNode, source), Narrowed_unionUnion)
 
+proc equals(_: typedesc[Narrowed_unionNarrowedArray];
+            a, b: Narrowed_unionNarrowedArray): bool =
+  equals(typeof(a.x), a.x, b.x) and equals(typeof(a.y), a.y, b.y)
+
+proc `==`*(a, b: Narrowed_unionNarrowedArray): bool =
+  return equals(Narrowed_unionNarrowedArray, a, b)
+
+proc stringify(_: typedesc[Narrowed_unionNarrowedArray];
+               value: Narrowed_unionNarrowedArray): string =
+  stringifyObj("Narrowed_unionNarrowedArray",
+               ("x", stringify(typeof(value.x), value.x)),
+               ("y", stringify(typeof(value.y), value.y)))
+
+proc `$`*(value: Narrowed_unionNarrowedArray): string =
+  stringify(Narrowed_unionNarrowedArray, value)
+
+proc fromJsonHook*(target: var Narrowed_unionNarrowedArray; source: JsonNode) =
+  assert(hasKey(source, "x"),
+         "x" & " is missing while decoding " & "Narrowed_unionNarrowedArray")
+  target.x = jsonTo(source{"x"}, typeof(target.x))
+  assert(hasKey(source, "y"),
+         "y" & " is missing while decoding " & "Narrowed_unionNarrowedArray")
+  target.y = jsonTo(source{"y"}, typeof(target.y))
+
+proc toJsonHook*(source: Narrowed_unionNarrowedArray): JsonNode =
+  result = newJObject()
+  result{"x"} = newJInt(source.x)
+  result{"y"} = newJString(source.y)
+
+proc toStream*(source: Narrowed_unionNarrowedArray; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("x"))
+  write(target, ':')
+  toStream(source.x, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("y"))
+  write(target, ':')
+  toStream(source.y, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Narrowed_unionNarrowedArray];
+                 source: var JsonParser): Narrowed_unionNarrowedArray =
+  var seen: set[0 .. 1]
+  for key in objectKeys(source):
+    case key
+    of "x":
+      result.x = fromStream(typeof(result.x), source)
+      seen.incl(0)
+    of "y":
+      result.y = fromStream(typeof(result.y), source)
+      seen.incl(1)
+    else:
+      skipValue(source)
+  assert(card(seen) == 2)
+
+proc equals(_: typedesc[Narrowed_unionNarrowedMap];
+            a, b: Narrowed_unionNarrowedMap): bool =
+  equals(typeof(a.m), a.m, b.m) and equals(typeof(a.n), a.n, b.n)
+
+proc `==`*(a, b: Narrowed_unionNarrowedMap): bool =
+  return equals(Narrowed_unionNarrowedMap, a, b)
+
+proc stringify(_: typedesc[Narrowed_unionNarrowedMap];
+               value: Narrowed_unionNarrowedMap): string =
+  stringifyObj("Narrowed_unionNarrowedMap",
+               ("m", stringify(typeof(value.m), value.m)),
+               ("n", stringify(typeof(value.n), value.n)))
+
+proc `$`*(value: Narrowed_unionNarrowedMap): string =
+  stringify(Narrowed_unionNarrowedMap, value)
+
+proc fromJsonHook*(target: var Narrowed_unionNarrowedMap; source: JsonNode) =
+  assert(hasKey(source, "m"),
+         "m" & " is missing while decoding " & "Narrowed_unionNarrowedMap")
+  target.m = jsonTo(source{"m"}, typeof(target.m))
+  assert(hasKey(source, "n"),
+         "n" & " is missing while decoding " & "Narrowed_unionNarrowedMap")
+  target.n = jsonTo(source{"n"}, typeof(target.n))
+
+proc toJsonHook*(source: Narrowed_unionNarrowedMap): JsonNode =
+  result = newJObject()
+  result{"m"} = newJString(source.m)
+  result{"n"} = newJInt(source.n)
+
+proc toStream*(source: Narrowed_unionNarrowedMap; target: Stream) =
+  var hasEmitted: bool
+  target.write('{')
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("m"))
+  write(target, ':')
+  toStream(source.m, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("n"))
+  write(target, ':')
+  toStream(source.n, target)
+  target.write('}')
+
+proc fromStream*(typ: typedesc[Narrowed_unionNarrowedMap];
+                 source: var JsonParser): Narrowed_unionNarrowedMap =
+  var seen: set[0 .. 1]
+  for key in objectKeys(source):
+    case key
+    of "m":
+      result.m = fromStream(typeof(result.m), source)
+      seen.incl(0)
+    of "n":
+      result.n = fromStream(typeof(result.n), source)
+      seen.incl(1)
+    else:
+      skipValue(source)
+  assert(card(seen) == 2)
+
 proc equals(_: typedesc[Narrowed_union]; a, b: Narrowed_union): bool =
-  equals(typeof(a.narrowed), a.narrowed, b.narrowed)
+  equals(typeof(a.narrowed), a.narrowed, b.narrowed) and
+      equals(typeof(a.narrowedArray), a.narrowedArray, b.narrowedArray) and
+      equals(typeof(a.narrowedMap), a.narrowedMap, b.narrowedMap)
 
 proc `==`*(a, b: Narrowed_union): bool =
   return equals(Narrowed_union, a, b)
 
 proc stringify(_: typedesc[Narrowed_union]; value: Narrowed_union): string =
-  stringifyObj("Narrowed_union",
-               ("narrowed", stringify(typeof(value.narrowed), value.narrowed)))
+  stringifyObj("Narrowed_union", ("narrowed", stringify(typeof(value.narrowed),
+      value.narrowed)), ("narrowedArray", stringify(typeof(value.narrowedArray),
+      value.narrowedArray)), ("narrowedMap", stringify(
+      typeof(value.narrowedMap), value.narrowedMap)))
 
 proc `$`*(value: Narrowed_union): string =
   stringify(Narrowed_union, value)
@@ -238,10 +370,32 @@ proc fromJsonHook*(target: var Narrowed_union; source: JsonNode) =
   assert(hasKey(source, "narrowed"),
          "narrowed" & " is missing while decoding " & "Narrowed_union")
   target.narrowed = jsonTo(source{"narrowed"}, typeof(target.narrowed))
+  if hasKey(source, "narrowedArray") and
+      source{"narrowedArray"}.kind != JNull:
+    target.narrowedArray = jsonTo(source{"narrowedArray"},
+                                  typeof(target.narrowedArray))
+  if hasKey(source, "narrowedMap") and source{"narrowedMap"}.kind != JNull:
+    target.narrowedMap = jsonTo(source{"narrowedMap"},
+                                typeof(target.narrowedMap))
 
 proc toJsonHook*(source: Narrowed_union): JsonNode =
   result = newJObject()
   result{"narrowed"} = toJsonHook(source.narrowed)
+  if len(source.narrowedArray) > 0:
+    result{"narrowedArray"} = block:
+      let cursor {.cursor.} = source.narrowedArray
+      var output = newJArray()
+      for entry in cursor:
+        output.add(toJsonHook(entry))
+      output
+  if len(source.narrowedMap) > 0:
+    result{"narrowedMap"} = block:
+      let cursor {.cursor.} = source.narrowedMap
+      var output = newJObject()
+      for key in keys(cursor):
+        output[key] = toJsonHook(
+            cursor[key])
+      output
 
 proc toStream*(source: Narrowed_union; target: Stream) =
   var hasEmitted: bool
@@ -250,6 +404,16 @@ proc toStream*(source: Narrowed_union; target: Stream) =
   write(target, escapeJson("narrowed"))
   write(target, ':')
   toStream(source.narrowed, target)
+  if len(source.narrowedArray) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("narrowedArray"))
+    write(target, ':')
+    toStream(source.narrowedArray, target)
+  if len(source.narrowedMap) > 0:
+    hasEmitted.writeComma(target)
+    write(target, escapeJson("narrowedMap"))
+    write(target, ':')
+    toStream(source.narrowedMap, target)
   target.write('}')
 
 proc fromStream*(typ: typedesc[Narrowed_union];
@@ -260,6 +424,10 @@ proc fromStream*(typ: typedesc[Narrowed_union];
     of "narrowed":
       result.narrowed = fromStream(typeof(result.narrowed), source)
       seen.incl(0)
+    of "narrowedArray":
+      result.narrowedArray = fromStream(typeof(result.narrowedArray), source)
+    of "narrowedMap":
+      result.narrowedMap = fromStream(typeof(result.narrowedMap), source)
     else:
       skipValue(source)
   assert(card(seen) == 1)

@@ -2,5 +2,17 @@
   "narrowed": {
     "a": 1,
     "shared": "first"
+  },
+  "narrowedArray": [
+    {
+      "x": 1,
+      "y": "one"
+    }
+  ],
+  "narrowedMap": {
+    "key": {
+      "m": "value",
+      "n": 2
+    }
   }
 }

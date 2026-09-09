@@ -82,7 +82,7 @@ proc mergeProps(a, b: PropDef, history: History, seen: var HashSet[string]): Pro
   return (
     propName: a.propName.cleanupIdent.choosePropName(seen),
     typ: finalTyp,
-    required: required
+    required: required,
   )
 
 proc mergeObjects(a, b: TypeDef, history: History): TypeDef =
@@ -148,6 +148,20 @@ proc mergeTypes*(a, b: TypeDef, history: History): TypeDef =
 
   if a.kind == ObjType and b.kind == ObjType:
     return mergeObjects(a, b, history)
+
+  # A pair of containers is narrowed by narrowing what they hold
+  if a.kind == ArrayType and b.kind == ArrayType:
+    return TypeDef(
+      kind: ArrayType,
+      items: mergeTypes(a.items, b.items, history.add("items")),
+      id: mergeIds(a, b),
+    )
+  if a.kind == MapType and b.kind == MapType:
+    return TypeDef(
+      kind: MapType,
+      entries: mergeTypes(a.entries, b.entries, history.add("additionalProperties")),
+      id: mergeIds(a, b),
+    )
 
   if a.kind == b.kind:
     return a

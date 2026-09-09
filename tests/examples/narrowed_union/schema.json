@@ -16,7 +16,38 @@
           "required": ["b"]
         }
       ]
+    },
+    "narrowedArray": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": { "x": { "type": "integer" } },
+        "required": ["x"]
+      },
+      "oneOf": [
+        {
+          "items": {
+            "properties": { "y": { "type": "string" } },
+            "required": ["y"]
+          }
+        }
+      ]
+    },
+    "narrowedMap": {
+      "additionalProperties": {
+        "type": "object",
+        "properties": { "m": { "type": "string" } },
+        "required": ["m"]
+      },
+      "oneOf": [
+        {
+          "additionalProperties": {
+            "properties": { "n": { "type": "integer" } },
+            "required": ["n"]
+          }
+        }
+      ]
     }
   },
-  "required": ["narrowed"]
+  "required": ["narrowed", "narrowedArray", "narrowedMap"]
 }
