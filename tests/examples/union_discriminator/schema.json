@@ -1,0 +1,22 @@
+{
+  "$id": "https://example.com/unionDiscriminator.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "shape": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": { "radius": { "type": "number" }, "name": { "type": "string" } },
+          "required": ["radius", "name"]
+        },
+        {
+          "type": "object",
+          "properties": { "side": { "type": "number" }, "name": { "type": "string" } },
+          "required": ["side", "name"]
+        }
+      ]
+    }
+  },
+  "required": ["shape"]
+}

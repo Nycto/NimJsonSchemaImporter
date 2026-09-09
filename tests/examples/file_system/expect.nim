@@ -335,13 +335,18 @@ proc `$`*(value: File_systemUnion): string =
   stringify(File_systemUnion, value)
 
 proc fromJsonHook*(target: var File_systemUnion; source: JsonNode) =
-  if source.kind == JObject and hasKey(source, "device"):
+  if source.kind == JObject and hasKey(source, "type") and
+      hasKey(source, "device"):
     target = File_systemUnion(kind: 0, key0: jsonTo(source, typeof(target.key0)))
-  elif source.kind == JObject and hasKey(source, "label"):
+  elif source.kind == JObject and hasKey(source, "type") and
+      hasKey(source, "label"):
     target = File_systemUnion(kind: 1, key1: jsonTo(source, typeof(target.key1)))
-  elif source.kind == JObject and hasKey(source, "server"):
+  elif source.kind == JObject and hasKey(source, "type") and
+      hasKey(source, "remotePath") and
+      hasKey(source, "server"):
     target = File_systemUnion(kind: 2, key2: jsonTo(source, typeof(target.key2)))
-  elif source.kind == JObject and hasKey(source, "sizeInMB"):
+  elif source.kind == JObject and hasKey(source, "type") and
+      hasKey(source, "sizeInMB"):
     target = File_systemUnion(kind: 3, key3: jsonTo(source, typeof(target.key3)))
   else:
     raise newException(ValueError,

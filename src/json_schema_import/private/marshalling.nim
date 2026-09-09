@@ -6,10 +6,14 @@ proc isJsonKind(value: NimNode, kind: JsonNodeKind): NimNode =
     `value`.kind == `kind`
 
 proc hasAllProps(base, value: NimNode, typ: TypeDef): NimNode =
+  ## Extends a check with the presence of every property the object requires
+  ##
+  ## This is how one arm of a union is told apart from another, so every required key has
+  ## to be tested: an object missing one of them is not a value of this type.
   result = base
   for key, (_, _, required) in typ.properties:
     if required:
-      result = infix(base, "and", newCall(bindSym("hasKey"), value, key.newLit))
+      result = infix(result, "and", newCall(bindSym("hasKey"), value, key.newLit))
 
 proc toLiteral(json: JsonNode): NimNode =
   ## Creates an expression that knows how to define a literal type from a JSON value
