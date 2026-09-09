@@ -45,7 +45,6 @@ type
 
   JsonSchema* = ref object
     rootType*: TypeDef
-    defs*: OrderedTable[string, TypeDef]
 
 proc hasRealField*(typ: TypeDef): bool =
   ## Returns whether the given type actually requires a field on internal object
