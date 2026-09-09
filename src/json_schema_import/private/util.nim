@@ -1,4 +1,4 @@
-import std/[macros, json, sets, strutils, tables], regex, types
+import std/[macros, json, sets, strformat, strutils, tables], regex, types
 
 type SomeTable*[K, V] = Table[K, V] | OrderedTable[K, V]
 
@@ -43,6 +43,22 @@ proc wrapIdent(name: string): NimNode =
       name.ident
     else:
       return nnkAccQuoted.newTree(name.ident)
+
+proc choosePropName*(
+    initialName: string, seen: var HashSet[string], increment: int = 0
+): string =
+  ## Chooses a unique name for an object property
+  let name =
+    if increment == 0:
+      initialName
+    else:
+      fmt"{initialName}{increment}"
+
+  if name notin seen:
+    seen.incl name
+    return name
+  else:
+    return choosePropName(initialName, seen, increment + 1)
 
 proc safeTypeName*(name: string): NimNode =
   name.cleanupIdent.capitalizeAscii.wrapIdent

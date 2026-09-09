@@ -32,22 +32,6 @@ proc id(node: JsonNode): Uri =
     except:
       discard
 
-proc choosePropName(
-    initialName: string, seen: var HashSet[string], increment: int = 0
-): string =
-  ## Chooses a unique name for an object property
-  let name =
-    if increment == 0:
-      initialName
-    else:
-      fmt"{initialName}{increment}"
-
-  if name notin seen:
-    seen.incl name
-    return name
-  else:
-    return choosePropName(initialName, seen, increment + 1)
-
 proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JObject)
 
