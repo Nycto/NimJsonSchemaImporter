@@ -23,6 +23,7 @@ buildTest("empty_object", EmptyObject)
 buildTest("optional_empty_object", OptionalEmptyObject)
 buildTest("untyped_array", UntypedArray)
 buildTest("unconstrained_object", UnconstrainedObject)
+buildTest("bool_schema", BoolSchema)
 buildTest("array_root", ArrayRoot)
 buildTest("string_root", StringRoot)
 #

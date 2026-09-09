@@ -1,0 +1,13 @@
+{
+  "$id": "https://example.com/bool_schema.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BoolSchema",
+  "type": "object",
+  "properties": {
+    "anything": true,
+    "forbidden": false,
+    "list": { "type": "array", "items": true },
+    "bag": { "type": "object", "additionalProperties": true }
+  },
+  "required": ["anything", "list", "bag"]
+}

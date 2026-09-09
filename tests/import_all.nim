@@ -22,5 +22,6 @@ importJsonSchema("examples/untyped_array/schema.json", conf("UntypedArray"))
 importJsonSchema(
   "examples/unconstrained_object/schema.json", conf("UnconstrainedObject")
 )
+importJsonSchema("examples/bool_schema/schema.json", conf("BoolSchema"))
 importJsonSchema("examples/array_root/schema.json", conf("ArrayRoot"))
 importJsonSchema("examples/string_root/schema.json", conf("StringRoot"))

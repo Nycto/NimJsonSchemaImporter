@@ -1,0 +1,1 @@
+BoolSchema(anything: {"any":"value"}, list: [1, "two", null, false], bag: {"a": 1, "b": [2]})

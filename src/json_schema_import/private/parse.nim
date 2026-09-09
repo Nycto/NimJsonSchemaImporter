@@ -63,6 +63,10 @@ proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   var seen = initHashSet[string]()
 
   for key, typeDef in properties:
+    # A `false` subschema forbids the property outright, so there is nothing to declare
+    if typeDef.kind == JBool and not typeDef.getBool:
+      continue
+
     let subtype = typeDef.parseType(ctx, history.add("properties").add(key))
     result.properties[key] = (
       propName: key.cleanupIdent.choosePropName(seen),
@@ -235,6 +239,8 @@ proc parseTyped(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     raise newException(ValueError, fmt"Unsupported type {typ} at {history}")
 
 proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
+  if node.kind == JBool and node.getBool:
+    return TypeDef(kind: JsonType)
   if node.kind != JObject:
     raise newException(ValueError, fmt"Unable to parse type {node} at {history}")
   if "$ref" in node:
