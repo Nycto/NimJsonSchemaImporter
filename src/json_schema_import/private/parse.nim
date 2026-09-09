@@ -78,22 +78,6 @@ proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
       required: key in required,
     )
 
-proc parseMap(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
-  node.expectKind(JObject)
-  if node{"additionalProperties"}.kind == JBool and
-      node{"additionalProperties"}.getBool == false:
-    return parseObj(node, ctx, history)
-  if "properties" in node:
-    raise newException(
-      ValueError,
-      fmt"Mixing properties and additionalProperties is unsupported at {history}",
-    )
-  return TypeDef(
-    kind: MapType,
-    entries: node.parseSubnodeType("additionalProperties", ctx, history),
-    id: id(node),
-  )
-
 proc parseArray(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JObject)
   let items = node{"items"}
@@ -205,67 +189,127 @@ proc parseEnum(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   if isOptional:
     result = result.optional()
 
-proc parseStr(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
-  if "enum" in node:
-    return parseEnum(node, ctx, history)
-  result = parseTypeStr("string", history)
-  result.id = id(node)
+type ParseMode = enum
+  ## A single keyword-driven interpretation of a schema node
+  ##
+  ## A node is a conjunction of every keyword on it, so more than one of these can apply
+  ## at once. The declaration order is the order they get folded together in, and it
+  ## matches the priority the old first-keyword-wins chain used.
+  ParseRef ## `$ref`
+  ParseMap ## `additionalProperties` holding a schema
+  ParseObj ## `properties`, or `additionalProperties: false`
+  ParseArray ## `items`, or `type: "array"`
+  ParseEnum ## `enum`
+  ParseOneOf ## `oneOf`
+  ParseAnyOf ## `anyOf`
+  ParseTypeName ## `type` holding a string other than `"array"`
+  ParseTypeList ## `type` holding an array
+  ParseFormat ## `format`
+  ParseConst ## `const`
 
-proc parseTypedStr(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
-  node.expectKind(JObject)
-  let typ = node{"type"}.getStr
-  case typ
-  of "string":
-    return parseStr(node, ctx, history)
-  of "number", "integer", "boolean", "null", "object":
+proc determineParseModes(node: JsonNode, history: History): set[ParseMode] =
+  ## Determines every interpretation that applies to a schema node
+  ##
+  ## This is pure keyword inspection: nothing here parses a subschema, so it stays cheap
+  ## and stays the single place that decides what a node means.
+
+  # A reference with siblings is a merge of the target and those siblings, which isn't
+  # supported yet, so a reference still swallows the rest of the node.
+  if "$ref" in node:
+    return {ParseRef}
+
+  if "additionalProperties" in node:
+    # `additionalProperties: false` doesn't describe entries, it closes the object off,
+    # which is how a schema says "an object accepting nothing but what is listed".
+    if node{"additionalProperties"}.kind == JBool and
+        not node{"additionalProperties"}.getBool:
+      result.incl(ParseObj)
+    else:
+      result.incl(ParseMap)
+
+  if "properties" in node:
+    result.incl(ParseObj)
+  if "items" in node:
+    result.incl(ParseArray)
+  if "enum" in node:
+    result.incl(ParseEnum)
+  if "oneOf" in node:
+    result.incl(ParseOneOf)
+  if "anyOf" in node:
+    result.incl(ParseAnyOf)
+  if "format" in node:
+    result.incl(ParseFormat)
+  if "const" in node:
+    result.incl(ParseConst)
+
+  if "type" in node:
+    let typ = node{"type"}
+    case typ.kind
+    of JString:
+      # An array is described by its `items`, which `parseArray` fills in with an
+      # unconstrained value when the keyword is missing entirely.
+      if typ.getStr == "array":
+        result.incl(ParseArray)
+      else:
+        result.incl(ParseTypeName)
+    of JArray:
+      result.incl(ParseTypeList)
+    else:
+      raise newException(ValueError, fmt"Unsupported type {typ} at {history}")
+
+proc parseType(
+    node: JsonNode, mode: ParseMode, ctx: ParseContext, history: History
+): TypeDef =
+  ## Parses a single interpretation of a schema node, ignoring every other keyword on it
+  case mode
+  of ParseRef:
+    return parseRef(node, ctx, history)
+  of ParseMap:
+    if "properties" in node:
+      raise newException(
+        ValueError,
+        fmt"Mixing properties and additionalProperties is unsupported at {history}",
+      )
+    return TypeDef(
+      kind: MapType,
+      entries: node.parseSubnodeType("additionalProperties", ctx, history),
+      id: id(node),
+    )
+  of ParseObj:
+    return parseObj(node, ctx, history)
+  of ParseArray:
+    return parseArray(node, ctx, history)
+  of ParseEnum:
+    return parseEnum(node, ctx, history)
+  of ParseOneOf:
+    return parseUnion(node{"oneOf"}, ctx, history.add("oneOf"))
+  of ParseAnyOf:
+    return parseUnion(node{"anyOf"}, ctx, history.add("anyOf"))
+  of ParseTypeName:
     # `parseTypeStr` only sees the type name, but the node it came from may carry an
     # `$id` that the type needs to be named after when it sits at the root.
-    result = parseTypeStr(typ, history)
+    result = parseTypeStr(node{"type"}.getStr, history)
     result.id = id(node)
-  of "array":
-    return parseArray(node, ctx, history)
-  else:
-    raise newException(ValueError, fmt"Unsupported type '{typ}' at {history}")
-
-proc parseTyped(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
-  node.expectKind(JObject)
-  let typ = node{"type"}
-  case typ.kind
-  of JString:
-    return parseTypedStr(node, ctx, history)
-  of JArray:
-    return parseUnion(typ, ctx, history.add("type"))
-  else:
-    raise newException(ValueError, fmt"Unsupported type {typ} at {history}")
+  of ParseTypeList:
+    return parseUnion(node{"type"}, ctx, history.add("type"))
+  of ParseFormat:
+    result = parseTypeStr("string", history)
+    result.id = id(node)
+  of ParseConst:
+    return TypeDef(kind: ConstValueType, value: node{"const"})
 
 proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   if node.kind == JBool and node.getBool:
     return TypeDef(kind: JsonType)
   if node.kind != JObject:
     raise newException(ValueError, fmt"Unable to parse type {node} at {history}")
-  if "$ref" in node:
-    return parseRef(node, ctx, history)
-  elif "additionalProperties" in node:
-    return parseMap(node, ctx, history)
-  elif "properties" in node:
-    return parseObj(node, ctx, history)
-  elif "items" in node:
-    return parseArray(node, ctx, history)
-  elif "enum" in node:
-    return parseEnum(node, ctx, history)
-  elif "oneOf" in node:
-    return parseUnion(node{"oneOf"}, ctx, history.add("oneOf"))
-  elif "anyOf" in node:
-    return parseUnion(node{"anyOf"}, ctx, history.add("anyOf"))
-  elif "type" in node:
-    return parseTyped(node, ctx, history)
-  elif "format" in node:
-    result = parseTypeStr("string", history)
-    result.id = id(node)
-  elif "const" in node:
-    return TypeDef(kind: ConstValueType, value: node{"const"})
-  else:
+
+  let modes = determineParseModes(node, history)
+  if modes.card == 0:
     return TypeDef(kind: JsonType, id: id(node))
+
+  for mode in modes:
+    return node.parseType(mode, ctx, history)
 
 proc parseSchema*(node: JsonNode, resolver: UrlResolver): JsonSchema =
   result = JsonSchema()
