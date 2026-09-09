@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/ref-siblings.schema.json",
+  "title": "Ref siblings",
+  "type": "object",
+  "properties": {
+    "plain": { "$ref": "#/$defs/entry" },
+    "described": {
+      "$ref": "#/$defs/entry",
+      "description": "A keyword that says nothing about the type leaves it alone"
+    },
+    "narrowed": {
+      "$ref": "#/$defs/entry",
+      "properties": { "count": { "type": "integer" } },
+      "required": ["count"]
+    },
+    "tagged": {
+      "$ref": "#/$defs/label",
+      "enum": ["red", "green"]
+    }
+  },
+  "required": ["plain", "described", "narrowed", "tagged"],
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "properties": { "name": { "type": "string" } },
+      "required": ["name"]
+    },
+    "label": { "type": "string" }
+  }
+}

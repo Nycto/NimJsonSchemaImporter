@@ -1,0 +1,13 @@
+{
+  "plain": {
+    "name": "a"
+  },
+  "described": {
+    "name": "b"
+  },
+  "narrowed": {
+    "name": "c",
+    "count": 3
+  },
+  "tagged": "red"
+}

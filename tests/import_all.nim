@@ -33,3 +33,4 @@ importJsonSchema("examples/union_discriminator/schema.json", conf("UnionDiscrimi
 importJsonSchema("examples/narrowed_union/schema.json", conf("NarrowedUnion"))
 importJsonSchema("examples/const_typed/schema.json", conf("ConstTyped"))
 importJsonSchema("examples/open_object/schema.json", conf("OpenObject"))
+importJsonSchema("examples/ref_siblings/schema.json", conf("RefSiblings"))

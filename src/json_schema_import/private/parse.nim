@@ -174,10 +174,8 @@ proc determineParseModes(node: JsonNode, history: History): set[ParseMode] =
   ## This is pure keyword inspection: nothing here parses a subschema, so it stays cheap
   ## and stays the single place that decides what a node means.
 
-  # A reference with siblings is a merge of the target and those siblings, which isn't
-  # supported yet, so a reference still swallows the rest of the node.
   if "$ref" in node:
-    return {ParseRef}
+    result.incl(ParseRef)
 
   if "additionalProperties" in node:
     # `additionalProperties: false` doesn't describe entries, it closes the object off,
