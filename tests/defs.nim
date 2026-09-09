@@ -28,6 +28,7 @@ buildTest("array_root", ArrayRoot)
 buildTest("string_root", StringRoot)
 buildTest("const_root", ConstRoot)
 buildTest("union_root", UnionRoot)
+buildTest("merged_scalars", MergedScalars)
 #
 # # Specific applications
 buildTest("ldtk", LdtkJsonRoot)

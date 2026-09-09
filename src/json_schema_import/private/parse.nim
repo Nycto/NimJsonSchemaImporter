@@ -1,5 +1,11 @@
 import
-  std/[json, sets, tables, strformat, uri], types, schemaRef, history, util, ../config
+  std/[json, sets, tables, strformat, uri],
+  types,
+  schemaRef,
+  history,
+  util,
+  merge,
+  ../config
 
 type ParseContext = ref object
   doc: JsonNode
@@ -117,42 +123,13 @@ proc parseTypeStr(typ: string, history: History): TypeDef =
     return TypeDef(kind: NullType)
   of "object":
     return TypeDef(kind: MapType, entries: TypeDef(kind: JsonType))
+  of "array":
+    # Only reachable through a `type` holding a list: a `type` naming an array on its own is
+    # routed to `ParseArray`, which reads the `items` this has no access to. Merging against
+    # whatever `items` describes is what narrows this back down.
+    return TypeDef(kind: ArrayType, items: TypeDef(kind: JsonType))
   else:
     raise newException(ValueError, fmt"Unsupported type {typ} at {history}")
-
-proc collapseUnion(typ: TypeDef, history: History): TypeDef =
-  assert(typ.kind == UnionType)
-
-  if typ.subtypes.len == 0:
-    raise newException(ValueError, fmt"Empty union at {history}")
-  elif typ.subtypes.len == 1:
-    return typ.subtypes[0]
-
-  var nestedUnion = false
-  var markOptional = false
-  var subtypes: seq[TypeDef]
-  for subtype in typ.subtypes:
-    case subtype.kind
-    of NullType:
-      markOptional = true
-    of OptionalType:
-      markOptional = true
-      subtypes.add(subtype.subtype)
-    of UnionType:
-      nestedUnion = true
-      subtypes.add(subtype.subtypes)
-    else:
-      subtypes.add(subtype)
-
-  return
-    if markOptional:
-      TypeDef(kind: UnionType, subtypes: subtypes, id: typ.id)
-        .collapseUnion(history)
-        .optional()
-    elif nestedUnion:
-      TypeDef(kind: UnionType, subtypes: subtypes, id: typ.id).collapseUnion(history)
-    else:
-      typ
 
 proc parseUnion(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JArray)
@@ -193,8 +170,8 @@ type ParseMode = enum
   ## A single keyword-driven interpretation of a schema node
   ##
   ## A node is a conjunction of every keyword on it, so more than one of these can apply
-  ## at once. The declaration order is the order they get folded together in, and it
-  ## matches the priority the old first-keyword-wins chain used.
+  ## at once. The declaration order is the order the results get folded together in, which
+  ## is what makes the merge produce the same type every time.
   ParseRef ## `$ref`
   ParseMap ## `additionalProperties` holding a schema
   ParseObj ## `properties`, or `additionalProperties: false`
@@ -309,7 +286,12 @@ proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     return TypeDef(kind: JsonType, id: id(node))
 
   for mode in modes:
-    return node.parseType(mode, ctx, history)
+    let parsed = node.parseType(mode, ctx, history)
+    result =
+      if result.isNil:
+        parsed
+      else:
+        mergeTypes(result, parsed, history)
 
 proc parseSchema*(node: JsonNode, resolver: UrlResolver): JsonSchema =
   result = JsonSchema()

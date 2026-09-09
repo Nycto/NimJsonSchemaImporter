@@ -1,0 +1,24 @@
+{
+  "$id": "https://example.com/mergedScalars.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "typedEnum": {
+      "type": "string",
+      "enum": ["alpha", "beta"]
+    },
+    "intEnum": {
+      "type": "integer",
+      "enum": [1, 2, 3]
+    },
+    "formatted": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "openMap": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    }
+  },
+  "required": ["typedEnum", "intEnum", "formatted", "openMap"]
+}
