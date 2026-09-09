@@ -17,6 +17,17 @@ proc conf*(rootTypeName: string): auto =
     noCopies: true,
   )
 
+proc isSingleton*(T: typedesc): bool =
+  ## Whether a type has exactly one possible value, as a schema pinned to a `const` does.
+  ## There is no second value for such a type to be different from.
+  when T is object:
+    var value: T
+    for _ in value.fields:
+      return false
+    return true
+  else:
+    return false
+
 proc compareLines*(expect, found, path: string) =
   let expectLines = expect.splitLines
   let foundLines = found.splitLines

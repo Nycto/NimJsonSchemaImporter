@@ -25,3 +25,4 @@ importJsonSchema(
 importJsonSchema("examples/bool_schema/schema.json", conf("BoolSchema"))
 importJsonSchema("examples/array_root/schema.json", conf("ArrayRoot"))
 importJsonSchema("examples/string_root/schema.json", conf("StringRoot"))
+importJsonSchema("examples/const_root/schema.json", conf("ConstRoot"))

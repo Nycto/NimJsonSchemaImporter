@@ -14,6 +14,7 @@ suite "Equality of types":
         let a = jsonTo(parseFile(path), rootType)
         let b = jsonTo(parseFile(path), rootType)
         check(a == b)
-        check(a != empty)
+        if not rootType.isSingleton:
+          check(a != empty)
 
   include defs

@@ -41,6 +41,9 @@ proc buildEquals*(typ: TypeDef, typeName: NimNode): NimNode =
       buildObjEquals(typ, typeName)
     of UnionType:
       buildUnionEquals(typ, typeName)
+    of ConstValueType:
+      # Two values of a const type are the same value, by construction
+      newLit(true)
     else:
       return newStmtList()
 

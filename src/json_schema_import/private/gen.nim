@@ -86,6 +86,33 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     typ.buildSaxObjDecoder(result),
   )
 
+proc genConst(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
+  ## Generates code for a fixed value. The schema already says what the value is, so
+  ## nothing about it needs to survive to runtime. The type exists purely to give the
+  ## encoders somewhere to live and holds no data at all.
+  assert(typ.kind == ConstValueType)
+
+  result = ctx.genName(name, typ)
+
+  ctx.addType(
+    result.withByRef(),
+    nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), nnkRecList.newTree()),
+  )
+
+  if ctx.conf.noCopies:
+    let copyProc = nnkAccQuoted.newTree(ident("=copy"))
+    ctx.declarations.add quote do:
+      proc `copyProc`(a: var `result`, b: `result`) {.error.}
+
+  ctx.procs.add(
+    typ.buildEquals(result),
+    typ.buildDollars(result),
+    typ.buildConstDecoder(result),
+    typ.buildConstEncoder(result),
+    typ.buildSaxConstEncoder(result),
+    typ.buildSaxConstDecoder(result),
+  )
+
 proc genArray(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   assert(typ.kind == ArrayType)
   result = nnkBracketExpr.newTree(bindSym("seq"), genType(typ.items, name, ctx))
@@ -184,13 +211,15 @@ proc genType(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     result = genMap(typ, name, ctx)
   of OptionalType:
     result = genOptional(typ, name, ctx)
+  of ConstValueType:
+    result = genConst(typ, name, ctx)
   else:
     raise newException(AssertionDefect, "Could not generate code for " & $typ.kind)
 
   if not typ.sref.isNil:
     ctx.cache[typ.sref] = result
 
-const namedKinds = {ObjType, EnumType, UnionType}
+const namedKinds = {ObjType, EnumType, UnionType, ConstValueType}
   ## Kinds that declare a type of their own, so a schema rooted at one of them already
   ## has a name to refer to it by
 

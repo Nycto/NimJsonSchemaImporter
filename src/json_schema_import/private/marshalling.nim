@@ -154,6 +154,23 @@ proc buildUnionEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
     proc toJsonHook*(`source`: `typeName`): JsonNode =
       `cases`
 
+proc buildConstDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
+  ## A const has nothing to read: the schema already fixes the value, so decoding is
+  ## only obliged to accept whatever shows up.
+  assert(typ.kind == ConstValueType)
+  return quote:
+    proc fromJsonHook*(`target`: var `typeName`, `source`: JsonNode) =
+      discard
+
+proc buildConstEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
+  ## Encoding a const writes the value the schema pinned it to, built once here rather
+  ## than carried around at runtime.
+  assert(typ.kind == ConstValueType)
+  let literal = typ.value.toLiteral
+  return quote:
+    proc toJsonHook*(`source`: `typeName`): JsonNode =
+      `literal`
+
 proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
   var decodeKeys = newStmtList()
 

@@ -26,6 +26,7 @@ buildTest("unconstrained_object", UnconstrainedObject)
 buildTest("bool_schema", BoolSchema)
 buildTest("array_root", ArrayRoot)
 buildTest("string_root", StringRoot)
+buildTest("const_root", ConstRoot)
 #
 # # Specific applications
 buildTest("ldtk", LdtkJsonRoot)

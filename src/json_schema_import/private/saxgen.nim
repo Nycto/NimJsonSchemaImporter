@@ -106,6 +106,22 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
         `cases`
       assert(card(`seen`) == `requiredCount`)
 
+proc buildSaxConstEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
+  ## Builds the `toStream` proc for a fixed value, which is just the value itself
+  assert(typ.kind == ConstValueType)
+  let jsonText = $typ.value
+  return quote:
+    proc toStream*(`source`: `typeName`, `target`: Stream) =
+      write(`target`, `jsonText`)
+
+proc buildSaxConstDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
+  ## Builds the `fromStream` proc for a fixed value. There is nothing to extract, so it
+  ## only has to move the parser past the value.
+  assert(typ.kind == ConstValueType)
+  return quote:
+    proc fromStream*(typ: typedesc[`typeName`], `source`: var JsonParser): `typeName` =
+      skipValue(`source`)
+
 proc buildSaxUnionEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
   ## Builds the `toStream` proc for encoding a union
   assert(typ.kind == UnionType)

@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/const-root.schema.json",
+  "title": "Const root",
+  "description": "A schema whose root is a fixed value",
+  "const": 42
+}

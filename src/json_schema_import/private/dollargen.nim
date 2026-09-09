@@ -33,6 +33,8 @@ proc buildDollars*(typ: TypeDef, typeName: NimNode): NimNode =
       buildObjDollar(typ, typeName)
     of UnionType:
       buildUnionDollar(typ, typeName)
+    of ConstValueType:
+      newLit($typ.value)
     else:
       return newStmtList()
 
