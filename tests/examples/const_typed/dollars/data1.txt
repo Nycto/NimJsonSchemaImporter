@@ -1,0 +1,1 @@
+ConstTyped(taggedKind: "widget", shape: ConstTypedShape2(kind: "square", side: 3))

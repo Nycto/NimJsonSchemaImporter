@@ -129,6 +129,10 @@ proc mergeOrdered(a, b: TypeDef, history: History): TypeDef =
   if a.kind == UnionType:
     return mergeUnion(a, b, history)
 
+  # A single fixed value is as narrow as a type can get
+  if a.kind == ConstValueType:
+    return a
+
   # An enum is a set of strings, so it already satisfies being a string
   if a.kind == EnumType and b.kind == StringType:
     return a

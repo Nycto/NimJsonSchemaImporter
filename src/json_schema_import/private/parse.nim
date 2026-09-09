@@ -257,7 +257,7 @@ proc parseType(
     result = parseTypeStr("string", history)
     result.id = id(node)
   of ParseConst:
-    return TypeDef(kind: ConstValueType, value: node{"const"})
+    return TypeDef(kind: ConstValueType, value: node{"const"}, id: id(node))
 
 proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   if node.kind == JBool and node.getBool:

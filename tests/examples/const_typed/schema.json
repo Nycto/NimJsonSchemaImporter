@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/const-typed.schema.json",
+  "title": "Const typed",
+  "description": "Fixed values narrowed against the rest of the node they sit in",
+  "type": "object",
+  "properties": {
+    "taggedKind": {
+      "description": "A const alongside the type it obviously satisfies",
+      "type": "string",
+      "const": "widget"
+    },
+    "shape": {
+      "description": "A discriminated union: the base object is distributed over each arm, and the arm's const narrows the discriminator the base declares as a plain string",
+      "properties": {
+        "kind": { "type": "string" }
+      },
+      "required": ["kind"],
+      "oneOf": [
+        {
+          "properties": {
+            "kind": { "const": "circle" },
+            "radius": { "type": "integer" }
+          },
+          "required": ["radius"]
+        },
+        {
+          "properties": {
+            "kind": { "const": "square" },
+            "side": { "type": "integer" }
+          },
+          "required": ["side"]
+        }
+      ]
+    }
+  },
+  "required": ["taggedKind", "shape"],
+  "additionalProperties": false
+}
