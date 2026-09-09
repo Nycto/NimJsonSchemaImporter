@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/open_object.schema.json",
+  "title": "Open object",
+  "description": "Objects that name some properties and describe the rest",
+  "type": "object",
+  "properties": {
+    "partlyOpen": {
+      "description": "A named property alongside a schema for every other key",
+      "type": "object",
+      "properties": {
+        "known": { "type": "string" }
+      },
+      "additionalProperties": { "type": "string" }
+    },
+    "closed": {
+      "type": "object",
+      "properties": {
+        "alsoKnown": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "anyValue": {
+      "type": "object",
+      "additionalProperties": { "type": "integer" }
+    }
+  },
+  "required": ["partlyOpen", "closed", "anyValue"]
+}

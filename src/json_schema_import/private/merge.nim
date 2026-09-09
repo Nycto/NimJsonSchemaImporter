@@ -137,6 +137,14 @@ proc mergeOrdered(a, b: TypeDef, history: History): TypeDef =
   if a.kind == EnumType and b.kind == StringType:
     return a
 
+  # A node that both names its properties and describes what any other key would hold is
+  # narrowed to just the properties it names. Nim objects have a fixed set of fields, so
+  # there is nowhere for the open half to go; the keys it would have covered are dropped on
+  # decode. `additionalProperties: false` parses to a wildcard map and lands on the rule
+  # above, so a closed object keeps meaning what it always did.
+  if a.kind == ObjType and b.kind == MapType:
+    return a
+
   return nil
 
 proc mergeTypes*(a, b: TypeDef, history: History): TypeDef =

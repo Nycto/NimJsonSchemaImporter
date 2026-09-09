@@ -1,0 +1,12 @@
+{
+  "partlyOpen": {
+    "known": "hello"
+  },
+  "closed": {
+    "alsoKnown": "world"
+  },
+  "anyValue": {
+    "a": 1,
+    "b": 2
+  }
+}

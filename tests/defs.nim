@@ -33,6 +33,7 @@ buildTest("nullable_merge", NullableMerge)
 buildTest("union_discriminator", UnionDiscriminator)
 buildTest("narrowed_union", NarrowedUnion)
 buildTest("const_typed", ConstTyped)
+buildTest("open_object", OpenObject)
 #
 # # Specific applications
 buildTest("ldtk", LdtkJsonRoot)

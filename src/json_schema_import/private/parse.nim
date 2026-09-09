@@ -226,11 +226,6 @@ proc parseType(
   of ParseRef:
     return parseRef(node, ctx, history)
   of ParseMap:
-    if "properties" in node:
-      raise newException(
-        ValueError,
-        fmt"Mixing properties and additionalProperties is unsupported at {history}",
-      )
     return TypeDef(
       kind: MapType,
       entries: node.parseSubnodeType("additionalProperties", ctx, history),
