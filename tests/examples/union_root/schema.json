@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/union-root.schema.json",
+  "title": "Union root",
+  "description": "A schema whose root is a union of types",
+  "type": [ "string", "integer" ]
+}

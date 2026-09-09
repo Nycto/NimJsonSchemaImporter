@@ -27,6 +27,7 @@ buildTest("bool_schema", BoolSchema)
 buildTest("array_root", ArrayRoot)
 buildTest("string_root", StringRoot)
 buildTest("const_root", ConstRoot)
+buildTest("union_root", UnionRoot)
 #
 # # Specific applications
 buildTest("ldtk", LdtkJsonRoot)

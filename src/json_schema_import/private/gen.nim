@@ -132,7 +132,16 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   assert(typ.kind == UnionType)
   assert(typ.subtypes.len > 0)
 
-  result = ctx.genName(name.add("Union"), typ)
+  # A union nested in a schema shares its name with the values it is a union of, so it
+  # needs a suffix to tell it apart from them. The root has a name of its own, though,
+  # and it should be used as given; the suffix is only a fallback there.
+  let unionName =
+    if name.isRoot:
+      name.categorize("Union")
+    else:
+      name.add("Union")
+
+  result = ctx.genName(unionName, typ)
 
   var cases = nnkRecCase.newTree(
     nnkIdentDefs.newTree(

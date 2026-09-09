@@ -3,14 +3,20 @@ import std/strutils
 type NameChain* = ref object ## A chain of names
   name, category: string
   parent: NameChain
+  root: bool
 
 proc rootName*(name: string): auto =
   ## Creates a root name chain
   return
     if name != "":
-      NameChain(name: name)
+      NameChain(name: name, root: true)
     else:
       nil
+
+proc isRoot*(name: NameChain): bool =
+  ## Whether this is the name the user configured for the root type, as opposed to one
+  ## derived from a key within the schema
+  return name != nil and name.root
 
 proc add*(parent: NameChain, child: string): auto =
   ## Adds a child to the name chain
