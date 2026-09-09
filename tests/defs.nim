@@ -21,6 +21,7 @@ buildTest("union", Union)
 buildTest("consts", Consts)
 buildTest("empty_object", EmptyObject)
 buildTest("optional_empty_object", OptionalEmptyObject)
+buildTest("untyped_array", UntypedArray)
 buildTest("array_root", ArrayRoot)
 buildTest("string_root", StringRoot)
 #

@@ -1,0 +1,11 @@
+{
+  "name": "example",
+  "values": [
+    1,
+    "two",
+    {
+      "three": true
+    },
+    null
+  ]
+}

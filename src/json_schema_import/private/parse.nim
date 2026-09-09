@@ -86,11 +86,13 @@ proc parseMap(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
 
 proc parseArray(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JObject)
-  return TypeDef(
-    kind: ArrayType,
-    items: parseType(node{"items"}, ctx, history.add("items")),
-    id: id(node),
-  )
+  let items = node{"items"}
+  let subtype =
+    if items == nil:
+      TypeDef(kind: JsonType)
+    else:
+      parseType(items, ctx, history.add("items"))
+  return TypeDef(kind: ArrayType, items: subtype, id: id(node))
 
 proc parseRef(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JObject)
