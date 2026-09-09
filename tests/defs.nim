@@ -31,6 +31,7 @@ buildTest("union_root", UnionRoot)
 buildTest("merged_scalars", MergedScalars)
 buildTest("nullable_merge", NullableMerge)
 buildTest("union_discriminator", UnionDiscriminator)
+buildTest("narrowed_union", NarrowedUnion)
 #
 # # Specific applications
 buildTest("ldtk", LdtkJsonRoot)

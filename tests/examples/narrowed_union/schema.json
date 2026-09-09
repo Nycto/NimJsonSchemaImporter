@@ -1,0 +1,22 @@
+{
+  "$id": "https://example.com/narrowedUnion.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "narrowed": {
+      "properties": { "shared": { "type": "string" } },
+      "required": ["shared"],
+      "oneOf": [
+        {
+          "properties": { "a": { "type": "integer" } },
+          "required": ["a"]
+        },
+        {
+          "properties": { "b": { "type": "integer" } },
+          "required": ["b"]
+        }
+      ]
+    }
+  },
+  "required": ["narrowed"]
+}

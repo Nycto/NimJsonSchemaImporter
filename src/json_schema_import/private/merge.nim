@@ -1,4 +1,4 @@
-import std/[strformat], types, history
+import std/[sets, tables, strformat, uri], types, history, util
 
 proc collapseUnion*(typ: TypeDef, history: History): TypeDef =
   ## Flattens a union, hoisting nullability out of it
@@ -46,6 +46,68 @@ const OBJECT_SHAPED = {ObjType, MapType, UnionType}
 
 proc mergeTypes*(a, b: TypeDef, history: History): TypeDef
 
+proc mergeIds(a, b: TypeDef): Uri =
+  ## Picks the `$id` a merged type is named after
+  if a.id == default(Uri): b.id else: a.id
+
+proc mergeUnion(a, b: TypeDef, history: History): TypeDef =
+  ## Narrows every arm of a union by whatever the rest of the node says
+
+  # A union of arms is a choice between them, and a constraint written alongside it applies
+  # whichever arm is taken, so it distributes over them. Arms that become the same type
+  # afterwards are folded together, the way `parseUnion` does with the arms it is given.
+  var seen = initHashSet[TypeDef]()
+  var subtypes: seq[TypeDef]
+  for subtype in a.subtypes:
+    let merged = mergeTypes(subtype, b, history)
+    if merged notin seen:
+      seen.incl(merged)
+      subtypes.add(merged)
+
+  return TypeDef(kind: UnionType, subtypes: subtypes, id: mergeIds(a, b)).collapseUnion(
+    history
+  )
+
+proc mergeProps(a, b: PropDef, history: History, seen: var HashSet[string]): PropDef =
+  let required = a.required or b.required
+  let typ = mergeTypes(a.typ, b.typ, history.add(a.propName))
+
+  let finalTyp =
+    if not required:
+      typ.optional()
+    elif typ.kind == OptionalType:
+      typ.subtype
+    else:
+      typ
+  return (
+    propName: a.propName.cleanupIdent.choosePropName(seen),
+    typ: finalTyp,
+    required: required
+  )
+
+proc mergeObjects(a, b: TypeDef, history: History): TypeDef =
+  ## Intersects two object descriptions of the same node
+  var properties = initOrderedTable[string, PropDef]()
+  var seen = initHashSet[string]()
+
+  proc addProperty(key: auto) =
+    if key notin properties:
+      properties[key] =
+        if key notin a.properties:
+          b.properties[key]
+        elif key notin b.properties:
+          a.properties[key]
+        else:
+          mergeProps(a.properties[key], b.properties[key], history, seen)
+
+  for key in a.properties.keys:
+    addProperty(key)
+
+  for key in b.properties.keys:
+    addProperty(key)
+
+  return TypeDef(kind: ObjType, properties: properties, id: mergeIds(a, b))
+
 proc mergeOrdered(a, b: TypeDef, history: History): TypeDef =
   ## Applies the merge rules that care which of the two types they are handed
   ## Returns `nil` when none of them apply, which is the caller's cue to try again with the
@@ -64,6 +126,9 @@ proc mergeOrdered(a, b: TypeDef, history: History): TypeDef =
   if a.isWildcardObject and b.kind in OBJECT_SHAPED:
     return b
 
+  if a.kind == UnionType:
+    return mergeUnion(a, b, history)
+
   # An enum is a set of strings, so it already satisfies being a string
   if a.kind == EnumType and b.kind == StringType:
     return a
@@ -80,6 +145,9 @@ proc mergeTypes*(a, b: TypeDef, history: History): TypeDef =
   result = mergeOrdered(b, a, history)
   if not result.isNil:
     return
+
+  if a.kind == ObjType and b.kind == ObjType:
+    return mergeObjects(a, b, history)
 
   if a.kind == b.kind:
     return a

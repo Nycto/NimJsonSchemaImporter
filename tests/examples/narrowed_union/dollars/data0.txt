@@ -1,0 +1,1 @@
+NarrowedUnion(narrowed: NarrowedUnionNarrowed(a: 1, shared: "first"))
