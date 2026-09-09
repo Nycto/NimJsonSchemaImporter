@@ -1,0 +1,15 @@
+{
+  "$id": "https://example.com/nullableMerge.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "nullableEnum": { "type": ["string", "null"], "enum": ["alpha", "beta"] },
+    "nullableScalar": { "type": ["string", "null"], "format": "date-time" },
+    "nullableObject": {
+      "type": ["object", "null"],
+      "properties": { "inner": { "type": "string" } },
+      "required": ["inner"]
+    }
+  },
+  "required": ["nullableEnum", "nullableScalar", "nullableObject"]
+}

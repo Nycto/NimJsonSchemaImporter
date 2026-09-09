@@ -1,0 +1,1 @@
+NullableMerge(nullableEnum: beta, nullableScalar: "2026-09-08T12:00:00Z", nullableObject: NullableMergeNullableObject(inner: "value"))

@@ -44,6 +44,8 @@ const OBJECT_SHAPED = {ObjType, MapType, UnionType}
   ## Kinds that a bare `type: "object"` adds nothing to, because they already describe an
   ## object more precisely than it does
 
+proc mergeTypes*(a, b: TypeDef, history: History): TypeDef
+
 proc mergeOrdered(a, b: TypeDef, history: History): TypeDef =
   ## Applies the merge rules that care which of the two types they are handed
   ## Returns `nil` when none of them apply, which is the caller's cue to try again with the
@@ -52,6 +54,12 @@ proc mergeOrdered(a, b: TypeDef, history: History): TypeDef =
   # Every other type is narrower than "any json value at all"
   if a.kind == JsonType:
     return b
+
+  # Nullability describes the value as a whole rather than any one keyword, so it comes back
+  # out to the front once the types underneath it have been reconciled. This has to be tried
+  # ahead of the object rules below, which would otherwise discard the `null`.
+  if a.kind == OptionalType:
+    return mergeTypes(a.subtype, b, history).optional()
 
   if a.isWildcardObject and b.kind in OBJECT_SHAPED:
     return b

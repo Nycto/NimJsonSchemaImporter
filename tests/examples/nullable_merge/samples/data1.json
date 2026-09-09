@@ -1,0 +1,7 @@
+{
+  "nullableEnum": null,
+  "nullableScalar": null,
+  "nullableObject": {
+    "inner": "other"
+  }
+}
