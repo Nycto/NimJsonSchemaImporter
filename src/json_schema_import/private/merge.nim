@@ -149,6 +149,12 @@ proc mergeOrdered(a, b: TypeDef, history: History): TypeDef =
 
 proc mergeTypes*(a, b: TypeDef, history: History): TypeDef =
   ## Intersects two interpretations of the same schema node
+  assert(not a.isNil or not b.isNil)
+
+  if a.isNil:
+    return b
+  elif b.isNil:
+    return a
 
   result = mergeOrdered(a, b, history)
   if not result.isNil:

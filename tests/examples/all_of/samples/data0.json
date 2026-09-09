@@ -1,0 +1,11 @@
+{
+  "combined": {
+    "a": "hello",
+    "b": 2
+  },
+  "extended": {
+    "extra": true,
+    "name": "widget"
+  },
+  "narrowed": "one"
+}

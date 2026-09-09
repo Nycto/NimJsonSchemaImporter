@@ -1,0 +1,1 @@
+AllOf(combined: AllOfCombined(a: "hello", b: 2), extended: AllOfExtended(extra: true, name: "widget"), narrowed: one)

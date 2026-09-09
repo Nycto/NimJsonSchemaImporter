@@ -133,6 +133,14 @@ proc parseUnion(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   return
     TypeDef(kind: UnionType, subtypes: subtypes, id: id(node)).collapseUnion(history)
 
+proc parseAllOf(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
+  ## Folds every branch of an `allOf` into the one type that satisfies all of them
+  node.expectKind(JArray)
+  for i in 0 ..< node.len:
+    result = result.mergeTypes(node[i].parseType(ctx, history.add($i)), history)
+  if result.isNil:
+    raise newException(ValueError, fmt"Empty allOf at {history}")
+
 proc parseEnum(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JObject)
   var values = initOrderedSet[string]()
@@ -161,6 +169,7 @@ type ParseMode = enum
   ParseObj ## `properties`, or `additionalProperties: false`
   ParseArray ## `items`, or `type: "array"`
   ParseEnum ## `enum`
+  ParseAllOf ## `allOf`
   ParseOneOf ## `oneOf`
   ParseAnyOf ## `anyOf`
   ParseTypeName ## `type` holding a string other than `"array"`
@@ -192,6 +201,8 @@ proc determineParseModes(node: JsonNode, history: History): set[ParseMode] =
     result.incl(ParseArray)
   if "enum" in node:
     result.incl(ParseEnum)
+  if "allOf" in node:
+    result.incl(ParseAllOf)
   if "oneOf" in node:
     result.incl(ParseOneOf)
   if "anyOf" in node:
@@ -235,6 +246,8 @@ proc parseType(
     return parseArray(node, ctx, history)
   of ParseEnum:
     return parseEnum(node, ctx, history)
+  of ParseAllOf:
+    return parseAllOf(node{"allOf"}, ctx, history.add("allOf"))
   of ParseOneOf:
     return parseUnion(node{"oneOf"}, ctx, history.add("oneOf"))
   of ParseAnyOf:

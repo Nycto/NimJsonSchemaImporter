@@ -35,6 +35,7 @@ buildTest("narrowed_union", NarrowedUnion)
 buildTest("const_typed", ConstTyped)
 buildTest("open_object", OpenObject)
 buildTest("ref_siblings", RefSiblings)
+buildTest("all_of", AllOf)
 #
 # # Specific applications
 buildTest("ldtk", LdtkJsonRoot)

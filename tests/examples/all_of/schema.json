@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/all_of.schema.json",
+  "title": "All of",
+  "type": "object",
+  "properties": {
+    "combined": {
+      "allOf": [
+        {
+          "type": "object",
+          "properties": { "a": { "type": "string" } },
+          "required": ["a"]
+        },
+        {
+          "type": "object",
+          "properties": { "b": { "type": "integer" } },
+          "required": ["b"]
+        }
+      ]
+    },
+    "extended": {
+      "allOf": [{ "$ref": "#/$defs/base" }],
+      "properties": { "extra": { "type": "boolean" } },
+      "required": ["extra"]
+    },
+    "narrowed": {
+      "allOf": [{ "type": "string" }, { "enum": ["one", "two"] }]
+    }
+  },
+  "required": ["combined", "extended", "narrowed"],
+  "additionalProperties": false,
+  "$defs": {
+    "base": {
+      "type": "object",
+      "properties": { "name": { "type": "string" } },
+      "required": ["name"]
+    }
+  }
+}
