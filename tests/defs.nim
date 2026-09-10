@@ -13,10 +13,10 @@ buildTest("array_of_things", Array_of_things)
 buildTest("enumerated_values", Enumerated_values)
 buildTest("complex_object", Complex_object)
 
-# # https://json-schema.org/learn/file-system#full-entry
+# https://json-schema.org/learn/file-system#full-entry
 buildTest("file_system", File_system)
-#
-# # Specific use cases
+
+# Specific use cases
 buildTest("union", Union)
 buildTest("consts", Consts)
 buildTest("empty_object", EmptyObject)
@@ -36,7 +36,8 @@ buildTest("const_typed", ConstTyped)
 buildTest("open_object", OpenObject)
 buildTest("ref_siblings", RefSiblings)
 buildTest("all_of", AllOf)
-#
-# # Specific applications
+buildTest("tuples", Tuples)
+
+# Specific applications
 buildTest("ldtk", LdtkJsonRoot)
 buildTest("aseprite", AsepriteSpriteSheet)

@@ -68,6 +68,21 @@ proc mergeUnion(a, b: TypeDef, history: History): TypeDef =
     history
   )
 
+proc mergeTupleWithArray(tup, arr: TypeDef, history: History): TypeDef =
+  ## Narrows every slot of a tuple by what the array around it says its items hold
+  result = TypeDef(kind: TupleType, id: mergeIds(tup, arr))
+  for i, element in tup.elements:
+    result.elements.add(mergeTypes(element, arr.items, history.add($i)))
+
+proc mergeTuples(a, b: TypeDef, history: History): TypeDef =
+  ## Narrows a pair of tuples slot by slot
+  if a.elements.len != b.elements.len:
+    raise newException(ValueError, fmt"Mismatched tuple lengths at {history}")
+
+  result = TypeDef(kind: TupleType, id: mergeIds(a, b))
+  for i, element in a.elements:
+    result.elements.add(mergeTypes(element, b.elements[i], history.add($i)))
+
 proc mergeProps(a, b: PropDef, history: History, seen: var HashSet[string]): PropDef =
   let required = a.required or b.required
   let typ = mergeTypes(a.typ, b.typ, history.add(a.propName))
@@ -129,6 +144,9 @@ proc mergeOrdered(a, b: TypeDef, history: History): TypeDef =
   if a.kind == UnionType:
     return mergeUnion(a, b, history)
 
+  if a.kind == ArrayType and b.kind == TupleType:
+    return mergeTupleWithArray(b, a, history)
+
   # A single fixed value is as narrow as a type can get
   if a.kind == ConstValueType:
     return a
@@ -174,6 +192,8 @@ proc mergeTypes*(a, b: TypeDef, history: History): TypeDef =
       items: mergeTypes(a.items, b.items, history.add("items")),
       id: mergeIds(a, b),
     )
+  if a.kind == TupleType and b.kind == TupleType:
+    return mergeTuples(a, b, history)
   if a.kind == MapType and b.kind == MapType:
     return TypeDef(
       kind: MapType,

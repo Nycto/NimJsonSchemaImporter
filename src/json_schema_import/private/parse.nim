@@ -78,6 +78,20 @@ proc parseArray(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
       parseType(items, ctx, history.add("items"))
   return TypeDef(kind: ArrayType, items: subtype, id: id(node))
 
+proc parseTuple(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
+  ## Parses a fixed length array, where every position has a schema of its own
+  ##
+  ## `prefixItems` is how 2020-12 spells this; earlier drafts overloaded `items` with a
+  ## list, and plenty of schemas in the wild still do.
+  node.expectKind(JObject)
+  let key = if "prefixItems" in node: "prefixItems" else: "items"
+  let elements = node{key}
+  elements.expectKind(JArray)
+
+  result = TypeDef(kind: TupleType, id: id(node))
+  for i in 0 ..< elements.len:
+    result.elements.add(elements[i].parseType(ctx, history.add(key).add($i)))
+
 proc parseRef(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JObject)
   let sref = parseRef(node{"$ref"}.getStr)
@@ -168,6 +182,7 @@ type ParseMode = enum
   ParseMap ## `additionalProperties` holding a schema
   ParseObj ## `properties`, or `additionalProperties: false`
   ParseArray ## `items`, or `type: "array"`
+  ParseTuple ## `prefixItems`, or `items` holding a list of schemas
   ParseEnum ## `enum`
   ParseAllOf ## `allOf`
   ParseOneOf ## `oneOf`
@@ -198,7 +213,13 @@ proc determineParseModes(node: JsonNode, history: History): set[ParseMode] =
   if "properties" in node:
     result.incl(ParseObj)
   if "items" in node:
-    result.incl(ParseArray)
+    # Before 2020-12, an `items` holding a list was how a tuple was written.
+    if node{"items"}.kind == JArray:
+      result.incl(ParseTuple)
+    else:
+      result.incl(ParseArray)
+  if "prefixItems" in node:
+    result.incl(ParseTuple)
   if "enum" in node:
     result.incl(ParseEnum)
   if "allOf" in node:
@@ -244,6 +265,8 @@ proc parseType(
     return parseObj(node, ctx, history)
   of ParseArray:
     return parseArray(node, ctx, history)
+  of ParseTuple:
+    return parseTuple(node, ctx, history)
   of ParseEnum:
     return parseEnum(node, ctx, history)
   of ParseAllOf:

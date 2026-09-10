@@ -5,6 +5,7 @@ type
     ObjType
     RefType
     ArrayType
+    TupleType
     IntegerType
     StringType
     NumberType
@@ -32,6 +33,8 @@ type
       schemaRef*: SchemaRef
     of ArrayType:
       items*: TypeDef
+    of TupleType:
+      elements*: seq[TypeDef]
     of UnionType:
       subtypes*: seq[TypeDef]
     of MapType:
@@ -69,6 +72,8 @@ proc hash*(typ: TypeDef): Hash {.noSideEffect.} =
     result = result !& hash(typ.schemaRef)
   of ArrayType:
     result = result !& hash(typ.items)
+  of TupleType:
+    result = result !& hash(typ.elements)
   of UnionType:
     result = result !& hash(typ.subtypes)
   of MapType:
@@ -93,6 +98,8 @@ proc `==`*(a, b: TypeDef): bool {.noSideEffect.} =
     return a.schemaRef == b.schemaRef
   of ArrayType:
     return a.items == b.items
+  of TupleType:
+    return a.elements == b.elements
   of UnionType:
     return a.subtypes == b.subtypes
   of MapType:
@@ -112,6 +119,8 @@ proc `$`*(typ: TypeDef): string =
     result = fmt"(Ref {typ.schemaRef})"
   of ArrayType:
     result = fmt"(Array {typ.items})"
+  of TupleType:
+    result = fmt"(Tuple {typ.elements})"
   of UnionType:
     result = fmt"(Union {typ.subtypes})"
   of MapType:
@@ -157,6 +166,8 @@ proc withRef*(typ: TypeDef, sref: SchemaRef): TypeDef =
       TypeDef(kind: RefType, schemaRef: typ.schemaRef)
     of ArrayType:
       TypeDef(kind: ArrayType, items: typ.items)
+    of TupleType:
+      TypeDef(kind: TupleType, elements: typ.elements)
     of UnionType:
       TypeDef(kind: UnionType, subtypes: typ.subtypes)
     of MapType:
@@ -192,6 +203,7 @@ proc abbrev*(typ: TypeDef): string =
     of EnumType: "Enum"
     of RefType: typ.schemaRef.getName
     of ArrayType: "Seq"
+    of TupleType: "Tuple"
     of UnionType: "Union"
     of MapType: "Map"
     of OptionalType: "Opt"
@@ -202,6 +214,13 @@ proc abbrev*(typ: TypeDef): string =
     of NullType: "Null"
     of JsonType: "Json"
     of ConstValueType: "Const"
+
+proc abbrevAll(typs: seq[TypeDef]): string =
+  ## Names a type built out of a list of others by what each of them is
+  var accum: seq[string]
+  for typ in typs:
+    accum.add(typ.abbrev)
+  return "Of" & accum.join("And")
 
 iterator nameFragments*(typ: TypeDef): string =
   ## Produces fragments of a descriptive name for a type
@@ -215,11 +234,10 @@ iterator nameFragments*(typ: TypeDef): string =
       discard
     of ArrayType:
       yield fmt"Of{typ.items.abbrev}"
+    of TupleType:
+      yield typ.elements.abbrevAll
     of UnionType:
-      var accum: seq[string]
-      for subtype in typ.subtypes:
-        accum.add(subtype.abbrev)
-      yield "Of" & accum.join("And")
+      yield typ.subtypes.abbrevAll
     of MapType:
       yield fmt"Of{typ.entries.abbrev}"
     of OptionalType:

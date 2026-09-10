@@ -1,0 +1,51 @@
+{
+  "$id": "https://example.com/tuple_array.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TupleArray",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "point": {
+      "type": "array",
+      "prefixItems": [{ "type": "number" }, { "type": "number" }]
+    },
+    "record": {
+      "items": [
+        { "type": "string" },
+        { "type": "integer" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "tag": { "type": "string" } },
+          "required": ["tag"]
+        }
+      ]
+    },
+    "path": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/coord" }
+    },
+    "tagged": {
+      "prefixItems": [{ "const": "kind" }, { "type": "string" }]
+    },
+    "either": {
+      "oneOf": [
+        {
+          "prefixItems": [{ "type": "integer" }, { "type": "integer" }]
+        },
+        { "type": "string" }
+      ]
+    },
+    "span": {
+      "type": "array",
+      "prefixItems": [{ "type": "integer" }, { "type": "integer" }]
+    }
+  },
+  "required": ["point", "record", "path", "tagged", "either"],
+  "$defs": {
+    "coord": {
+      "type": "array",
+      "prefixItems": [{ "type": "integer" }, { "type": "integer" }]
+    }
+  }
+}

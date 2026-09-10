@@ -87,6 +87,8 @@ proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
     return input
   of ConstValueType:
     return typ.value.toLiteral()
+  of TupleType:
+    raiseAssert("Tuples are not supported yet")
 
 proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
   case typ.kind
@@ -114,7 +116,7 @@ proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
     raiseAssert("Unions should not contain other unions")
   of RefType:
     raiseAssert("Unions are not supported in ref types")
-  of ConstValueType:
+  of ConstValueType, TupleType:
     raiseAssert("Unimplemented")
 
 let source {.compileTime.} = ident("source")
