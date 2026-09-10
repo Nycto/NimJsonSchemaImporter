@@ -17,6 +17,7 @@ type
     MapType
     OptionalType
     ConstValueType
+    NeverType ## A schema nothing can satisfy, written as a `false` subschema
 
   PropDef* = tuple[propName: string, typ: TypeDef, required: bool]
     ## The details of an object property
@@ -41,7 +42,7 @@ type
       entries*: TypeDef
     of OptionalType:
       subtype*: TypeDef
-    of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
+    of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, NeverType:
       discard
     of ConstValueType:
       value*: JsonNode
@@ -80,7 +81,7 @@ proc hash*(typ: TypeDef): Hash {.noSideEffect.} =
     result = result !& hash(typ.entries)
   of OptionalType:
     result = result !& hash(typ.subtype)
-  of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
+  of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, NeverType:
     discard
   of ConstValueType:
     result = result !& hash(typ.value)
@@ -106,7 +107,8 @@ proc `==`*(a, b: TypeDef): bool {.noSideEffect.} =
     return a.entries == b.entries
   of OptionalType:
     return a.subtype == b.subtype
-  of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, ConstValueType:
+  of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, ConstValueType,
+      NeverType:
     return true
 
 proc `$`*(typ: TypeDef): string =
@@ -139,6 +141,8 @@ proc `$`*(typ: TypeDef): string =
     result = "(Null)"
   of JsonType:
     result = "(Json)"
+  of NeverType:
+    result = "(Never)"
   of ConstValueType:
     result = fmt"(Const {typ.value})"
 
@@ -176,7 +180,7 @@ proc withRef*(typ: TypeDef, sref: SchemaRef): TypeDef =
       TypeDef(kind: OptionalType, subtype: typ.subtype)
     of ConstValueType:
       TypeDef(kind: ConstValueType, value: typ.value)
-    of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
+    of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, NeverType:
       TypeDef(kind: typ.kind)
 
   result.id = typ.id
@@ -214,6 +218,7 @@ proc abbrev*(typ: TypeDef): string =
     of NullType: "Null"
     of JsonType: "Json"
     of ConstValueType: "Const"
+    of NeverType: "Never"
 
 proc abbrevAll(typs: seq[TypeDef]): string =
   ## Names a type built out of a list of others by what each of them is
@@ -243,7 +248,7 @@ iterator nameFragments*(typ: TypeDef): string =
     of OptionalType:
       yield fmt"Of{typ.subtype.abbrev}"
     of EnumType, RefType, IntegerType, StringType, NumberType, BoolType, NullType,
-        JsonType, ConstValueType:
+        JsonType, ConstValueType, NeverType:
       discard
 
 proc chooseName*(typ: TypeDef): string =

@@ -25,6 +25,16 @@
       "type": "array",
       "items": [{ "type": "string" }, { "type": "boolean" }]
     },
+    "closed": {
+      "type": "array",
+      "prefixItems": [{ "type": "string" }, { "type": "integer" }],
+      "items": false
+    },
+    "legacyClosed": {
+      "type": "array",
+      "items": [{ "type": "boolean" }, { "type": "string" }],
+      "additionalItems": false
+    },
     "path": {
       "type": "array",
       "items": { "$ref": "#/$defs/coord" }
@@ -45,7 +55,16 @@
       "prefixItems": [{ "type": "integer" }, { "type": "integer" }]
     }
   },
-  "required": ["point", "record", "typedRecord", "path", "tagged", "either"],
+  "required": [
+    "point",
+    "record",
+    "typedRecord",
+    "closed",
+    "legacyClosed",
+    "path",
+    "tagged",
+    "either"
+  ],
   "$defs": {
     "coord": {
       "type": "array",

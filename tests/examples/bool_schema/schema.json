@@ -6,8 +6,35 @@
   "properties": {
     "anything": true,
     "forbidden": false,
+    "uninhabited": { "prefixItems": [{ "type": "string" }, false] },
     "list": { "type": "array", "items": true },
-    "bag": { "type": "object", "additionalProperties": true }
+    "bag": { "type": "object", "additionalProperties": true },
+    "closedTuple": {
+      "type": "array",
+      "prefixItems": [{ "type": "string" }, { "type": "integer" }],
+      "items": false
+    },
+    "legacyClosed": {
+      "type": "array",
+      "items": [{ "type": "boolean" }, { "type": "string" }],
+      "additionalItems": false
+    },
+    "emptyList": { "type": "array", "items": false },
+    "eitherOr": { "oneOf": [false, { "type": "string" }] },
+    "closedBag": {
+      "type": "object",
+      "properties": { "named": { "type": "string" } },
+      "additionalProperties": { "allOf": [false] },
+      "required": ["named"]
+    }
   },
-  "required": ["anything", "list", "bag"]
+  "required": [
+    "anything",
+    "list",
+    "bag",
+    "closedTuple",
+    "legacyClosed",
+    "eitherOr",
+    "closedBag"
+  ]
 }

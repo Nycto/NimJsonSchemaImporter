@@ -87,6 +87,8 @@ proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
     return input
   of ConstValueType:
     return typ.value.toLiteral()
+  of NeverType:
+    raiseAssert("A schema that accepts nothing has no value to encode")
   of TupleType:
     var elems = nnkBracket.newTree()
     for i, element in typ.elements:
@@ -128,6 +130,8 @@ proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
     )
   of ConstValueType:
     raiseAssert("Unimplemented")
+  of NeverType:
+    raiseAssert("A schema that accepts nothing has no value to test for")
 
 let source {.compileTime.} = ident("source")
 let target {.compileTime.} = ident("target")

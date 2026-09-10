@@ -17,6 +17,8 @@ type
     point*: (BiggestFloat, BiggestFloat)
     record*: (string, BiggestInt, TuplesRecord)
     typedRecord*: (string, bool)
+    closed*: (string, BiggestInt)
+    legacyClosed*: (bool, string)
     path*: seq[(BiggestInt, BiggestInt)]
     tagged*: (TuplesTagged, string)
     either*: TuplesUnion
@@ -188,6 +190,8 @@ proc equals(_: typedesc[Tuples]; a, b: Tuples): bool =
   equals(typeof(a.point), a.point, b.point) and
       equals(typeof(a.record), a.record, b.record) and
       equals(typeof(a.typedRecord), a.typedRecord, b.typedRecord) and
+      equals(typeof(a.closed), a.closed, b.closed) and
+      equals(typeof(a.legacyClosed), a.legacyClosed, b.legacyClosed) and
       equals(typeof(a.path), a.path, b.path) and
       equals(typeof(a.tagged), a.tagged, b.tagged) and
       equals(typeof(a.either), a.either, b.either) and
@@ -201,6 +205,8 @@ proc stringify(_: typedesc[Tuples]; value: Tuples): string =
                ("point", stringify(typeof(value.point), value.point)),
                ("record", stringify(typeof(value.record), value.record)), (
       "typedRecord", stringify(typeof(value.typedRecord), value.typedRecord)),
+               ("closed", stringify(typeof(value.closed), value.closed)), (
+      "legacyClosed", stringify(typeof(value.legacyClosed), value.legacyClosed)),
                ("path", stringify(typeof(value.path), value.path)),
                ("tagged", stringify(typeof(value.tagged), value.tagged)),
                ("either", stringify(typeof(value.either), value.either)),
@@ -219,6 +225,13 @@ proc fromJsonHook*(target: var Tuples; source: JsonNode) =
   assert(hasKey(source, "typedRecord"),
          "typedRecord" & " is missing while decoding " & "Tuples")
   target.typedRecord = jsonTo(source{"typedRecord"}, typeof(target.typedRecord))
+  assert(hasKey(source, "closed"),
+         "closed" & " is missing while decoding " & "Tuples")
+  target.closed = jsonTo(source{"closed"}, typeof(target.closed))
+  assert(hasKey(source, "legacyClosed"),
+         "legacyClosed" & " is missing while decoding " & "Tuples")
+  target.legacyClosed = jsonTo(source{"legacyClosed"},
+                               typeof(target.legacyClosed))
   if hasKey(source, "path") and source{"path"}.kind != JNull:
     target.path = jsonTo(source{"path"}, typeof(target.path))
   assert(hasKey(source, "tagged"),
@@ -239,6 +252,10 @@ proc toJsonHook*(source: Tuples): JsonNode =
       toJsonHook(source.record[2])])
   result{"typedRecord"} = JsonNode(kind: JArray, elems: @[
       newJString(source.typedRecord[0]), newJBool(source.typedRecord[1])])
+  result{"closed"} = JsonNode(kind: JArray, elems: @[
+      newJString(source.closed[0]), newJInt(source.closed[1])])
+  result{"legacyClosed"} = JsonNode(kind: JArray, elems: @[
+      newJBool(source.legacyClosed[0]), newJString(source.legacyClosed[1])])
   if len(source.path) > 0:
     result{"path"} = block:
       let cursor {.cursor.} = source.path
@@ -269,6 +286,14 @@ proc toStream*(source: Tuples; target: Stream) =
   write(target, escapeJson("typedRecord"))
   write(target, ':')
   toStream(source.typedRecord, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("closed"))
+  write(target, ':')
+  toStream(source.closed, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("legacyClosed"))
+  write(target, ':')
+  toStream(source.legacyClosed, target)
   if len(source.path) > 0:
     hasEmitted.writeComma(target)
     write(target, escapeJson("path"))
@@ -290,7 +315,7 @@ proc toStream*(source: Tuples; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[Tuples]; source: var JsonParser): Tuples =
-  var seen: set[0 .. 4]
+  var seen: set[0 .. 6]
   for key in objectKeys(source):
     case key
     of "point":
@@ -302,18 +327,24 @@ proc fromStream*(typ: typedesc[Tuples]; source: var JsonParser): Tuples =
     of "typedRecord":
       result.typedRecord = fromStream(typeof(result.typedRecord), source)
       seen.incl(2)
+    of "closed":
+      result.closed = fromStream(typeof(result.closed), source)
+      seen.incl(3)
+    of "legacyClosed":
+      result.legacyClosed = fromStream(typeof(result.legacyClosed), source)
+      seen.incl(4)
     of "path":
       result.path = fromStream(typeof(result.path), source)
     of "tagged":
       result.tagged = fromStream(typeof(result.tagged), source)
-      seen.incl(3)
+      seen.incl(5)
     of "either":
       result.either = fromStream(typeof(result.either), source)
-      seen.incl(4)
+      seen.incl(6)
     of "span":
       result.span = some(fromStream(typeof(unsafeGet(result.span)), source))
     else:
       skipValue(source)
-  assert(card(seen) == 5)
+  assert(card(seen) == 7)
 
 {.pop.}

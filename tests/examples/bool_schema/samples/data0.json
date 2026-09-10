@@ -13,5 +13,17 @@
     "b": [
       2
     ]
+  },
+  "closedTuple": [
+    "abc",
+    7
+  ],
+  "legacyClosed": [
+    true,
+    "x"
+  ],
+  "eitherOr": "either",
+  "closedBag": {
+    "named": "value"
   }
 }

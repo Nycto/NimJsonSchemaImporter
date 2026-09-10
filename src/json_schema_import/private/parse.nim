@@ -53,11 +53,11 @@ proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   var seen = initHashSet[string]()
 
   for key, typeDef in properties:
-    # A `false` subschema forbids the property outright, so there is nothing to declare
-    if typeDef.kind == JBool and not typeDef.getBool:
+    let subtype = typeDef.parseType(ctx, history.add("properties").add(key))
+
+    if subtype.kind == NeverType:
       continue
 
-    let subtype = typeDef.parseType(ctx, history.add("properties").add(key))
     result.properties[key] = (
       propName: key.cleanupIdent.choosePropName(seen),
       typ:
@@ -71,11 +71,19 @@ proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
 proc parseArray(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JObject)
   let items = node{"items"}
-  let subtype =
+  var subtype =
     if items == nil:
       TypeDef(kind: JsonType)
     else:
       parseType(items, ctx, history.add("items"))
+
+  # An `items` nothing satisfies describes an array that can only ever be empty, and no Nim
+  # element type says that. Falling back to the unconstrained item leaves the same type the
+  # array would have had without the keyword. Written beside a `prefixItems` -- the usual
+  # way to close a tuple off -- the merge then drops it for adding no constraint.
+  if subtype.kind == NeverType:
+    subtype = TypeDef(kind: JsonType)
+
   return TypeDef(kind: ArrayType, items: subtype, id: id(node))
 
 proc parseTuple(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
@@ -90,7 +98,14 @@ proc parseTuple(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
 
   result = TypeDef(kind: TupleType, id: id(node))
   for i in 0 ..< elements.len:
-    result.elements.add(elements[i].parseType(ctx, history.add(key).add($i)))
+    let element = elements[i].parseType(ctx, history.add(key).add($i))
+
+    # Nothing can fill a slot nothing satisfies, so no array of this length validates and
+    # the tuple as a whole is uninhabited
+    if element.kind == NeverType:
+      return TypeDef(kind: NeverType, id: id(node))
+
+    result.elements.add(element)
 
 proc parseRef(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JObject)
@@ -258,11 +273,14 @@ proc parseType(
   of ParseRef:
     return parseRef(node, ctx, history)
   of ParseMap:
-    return TypeDef(
-      kind: MapType,
-      entries: node.parseSubnodeType("additionalProperties", ctx, history),
-      id: id(node),
-    )
+    let entries = node.parseSubnodeType("additionalProperties", ctx, history)
+
+    # Entries nothing can satisfy is an object that accepts no key it does not name, which
+    # is what `additionalProperties: false` says the short way
+    if entries.kind == NeverType:
+      return parseObj(node, ctx, history)
+
+    return TypeDef(kind: MapType, entries: entries, id: id(node))
   of ParseObj:
     return parseObj(node, ctx, history)
   of ParseArray:
@@ -291,8 +309,15 @@ proc parseType(
     return TypeDef(kind: ConstValueType, value: node{"const"}, id: id(node))
 
 proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
-  if node.kind == JBool and node.getBool:
-    return TypeDef(kind: JsonType)
+  # A boolean is a schema in its own right: `true` accepts every value, `false` accepts
+  # none. There is no Nim type for the latter, so it is carried as `NeverType` and absorbed
+  # by whichever keyword encloses it; one that reaches the root is reported there.
+  if node.kind == JBool:
+    return
+      if node.getBool:
+        TypeDef(kind: JsonType)
+      else:
+        TypeDef(kind: NeverType)
   if node.kind != JObject:
     raise newException(ValueError, fmt"Unable to parse type {node} at {history}")
 
@@ -313,6 +338,11 @@ proc parseSchema*(node: JsonNode, resolver: UrlResolver): JsonSchema =
   let ctx =
     ParseContext(doc: node, resolver: resolver, refs: initTable[SchemaRef, TypeDef]())
   result.rootType = parseType(node, ctx, nil)
+  if result.rootType.kind == NeverType:
+    raise newException(
+      ValueError,
+      "This schema accepts no values at all, so there is no type to generate",
+    )
 
 proc parseSchema*(node: string, resolver: UrlResolver): JsonSchema =
   node.parseJson.parseSchema(resolver)

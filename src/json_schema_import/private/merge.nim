@@ -11,9 +11,12 @@ proc collapseUnion*(typ: TypeDef, history: History): TypeDef =
 
   var nestedUnion = false
   var markOptional = false
+  var droppedNever = false
   var subtypes: seq[TypeDef]
   for subtype in typ.subtypes:
     case subtype.kind
+    of NeverType:
+      droppedNever = true
     of NullType:
       markOptional = true
     of OptionalType:
@@ -25,12 +28,17 @@ proc collapseUnion*(typ: TypeDef, history: History): TypeDef =
     else:
       subtypes.add(subtype)
 
+  # Every arm was uninhabited, which leaves a union with nothing to choose between
+  if droppedNever and subtypes.len == 0:
+    # A `null` arm still describes a value, so it survives on its own.
+    return TypeDef(kind: if markOptional: NullType else: NeverType, id: typ.id)
+
   return
     if markOptional:
       TypeDef(kind: UnionType, subtypes: subtypes, id: typ.id)
         .collapseUnion(history)
         .optional()
-    elif nestedUnion:
+    elif nestedUnion or droppedNever:
       TypeDef(kind: UnionType, subtypes: subtypes, id: typ.id).collapseUnion(history)
     else:
       typ
@@ -127,6 +135,10 @@ proc mergeOrdered(a, b: TypeDef, history: History): TypeDef =
   ## Applies the merge rules that care which of the two types they are handed
   ## Returns `nil` when none of them apply, which is the caller's cue to try again with the
   ## operands swapped rather than every rule having to be written out twice.
+
+  # Nothing satisfies a `false` subschema.
+  if a.kind == NeverType:
+    return a
 
   # Every other type is narrower than "any json value at all"
   if a.kind == JsonType:

@@ -1,1 +1,1 @@
-Tuples(point: (0.0, 0.0), record: ("", 0, TuplesRecord(tag: "")), typedRecord: ("", false), path: [(-1, -2)], tagged: ("kind", "other"), either: "hello", span: ∅)
+Tuples(point: (0.0, 0.0), record: ("", 0, TuplesRecord(tag: "")), typedRecord: ("", false), closed: ("", 0), legacyClosed: (false, ""), path: [(-1, -2)], tagged: ("kind", "other"), either: "hello", span: ∅)
