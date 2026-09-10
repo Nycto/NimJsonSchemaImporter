@@ -90,7 +90,7 @@ proc mergeObjects(a, b: TypeDef, history: History): TypeDef =
   var properties = initOrderedTable[string, PropDef]()
   var seen = initHashSet[string]()
 
-  proc addProperty(key: auto) =
+  proc addProperty(key: string) =
     if key notin properties:
       properties[key] =
         if key notin a.properties:
