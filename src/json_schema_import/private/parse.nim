@@ -238,9 +238,11 @@ proc determineParseModes(node: JsonNode, history: History): set[ParseMode] =
     case typ.kind
     of JString:
       # An array is described by its `items`, which `parseArray` fills in with an
-      # unconstrained value when the keyword is missing entirely.
+      # unconstrained value when the keyword is missing entirely. A tuple is also
+      # written as `type: array`, so the list-form `items`/`prefixItems` wins.
       if typ.getStr == "array":
-        result.incl(ParseArray)
+        if ParseTuple notin result:
+          result.incl(ParseArray)
       else:
         result.incl(ParseTypeName)
     of JArray:

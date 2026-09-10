@@ -16,6 +16,7 @@ type
   Tuples* {.byref.} = object
     point*: (BiggestFloat, BiggestFloat)
     record*: (string, BiggestInt, TuplesRecord)
+    typedRecord*: (string, bool)
     path*: seq[(BiggestInt, BiggestInt)]
     tagged*: (TuplesTagged, string)
     either*: TuplesUnion
@@ -186,6 +187,7 @@ proc fromStream*(typ: typedesc[TuplesUnion]; source: var JsonParser): TuplesUnio
 proc equals(_: typedesc[Tuples]; a, b: Tuples): bool =
   equals(typeof(a.point), a.point, b.point) and
       equals(typeof(a.record), a.record, b.record) and
+      equals(typeof(a.typedRecord), a.typedRecord, b.typedRecord) and
       equals(typeof(a.path), a.path, b.path) and
       equals(typeof(a.tagged), a.tagged, b.tagged) and
       equals(typeof(a.either), a.either, b.either) and
@@ -197,7 +199,8 @@ proc `==`*(a, b: Tuples): bool =
 proc stringify(_: typedesc[Tuples]; value: Tuples): string =
   stringifyObj("Tuples",
                ("point", stringify(typeof(value.point), value.point)),
-               ("record", stringify(typeof(value.record), value.record)),
+               ("record", stringify(typeof(value.record), value.record)), (
+      "typedRecord", stringify(typeof(value.typedRecord), value.typedRecord)),
                ("path", stringify(typeof(value.path), value.path)),
                ("tagged", stringify(typeof(value.tagged), value.tagged)),
                ("either", stringify(typeof(value.either), value.either)),
@@ -213,6 +216,9 @@ proc fromJsonHook*(target: var Tuples; source: JsonNode) =
   assert(hasKey(source, "record"),
          "record" & " is missing while decoding " & "Tuples")
   target.record = jsonTo(source{"record"}, typeof(target.record))
+  assert(hasKey(source, "typedRecord"),
+         "typedRecord" & " is missing while decoding " & "Tuples")
+  target.typedRecord = jsonTo(source{"typedRecord"}, typeof(target.typedRecord))
   if hasKey(source, "path") and source{"path"}.kind != JNull:
     target.path = jsonTo(source{"path"}, typeof(target.path))
   assert(hasKey(source, "tagged"),
@@ -231,6 +237,8 @@ proc toJsonHook*(source: Tuples): JsonNode =
   result{"record"} = JsonNode(kind: JArray, elems: @[
       newJString(source.record[0]), newJInt(source.record[1]),
       toJsonHook(source.record[2])])
+  result{"typedRecord"} = JsonNode(kind: JArray, elems: @[
+      newJString(source.typedRecord[0]), newJBool(source.typedRecord[1])])
   if len(source.path) > 0:
     result{"path"} = block:
       let cursor {.cursor.} = source.path
@@ -257,6 +265,10 @@ proc toStream*(source: Tuples; target: Stream) =
   write(target, escapeJson("record"))
   write(target, ':')
   toStream(source.record, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("typedRecord"))
+  write(target, ':')
+  toStream(source.typedRecord, target)
   if len(source.path) > 0:
     hasEmitted.writeComma(target)
     write(target, escapeJson("path"))
@@ -278,7 +290,7 @@ proc toStream*(source: Tuples; target: Stream) =
   target.write('}')
 
 proc fromStream*(typ: typedesc[Tuples]; source: var JsonParser): Tuples =
-  var seen: set[0 .. 3]
+  var seen: set[0 .. 4]
   for key in objectKeys(source):
     case key
     of "point":
@@ -287,18 +299,21 @@ proc fromStream*(typ: typedesc[Tuples]; source: var JsonParser): Tuples =
     of "record":
       result.record = fromStream(typeof(result.record), source)
       seen.incl(1)
+    of "typedRecord":
+      result.typedRecord = fromStream(typeof(result.typedRecord), source)
+      seen.incl(2)
     of "path":
       result.path = fromStream(typeof(result.path), source)
     of "tagged":
       result.tagged = fromStream(typeof(result.tagged), source)
-      seen.incl(2)
+      seen.incl(3)
     of "either":
       result.either = fromStream(typeof(result.either), source)
-      seen.incl(3)
+      seen.incl(4)
     of "span":
       result.span = some(fromStream(typeof(unsafeGet(result.span)), source))
     else:
       skipValue(source)
-  assert(card(seen) == 4)
+  assert(card(seen) == 5)
 
 {.pop.}

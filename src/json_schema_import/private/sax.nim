@@ -75,7 +75,10 @@ proc consumeText*(source: var JsonParser): string =
   discard getTok(source)
 
 template iterateDelimited(
-  source: var JsonParser, assign, iter: untyped; openTok, closeTok: TokKind; body: untyped
+    source: var JsonParser,
+    assign, iter: untyped,
+    openTok, closeTok: TokKind,
+    body: untyped,
 ) =
   eat(source, openTok)
   var isFirst = true

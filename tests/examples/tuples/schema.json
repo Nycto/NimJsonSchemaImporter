@@ -21,6 +21,10 @@
         }
       ]
     },
+    "typedRecord": {
+      "type": "array",
+      "items": [{ "type": "string" }, { "type": "boolean" }]
+    },
     "path": {
       "type": "array",
       "items": { "$ref": "#/$defs/coord" }
@@ -41,7 +45,7 @@
       "prefixItems": [{ "type": "integer" }, { "type": "integer" }]
     }
   },
-  "required": ["point", "record", "path", "tagged", "either"],
+  "required": ["point", "record", "typedRecord", "path", "tagged", "either"],
   "$defs": {
     "coord": {
       "type": "array",
