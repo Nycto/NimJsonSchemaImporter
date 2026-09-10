@@ -23,6 +23,12 @@ proc equals*[K, V](_: typedesc[SomeTable[K, V]], a, b: SomeTable[K, V]): bool =
   else:
     return false
 
+proc equals*[T: tuple](_: typedesc[T], a, b: T): bool =
+  for x, y in fields(a, b):
+    if not equals(typeof(x), x, y):
+      return false
+  return true
+
 proc equals*[T](_: typedesc[Option[T]], a, b: Option[T]): bool =
   let aSome = a.isSome
   let bSome = b.isSome

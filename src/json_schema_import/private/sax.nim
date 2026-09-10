@@ -33,6 +33,14 @@ proc toStream*[T](source: seq[T], target: Stream) =
     toStream(item, target)
   target.write(']')
 
+proc toStream*[T: tuple](source: T, target: Stream) =
+  var hasEmitted: bool
+  target.write('[')
+  for value in source.fields:
+    hasEmitted.writeComma(target)
+    toStream(value, target)
+  target.write(']')
+
 proc toStream*[V](source: OrderedTable[string, V], target: Stream) =
   var hasEmitted: bool
   target.write('{')
@@ -66,21 +74,33 @@ proc consumeText*(source: var JsonParser): string =
   result = source.a
   discard getTok(source)
 
+template iterateDelimited(
+  source: var JsonParser, assign, iter: untyped; openTok, closeTok: TokKind; body: untyped
+) =
+  eat(source, openTok)
+  var isFirst = true
+  for assign in iter:
+    if isFirst:
+      isFirst = false
+    else:
+      eat(source, tkComma)
+    body
+  eat(source, closeTok)
+
+iterator until(source: var JsonParser, closeTok: TokKind): pointer =
+  # Iterates on a parser until a specific token is encountered
+  while source.tok != closeTok:
+    yield nil
+
 iterator delimited*(source: var JsonParser, openTok, closeTok: TokKind): int =
   ## Iterates a comma-delimited list bracketed by `openTok`/`closeTok` (e.g.
   ## `[...]` or `{...}`), yielding the (0-based) index of each element.
   ## Eats `openTok` before the loop and `closeTok` once it ends, so the
   ## body only needs to consume one element per iteration.
-  eat(source, openTok)
   var i = 0
-  while source.tok != closeTok:
+  source.iterateDelimited(_, source.until(closeTok), openTok, closeTok):
     yield i
     inc i
-    if source.tok == tkComma:
-      discard getTok(source)
-    else:
-      break
-  eat(source, closeTok)
 
 iterator objectKeys*(source: var JsonParser): string =
   ## Iterates the string keys of a JSON object, leaving `source` positioned
@@ -140,6 +160,10 @@ proc fromStream*[T](typ: typedesc[Option[T]], source: var JsonParser): Option[T]
 proc fromStream*[T](typ: typedesc[seq[T]], source: var JsonParser): seq[T] =
   for _ in delimited(source, tkBracketLe, tkBracketRi):
     result.add(fromStream(T, source))
+
+proc fromStream*[T: tuple](typ: typedesc[T], source: var JsonParser): T =
+  source.iterateDelimited(value, result.fields, tkBracketLe, tkBracketRi):
+    value = fromStream(typeof(value), source)
 
 proc fromStream*[V](
     typ: typedesc[OrderedTable[string, V]], source: var JsonParser

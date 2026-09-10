@@ -88,7 +88,11 @@ proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
   of ConstValueType:
     return typ.value.toLiteral()
   of TupleType:
-    raiseAssert("Tuples are not supported yet")
+    var elems = nnkBracket.newTree()
+    for i, element in typ.elements:
+      elems.add(nnkBracketExpr.newTree(input, i.newLit).createEncodeExpr(element))
+    return quote:
+      JsonNode(kind: JArray, elems: @`elems`)
 
 proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
   case typ.kind
@@ -116,7 +120,13 @@ proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
     raiseAssert("Unions should not contain other unions")
   of RefType:
     raiseAssert("Unions are not supported in ref types")
-  of ConstValueType, TupleType:
+  of TupleType:
+    return infix(
+      value.isJsonKind(JArray),
+      "and",
+      infix(newCall(bindSym("len"), value), "==", typ.elements.len.newLit),
+    )
+  of ConstValueType:
     raiseAssert("Unimplemented")
 
 let source {.compileTime.} = ident("source")

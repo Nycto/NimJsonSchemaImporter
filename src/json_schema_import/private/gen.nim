@@ -117,6 +117,13 @@ proc genArray(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   assert(typ.kind == ArrayType)
   result = nnkBracketExpr.newTree(bindSym("seq"), genType(typ.items, name, ctx))
 
+proc genTuple(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
+  ## Builds Nim's own anonymous tuple out of the schema each slot was given
+  assert(typ.kind == TupleType)
+  result = nnkTupleConstr.newTree()
+  for element in typ.elements:
+    result.add(genType(element, name, ctx))
+
 proc genEnum(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   assert(typ.kind == EnumType)
   result = ctx.genName(name, typ)
@@ -202,6 +209,8 @@ proc genType(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     result = bindSym("string")
   of ArrayType:
     result = genArray(typ, name, ctx)
+  of TupleType:
+    result = genTuple(typ, name, ctx)
   of NumberType:
     result = bindSym("BiggestFloat")
   of IntegerType:

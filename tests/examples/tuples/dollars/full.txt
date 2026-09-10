@@ -1,0 +1,1 @@
+Tuples(point: (1.5, 2.5), record: ("abc", 3, TuplesRecord(tag: "x")), path: [(0, 0), (1, 2)], tagged: ("kind", "name"), either: (1, 2), span: (0, 10))
