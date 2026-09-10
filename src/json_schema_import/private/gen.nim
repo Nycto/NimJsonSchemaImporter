@@ -120,6 +120,12 @@ proc genArray(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
 proc genTuple(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   ## Builds Nim's own anonymous tuple out of the schema each slot was given
   assert(typ.kind == TupleType)
+
+  # A tuple with no slots is spelled differently: an empty `nnkTupleConstr` is the unit
+  # value rather than the unit type.
+  if typ.elements.len == 0:
+    return nnkTupleTy.newTree()
+
   result = nnkTupleConstr.newTree()
   for element in typ.elements:
     result.add(genType(element, name, ctx))

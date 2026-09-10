@@ -57,10 +57,10 @@ suite "A false items":
     check(typ.elements.len == 1)
     check(typ.elements[0].kind == StringType)
 
-  test "Leaves an array that can only be empty unconstrained":
+  test "Describes an array that can only ever be empty as a tuple of no slots":
     let typ = parse("""{"type": "array", "items": false}""")
-    check(typ.kind == ArrayType)
-    check(typ.items.kind == JsonType)
+    check(typ.kind == TupleType)
+    check(typ.elements.len == 0)
 
   test "Closes a draft-07 tuple through additionalItems":
     let typ = parse(

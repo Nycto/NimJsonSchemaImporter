@@ -1,1 +1,1 @@
-BoolSchema(anything: {"any":"value"}, list: [1, "two", null, false], bag: {"a": 1, "b": [2]}, closedTuple: ("abc", 7), legacyClosed: (true, "x"), emptyList: [], eitherOr: "either", closedBag: BoolSchemaClosedBag(named: "value"))
+BoolSchema(anything: {"any":"value"}, list: [1, "two", null, false], bag: {"a": 1, "b": [2]}, closedTuple: ("abc", 7), legacyClosed: (true, "x"), emptyList: ∅, eitherOr: "either", closedBag: BoolSchemaClosedBag(named: "value"))

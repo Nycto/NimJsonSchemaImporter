@@ -12,7 +12,7 @@ type
     bag*: OrderedTable[string, JsonNode]
     closedTuple*: (string, BiggestInt)
     legacyClosed*: (bool, string)
-    emptyList*: seq[JsonNode]
+    emptyList*: Option[tuple[]]
     eitherOr*: string
     closedBag*: Bool_schemaClosedBag
 proc `=copy`(a: var Bool_schemaClosedBag;
@@ -105,7 +105,8 @@ proc fromJsonHook*(target: var Bool_schema; source: JsonNode) =
   target.legacyClosed = jsonTo(source{"legacyClosed"},
                                typeof(target.legacyClosed))
   if hasKey(source, "emptyList") and source{"emptyList"}.kind != JNull:
-    target.emptyList = jsonTo(source{"emptyList"}, typeof(target.emptyList))
+    target.emptyList = some(jsonTo(source{"emptyList"},
+                                   typeof(unsafeGet(target.emptyList))))
   assert(hasKey(source, "eitherOr"),
          "eitherOr" & " is missing while decoding " & "Bool_schema")
   target.eitherOr = jsonTo(source{"eitherOr"}, typeof(target.eitherOr))
@@ -135,13 +136,8 @@ proc toJsonHook*(source: Bool_schema): JsonNode =
       newJString(source.closedTuple[0]), newJInt(source.closedTuple[1])])
   result{"legacyClosed"} = JsonNode(kind: JArray, elems: @[
       newJBool(source.legacyClosed[0]), newJString(source.legacyClosed[1])])
-  if len(source.emptyList) > 0:
-    result{"emptyList"} = block:
-      let cursor {.cursor.} = source.emptyList
-      var output = newJArray()
-      for entry in cursor:
-        output.add(entry)
-      output
+  if isSome(source.emptyList):
+    result{"emptyList"} = JsonNode(kind: JArray, elems: @[])
   result{"eitherOr"} = newJString(source.eitherOr)
   result{"closedBag"} = toJsonHook(source.closedBag)
 
@@ -170,11 +166,11 @@ proc toStream*(source: Bool_schema; target: Stream) =
   write(target, escapeJson("legacyClosed"))
   write(target, ':')
   toStream(source.legacyClosed, target)
-  if len(source.emptyList) > 0:
+  if isSome(source.emptyList):
     hasEmitted.writeComma(target)
     write(target, escapeJson("emptyList"))
     write(target, ':')
-    toStream(source.emptyList, target)
+    toStream(unsafeGet(source.emptyList), target)
   hasEmitted.writeComma(target)
   write(target, escapeJson("eitherOr"))
   write(target, ':')
@@ -203,7 +199,8 @@ proc fromStream*(typ: typedesc[Bool_schema]; source: var JsonParser): Bool_schem
       result.legacyClosed = fromStream(typeof(result.legacyClosed), source)
       seen.incl(2)
     of "emptyList":
-      result.emptyList = fromStream(typeof(result.emptyList), source)
+      result.emptyList = some(fromStream(typeof(unsafeGet(result.emptyList)),
+          source))
     of "eitherOr":
       result.eitherOr = fromStream(typeof(result.eitherOr), source)
       seen.incl(3)

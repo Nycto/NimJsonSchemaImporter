@@ -71,18 +71,11 @@ proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
 proc parseArray(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JObject)
   let items = node{"items"}
-  var subtype =
+  let subtype =
     if items == nil:
       TypeDef(kind: JsonType)
     else:
       parseType(items, ctx, history.add("items"))
-
-  # An `items` nothing satisfies describes an array that can only ever be empty, and no Nim
-  # element type says that. Falling back to the unconstrained item leaves the same type the
-  # array would have had without the keyword. Written beside a `prefixItems` -- the usual
-  # way to close a tuple off -- the merge then drops it for adding no constraint.
-  if subtype.kind == NeverType:
-    subtype = TypeDef(kind: JsonType)
 
   return TypeDef(kind: ArrayType, items: subtype, id: id(node))
 
@@ -332,6 +325,14 @@ proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
         parsed
       else:
         mergeTypes(result, parsed, history)
+
+  # Once every keyword on the node has been folded in, an array whose element nothing
+  # satisfies is an array whose only value is the empty one -- a fixed length array of
+  # length zero, which the tuple machinery already describes end to end. This has to wait
+  # until after the merge, because a `prefixItems` written beside the `items` is what
+  # decides whether the array had any slots to begin with.
+  if result.kind == ArrayType and result.items.kind == NeverType:
+    result = TypeDef(kind: TupleType, id: result.id)
 
 proc parseSchema*(node: JsonNode, resolver: UrlResolver): JsonSchema =
   result = JsonSchema()

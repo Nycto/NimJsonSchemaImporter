@@ -78,6 +78,13 @@ proc mergeUnion(a, b: TypeDef, history: History): TypeDef =
 
 proc mergeTupleWithArray(tup, arr: TypeDef, history: History): TypeDef =
   ## Narrows every slot of a tuple by what the array around it says its items hold
+
+  # An `items` nothing satisfies is how a tuple is closed off. In 2020-12 it only governs
+  # the entries past the ones `prefixItems` names, so it says the tail is empty rather than
+  # anything about the slots themselves, and the tuple is already the right length.
+  if arr.items.kind == NeverType:
+    return TypeDef(kind: TupleType, elements: tup.elements, id: mergeIds(tup, arr))
+
   result = TypeDef(kind: TupleType, id: mergeIds(tup, arr))
   for i, element in tup.elements:
     result.elements.add(mergeTypes(element, arr.items, history.add($i)))
