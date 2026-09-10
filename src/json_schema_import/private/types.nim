@@ -270,6 +270,12 @@ proc extractFilename(value: string): string =
 
 iterator proposeNames*(typ: TypeDef, prefix: string, name: NameChain): string =
   ## Proposes all possible names for a type
+  # A type reached through a `$ref` borrows the name of the ref target, but at the root
+  # the name the user configured outranks it; the ref name is only a fallback there.
+  if name.isRoot:
+    for name in name.chainOptions(prefix):
+      yield name
+
   for name in name.add(typ.sref.getName).nameOptions(prefix):
     yield name
 

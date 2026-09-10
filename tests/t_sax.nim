@@ -34,7 +34,7 @@ suite "Sax decoding errors":
 
   test "Invalid enum value raises":
     expect ValueError:
-      discard AsepriteSpriteSheet.fromStream(
+      discard Aseprite.fromStream(
         newStringStream(
           """{"frames": {}, "meta": {"app": "a", "format": "bogus",
             "image": "i", "scale": "1", "size": {"h": 0, "w": 0}, "version": "v"}}"""

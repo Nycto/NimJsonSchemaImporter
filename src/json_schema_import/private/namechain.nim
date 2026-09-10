@@ -42,8 +42,9 @@ proc prefixed(name, prefix: string): string =
     else:
       prefix & name
 
-iterator nameOptions*(name: NameChain, prefix: string): string =
-  ## Proposes all possible names for a type
+iterator chainOptions*(name: NameChain, prefix: string): string =
+  ## Proposes the names that can be spelled out of the chain itself. Unlike
+  ## `nameOptions`, this ends instead of falling back to numeric suffixes
   var accum: string
   var next = name
   while next != nil:
@@ -56,8 +57,15 @@ iterator nameOptions*(name: NameChain, prefix: string): string =
 
     next = next.parent
 
-  if accum != "":
+iterator nameOptions*(name: NameChain, prefix: string): string =
+  ## Proposes all possible names for a type
+  var last: string
+  for option in name.chainOptions(prefix):
+    last = option
+    yield option
+
+  if last != "":
     var i = 2
     while true:
-      yield accum.prefixed(prefix) & $i
+      yield last & $i
       inc i

@@ -48,3 +48,13 @@ suite "Name chaining and generation":
     check(
       take(rootName("Pre").add("bar"), 4) == @["PreBar", "PreBar", "PreBar2", "PreBar3"]
     )
+
+  test "Chain options stop instead of counting up":
+    proc chained(name: NameChain): seq[string] =
+      for next in name.chainOptions("Pre"):
+        result.add(next)
+
+    check(chained(nil).len == 0)
+    check(chained(rootName("Foo")) == @["PreFoo"])
+    check(chained(rootName("Foo").add("bar")) == @["PreBar", "PreFooBar"])
+    check(chained(rootName("Foo").categorize("Union")) == @["PreFoo", "PreFooUnion"])

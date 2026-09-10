@@ -7,15 +7,14 @@ type
   EcommerceProductSchema* {.byref.} = object
     name*: Option[string]
     price*: Option[BiggestFloat]
-  EcommerceOrderSchema* {.byref.} = object
+  Ecommerce* {.byref.} = object
     orderId*: Option[string]
     items*: seq[EcommerceProductSchema]
 proc `=copy`(a: var EcommerceProductSchema;
              b: EcommerceProductSchema) {.error.}
 proc toJsonHook*(source: EcommerceProductSchema): JsonNode
-proc `=copy`(a: var EcommerceOrderSchema;
-             b: EcommerceOrderSchema) {.error.}
-proc toJsonHook*(source: EcommerceOrderSchema): JsonNode
+proc `=copy`(a: var Ecommerce; b: Ecommerce) {.error.}
+proc toJsonHook*(source: Ecommerce): JsonNode
 proc equals(_: typedesc[EcommerceProductSchema]; a, b: EcommerceProductSchema): bool =
   equals(typeof(a.name), a.name, b.name) and
       equals(typeof(a.price), a.price, b.price)
@@ -73,29 +72,29 @@ proc fromStream*(typ: typedesc[EcommerceProductSchema];
       skipValue(source)
   assert(card(seen) == 0)
 
-proc equals(_: typedesc[EcommerceOrderSchema]; a, b: EcommerceOrderSchema): bool =
+proc equals(_: typedesc[Ecommerce]; a, b: Ecommerce): bool =
   equals(typeof(a.orderId), a.orderId, b.orderId) and
       equals(typeof(a.items), a.items, b.items)
 
-proc `==`*(a, b: EcommerceOrderSchema): bool =
-  return equals(EcommerceOrderSchema, a, b)
+proc `==`*(a, b: Ecommerce): bool =
+  return equals(Ecommerce, a, b)
 
-proc stringify(_: typedesc[EcommerceOrderSchema]; value: EcommerceOrderSchema): string =
-  stringifyObj("EcommerceOrderSchema",
+proc stringify(_: typedesc[Ecommerce]; value: Ecommerce): string =
+  stringifyObj("Ecommerce",
                ("orderId", stringify(typeof(value.orderId), value.orderId)),
                ("items", stringify(typeof(value.items), value.items)))
 
-proc `$`*(value: EcommerceOrderSchema): string =
-  stringify(EcommerceOrderSchema, value)
+proc `$`*(value: Ecommerce): string =
+  stringify(Ecommerce, value)
 
-proc fromJsonHook*(target: var EcommerceOrderSchema; source: JsonNode) =
+proc fromJsonHook*(target: var Ecommerce; source: JsonNode) =
   if hasKey(source, "orderId") and source{"orderId"}.kind != JNull:
     target.orderId = some(jsonTo(source{"orderId"},
                                  typeof(unsafeGet(target.orderId))))
   if hasKey(source, "items") and source{"items"}.kind != JNull:
     target.items = jsonTo(source{"items"}, typeof(target.items))
 
-proc toJsonHook*(source: EcommerceOrderSchema): JsonNode =
+proc toJsonHook*(source: Ecommerce): JsonNode =
   result = newJObject()
   if isSome(source.orderId):
     result{"orderId"} = newJString(unsafeGet(source.orderId))
@@ -107,7 +106,7 @@ proc toJsonHook*(source: EcommerceOrderSchema): JsonNode =
         output.add(toJsonHook(entry))
       output
 
-proc toStream*(source: EcommerceOrderSchema; target: Stream) =
+proc toStream*(source: Ecommerce; target: Stream) =
   var hasEmitted: bool
   target.write('{')
   if isSome(source.orderId):
@@ -122,8 +121,7 @@ proc toStream*(source: EcommerceOrderSchema; target: Stream) =
     toStream(source.items, target)
   target.write('}')
 
-proc fromStream*(typ: typedesc[EcommerceOrderSchema];
-                 source: var JsonParser): EcommerceOrderSchema =
+proc fromStream*(typ: typedesc[Ecommerce]; source: var JsonParser): Ecommerce =
   var seen: set[0 .. 1]
   for key in objectKeys(source):
     case key

@@ -430,7 +430,7 @@ type
     EnumDef*: Option[LdtkEnumDef]
     GridPoint*: Option[LdtkGridPoint]
     IntGridValueDef*: Option[LdtkIntGridValueDef]
-  LdtkLdtkJsonRoot* {.byref.} = object
+  Ldtk* {.byref.} = object
     backupLimit*: BiggestInt
     defaultEntityWidth*: BiggestInt
     backupOnSave*: bool
@@ -550,9 +550,8 @@ proc toJsonHook*(source: LdtkGridPoint): JsonNode
 proc `=copy`(a: var Ldtk_FORCED_REFS; b: Ldtk_FORCED_REFS) {.
     error.}
 proc toJsonHook*(source: Ldtk_FORCED_REFS): JsonNode
-proc `=copy`(a: var LdtkLdtkJsonRoot; b: LdtkLdtkJsonRoot) {.
-    error.}
-proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode
+proc `=copy`(a: var Ldtk; b: Ldtk) {.error.}
+proc toJsonHook*(source: Ldtk): JsonNode
 proc equals(_: typedesc[LdtkNeighbourLevel]; a, b: LdtkNeighbourLevel): bool =
   equals(typeof(a.levelIid), a.levelIid, b.levelIid) and
       equals(typeof(a.levelUid), a.levelUid, b.levelUid) and
@@ -6391,7 +6390,7 @@ proc fromStream*(typ: typedesc[Ldtk_FORCED_REFS];
       skipValue(source)
   assert(card(seen) == 0)
 
-proc equals(_: typedesc[LdtkLdtkJsonRoot]; a, b: LdtkLdtkJsonRoot): bool =
+proc equals(_: typedesc[Ldtk]; a, b: Ldtk): bool =
   equals(typeof(a.backupLimit), a.backupLimit, b.backupLimit) and
       equals(typeof(a.defaultEntityWidth), a.defaultEntityWidth,
              b.defaultEntityWidth) and
@@ -6436,12 +6435,13 @@ proc equals(_: typedesc[LdtkLdtkJsonRoot]; a, b: LdtkLdtkJsonRoot): bool =
       equals(typeof(a.exportLevelBg), a.exportLevelBg, b.exportLevelBg) and
       equals(typeof(a.backupRelPath), a.backupRelPath, b.backupRelPath)
 
-proc `==`*(a, b: LdtkLdtkJsonRoot): bool =
-  return equals(LdtkLdtkJsonRoot, a, b)
+proc `==`*(a, b: Ldtk): bool =
+  return equals(Ldtk, a, b)
 
-proc stringify(_: typedesc[LdtkLdtkJsonRoot]; value: LdtkLdtkJsonRoot): string =
-  stringifyObj("LdtkLdtkJsonRoot", ("backupLimit", stringify(
-      typeof(value.backupLimit), value.backupLimit)), ("defaultEntityWidth",
+proc stringify(_: typedesc[Ldtk]; value: Ldtk): string =
+  stringifyObj("Ldtk", ("backupLimit",
+                        stringify(typeof(value.backupLimit), value.backupLimit)), (
+      "defaultEntityWidth",
       stringify(typeof(value.defaultEntityWidth), value.defaultEntityWidth)), (
       "backupOnSave", stringify(typeof(value.backupOnSave), value.backupOnSave)), (
       "worldGridWidth",
@@ -6499,58 +6499,55 @@ proc stringify(_: typedesc[LdtkLdtkJsonRoot]; value: LdtkLdtkJsonRoot): string =
       "backupRelPath",
       stringify(typeof(value.backupRelPath), value.backupRelPath)))
 
-proc `$`*(value: LdtkLdtkJsonRoot): string =
-  stringify(LdtkLdtkJsonRoot, value)
+proc `$`*(value: Ldtk): string =
+  stringify(Ldtk, value)
 
-proc fromJsonHook*(target: var LdtkLdtkJsonRoot; source: JsonNode) =
+proc fromJsonHook*(target: var Ldtk; source: JsonNode) =
   assert(hasKey(source, "backupLimit"),
-         "backupLimit" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "backupLimit" & " is missing while decoding " & "Ldtk")
   target.backupLimit = jsonTo(source{"backupLimit"}, typeof(target.backupLimit))
-  assert(hasKey(source, "defaultEntityWidth"), "defaultEntityWidth" &
-      " is missing while decoding " &
-      "LdtkLdtkJsonRoot")
+  assert(hasKey(source, "defaultEntityWidth"),
+         "defaultEntityWidth" & " is missing while decoding " & "Ldtk")
   target.defaultEntityWidth = jsonTo(source{"defaultEntityWidth"},
                                      typeof(target.defaultEntityWidth))
   assert(hasKey(source, "backupOnSave"),
-         "backupOnSave" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "backupOnSave" & " is missing while decoding " & "Ldtk")
   target.backupOnSave = jsonTo(source{"backupOnSave"},
                                typeof(target.backupOnSave))
   if hasKey(source, "worldGridWidth") and
       source{"worldGridWidth"}.kind != JNull:
     target.worldGridWidth = some(jsonTo(source{"worldGridWidth"}, typeof(
         unsafeGet(target.worldGridWidth))))
-  assert(hasKey(source, "iid"),
-         "iid" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+  assert(hasKey(source, "iid"), "iid" & " is missing while decoding " & "Ldtk")
   target.iid = jsonTo(source{"iid"}, typeof(target.iid))
-  assert(hasKey(source, "defaultLevelBgColor"), "defaultLevelBgColor" &
-      " is missing while decoding " &
-      "LdtkLdtkJsonRoot")
+  assert(hasKey(source, "defaultLevelBgColor"),
+         "defaultLevelBgColor" & " is missing while decoding " & "Ldtk")
   target.defaultLevelBgColor = jsonTo(source{"defaultLevelBgColor"},
                                       typeof(target.defaultLevelBgColor))
   assert(hasKey(source, "bgColor"),
-         "bgColor" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "bgColor" & " is missing while decoding " & "Ldtk")
   target.bgColor = jsonTo(source{"bgColor"}, typeof(target.bgColor))
   if hasKey(source, "worlds") and source{"worlds"}.kind != JNull:
     target.worlds = jsonTo(source{"worlds"}, typeof(target.worlds))
   if hasKey(source, "toc") and source{"toc"}.kind != JNull:
     target.toc = jsonTo(source{"toc"}, typeof(target.toc))
   assert(hasKey(source, "nextUid"),
-         "nextUid" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "nextUid" & " is missing while decoding " & "Ldtk")
   target.nextUid = jsonTo(source{"nextUid"}, typeof(target.nextUid))
   assert(hasKey(source, "imageExportMode"),
-         "imageExportMode" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "imageExportMode" & " is missing while decoding " & "Ldtk")
   target.imageExportMode = jsonTo(source{"imageExportMode"},
                                   typeof(target.imageExportMode))
   assert(hasKey(source, "identifierStyle"),
-         "identifierStyle" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "identifierStyle" & " is missing while decoding " & "Ldtk")
   target.identifierStyle = jsonTo(source{"identifierStyle"},
                                   typeof(target.identifierStyle))
   assert(hasKey(source, "defaultPivotY"),
-         "defaultPivotY" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "defaultPivotY" & " is missing while decoding " & "Ldtk")
   target.defaultPivotY = jsonTo(source{"defaultPivotY"},
                                 typeof(target.defaultPivotY))
   assert(hasKey(source, "dummyWorldIid"),
-         "dummyWorldIid" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "dummyWorldIid" & " is missing while decoding " & "Ldtk")
   target.dummyWorldIid = jsonTo(source{"dummyWorldIid"},
                                 typeof(target.dummyWorldIid))
   if hasKey(source, "customCommands") and
@@ -6562,10 +6559,10 @@ proc fromJsonHook*(target: var LdtkLdtkJsonRoot; source: JsonNode) =
     target.worldGridHeight = some(jsonTo(source{"worldGridHeight"},
         typeof(unsafeGet(target.worldGridHeight))))
   assert(hasKey(source, "appBuildId"),
-         "appBuildId" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "appBuildId" & " is missing while decoding " & "Ldtk")
   target.appBuildId = jsonTo(source{"appBuildId"}, typeof(target.appBuildId))
   assert(hasKey(source, "defaultGridSize"),
-         "defaultGridSize" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "defaultGridSize" & " is missing while decoding " & "Ldtk")
   target.defaultGridSize = jsonTo(source{"defaultGridSize"},
                                   typeof(target.defaultGridSize))
   if hasKey(source, "worldLayout") and source{"worldLayout"}.kind != JNull:
@@ -6573,9 +6570,8 @@ proc fromJsonHook*(target: var LdtkLdtkJsonRoot; source: JsonNode) =
                                      typeof(unsafeGet(target.worldLayout))))
   if hasKey(source, "flags") and source{"flags"}.kind != JNull:
     target.flags = jsonTo(source{"flags"}, typeof(target.flags))
-  assert(hasKey(source, "levelNamePattern"), "levelNamePattern" &
-      " is missing while decoding " &
-      "LdtkLdtkJsonRoot")
+  assert(hasKey(source, "levelNamePattern"),
+         "levelNamePattern" & " is missing while decoding " & "Ldtk")
   target.levelNamePattern = jsonTo(source{"levelNamePattern"},
                                    typeof(target.levelNamePattern))
   if hasKey(source, "exportPng") and source{"exportPng"}.kind != JNull:
@@ -6594,46 +6590,43 @@ proc fromJsonHook*(target: var LdtkLdtkJsonRoot; source: JsonNode) =
     target.FORCED_REFS = some(jsonTo(source{"__FORCED_REFS"},
                                      typeof(unsafeGet(target.FORCED_REFS))))
   assert(hasKey(source, "exportTiled"),
-         "exportTiled" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "exportTiled" & " is missing while decoding " & "Ldtk")
   target.exportTiled = jsonTo(source{"exportTiled"}, typeof(target.exportTiled))
-  assert(hasKey(source, "defs"),
-         "defs" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+  assert(hasKey(source, "defs"), "defs" & " is missing while decoding " & "Ldtk")
   target.defs = jsonTo(source{"defs"}, typeof(target.defs))
   if hasKey(source, "levels") and source{"levels"}.kind != JNull:
     target.levels = jsonTo(source{"levels"}, typeof(target.levels))
   assert(hasKey(source, "jsonVersion"),
-         "jsonVersion" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "jsonVersion" & " is missing while decoding " & "Ldtk")
   target.jsonVersion = jsonTo(source{"jsonVersion"}, typeof(target.jsonVersion))
-  assert(hasKey(source, "defaultEntityHeight"), "defaultEntityHeight" &
-      " is missing while decoding " &
-      "LdtkLdtkJsonRoot")
+  assert(hasKey(source, "defaultEntityHeight"),
+         "defaultEntityHeight" & " is missing while decoding " & "Ldtk")
   target.defaultEntityHeight = jsonTo(source{"defaultEntityHeight"},
                                       typeof(target.defaultEntityHeight))
   assert(hasKey(source, "defaultPivotX"),
-         "defaultPivotX" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "defaultPivotX" & " is missing while decoding " & "Ldtk")
   target.defaultPivotX = jsonTo(source{"defaultPivotX"},
                                 typeof(target.defaultPivotX))
   if hasKey(source, "defaultLevelHeight") and
       source{"defaultLevelHeight"}.kind != JNull:
     target.defaultLevelHeight = some(jsonTo(source{"defaultLevelHeight"},
         typeof(unsafeGet(target.defaultLevelHeight))))
-  assert(hasKey(source, "simplifiedExport"), "simplifiedExport" &
-      " is missing while decoding " &
-      "LdtkLdtkJsonRoot")
+  assert(hasKey(source, "simplifiedExport"),
+         "simplifiedExport" & " is missing while decoding " & "Ldtk")
   target.simplifiedExport = jsonTo(source{"simplifiedExport"},
                                    typeof(target.simplifiedExport))
   assert(hasKey(source, "externalLevels"),
-         "externalLevels" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "externalLevels" & " is missing while decoding " & "Ldtk")
   target.externalLevels = jsonTo(source{"externalLevels"},
                                  typeof(target.externalLevels))
   if hasKey(source, "tutorialDesc") and source{"tutorialDesc"}.kind != JNull:
     target.tutorialDesc = some(jsonTo(source{"tutorialDesc"},
                                       typeof(unsafeGet(target.tutorialDesc))))
   assert(hasKey(source, "minifyJson"),
-         "minifyJson" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "minifyJson" & " is missing while decoding " & "Ldtk")
   target.minifyJson = jsonTo(source{"minifyJson"}, typeof(target.minifyJson))
   assert(hasKey(source, "exportLevelBg"),
-         "exportLevelBg" & " is missing while decoding " & "LdtkLdtkJsonRoot")
+         "exportLevelBg" & " is missing while decoding " & "Ldtk")
   target.exportLevelBg = jsonTo(source{"exportLevelBg"},
                                 typeof(target.exportLevelBg))
   if hasKey(source, "backupRelPath") and
@@ -6641,7 +6634,7 @@ proc fromJsonHook*(target: var LdtkLdtkJsonRoot; source: JsonNode) =
     target.backupRelPath = some(jsonTo(source{"backupRelPath"},
                                        typeof(unsafeGet(target.backupRelPath))))
 
-proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode =
+proc toJsonHook*(source: Ldtk): JsonNode =
   result = newJObject()
   result{"backupLimit"} = newJInt(source.backupLimit)
   result{"defaultEntityWidth"} = newJInt(source.defaultEntityWidth)
@@ -6722,7 +6715,7 @@ proc toJsonHook*(source: LdtkLdtkJsonRoot): JsonNode =
   if isSome(source.backupRelPath):
     result{"backupRelPath"} = newJString(unsafeGet(source.backupRelPath))
 
-proc toStream*(source: LdtkLdtkJsonRoot; target: Stream) =
+proc toStream*(source: Ldtk; target: Stream) =
   var hasEmitted: bool
   target.write('{')
   hasEmitted.writeComma(target)
@@ -6894,8 +6887,7 @@ proc toStream*(source: LdtkLdtkJsonRoot; target: Stream) =
     toStream(unsafeGet(source.backupRelPath), target)
   target.write('}')
 
-proc fromStream*(typ: typedesc[LdtkLdtkJsonRoot];
-                 source: var JsonParser): LdtkLdtkJsonRoot =
+proc fromStream*(typ: typedesc[Ldtk]; source: var JsonParser): Ldtk =
   var seen: set[0 .. 22]
   for key in objectKeys(source):
     case key

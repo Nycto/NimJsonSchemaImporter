@@ -1,7 +1,7 @@
 # https://json-schema.org/learn/json-schema-examples
 buildTest("address", Address)
 buildTest("blog", Blog)
-buildTest("ecommerce", EcommerceOrderSchema)
+buildTest("ecommerce", Ecommerce)
 buildTest("location", Location)
 buildTest("health", Health)
 buildTest("movie", Movie)
@@ -39,5 +39,5 @@ buildTest("all_of", AllOf)
 buildTest("tuples", Tuples)
 
 # Specific applications
-buildTest("ldtk", LdtkJsonRoot)
-buildTest("aseprite", AsepriteSpriteSheet)
+buildTest("ldtk", Ldtk)
+buildTest("aseprite", Aseprite)

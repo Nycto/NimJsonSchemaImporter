@@ -80,7 +80,7 @@ type
     size*: AsepriteSize
     slices*: seq[AsepriteSlice]
     version*: string
-  AsepriteSpriteSheet* {.byref.} = object
+  Aseprite* {.byref.} = object
     frames*: AsepriteUnion
     meta*: AsepriteMeta
 proc `=copy`(a: var AsepriteRectangle;
@@ -111,9 +111,8 @@ proc `=copy`(a: var AsepriteSlice; b: AsepriteSlice) {.
 proc toJsonHook*(source: AsepriteSlice): JsonNode
 proc `=copy`(a: var AsepriteMeta; b: AsepriteMeta) {.error.}
 proc toJsonHook*(source: AsepriteMeta): JsonNode
-proc `=copy`(a: var AsepriteSpriteSheet;
-             b: AsepriteSpriteSheet) {.error.}
-proc toJsonHook*(source: AsepriteSpriteSheet): JsonNode
+proc `=copy`(a: var Aseprite; b: Aseprite) {.error.}
+proc toJsonHook*(source: Aseprite): JsonNode
 proc equals(_: typedesc[AsepriteRectangle]; a, b: AsepriteRectangle): bool =
   equals(typeof(a.h), a.h, b.h) and equals(typeof(a.w), a.w, b.w) and
       equals(typeof(a.x), a.x, b.x) and
@@ -1166,35 +1165,35 @@ proc fromStream*(typ: typedesc[AsepriteMeta]; source: var JsonParser): AsepriteM
       skipValue(source)
   assert(card(seen) == 6)
 
-proc equals(_: typedesc[AsepriteSpriteSheet]; a, b: AsepriteSpriteSheet): bool =
+proc equals(_: typedesc[Aseprite]; a, b: Aseprite): bool =
   equals(typeof(a.frames), a.frames, b.frames) and
       equals(typeof(a.meta), a.meta, b.meta)
 
-proc `==`*(a, b: AsepriteSpriteSheet): bool =
-  return equals(AsepriteSpriteSheet, a, b)
+proc `==`*(a, b: Aseprite): bool =
+  return equals(Aseprite, a, b)
 
-proc stringify(_: typedesc[AsepriteSpriteSheet]; value: AsepriteSpriteSheet): string =
-  stringifyObj("AsepriteSpriteSheet",
+proc stringify(_: typedesc[Aseprite]; value: Aseprite): string =
+  stringifyObj("Aseprite",
                ("frames", stringify(typeof(value.frames), value.frames)),
                ("meta", stringify(typeof(value.meta), value.meta)))
 
-proc `$`*(value: AsepriteSpriteSheet): string =
-  stringify(AsepriteSpriteSheet, value)
+proc `$`*(value: Aseprite): string =
+  stringify(Aseprite, value)
 
-proc fromJsonHook*(target: var AsepriteSpriteSheet; source: JsonNode) =
+proc fromJsonHook*(target: var Aseprite; source: JsonNode) =
   assert(hasKey(source, "frames"),
-         "frames" & " is missing while decoding " & "AsepriteSpriteSheet")
+         "frames" & " is missing while decoding " & "Aseprite")
   target.frames = jsonTo(source{"frames"}, typeof(target.frames))
   assert(hasKey(source, "meta"),
-         "meta" & " is missing while decoding " & "AsepriteSpriteSheet")
+         "meta" & " is missing while decoding " & "Aseprite")
   target.meta = jsonTo(source{"meta"}, typeof(target.meta))
 
-proc toJsonHook*(source: AsepriteSpriteSheet): JsonNode =
+proc toJsonHook*(source: Aseprite): JsonNode =
   result = newJObject()
   result{"frames"} = toJsonHook(source.frames)
   result{"meta"} = toJsonHook(source.meta)
 
-proc toStream*(source: AsepriteSpriteSheet; target: Stream) =
+proc toStream*(source: Aseprite; target: Stream) =
   var hasEmitted: bool
   target.write('{')
   hasEmitted.writeComma(target)
@@ -1207,8 +1206,7 @@ proc toStream*(source: AsepriteSpriteSheet; target: Stream) =
   toStream(source.meta, target)
   target.write('}')
 
-proc fromStream*(typ: typedesc[AsepriteSpriteSheet];
-                 source: var JsonParser): AsepriteSpriteSheet =
+proc fromStream*(typ: typedesc[Aseprite]; source: var JsonParser): Aseprite =
   var seen: set[0 .. 1]
   for key in objectKeys(source):
     case key
