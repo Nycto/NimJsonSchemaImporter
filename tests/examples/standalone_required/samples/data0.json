@@ -1,0 +1,16 @@
+{
+  "split": {
+    "a": "hello"
+  },
+  "tightened": {
+    "name": "widget"
+  },
+  "untyped": {
+    "known": "value",
+    "anything": [
+      1,
+      2,
+      3
+    ]
+  }
+}

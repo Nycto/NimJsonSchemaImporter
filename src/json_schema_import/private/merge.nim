@@ -98,21 +98,34 @@ proc mergeTuples(a, b: TypeDef, history: History): TypeDef =
   for i, element in a.elements:
     result.elements.add(mergeTypes(element, b.elements[i], history.add($i)))
 
+proc unwrapOptional(prop: PropDef, required: bool): TypeDef =
+  ## The type a side of the merge described, with the `Option` `parseObj` adds to a
+  ## property it wasn't told to require taken back off
+  ##
+  ## Only the wrapping that stood in for a missing `required` comes off. A `null` the
+  ## schema asked for is wrapped in the same `Option` but means something else, so it has
+  ## to survive whatever the rest of the node says about the key being present.
+  return
+    if required and not prop.required and not prop.nullable and
+        prop.typ.kind == OptionalType: prop.typ.subtype else: prop.typ
+
 proc mergeProps(a, b: PropDef, history: History, seen: var HashSet[string]): PropDef =
   let required = a.required or b.required
-  let typ = mergeTypes(a.typ, b.typ, history.add(a.propName))
+  let nullable = a.nullable or b.nullable
+  let typ = mergeTypes(
+    a.unwrapOptional(required), b.unwrapOptional(required), history.add(a.propName)
+  )
 
   let finalTyp =
-    if not required:
-      typ.optional()
-    elif typ.kind == OptionalType:
-      typ.subtype
-    else:
+    if required and not nullable:
       typ
+    else:
+      typ.optional()
   return (
     propName: a.propName.cleanupIdent.choosePropName(seen),
     typ: finalTyp,
     required: required,
+    nullable: nullable,
   )
 
 proc mergeObjects(a, b: TypeDef, history: History): TypeDef =

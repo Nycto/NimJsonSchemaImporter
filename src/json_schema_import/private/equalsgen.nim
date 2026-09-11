@@ -10,7 +10,7 @@ proc keysEqual(key: NimNode): NimNode =
 proc buildObjEquals(typ: TypeDef, typeName: NimNode): NimNode =
   assert(typ.kind == ObjType)
   var output = newEmptyNode()
-  for _, (propName, typ, _) in typ.properties:
+  for _, (propName, typ, _, _) in typ.properties:
     if typ.hasRealField:
       let compare = keysEqual(safePropName(propName))
       output =

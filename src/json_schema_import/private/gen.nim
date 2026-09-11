@@ -55,7 +55,7 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   result = ctx.genName(name, typ)
 
   var records = nnkRecList.newTree()
-  for jsonKey, (propName, keyType, _) in typ.properties:
+  for jsonKey, (propName, keyType, _, _) in typ.properties:
     if keyType.hasRealField:
       records.add(
         nnkIdentDefs.newTree(

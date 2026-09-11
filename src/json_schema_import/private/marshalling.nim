@@ -11,7 +11,7 @@ proc hasAllProps(base, value: NimNode, typ: TypeDef): NimNode =
   ## This is how one arm of a union is told apart from another, so every required key has
   ## to be tested: an object missing one of them is not a value of this type.
   result = base
-  for key, (_, _, required) in typ.properties:
+  for key, (_, _, required, _) in typ.properties:
     if required:
       result = infix(result, "and", newCall(bindSym("hasKey"), value, key.newLit))
 
@@ -196,7 +196,7 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
 
   let typeNameStr = typeName.getName.newLit
 
-  for key, (propName, subtype, required) in typ.properties:
+  for key, (propName, subtype, required, _) in typ.properties:
     if not subtype.hasRealField:
       continue
 
@@ -227,7 +227,7 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
 proc buildObjectEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
   var encodeKeys = newStmtList()
 
-  for key, (propName, propType, required) in typ.properties:
+  for key, (propName, propType, required, _) in typ.properties:
     let readProp = newDotExpr(source, safePropName(propName))
 
     case classify(propType, required)

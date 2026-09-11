@@ -37,6 +37,7 @@ buildTest("open_object", OpenObject)
 buildTest("ref_siblings", RefSiblings)
 buildTest("all_of", AllOf)
 buildTest("tuples", Tuples)
+buildTest("standalone_required", StandaloneRequired)
 
 # Specific applications
 buildTest("ldtk", Ldtk)

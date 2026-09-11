@@ -32,13 +32,24 @@ proc id(node: JsonNode): Uri =
     except:
       discard
 
+iterator requiredKeys(node: JsonNode): string =
+  ## The keys named by a node's `required` list. Draft 3 spelled `required` as a boolean
+  ## beside the property it applied to, which names no key of the node carrying it, so
+  ## anything but a list is passed over.
+  if "required" in node and node{"required"}.kind == JArray:
+    for key in node{"required"}:
+      yield key.getStr
+
+proc hasRequiredKeys(node: JsonNode): bool =
+  for _ in node.requiredKeys:
+    return true
+
 proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JObject)
 
   var required = initHashSet[string]()
-  if "required" in node:
-    for key in node{"required"}:
-      required.incl(key.getStr)
+  for key in node.requiredKeys:
+    required.incl(key)
 
   result = TypeDef(
     kind: ObjType, properties: initOrderedTable[string, PropDef](), id: id(node)
@@ -66,6 +77,30 @@ proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
         else:
           subtype.optional(),
       required: key in required,
+      nullable: subtype.kind == OptionalType,
+    )
+
+proc parseRequired(node: JsonNode, history: History): TypeDef =
+  ## Builds an object out of a `required` list on its own. The keys it names have to be
+  ## present, but nothing here says what they hold, so they come out untyped and are
+  ## narrowed by whatever `properties` the merge folds in alongside them.
+  node.expectKind(JObject)
+
+  result = TypeDef(
+    kind: ObjType, properties: initOrderedTable[string, PropDef](), id: id(node)
+  )
+
+  var seen = initHashSet[string]()
+
+  for name in node.requiredKeys:
+    if name in result.properties:
+      continue
+
+    result.properties[name] = (
+      propName: name.cleanupIdent.choosePropName(seen),
+      typ: TypeDef(kind: JsonType),
+      required: true,
+      nullable: false,
     )
 
 proc parseArray(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
@@ -189,6 +224,7 @@ type ParseMode = enum
   ParseRef ## `$ref`
   ParseMap ## `additionalProperties` holding a schema
   ParseObj ## `properties`, or `additionalProperties: false`
+  ParseRequired ## `required` holding a list of keys
   ParseArray ## `items`, or `type: "array"`
   ParseTuple ## `prefixItems`, or `items` holding a list of schemas
   ParseEnum ## `enum`
@@ -220,6 +256,15 @@ proc determineParseModes(node: JsonNode, history: History): set[ParseMode] =
 
   if "properties" in node:
     result.incl(ParseObj)
+
+  # `required` stands on its own: splitting the properties from the keys that must be
+  # present across `allOf` branches, or tightening a `$ref` with a sibling `required`,
+  # are both mainstream idioms, and neither says anything the other keywords do. Draft 3
+  # spelled `required` as a boolean beside the property it applied to, which names no key
+  # of this node, and an empty list narrows nothing.
+  if node.hasRequiredKeys:
+    result.incl(ParseRequired)
+
   if "items" in node:
     # Before 2020-12, an `items` holding a list was how a tuple was written.
     if node{"items"}.kind == JArray:
@@ -276,6 +321,8 @@ proc parseType(
     return TypeDef(kind: MapType, entries: entries, id: id(node))
   of ParseObj:
     return parseObj(node, ctx, history)
+  of ParseRequired:
+    return parseRequired(node, history)
   of ParseArray:
     return parseArray(node, ctx, history)
   of ParseTuple:

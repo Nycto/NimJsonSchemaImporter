@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/standalone_required.schema.json",
+  "title": "Standalone required",
+  "type": "object",
+  "properties": {
+    "split": {
+      "allOf": [
+        {
+          "type": "object",
+          "properties": { "a": { "type": "string" } }
+        },
+        { "required": ["a"] }
+      ]
+    },
+    "tightened": {
+      "$ref": "#/$defs/entry",
+      "required": ["name"]
+    },
+    "untyped": {
+      "type": "object",
+      "properties": { "known": { "type": "string" } },
+      "required": ["known", "anything"]
+    }
+  },
+  "required": ["split", "tightened", "untyped"],
+  "additionalProperties": false,
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "properties": { "name": { "type": "string" } }
+    }
+  }
+}

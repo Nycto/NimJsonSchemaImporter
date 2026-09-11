@@ -5,7 +5,7 @@ let value {.compileTime.} = ident("value")
 proc buildObjDollar(typ: TypeDef, typeName: NimNode): NimNode =
   assert(typ.kind == ObjType)
   result = newCall(bindSym("stringifyObj"), typeName.getName.newLit)
-  for _, (propName, subtype, _) in typ.properties:
+  for _, (propName, subtype, _, _) in typ.properties:
     let propRef = safePropName(propName)
 
     let propStr =

@@ -27,7 +27,7 @@ proc writeConstKeyValue(key: string, value: JsonNode): NimNode =
 proc buildSaxObjEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
   var encodeKeys = newStmtList()
 
-  for key, (propName, propType, required) in typ.properties:
+  for key, (propName, propType, required, _) in typ.properties:
     let readProp = newDotExpr(source, safePropName(propName))
 
     if propType.kind == ConstValueType:
@@ -60,7 +60,7 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
   var cases = nnkCaseStmt.newTree(key)
   var requiredCount = 0
 
-  for jsonKey, (propName, subtype, required) in typ.properties:
+  for jsonKey, (propName, subtype, required, _) in typ.properties:
     if not subtype.hasRealField:
       continue
 
