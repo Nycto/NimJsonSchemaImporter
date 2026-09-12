@@ -281,8 +281,6 @@ proc determineParseModes(node: JsonNode, history: History): set[ParseMode] =
     result.incl(ParseOneOf)
   if "anyOf" in node:
     result.incl(ParseAnyOf)
-  if "format" in node:
-    result.incl(ParseFormat)
   if "const" in node:
     result.incl(ParseConst)
 
@@ -302,6 +300,13 @@ proc determineParseModes(node: JsonNode, history: History): set[ParseMode] =
       result.incl(ParseTypeList)
     else:
       raise newException(ValueError, fmt"Unsupported type {typ} at {history}")
+
+  # Every format the spec defines describes a string, so a node whose only keyword is a
+  # `format` is one. It says nothing at all about an instance of any other type, though --
+  # `{"type": "integer", "format": "int64"}` is an integer, not a contradiction -- so it
+  # only names a type when nothing else on the node has.
+  if result.card == 0 and "format" in node:
+    result.incl(ParseFormat)
 
 proc parseType(
     node: JsonNode, mode: ParseMode, ctx: ParseContext, history: History

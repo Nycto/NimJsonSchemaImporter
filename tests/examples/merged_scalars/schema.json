@@ -15,10 +15,29 @@
       "type": "string",
       "format": "date-time"
     },
+    "intFormat": {
+      "type": "integer",
+      "format": "int64"
+    },
+    "numFormat": {
+      "type": "number",
+      "format": "double"
+    },
+    "bareFormat": {
+      "format": "uuid"
+    },
     "openMap": {
       "type": "object",
       "additionalProperties": { "type": "string" }
     }
   },
-  "required": ["typedEnum", "intEnum", "formatted", "openMap"]
+  "required": [
+    "typedEnum",
+    "intEnum",
+    "formatted",
+    "intFormat",
+    "numFormat",
+    "bareFormat",
+    "openMap"
+  ]
 }

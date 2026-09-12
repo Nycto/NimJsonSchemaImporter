@@ -2,6 +2,9 @@
   "typedEnum": "beta",
   "intEnum": 2,
   "formatted": "2026-09-08T12:00:00Z",
+  "intFormat": 9007199254740993,
+  "numFormat": 1.5,
+  "bareFormat": "f81d4fae-7dec-11d0-a765-00a0c91e6bf6",
   "openMap": {
     "one": "1",
     "two": "2"
