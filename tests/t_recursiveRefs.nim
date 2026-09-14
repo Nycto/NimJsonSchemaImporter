@@ -214,17 +214,35 @@ suite "A cycle with no type to close onto":
       "$defs": { "list": { "type": "array", "items": { "$ref": "#/$defs/list" } } }
     }"""
 
+  # A nullable definition folds to an `Optional` wrapping the object, and the reference
+  # labels the wrapper rather than the object inside it, so nothing reserves a name.
+  const NULLABLE_CYCLE = """{
+      "$ref": "#/$defs/node",
+      "$defs": {
+        "node": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "object", "properties": { "next": { "$ref": "#/$defs/node" } } }
+          ]
+        }
+      }
+    }"""
+
   test "Parses to the container holding the edge":
     check(MAP_CYCLE.root.kind == MapType)
     check(MAP_CYCLE.root.entries.kind == RefType)
     check(ARRAY_CYCLE.root.kind == ArrayType)
     check(ARRAY_CYCLE.root.items.kind == RefType)
+    check(NULLABLE_CYCLE.root.kind == OptionalType)
+    check(NULLABLE_CYCLE.root.subtype.kind == ObjType)
 
   test "Is rejected by codegen, naming the reference":
     check("object or a union" in genError(MAP_CYCLE))
     check("#/$defs/tree" in genError(MAP_CYCLE))
     check("object or a union" in genError(ARRAY_CYCLE))
     check("#/$defs/list" in genError(ARRAY_CYCLE))
+    check("object or a union" in genError(NULLABLE_CYCLE))
+    check("#/$defs/node" in genError(NULLABLE_CYCLE))
 
   test "A cycle through an object or a union is not rejected":
     check(genError(LINKED_LIST) == "")
