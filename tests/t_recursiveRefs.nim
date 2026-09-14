@@ -1,6 +1,19 @@
 import
   std/[unittest, os, strutils, tables],
+  json_schema_import {.all.},
   json_schema_import/private/[parse, schemaRef, types]
+
+proc generate(schema: string): string {.compileTime.} =
+  ## What codegen reports for a schema, or "" when it generates one
+  try:
+    discard parseJsonSchema(schema, JsonSchemaConfig(rootTypeName: "Root"))
+    return ""
+  except ValueError as e:
+    return e.msg
+
+template genError(schema: static string): string =
+  const captured = generate(schema)
+  captured
 
 proc parse(schema: string): JsonSchema =
   ## Parses a schema without any url resolution, since none of these reach outwards
@@ -187,26 +200,37 @@ suite "A reference that cannot be represented":
       check("#/properties/held -> #/$defs/a" in e.msg)
 
 suite "A cycle with no type to close onto":
-  # An edge onto anything but an object or a union has no named type to point at. Codegen
-  # turns those away, since the parser no longer records that a reference was cut; these pin
-  # down what it will be handed.
-  test "Parses to a map whose entries are the edge":
-    let typ = """{
+  # Only an object or a union reserves a name for an edge to point at, so codegen is where
+  # these are turned away -- the parse hands over a container holding the edge.
+  const MAP_CYCLE = """{
       "$ref": "#/$defs/tree",
       "$defs": {
         "tree": { "type": "object", "additionalProperties": { "$ref": "#/$defs/tree" } }
       }
-    }""".root
-    check(typ.kind == MapType)
-    check(typ.entries.kind == RefType)
+    }"""
 
-  test "Parses to an array whose items are the edge":
-    let typ = """{
+  const ARRAY_CYCLE = """{
       "$ref": "#/$defs/list",
       "$defs": { "list": { "type": "array", "items": { "$ref": "#/$defs/list" } } }
-    }""".root
-    check(typ.kind == ArrayType)
-    check(typ.items.kind == RefType)
+    }"""
+
+  test "Parses to the container holding the edge":
+    check(MAP_CYCLE.root.kind == MapType)
+    check(MAP_CYCLE.root.entries.kind == RefType)
+    check(ARRAY_CYCLE.root.kind == ArrayType)
+    check(ARRAY_CYCLE.root.items.kind == RefType)
+
+  test "Is rejected by codegen, naming the reference":
+    check("object or a union" in genError(MAP_CYCLE))
+    check("#/$defs/tree" in genError(MAP_CYCLE))
+    check("object or a union" in genError(ARRAY_CYCLE))
+    check("#/$defs/list" in genError(ARRAY_CYCLE))
+
+  test "A cycle through an object or a union is not rejected":
+    check(genError(LINKED_LIST) == "")
+    check(genError(MUTUAL_REFS) == "")
+    check(genError(RECURSIVE_TREE) == "")
+    check(genError(RECURSIVE_UNION) == "")
 
 suite "The committed recursive examples":
   test "All parse to a finite tree":

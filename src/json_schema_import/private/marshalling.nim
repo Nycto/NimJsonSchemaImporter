@@ -1,5 +1,8 @@
 import std/[macros, tables, sets, json, jsonutils, options, sequtils]
-import types, util
+import types, schemaRef, util
+
+type RefTypes* = Table[SchemaRef, TypeDef]
+  ## The named types an edge can close onto, looked up by the reference naming them
 
 proc isJsonKind(value: NimNode, kind: JsonNodeKind): NimNode =
   return quote:
@@ -81,8 +84,12 @@ proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
     return newCall(ident("toJsonHook"), input)
   of EnumType:
     return newCall(bindSym("%"), input)
-  of NullType, RefType:
+  of NullType:
     return newCall(bindSym("newJNull"))
+  of RefType:
+    # `toJson` already maps a nil ref to `null` and otherwise hands off to the target's own
+    # `toJsonHook`, so the edge never has to be followed into the target's structure.
+    return newCall(bindSym("toJson"), input)
   of JsonType:
     return input
   of ConstValueType:
@@ -96,7 +103,7 @@ proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
     return quote:
       JsonNode(kind: JArray, elems: @`elems`)
 
-proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
+proc buildIsType(typ: TypeDef, value: NimNode, refs: RefTypes): NimNode =
   case typ.kind
   of StringType, EnumType:
     return value.isJsonKind(JString)
@@ -117,11 +124,12 @@ proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
   of JsonType:
     return true.newLit
   of OptionalType:
-    return typ.subtype.buildIsType(value)
+    return typ.subtype.buildIsType(value, refs)
   of UnionType:
     raiseAssert("Unions should not contain other unions")
   of RefType:
-    raiseAssert("Unions are not supported in ref types")
+    # An edge is told apart by whatever it closes onto, which is never itself an edge
+    return refs[typ.schemaRef].buildIsType(value, refs)
   of TupleType:
     return infix(
       value.isJsonKind(JArray),
@@ -136,7 +144,7 @@ proc buildIsType(typ: TypeDef, value: NimNode): NimNode =
 let source {.compileTime.} = ident("source")
 let target {.compileTime.} = ident("target")
 
-proc buildUnionDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
+proc buildUnionDecoder*(typ: TypeDef, typeName: NimNode, refs: RefTypes): NimNode =
   ## Builds the `fromJsonHook` function for decoding a union type down to the union object
   assert(typ.kind == UnionType)
 
@@ -146,7 +154,7 @@ proc buildUnionDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
     let key = i.unionKey
     let builder = quote:
       `target` = `typeName`(kind: `i`, `key`: jsonTo(`source`, typeof(`target`.`key`)))
-    branches.add(nnkElifBranch.newTree(buildIsType(subtype, source), builder))
+    branches.add(nnkElifBranch.newTree(buildIsType(subtype, source, refs), builder))
 
   let errorMessage = newLit("Unable to deserialize json node to " & typeName.getName)
   let throw = quote:

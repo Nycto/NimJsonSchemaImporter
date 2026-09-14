@@ -21,6 +21,7 @@ type
     nextId: uint
     cache: Table[SchemaRef, NimNode]
     usedNames: HashSet[string]
+    refTypes: RefTypes ## Every named type, by the reference naming it
 
   GeneratedOutput* = tuple[rootType, code: NimNode]
 
@@ -46,11 +47,31 @@ proc genName(ctx: GenContext, name: NameChain, typ: TypeDef): NimNode =
 proc genType(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode
   ## Forward declaration for a proc that generates code for an arbitrary type
 
+proc reserve(ctx: GenContext, typ: TypeDef, typeName: NimNode) =
+  ## Publishes a name before the body it belongs to is walked
+  if not typ.sref.isNil:
+    ctx.cache[typ.sref] = typeName
+    ctx.refTypes[typ.sref] = typ
+
+proc genRef(typ: TypeDef, ctx: GenContext): NimNode =
+  ## Emits the edge back onto a type still being generated further up the stack
+  assert(typ.kind == RefType)
+
+  # Only an object or a union reserves a name of its own for the edge to point at
+  if typ.schemaRef notin ctx.cache:
+    raise newException(
+      ValueError,
+      "A recursive reference has to pass through an object or a union: " & $typ.schemaRef,
+    )
+
+  return nnkRefTy.newTree(ctx.cache[typ.schemaRef])
+
 proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   ## Generates code for an object type
   assert(typ.kind == ObjType)
 
   result = ctx.genName(name, typ)
+  ctx.reserve(typ, result)
 
   var records = nnkRecList.newTree()
   for jsonKey, (propName, keyType, _, _) in typ.properties:
@@ -150,6 +171,7 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
       name.add("Union")
 
   result = ctx.genName(unionName, typ)
+  ctx.reserve(typ, result)
 
   var cases = nnkRecCase.newTree(
     nnkIdentDefs.newTree(
@@ -180,7 +202,7 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   ctx.procs.add(
     typ.buildEquals(result),
     typ.buildDollars(result),
-    typ.buildUnionDecoder(result),
+    typ.buildUnionDecoder(result, ctx.refTypes),
     typ.buildUnionEncoder(result),
     typ.buildUnionUnpacker(result),
     typ.buildUnionBinSerde(result),
@@ -232,6 +254,8 @@ proc genType(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     result = genOptional(typ, name, ctx)
   of ConstValueType:
     result = genConst(typ, name, ctx)
+  of RefType:
+    result = genRef(typ, ctx)
   else:
     raise newException(AssertionDefect, "Could not generate code for " & $typ.kind)
 
