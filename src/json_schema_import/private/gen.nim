@@ -22,6 +22,9 @@ type
     cache: Table[SchemaRef, NimNode]
     usedNames: HashSet[string]
     refTypes: RefTypes ## Every named type, by the reference naming it
+    targets: Table[SchemaRef, TypeDef] ## Every parsed ref target, generated or not
+    open: seq[SchemaRef] ## Named types whose bodies are still being walked
+    forwarded: HashSet[SchemaRef] ## Types whose procs a standalone target calls early
 
   GeneratedOutput* = tuple[rootType, code: NimNode]
 
@@ -52,10 +55,20 @@ proc reserve(ctx: GenContext, typ: TypeDef, typeName: NimNode) =
   if not typ.sref.isNil:
     ctx.cache[typ.sref] = typeName
     ctx.refTypes[typ.sref] = typ
+    ctx.open.add(typ.sref)
 
 proc genRef(typ: TypeDef, ctx: GenContext): NimNode =
   ## Emits the edge back onto a type still being generated further up the stack
   assert(typ.kind == RefType)
+
+  # A merge copies its target rather than generating it, so it is generated standalone.
+  # Its procs then land ahead of those for the types still open above it.
+  let target = ctx.targets.getOrDefault(typ.schemaRef)
+  if typ.schemaRef notin ctx.cache and not target.isNil and
+      target.kind in {ObjType, UnionType}:
+    for sref in ctx.open:
+      ctx.forwarded.incl(sref)
+    discard target.genType(nil, ctx)
 
   # Only an object or a union reserves a name of its own for the edge to point at
   if typ.schemaRef notin ctx.cache:
@@ -68,9 +81,11 @@ proc genRef(typ: TypeDef, ctx: GenContext): NimNode =
 
 proc declare(ctx: GenContext, typ: TypeDef, procs: NimNode) =
   ## Declares a type's procs ahead of their definitions, when an edge closes onto it
-  if typ.closesOnto(typ.sref):
+  if typ.closesOnto(typ.sref) or typ.sref in ctx.forwarded:
     ctx.declarations.add(procs.asDeclarations)
   ctx.procs.add(procs)
+  if not typ.sref.isNil:
+    discard ctx.open.pop()
 
 proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   ## Generates code for an object type
@@ -285,6 +300,7 @@ proc genDeclarations*(schema: JsonSchema, conf: JsonSchemaConfig): GeneratedOutp
     cache: initTable[SchemaRef, NimNode](),
     declarations: newStmtList(),
     procs: newStmtList(),
+    targets: schema.refs,
   )
 
   let rootChain = rootName(conf.rootTypeName)

@@ -1,0 +1,6 @@
+{
+  "column": {
+    "type": "integer",
+    "name": "id"
+  }
+}

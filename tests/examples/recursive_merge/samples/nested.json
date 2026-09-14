@@ -1,0 +1,12 @@
+{
+  "column": {
+    "type": "array",
+    "items": {
+      "type": "array",
+      "items": {
+        "ref": "Cell"
+      }
+    },
+    "name": "matrix"
+  }
+}

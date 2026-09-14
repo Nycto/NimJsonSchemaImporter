@@ -103,7 +103,9 @@ proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
     return quote:
       JsonNode(kind: JArray, elems: @`elems`)
 
-proc buildIsType(typ: TypeDef, value: NimNode, refs: RefTypes): NimNode =
+proc buildIsType(
+    typ: TypeDef, value: NimNode, refs: RefTypes, expanding: seq[SchemaRef] = @[]
+): NimNode =
   case typ.kind
   of StringType, EnumType:
     return value.isJsonKind(JString)
@@ -124,12 +126,18 @@ proc buildIsType(typ: TypeDef, value: NimNode, refs: RefTypes): NimNode =
   of JsonType:
     return true.newLit
   of OptionalType:
-    return typ.subtype.buildIsType(value, refs)
+    return typ.subtype.buildIsType(value, refs, expanding)
   of UnionType:
-    raiseAssert("Unions should not contain other unions")
+    # Only reachable through an edge, since parsing flattens directly nested unions
+    result = false.newLit
+    for subtype in typ.subtypes:
+      result = infix(result, "or", subtype.buildIsType(value, refs, expanding))
   of RefType:
-    # An edge is told apart by whatever it closes onto, which is never itself an edge
-    return refs[typ.schemaRef].buildIsType(value, refs)
+    # An edge is told apart by whatever it closes onto. One already being expanded adds
+    # nothing the outer expansion doesn't already test for.
+    if typ.schemaRef in expanding:
+      return false.newLit
+    return refs[typ.schemaRef].buildIsType(value, refs, expanding & typ.schemaRef)
   of TupleType:
     return infix(
       value.isJsonKind(JArray),

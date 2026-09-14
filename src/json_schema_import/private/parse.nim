@@ -412,6 +412,7 @@ proc parseSchema*(node: JsonNode, resolver: UrlResolver): JsonSchema =
   result.rootType = parseType(node, ctx, addRef(nil, rootRef))
   if result.rootType.sref.isNil:
     result.rootType.sref = rootRef
+  result.refs = ctx.refs
 
   if result.rootType.kind == NeverType:
     raise newException(

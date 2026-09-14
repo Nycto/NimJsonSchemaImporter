@@ -54,6 +54,7 @@ type
 
   JsonSchema* = ref object
     rootType*: TypeDef
+    refs*: Table[SchemaRef, TypeDef] ## Every type reached through a `$ref`, by that ref
 
 proc hasRealField*(typ: TypeDef): bool =
   ## Returns whether the given type actually requires a field on internal object

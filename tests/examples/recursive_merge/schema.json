@@ -1,0 +1,39 @@
+{
+  "$id": "https://example.com/recursive-merge",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "A recursive definition folded into a wider object, whose edge lands on a union",
+  "type": "object",
+  "properties": {
+    "column": {
+      "allOf": [
+        { "$ref": "#/$defs/dataType" },
+        {
+          "required": [ "name" ],
+          "properties": { "name": { "type": "string" } }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "dataType": {
+      "type": "object",
+      "oneOf": [ { "required": [ "type" ] }, { "required": [ "ref" ] } ],
+      "properties": {
+        "type": { "type": "string" },
+        "ref": { "type": "string" },
+        "items": { "$ref": "#/$defs/items" }
+      }
+    },
+    "items": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [ "ref" ],
+          "properties": { "ref": { "type": "string" } },
+          "additionalProperties": false
+        },
+        { "allOf": [ { "$ref": "#/$defs/dataType" }, { "required": [ "type" ] } ] }
+      ]
+    }
+  }
+}
