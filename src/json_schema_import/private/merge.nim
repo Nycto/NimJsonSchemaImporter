@@ -170,6 +170,12 @@ proc mergeOrdered(a, b: TypeDef, history: History): TypeDef =
   if a.kind == OptionalType:
     return mergeTypes(a.subtype, b, history).optional()
 
+  # An edge says nothing about the shape it points at, so there is nothing to narrow. Keywords
+  # beside a recursive `$ref` are dropped: folding them in means inlining the target, which is
+  # what the edge exists to avoid.
+  if a.kind == RefType:
+    return a
+
   if a.isWildcardObject and b.kind in OBJECT_SHAPED:
     return b
 

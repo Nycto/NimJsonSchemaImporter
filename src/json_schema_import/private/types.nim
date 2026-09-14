@@ -36,7 +36,7 @@ type
     of EnumType:
       values*: OrderedSet[string]
     of RefType:
-      schemaRef*: SchemaRef
+      schemaRef*: SchemaRef ## Left unresolved: `hash`, `==` and `$` all walk the tree
     of ArrayType:
       items*: TypeDef
     of TupleType:
@@ -201,6 +201,10 @@ proc optional*(typ: TypeDef): TypeDef =
     else:
       TypeDef(kind: OptionalType, subtype: typ)
 
+proc refName(sref: SchemaRef): string =
+  ## The fragment a type reached through a reference is named after
+  return if sref.getName == "": "Root" else: sref.getName
+
 proc abbrev*(typ: TypeDef): string =
   ## Returns an abbreviated name of a type
   if typ.sref != nil:
@@ -210,7 +214,7 @@ proc abbrev*(typ: TypeDef): string =
     case typ.kind
     of ObjType: "Object"
     of EnumType: "Enum"
-    of RefType: typ.schemaRef.getName
+    of RefType: typ.schemaRef.refName
     of ArrayType: "Seq"
     of TupleType: "Tuple"
     of UnionType: "Union"
