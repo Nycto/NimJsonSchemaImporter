@@ -1,0 +1,9 @@
+{
+  "value": "first",
+  "next": {
+    "value": "second",
+    "next": {
+      "value": "third"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "top": {
+    "prompt": "Is it recursive?",
+    "answer": {
+      "text": "Mutually so",
+      "followUp": {
+        "prompt": "Which one is emitted first?",
+        "answer": {
+          "text": "Neither, they are declared ahead of their bodies"
+        }
+      }
+    }
+  }
+}

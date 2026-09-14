@@ -1,0 +1,1 @@
+RecursiveTree(name: "root", weight: 10, children: [RecursiveTree(name: "branch", weight: 4, children: [RecursiveTree(name: "leaf", weight: 1, children: [])]), RecursiveTree(name: "sibling", weight: ∅, children: [])])

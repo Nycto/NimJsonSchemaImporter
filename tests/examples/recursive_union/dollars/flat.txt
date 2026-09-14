@@ -1,0 +1,1 @@
+RecursiveUnion(name: "root", child: "just a string", index: {})

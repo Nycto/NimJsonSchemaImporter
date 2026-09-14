@@ -1,0 +1,19 @@
+{
+  "name": "root",
+  "weight": 10,
+  "children": [
+    {
+      "name": "branch",
+      "weight": 4,
+      "children": [
+        {
+          "name": "leaf",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "sibling"
+    }
+  ]
+}
