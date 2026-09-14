@@ -22,6 +22,13 @@ proc toStream*[T](source: Option[T], target: Stream) =
   else:
     target.write("null")
 
+proc toStream*[T](source: ref T, target: Stream) =
+  ## A recursive schema is generated as a `ref`, and nil is how it bottoms out
+  if source.isNil:
+    target.write("null")
+  else:
+    toStream(source[], target)
+
 proc toStream*(source: string, target: Stream) =
   target.write(source.escapeJson)
 
@@ -159,6 +166,13 @@ proc fromStream*[T](typ: typedesc[Option[T]], source: var JsonParser): Option[T]
     discard getTok(source)
   else:
     result = some(fromStream(T, source))
+
+proc fromStream*[T](typ: typedesc[ref T], source: var JsonParser): ref T =
+  if source.tok == tkNull:
+    discard getTok(source)
+  else:
+    result = new(T)
+    result[] = fromStream(T, source)
 
 proc fromStream*[T](typ: typedesc[seq[T]], source: var JsonParser): seq[T] =
   for _ in delimited(source, tkBracketLe, tkBracketRi):
