@@ -18,12 +18,9 @@ type
     shape*: Const_typedUnion
 proc `=copy`(a: var Const_typedShape; b: Const_typedShape) {.
     error.}
-proc toJsonHook*(source: Const_typedShape): JsonNode
 proc `=copy`(a: var Const_typedShape2;
              b: Const_typedShape2) {.error.}
-proc toJsonHook*(source: Const_typedShape2): JsonNode
 proc `=copy`(a: var Const_typed; b: Const_typed) {.error.}
-proc toJsonHook*(source: Const_typed): JsonNode
 proc equals(_: typedesc[Const_typedShape]; a, b: Const_typedShape): bool =
   equals(typeof(a.radius), a.radius, b.radius)
 

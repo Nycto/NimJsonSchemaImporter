@@ -9,7 +9,6 @@ type
     lastName*: Option[string]
     age*: Option[BiggestInt]
 proc `=copy`(a: var Basic; b: Basic) {.error.}
-proc toJsonHook*(source: Basic): JsonNode
 proc equals(_: typedesc[Basic]; a, b: Basic): bool =
   equals(typeof(a.firstName), a.firstName, b.firstName) and
       equals(typeof(a.lastName), a.lastName, b.lastName) and

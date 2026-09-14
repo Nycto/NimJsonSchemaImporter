@@ -35,9 +35,7 @@ type
     key2*: string
     key3*: Option[UnionKey3Union]
 proc `=copy`(a: var UnionKey3; b: UnionKey3) {.error.}
-proc toJsonHook*(source: UnionKey3): JsonNode
 proc `=copy`(a: var Union; b: Union) {.error.}
-proc toJsonHook*(source: Union): JsonNode
 converter forUnionUnion*(value: string): UnionUnion =
   return UnionUnion(kind: 0, key0: value)
 

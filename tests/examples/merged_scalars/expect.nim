@@ -16,7 +16,6 @@ type
     openMap*: OrderedTable[string, string]
 proc `=copy`(a: var Merged_scalars; b: Merged_scalars) {.
     error.}
-proc toJsonHook*(source: Merged_scalars): JsonNode
 proc equals(_: typedesc[Merged_scalars]; a, b: Merged_scalars): bool =
   equals(typeof(a.typedEnum), a.typedEnum, b.typedEnum) and
       equals(typeof(a.intEnum), a.intEnum, b.intEnum) and

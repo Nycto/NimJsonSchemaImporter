@@ -16,10 +16,8 @@ type
     hobbies*: seq[string]
 proc `=copy`(a: var Complex_objectAddress;
              b: Complex_objectAddress) {.error.}
-proc toJsonHook*(source: Complex_objectAddress): JsonNode
 proc `=copy`(a: var Complex_object; b: Complex_object) {.
     error.}
-proc toJsonHook*(source: Complex_object): JsonNode
 proc equals(_: typedesc[Complex_objectAddress]; a, b: Complex_objectAddress): bool =
   equals(typeof(a.street), a.street, b.street) and
       equals(typeof(a.city), a.city, b.city) and

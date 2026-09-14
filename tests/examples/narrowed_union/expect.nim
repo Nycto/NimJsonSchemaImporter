@@ -28,19 +28,14 @@ type
     narrowedMap*: OrderedTable[string, Narrowed_unionNarrowedMap]
 proc `=copy`(a: var Narrowed_unionNarrowed;
              b: Narrowed_unionNarrowed) {.error.}
-proc toJsonHook*(source: Narrowed_unionNarrowed): JsonNode
 proc `=copy`(a: var Narrowed_unionNarrowed2;
              b: Narrowed_unionNarrowed2) {.error.}
-proc toJsonHook*(source: Narrowed_unionNarrowed2): JsonNode
 proc `=copy`(a: var Narrowed_unionNarrowedArray;
              b: Narrowed_unionNarrowedArray) {.error.}
-proc toJsonHook*(source: Narrowed_unionNarrowedArray): JsonNode
 proc `=copy`(a: var Narrowed_unionNarrowedMap;
              b: Narrowed_unionNarrowedMap) {.error.}
-proc toJsonHook*(source: Narrowed_unionNarrowedMap): JsonNode
 proc `=copy`(a: var Narrowed_union; b: Narrowed_union) {.
     error.}
-proc toJsonHook*(source: Narrowed_union): JsonNode
 proc equals(_: typedesc[Narrowed_unionNarrowed]; a, b: Narrowed_unionNarrowed): bool =
   equals(typeof(a.a), a.a, b.a) and equals(typeof(a.shared), a.shared, b.shared)
 

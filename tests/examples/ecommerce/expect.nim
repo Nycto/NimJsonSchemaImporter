@@ -12,9 +12,7 @@ type
     items*: seq[EcommerceProductSchema]
 proc `=copy`(a: var EcommerceProductSchema;
              b: EcommerceProductSchema) {.error.}
-proc toJsonHook*(source: EcommerceProductSchema): JsonNode
 proc `=copy`(a: var Ecommerce; b: Ecommerce) {.error.}
-proc toJsonHook*(source: Ecommerce): JsonNode
 proc equals(_: typedesc[EcommerceProductSchema]; a, b: EcommerceProductSchema): bool =
   equals(typeof(a.name), a.name, b.name) and
       equals(typeof(a.price), a.price, b.price)

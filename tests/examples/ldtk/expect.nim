@@ -471,87 +471,57 @@ type
     backupRelPath*: Option[string]
 proc `=copy`(a: var LdtkNeighbourLevel;
              b: LdtkNeighbourLevel) {.error.}
-proc toJsonHook*(source: LdtkNeighbourLevel): JsonNode
 proc `=copy`(a: var LdtkLevelBgPosInfos;
              b: LdtkLevelBgPosInfos) {.error.}
-proc toJsonHook*(source: LdtkLevelBgPosInfos): JsonNode
 proc `=copy`(a: var LdtkTilesetRect; b: LdtkTilesetRect) {.
     error.}
-proc toJsonHook*(source: LdtkTilesetRect): JsonNode
 proc `=copy`(a: var LdtkFieldInstance;
              b: LdtkFieldInstance) {.error.}
-proc toJsonHook*(source: LdtkFieldInstance): JsonNode
 proc `=copy`(a: var LdtkTile; b: LdtkTile) {.error.}
-proc toJsonHook*(source: LdtkTile): JsonNode
 proc `=copy`(a: var LdtkEntityInstance;
              b: LdtkEntityInstance) {.error.}
-proc toJsonHook*(source: LdtkEntityInstance): JsonNode
 proc `=copy`(a: var LdtkIntGridValueInstance;
              b: LdtkIntGridValueInstance) {.error.}
-proc toJsonHook*(source: LdtkIntGridValueInstance): JsonNode
 proc `=copy`(a: var LdtkLayerInstance;
              b: LdtkLayerInstance) {.error.}
-proc toJsonHook*(source: LdtkLayerInstance): JsonNode
 proc `=copy`(a: var LdtkLevel; b: LdtkLevel) {.error.}
-proc toJsonHook*(source: LdtkLevel): JsonNode
 proc `=copy`(a: var LdtkWorld; b: LdtkWorld) {.error.}
-proc toJsonHook*(source: LdtkWorld): JsonNode
 proc `=copy`(a: var LdtkEntityReferenceInfos;
              b: LdtkEntityReferenceInfos) {.error.}
-proc toJsonHook*(source: LdtkEntityReferenceInfos): JsonNode
 proc `=copy`(a: var LdtkTocInstanceData;
              b: LdtkTocInstanceData) {.error.}
-proc toJsonHook*(source: LdtkTocInstanceData): JsonNode
 proc `=copy`(a: var LdtkTableOfContentEntry;
              b: LdtkTableOfContentEntry) {.error.}
-proc toJsonHook*(source: LdtkTableOfContentEntry): JsonNode
 proc `=copy`(a: var LdtkCustomCommand;
              b: LdtkCustomCommand) {.error.}
-proc toJsonHook*(source: LdtkCustomCommand): JsonNode
 proc `=copy`(a: var LdtkTileCustomMetadata;
              b: LdtkTileCustomMetadata) {.error.}
-proc toJsonHook*(source: LdtkTileCustomMetadata): JsonNode
 proc `=copy`(a: var LdtkEnumTagValue; b: LdtkEnumTagValue) {.
     error.}
-proc toJsonHook*(source: LdtkEnumTagValue): JsonNode
 proc `=copy`(a: var LdtkTilesetDef; b: LdtkTilesetDef) {.
     error.}
-proc toJsonHook*(source: LdtkTilesetDef): JsonNode
 proc `=copy`(a: var LdtkIntGridValueGroupDef;
              b: LdtkIntGridValueGroupDef) {.error.}
-proc toJsonHook*(source: LdtkIntGridValueGroupDef): JsonNode
 proc `=copy`(a: var LdtkIntGridValueDef;
              b: LdtkIntGridValueDef) {.error.}
-proc toJsonHook*(source: LdtkIntGridValueDef): JsonNode
 proc `=copy`(a: var LdtkAutoRuleDef; b: LdtkAutoRuleDef) {.
     error.}
-proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode
 proc `=copy`(a: var LdtkAutoLayerRuleGroup;
              b: LdtkAutoLayerRuleGroup) {.error.}
-proc toJsonHook*(source: LdtkAutoLayerRuleGroup): JsonNode
 proc `=copy`(a: var LdtkLayerDef; b: LdtkLayerDef) {.error.}
-proc toJsonHook*(source: LdtkLayerDef): JsonNode
 proc `=copy`(a: var LdtkFieldDef; b: LdtkFieldDef) {.error.}
-proc toJsonHook*(source: LdtkFieldDef): JsonNode
 proc `=copy`(a: var LdtkEnumDefValues;
              b: LdtkEnumDefValues) {.error.}
-proc toJsonHook*(source: LdtkEnumDefValues): JsonNode
 proc `=copy`(a: var LdtkEnumDef; b: LdtkEnumDef) {.error.}
-proc toJsonHook*(source: LdtkEnumDef): JsonNode
 proc `=copy`(a: var LdtkEntityDef; b: LdtkEntityDef) {.
     error.}
-proc toJsonHook*(source: LdtkEntityDef): JsonNode
 proc `=copy`(a: var LdtkDefinitions; b: LdtkDefinitions) {.
     error.}
-proc toJsonHook*(source: LdtkDefinitions): JsonNode
 proc `=copy`(a: var LdtkGridPoint; b: LdtkGridPoint) {.
     error.}
-proc toJsonHook*(source: LdtkGridPoint): JsonNode
 proc `=copy`(a: var Ldtk_FORCED_REFS; b: Ldtk_FORCED_REFS) {.
     error.}
-proc toJsonHook*(source: Ldtk_FORCED_REFS): JsonNode
 proc `=copy`(a: var Ldtk; b: Ldtk) {.error.}
-proc toJsonHook*(source: Ldtk): JsonNode
 proc equals(_: typedesc[LdtkNeighbourLevel]; a, b: LdtkNeighbourLevel): bool =
   equals(typeof(a.levelIid), a.levelIid, b.levelIid) and
       equals(typeof(a.levelUid), a.levelUid, b.levelUid) and

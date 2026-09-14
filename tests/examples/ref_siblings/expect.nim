@@ -18,12 +18,9 @@ type
     tagged*: Ref_siblingsTagged
 proc `=copy`(a: var Ref_siblingsEntry;
              b: Ref_siblingsEntry) {.error.}
-proc toJsonHook*(source: Ref_siblingsEntry): JsonNode
 proc `=copy`(a: var Ref_siblingsNarrowed;
              b: Ref_siblingsNarrowed) {.error.}
-proc toJsonHook*(source: Ref_siblingsNarrowed): JsonNode
 proc `=copy`(a: var Ref_siblings; b: Ref_siblings) {.error.}
-proc toJsonHook*(source: Ref_siblings): JsonNode
 proc equals(_: typedesc[Ref_siblingsEntry]; a, b: Ref_siblingsEntry): bool =
   equals(typeof(a.name), a.name, b.name)
 

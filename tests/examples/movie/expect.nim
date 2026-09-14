@@ -15,7 +15,6 @@ type
     duration*: Option[string]
     `cast`*: seq[string]
 proc `=copy`(a: var Movie; b: Movie) {.error.}
-proc toJsonHook*(source: Movie): JsonNode
 proc equals(_: typedesc[Movie]; a, b: Movie): bool =
   equals(typeof(a.title), a.title, b.title) and
       equals(typeof(a.director), a.director, b.director) and

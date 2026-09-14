@@ -12,10 +12,8 @@ type
     patterned*: OrderedTable[string, JsonNode]
 proc `=copy`(a: var Unconstrained_objectClosed;
              b: Unconstrained_objectClosed) {.error.}
-proc toJsonHook*(source: Unconstrained_objectClosed): JsonNode
 proc `=copy`(a: var Unconstrained_object;
              b: Unconstrained_object) {.error.}
-proc toJsonHook*(source: Unconstrained_object): JsonNode
 proc equals(_: typedesc[Unconstrained_objectClosed];
             a, b: Unconstrained_objectClosed): bool =
   true

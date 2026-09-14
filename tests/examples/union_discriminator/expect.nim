@@ -20,13 +20,10 @@ type
     shape*: Union_discriminatorUnion
 proc `=copy`(a: var Union_discriminatorShape;
              b: Union_discriminatorShape) {.error.}
-proc toJsonHook*(source: Union_discriminatorShape): JsonNode
 proc `=copy`(a: var Union_discriminatorShape2;
              b: Union_discriminatorShape2) {.error.}
-proc toJsonHook*(source: Union_discriminatorShape2): JsonNode
 proc `=copy`(a: var Union_discriminator;
              b: Union_discriminator) {.error.}
-proc toJsonHook*(source: Union_discriminator): JsonNode
 proc equals(_: typedesc[Union_discriminatorShape];
             a, b: Union_discriminatorShape): bool =
   equals(typeof(a.radius), a.radius, b.radius) and
