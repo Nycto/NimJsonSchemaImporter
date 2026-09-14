@@ -138,7 +138,7 @@ proc genEnum(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   for value in typ.values:
     enumTyp.add(nnkEnumFieldDef.newTree(safeTypeName(value), value.newLit))
 
-  ctx.addType(result, enumTyp)
+  ctx.addType(nnkPragmaExpr.newTree(result, nnkPragma.newTree(ident("pure"))), enumTyp)
 
 proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   ## Generates the type required to represent a union type

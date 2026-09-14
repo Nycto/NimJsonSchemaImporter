@@ -16,7 +16,7 @@ type
       key3*: BiggestFloat
   UnionKey3* {.byref.} = object
     foo*: Option[string]
-  UnionKey32* = enum
+  UnionKey32* {.pure.} = enum
     A = "a", B = "b", C = "c"
   UnionKey3Union* {.byref.} = object
     case kind*: range[0 .. 4]

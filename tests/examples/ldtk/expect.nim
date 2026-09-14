@@ -4,14 +4,14 @@ import json_schema_import/private/stringify as jsonSchemaStringify
 import json_schema_import/private/[equality, bin, sax]
 
 type
-  LdtkWorldLayout* = enum
+  LdtkWorldLayout* {.pure.} = enum
     Free = "Free", GridVania = "GridVania",
     LinearHorizontal = "LinearHorizontal", LinearVertical = "LinearVertical"
   LdtkNeighbourLevel* {.byref.} = object
     levelIid*: string
     levelUid*: Option[BiggestInt]
     dir*: string
-  LdtkBgPos* = enum
+  LdtkBgPos* {.pure.} = enum
     Unscaled = "Unscaled", Contain = "Contain", Cover = "Cover",
     CoverDirty = "CoverDirty", Repeat = "Repeat"
   LdtkLevelBgPosInfos* {.byref.} = object
@@ -128,22 +128,22 @@ type
     identifier*: string
     instancesData*: seq[LdtkTocInstanceData]
     instances*: seq[LdtkEntityReferenceInfos]
-  LdtkImageExportMode* = enum
+  LdtkImageExportMode* {.pure.} = enum
     None = "None", OneImagePerLayer = "OneImagePerLayer",
     OneImagePerLevel = "OneImagePerLevel", LayersAndLevels = "LayersAndLevels"
-  LdtkIdentifierStyle* = enum
+  LdtkIdentifierStyle* {.pure.} = enum
     Capitalize = "Capitalize", Uppercase = "Uppercase", Lowercase = "Lowercase",
     Free = "Free"
-  LdtkWhen* = enum
+  LdtkWhen* {.pure.} = enum
     Manual = "Manual", AfterLoad = "AfterLoad", BeforeSave = "BeforeSave",
     AfterSave = "AfterSave"
   LdtkCustomCommand* {.byref.} = object
     `when`*: LdtkWhen
     command*: string
-  LdtkWorldLayout2* = enum
+  LdtkWorldLayout2* {.pure.} = enum
     Free = "Free", GridVania = "GridVania",
     LinearHorizontal = "LinearHorizontal", LinearVertical = "LinearVertical"
-  LdtkFlags* = enum
+  LdtkFlags* {.pure.} = enum
     DiscardPreCsvIntGrid = "DiscardPreCsvIntGrid",
     ExportOldTableOfContentData = "ExportOldTableOfContentData",
     ExportPreCsvIntGridFormat = "ExportPreCsvIntGridFormat",
@@ -156,7 +156,7 @@ type
   LdtkEnumTagValue* {.byref.} = object
     tileIds*: seq[BiggestInt]
     enumValueId*: string
-  LdtkEmbedAtlas* = enum
+  LdtkEmbedAtlas* {.pure.} = enum
     LdtkIcons = "LdtkIcons"
   LdtkTilesetDef* {.byref.} = object
     cachedPixelData*: OrderedTable[string, JsonNode]
@@ -186,9 +186,9 @@ type
     identifier*: Option[string]
     value*: BiggestInt
     groupUid*: BiggestInt
-  LdtkChecker* = enum
+  LdtkChecker* {.pure.} = enum
     None = "None", Horizontal = "Horizontal", Vertical = "Vertical"
-  LdtkTileMode* = enum
+  LdtkTileMode* {.pure.} = enum
     Single = "Single", Stamp = "Stamp"
   LdtkAutoRuleDef* {.byref.} = object
     flipX*: bool
@@ -234,7 +234,7 @@ type
     requiredBiomeValues*: seq[string]
     active*: bool
     rules*: seq[LdtkAutoRuleDef]
-  LdtkType* = enum
+  LdtkType* {.pure.} = enum
     IntGrid = "IntGrid", Entities = "Entities", Tiles = "Tiles",
     AutoLayer = "AutoLayer"
   LdtkLayerDef* {.byref.} = object
@@ -272,10 +272,10 @@ type
     gridSize*: BiggestInt
     parallaxFactorX*: BiggestFloat
     autoTilesKilledByOtherLayerUid*: Option[BiggestInt]
-  LdtkAllowedRefs* = enum
+  LdtkAllowedRefs* {.pure.} = enum
     Any = "Any", OnlySame = "OnlySame", OnlyTags = "OnlyTags",
     OnlySpecificEntity = "OnlySpecificEntity"
-  LdtkEditorDisplayMode* = enum
+  LdtkEditorDisplayMode* {.pure.} = enum
     Hidden = "Hidden", ValueOnly = "ValueOnly", NameAndValue = "NameAndValue",
     EntityTile = "EntityTile", LevelTile = "LevelTile", Points = "Points",
     PointStar = "PointStar", PointPath = "PointPath",
@@ -284,14 +284,14 @@ type
     ArrayCountNoLabel = "ArrayCountNoLabel",
     RefLinkBetweenPivots = "RefLinkBetweenPivots",
     RefLinkBetweenCenters = "RefLinkBetweenCenters"
-  LdtkEditorDisplayPos* = enum
+  LdtkEditorDisplayPos* {.pure.} = enum
     Above = "Above", Center = "Center", Beneath = "Beneath"
-  LdtkTextLanguageMode* = enum
+  LdtkTextLanguageMode* {.pure.} = enum
     LangPython = "LangPython", LangRuby = "LangRuby", LangJS = "LangJS",
     LangLua = "LangLua", LangC = "LangC", LangHaxe = "LangHaxe",
     LangMarkdown = "LangMarkdown", LangJson = "LangJson", LangXml = "LangXml",
     LangLog = "LangLog"
-  LdtkEditorLinkStyle* = enum
+  LdtkEditorLinkStyle* {.pure.} = enum
     ZigZag = "ZigZag", StraightArrow = "StraightArrow",
     CurvedArrow = "CurvedArrow", ArrowsLine = "ArrowsLine",
     DashedLine = "DashedLine"
@@ -345,16 +345,16 @@ type
     iconTilesetUid*: Option[BiggestInt]
     identifier*: string
     tags*: seq[string]
-  LdtkLimitScope* = enum
+  LdtkLimitScope* {.pure.} = enum
     PerLayer = "PerLayer", PerLevel = "PerLevel", PerWorld = "PerWorld"
-  LdtkTileRenderMode* = enum
+  LdtkTileRenderMode* {.pure.} = enum
     Cover = "Cover", FitInside = "FitInside", Repeat = "Repeat",
     Stretch = "Stretch", FullSizeCropped = "FullSizeCropped",
     FullSizeUncropped = "FullSizeUncropped", NineSlice = "NineSlice"
-  LdtkLimitBehavior* = enum
+  LdtkLimitBehavior* {.pure.} = enum
     DiscardOldOnes = "DiscardOldOnes", PreventAdding = "PreventAdding",
     MoveLastOne = "MoveLastOne"
-  LdtkRenderMode* = enum
+  LdtkRenderMode* {.pure.} = enum
     Rectangle = "Rectangle", Ellipse = "Ellipse", Tile = "Tile", Cross = "Cross"
   LdtkEntityDef* {.byref.} = object
     tileId*: Option[BiggestInt]

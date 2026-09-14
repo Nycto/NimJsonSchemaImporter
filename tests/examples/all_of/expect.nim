@@ -10,7 +10,7 @@ type
   All_ofExtended* {.byref.} = object
     extra*: bool
     name*: string
-  All_ofNarrowed* = enum
+  All_ofNarrowed* {.pure.} = enum
     One = "one", Two = "two"
   All_of* {.byref.} = object
     combined*: All_ofCombined

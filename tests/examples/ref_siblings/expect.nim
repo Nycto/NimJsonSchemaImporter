@@ -9,7 +9,7 @@ type
   Ref_siblingsNarrowed* {.byref.} = object
     name*: string
     count*: BiggestInt
-  Ref_siblingsTagged* = enum
+  Ref_siblingsTagged* {.pure.} = enum
     Red = "red", Green = "green"
   Ref_siblings* {.byref.} = object
     plain*: Ref_siblingsEntry

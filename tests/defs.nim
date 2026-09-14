@@ -38,6 +38,7 @@ buildTest("ref_siblings", RefSiblings)
 buildTest("all_of", AllOf)
 buildTest("tuples", Tuples)
 buildTest("standalone_required", StandaloneRequired)
+buildTest("enum_value_collision", EnumValueCollision)
 
 # Specific applications
 buildTest("ldtk", Ldtk)
