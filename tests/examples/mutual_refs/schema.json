@@ -1,0 +1,28 @@
+{
+  "$id": "https://example.com/mutual-refs",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Two definitions that refer to each other, so neither can be emitted first",
+  "type": "object",
+  "required": [ "top" ],
+  "properties": {
+    "top": { "$ref": "#/$defs/question" }
+  },
+  "$defs": {
+    "question": {
+      "type": "object",
+      "required": [ "prompt" ],
+      "properties": {
+        "prompt": { "type": "string" },
+        "answer": { "$ref": "#/$defs/answer" }
+      }
+    },
+    "answer": {
+      "type": "object",
+      "required": [ "text" ],
+      "properties": {
+        "text": { "type": "string" },
+        "followUp": { "$ref": "#/$defs/question" }
+      }
+    }
+  }
+}

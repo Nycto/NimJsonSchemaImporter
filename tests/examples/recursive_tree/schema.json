@@ -1,0 +1,19 @@
+{
+  "$id": "https://example.com/recursive-tree",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "A tree whose children are trees, written as a reference back to the root",
+  "type": "object",
+  "required": [ "name" ],
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "weight": {
+      "type": "integer"
+    },
+    "children": {
+      "type": "array",
+      "items": { "$ref": "#" }
+    }
+  }
+}

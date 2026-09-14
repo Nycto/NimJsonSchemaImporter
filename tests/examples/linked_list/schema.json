@@ -1,0 +1,18 @@
+{
+  "$id": "https://example.com/linked-list",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "A chain of nodes, each one optionally pointing at the next",
+  "$ref": "#/$defs/node",
+  "$defs": {
+    "node": {
+      "type": "object",
+      "required": [ "value" ],
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "next": { "$ref": "#/$defs/node" }
+      }
+    }
+  }
+}

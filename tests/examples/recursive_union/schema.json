@@ -1,0 +1,17 @@
+{
+  "$id": "https://example.com/recursive-union",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "A node reached both as one arm of a union and as the entries of a map",
+  "type": "object",
+  "required": [ "name" ],
+  "properties": {
+    "name": { "type": "string" },
+    "child": {
+      "oneOf": [ { "type": "string" }, { "$ref": "#" } ]
+    },
+    "index": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#" }
+    }
+  }
+}

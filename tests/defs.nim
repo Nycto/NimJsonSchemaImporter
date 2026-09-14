@@ -38,6 +38,10 @@ buildTest("ref_siblings", RefSiblings)
 buildTest("all_of", AllOf)
 buildTest("tuples", Tuples)
 buildTest("standalone_required", StandaloneRequired)
+buildTest("recursive_tree", RecursiveTree)
+buildTest("linked_list", LinkedList)
+buildTest("mutual_refs", MutualRefs)
+buildTest("recursive_union", RecursiveUnion)
 
 # Specific applications
 buildTest("ldtk", Ldtk)
