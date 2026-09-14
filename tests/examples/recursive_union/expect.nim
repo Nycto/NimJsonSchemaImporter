@@ -28,7 +28,7 @@ proc fromStream*(typ: typedesc[Recursive_union];
 converter forRecursive_unionUnion*(value: string): Recursive_unionUnion =
   return Recursive_unionUnion(kind: 0, key0: value)
 
-converter forRecursive_unionUnion*(value: ref Recursive_union): Recursive_unionUnion =
+proc forRecursive_unionUnion*(value: ref Recursive_union): Recursive_unionUnion =
   return Recursive_unionUnion(kind: 1, key1: value)
 
 proc equals(_: typedesc[Recursive_unionUnion]; a, b: Recursive_unionUnion): bool =

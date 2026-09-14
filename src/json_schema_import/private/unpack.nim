@@ -30,6 +30,15 @@ proc buildUnionPacker*(unionIndex: int, subtype, unionType: NimNode): NimNode =
   ## Builds methods for packing values into a union
   let baseName = ident("for" & unionType.strVal)
   let key = unionIndex.unionKey
-  return quote:
+
+  result = quote:
     converter `baseName`*(value: `subtype`): `unionType` =
       return `unionType`(kind: `unionIndex`, `key`: value)
+
+  # We can't use a converter for a ref. `jsonutils` tests whether
+  # `toJsonHook(value)` compiles, and an implicit conversion passes
+  # that test, which sends encoding back around the cycle forever.
+  if subtype.kind == nnkRefTy:
+    let procDef = nnkProcDef.newTree()
+    result.copyChildrenTo(procDef)
+    result = procDef
