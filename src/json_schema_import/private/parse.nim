@@ -137,7 +137,7 @@ proc parseTuple(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
 
 proc parseRef(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JObject)
-  let sref = parseRef(node{"$ref"}.getStr)
+  let sref = parseRef(node{"$ref"}.getStr).within(history.document)
 
   # A reference still open closes a cycle, so it is cut into a leaf naming it. Asked before
   # the memo, which holds nothing for an open reference and so cannot tell one from a

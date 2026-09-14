@@ -41,7 +41,7 @@ proc `$`*(sref: SchemaRef): string =
   of SubRef:
     result = sref.name
   of UrlRef:
-    result = sref.url
+    return sref.url & $sref.next
   of AnchorRef:
     result = "#" & sref.name
 
@@ -108,15 +108,30 @@ proc getName*(sref: SchemaRef): string =
     of SubRef, AnchorRef:
       return sref.name
 
+proc within*(sref, document: SchemaRef): SchemaRef =
+  ## Pins a reference to the document it was written in, so `#/...` in a fetched one stays there
+  if sref.kind == UrlRef:
+    let next =
+      if sref.next.isNil:
+        SchemaRef(kind: RootRef)
+      else:
+        sref.next
+    return SchemaRef(kind: UrlRef, url: sref.url, next: next)
+  elif not document.isNil and document.kind == UrlRef:
+    return SchemaRef(kind: UrlRef, url: document.url, next: sref)
+  else:
+    return sref
+
 proc resolve*(sref: SchemaRef, node: JsonNode, resolveUrl: UrlResolver): JsonNode =
   if sref == nil:
     return node
 
   case sref.kind
   of UrlRef:
-    result = resolveUrl(sref.url)
-    if result == nil:
+    let doc = resolveUrl(sref.url)
+    if doc == nil:
       raise newException(ValueError, fmt"Unable to resolve url: {sref.url}")
+    return sref.next.resolve(doc, resolveUrl)
   of RootRef:
     return sref.next.resolve(node, resolveUrl)
   of SubRef:
