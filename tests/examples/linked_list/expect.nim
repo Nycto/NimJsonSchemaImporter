@@ -8,6 +8,14 @@ type
     value*: string
     next*: Option[ref Linked_list]
 proc `=copy`(a: var Linked_list; b: Linked_list) {.error.}
+proc equals(_: typedesc[Linked_list]; a, b: Linked_list): bool
+proc `==`*(a, b: Linked_list): bool
+proc stringify(_: typedesc[Linked_list]; value: Linked_list): string
+proc `$`*(value: Linked_list): string
+proc fromJsonHook*(target: var Linked_list; source: JsonNode)
+proc toJsonHook*(source: Linked_list): JsonNode
+proc toStream*(source: Linked_list; target: Stream)
+proc fromStream*(typ: typedesc[Linked_list]; source: var JsonParser): Linked_list
 proc equals(_: typedesc[Linked_list]; a, b: Linked_list): bool =
   equals(typeof(a.value), a.value, b.value) and
       equals(typeof(a.next), a.next, b.next)

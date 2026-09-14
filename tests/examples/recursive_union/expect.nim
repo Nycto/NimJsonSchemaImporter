@@ -16,6 +16,15 @@ type
     index*: OrderedTable[string, ref Recursive_union]
 proc `=copy`(a: var Recursive_union; b: Recursive_union) {.
     error.}
+proc equals(_: typedesc[Recursive_union]; a, b: Recursive_union): bool
+proc `==`*(a, b: Recursive_union): bool
+proc stringify(_: typedesc[Recursive_union]; value: Recursive_union): string
+proc `$`*(value: Recursive_union): string
+proc fromJsonHook*(target: var Recursive_union; source: JsonNode)
+proc toJsonHook*(source: Recursive_union): JsonNode
+proc toStream*(source: Recursive_union; target: Stream)
+proc fromStream*(typ: typedesc[Recursive_union];
+                 source: var JsonParser): Recursive_union
 converter forRecursive_unionUnion*(value: string): Recursive_unionUnion =
   return Recursive_unionUnion(kind: 0, key0: value)
 
