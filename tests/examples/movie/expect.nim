@@ -4,7 +4,7 @@ import json_schema_import/private/stringify as jsonSchemaStringify
 import json_schema_import/private/[equality, bin, sax]
 
 type
-  MovieGenre* = enum
+  MovieGenre* {.pure.} = enum
     Action = "Action", Comedy = "Comedy", Drama = "Drama",
     `Science Fiction` = "Science Fiction"
   Movie* {.byref.} = object

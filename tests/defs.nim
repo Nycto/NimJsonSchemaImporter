@@ -42,6 +42,7 @@ buildTest("recursive_tree", RecursiveTree)
 buildTest("linked_list", LinkedList)
 buildTest("mutual_refs", MutualRefs)
 buildTest("recursive_union", RecursiveUnion)
+buildTest("enum_value_collision", EnumValueCollision)
 
 # Specific applications
 buildTest("ldtk", Ldtk)

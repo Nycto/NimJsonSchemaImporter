@@ -1,0 +1,1 @@
+EnumValueCollision(kind: Feature, basicAuth: EnumValueCollisionBasicAuth(user: "someone"), feature: EnumValueCollisionFeature(name: "thing"), scheme: basicAuth, mode: Mode)

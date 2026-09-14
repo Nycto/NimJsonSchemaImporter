@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "kind": { "enum": ["basicAuth", "Feature"] },
+    "basicAuth": {
+      "type": "object",
+      "properties": { "user": { "type": "string" } }
+    },
+    "feature": {
+      "type": "object",
+      "properties": { "name": { "type": "string" } }
+    },
+    "scheme": { "enum": ["basicAuth", "bearer"] },
+    "mode": { "enum": ["Mode", "other"] }
+  }
+}

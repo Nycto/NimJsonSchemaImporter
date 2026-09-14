@@ -1,0 +1,1 @@
+EnumValueCollision(kind: basicAuth, basicAuth: ∅, feature: ∅, scheme: ∅, mode: ∅)
