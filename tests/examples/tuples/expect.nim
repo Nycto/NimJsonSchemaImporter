@@ -139,21 +139,22 @@ proc toJsonHook*(source: TuplesUnion): JsonNode =
 proc isTuple*(value: TuplesUnion): bool =
   value.kind == 0
 
-proc asTuple*(value: TuplesUnion): auto =
+proc asTuple*(value: TuplesUnion): typeof(value.key0) =
   assert(value.kind == 0)
   return value.key0
 
 proc isTupleOfIntAndInt*(value: TuplesUnion): bool =
   value.kind == 0
 
-proc asTupleOfIntAndInt*(value: TuplesUnion): auto =
+proc asTupleOfIntAndInt*(value: TuplesUnion): typeof(
+    value.key0) =
   assert(value.kind == 0)
   return value.key0
 
 proc isStr*(value: TuplesUnion): bool =
   value.kind == 1
 
-proc asStr*(value: TuplesUnion): auto =
+proc asStr*(value: TuplesUnion): typeof(value.key1) =
   assert(value.kind == 1)
   return value.key1
 

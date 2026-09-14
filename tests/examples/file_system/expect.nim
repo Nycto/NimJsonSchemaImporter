@@ -361,28 +361,29 @@ proc toJsonHook*(source: File_systemUnion): JsonNode =
 proc isDiskDevice*(value: File_systemUnion): bool =
   value.kind == 0
 
-proc asDiskDevice*(value: File_systemUnion): auto =
+proc asDiskDevice*(value: File_systemUnion): typeof(
+    value.key0) =
   assert(value.kind == 0)
   return value.key0
 
 proc isDiskUUID*(value: File_systemUnion): bool =
   value.kind == 1
 
-proc asDiskUUID*(value: File_systemUnion): auto =
+proc asDiskUUID*(value: File_systemUnion): typeof(value.key1) =
   assert(value.kind == 1)
   return value.key1
 
 proc isNfs*(value: File_systemUnion): bool =
   value.kind == 2
 
-proc asNfs*(value: File_systemUnion): auto =
+proc asNfs*(value: File_systemUnion): typeof(value.key2) =
   assert(value.kind == 2)
   return value.key2
 
 proc isTmpfs*(value: File_systemUnion): bool =
   value.kind == 3
 
-proc asTmpfs*(value: File_systemUnion): auto =
+proc asTmpfs*(value: File_systemUnion): typeof(value.key3) =
   assert(value.kind == 3)
   return value.key3
 

@@ -57,14 +57,14 @@ proc toJsonHook*(source: Union_root): JsonNode =
 proc isStr*(value: Union_root): bool =
   value.kind == 0
 
-proc asStr*(value: Union_root): auto =
+proc asStr*(value: Union_root): typeof(value.key0) =
   assert(value.kind == 0)
   return value.key0
 
 proc isInt*(value: Union_root): bool =
   value.kind == 1
 
-proc asInt*(value: Union_root): auto =
+proc asInt*(value: Union_root): typeof(value.key1) =
   assert(value.kind == 1)
   return value.key1
 

@@ -22,7 +22,7 @@ proc buildUnionUnpacker*(typ: TypeDef, typeName: NimNode): NimNode =
           proc `checker`*(value: `typeName`): bool =
             value.kind == `i`
 
-          proc `getter`*(value: `typeName`): auto =
+          proc `getter`*(value: `typeName`): typeof(value.`keyName`) =
             assert(value.kind == `i`)
             return value.`keyName`
 
