@@ -33,6 +33,12 @@ proc contains*(history: History, sref: SchemaRef): bool =
     if node.kind == RefStep and node.sref == sref:
       return true
 
+proc document*(history: History): SchemaRef =
+  ## The reference that led into the document currently being parsed
+  for node in history:
+    if node.kind == RefStep:
+      return node.sref
+
 proc `$`*(history: History): string =
   if history == nil:
     return ""
