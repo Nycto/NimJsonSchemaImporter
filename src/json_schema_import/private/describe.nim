@@ -1,4 +1,4 @@
-import std/[json, sets, options], schemaRef
+import std/[json, sets, options, tables], schemaRef
 
 type
   VariantKind* = enum
@@ -7,6 +7,8 @@ type
     vkInteger
     vkNumber
     vkString
+    vkArray
+    vkObject
     vkAny ## Nothing named a type, so every value is allowed
     vkConst ## A single fixed value
     vkEdge
@@ -17,6 +19,14 @@ type
     case kind*: VariantKind
     of vkString:
       values*: Option[OrderedSet[string]] ## Set by an `enum`
+    of vkArray:
+      items*: Description ## Nil when nothing constrains them
+      prefix*: Option[seq[Description]] ## A tuple, with `items` folded into every slot
+    of vkObject:
+      properties*: OrderedTable[string, Description]
+      required*: OrderedSet[string]
+      additional*: Description ## Nil when nothing constrains them
+      shaped*: bool ## Whether the properties were listed, even as none at all
     of vkConst:
       value*: JsonNode
     of vkEdge:
@@ -48,11 +58,80 @@ proc kindOf(value: JsonNode): VariantKind =
   of JInt: vkInteger
   of JFloat: vkNumber
   of JString: vkString
-  of JObject, JArray: vkAny
+  of JArray: vkArray
+  of JObject: vkObject
 
 proc admits(kind, other: VariantKind): bool =
   ## Whether every value of `other` is also a value of `kind`
   kind == other or kind == vkAny or (kind == vkNumber and other == vkInteger)
+
+proc intersect*(a, b: Description): Description
+
+proc narrow(a, b: Description): Description =
+  ## Intersects two optional constraints, where nil is no constraint at all
+  if a.isNil:
+    b
+  elif b.isNil:
+    a
+  else:
+    intersect(a, b)
+
+proc narrowString(a, b: Variant): Variant =
+  if a.values.isNone:
+    return b
+  if b.values.isNone:
+    return a
+
+  var values = initOrderedSet[string]()
+  for value in a.values.get:
+    if value in b.values.get:
+      values.incl(value)
+  if values.len > 0:
+    return Variant(kind: vkString, values: some(values))
+
+proc narrowArray(a, b: Variant): Variant =
+  result = Variant(kind: vkArray, items: narrow(a.items, b.items))
+
+  if a.prefix.isSome and b.prefix.isSome and a.prefix.get.len != b.prefix.get.len:
+    raise newException(ValueError, "Mismatched tuple lengths")
+
+  let slots = if a.prefix.isSome: a.prefix else: b.prefix
+  if slots.isNone:
+    return
+
+  # `items` covers the slots too, except when it is `false`, which only closes the tail
+  var elements: seq[Description]
+  for i, slot in slots.get:
+    var element = slot
+    if a.prefix.isSome and b.prefix.isSome:
+      element = intersect(element, b.prefix.get[i])
+    if not result.items.isNil and not result.items.isNever:
+      element = intersect(element, result.items)
+    if element.isNever:
+      return nil
+    elements.add(element)
+  result.prefix = some(elements)
+
+proc narrowObject(a, b: Variant): Variant =
+  result = Variant(
+    kind: vkObject,
+    additional: narrow(a.additional, b.additional),
+    shaped: a.shaped or b.shaped,
+  )
+  for key in a.required:
+    result.required.incl(key)
+  for key in b.required:
+    result.required.incl(key)
+
+  for key, prop in a.properties:
+    result.properties[key] = prop
+  for key, prop in b.properties:
+    result.properties[key] = narrow(result.properties.getOrDefault(key), prop)
+
+  # An object missing a key it has to hold is no object at all
+  for key in result.required:
+    if key in result.properties and result.properties[key].isNever:
+      return nil
 
 proc intersectVariant*(a, b: Variant): Variant =
   ## The variant satisfying both, or nil when no value can
@@ -78,16 +157,15 @@ proc intersectVariant*(a, b: Variant): Variant =
   else:
     return nil
 
-  if result.kind == vkString and a.values.isSome and b.values.isSome:
-    var values = initOrderedSet[string]()
-    for value in a.values.get:
-      if value in b.values.get:
-        values.incl(value)
-    if values.len == 0:
-      return nil
-    result = Variant(kind: vkString, values: some(values))
-  elif result.kind == vkString and a.values.isSome:
-    result = a
+  case result.kind
+  of vkString:
+    return narrowString(a, b)
+  of vkArray:
+    return narrowArray(a, b)
+  of vkObject:
+    return narrowObject(a, b)
+  else:
+    discard
 
 proc union*(a, b: Description): Description =
   ## Values satisfying either side, keeping each alternative as its own variant
