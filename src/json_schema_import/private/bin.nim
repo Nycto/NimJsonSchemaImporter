@@ -160,12 +160,19 @@ proc fromBinary*[T: object | tuple](_: typedesc[T], source: string, idx: var int
 
 proc toBinary*[T: ref object | ref tuple](target: var string, source: T) =
   ## Serializes a reference object or tuple into binary format and appends it to the target string.
-  toBinary(target, source[])
+  if source.isNil:
+    toBinary(target, false)
+  else:
+    toBinary(target, true)
+    toBinary(target, source[])
 
 proc fromBinary*[T: ref object | ref tuple](
     _: typedesc[T], source: string, idx: var int
 ): T =
   ## Deserializes a reference object or tuple from binary format in the source string.
+  if not fromBinary(bool, source, idx):
+    return nil
+
   result = new(T)
   for _, value in result[].fieldPairs:
     value = fromBinary(typeof(value), source, idx)
