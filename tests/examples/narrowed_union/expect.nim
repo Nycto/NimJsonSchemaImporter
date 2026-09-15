@@ -198,7 +198,8 @@ proc toJsonHook*(source: Narrowed_unionUnion): JsonNode =
 proc isObject*(value: Narrowed_unionUnion): bool =
   value.kind == 0
 
-proc asObject*(value: Narrowed_unionUnion): auto =
+proc asObject*(value: Narrowed_unionUnion): typeof(
+    value.key0) =
   assert(value.kind == 0)
   return value.key0
 

@@ -105,28 +105,28 @@ proc toJsonHook*(source: UnionUnion): JsonNode =
 proc isStr*(value: UnionUnion): bool =
   value.kind == 0
 
-proc asStr*(value: UnionUnion): auto =
+proc asStr*(value: UnionUnion): typeof(value.key0) =
   assert(value.kind == 0)
   return value.key0
 
 proc isInt*(value: UnionUnion): bool =
   value.kind == 1
 
-proc asInt*(value: UnionUnion): auto =
+proc asInt*(value: UnionUnion): typeof(value.key1) =
   assert(value.kind == 1)
   return value.key1
 
 proc isBool*(value: UnionUnion): bool =
   value.kind == 2
 
-proc asBool*(value: UnionUnion): auto =
+proc asBool*(value: UnionUnion): typeof(value.key2) =
   assert(value.kind == 2)
   return value.key2
 
 proc isFloat*(value: UnionUnion): bool =
   value.kind == 3
 
-proc asFloat*(value: UnionUnion): auto =
+proc asFloat*(value: UnionUnion): typeof(value.key3) =
   assert(value.kind == 3)
   return value.key3
 
@@ -303,49 +303,49 @@ proc toJsonHook*(source: UnionKey3Union): JsonNode =
 proc isObject*(value: UnionKey3Union): bool =
   value.kind == 0
 
-proc asObject*(value: UnionKey3Union): auto =
+proc asObject*(value: UnionKey3Union): typeof(value.key0) =
   assert(value.kind == 0)
   return value.key0
 
 proc isSeq*(value: UnionKey3Union): bool =
   value.kind == 1
 
-proc asSeq*(value: UnionKey3Union): auto =
+proc asSeq*(value: UnionKey3Union): typeof(value.key1) =
   assert(value.kind == 1)
   return value.key1
 
 proc isSeqOfStr*(value: UnionKey3Union): bool =
   value.kind == 1
 
-proc asSeqOfStr*(value: UnionKey3Union): auto =
+proc asSeqOfStr*(value: UnionKey3Union): typeof(value.key1) =
   assert(value.kind == 1)
   return value.key1
 
 proc isMap*(value: UnionKey3Union): bool =
   value.kind == 2
 
-proc asMap*(value: UnionKey3Union): auto =
+proc asMap*(value: UnionKey3Union): typeof(value.key2) =
   assert(value.kind == 2)
   return value.key2
 
 proc isMapOfStr*(value: UnionKey3Union): bool =
   value.kind == 2
 
-proc asMapOfStr*(value: UnionKey3Union): auto =
+proc asMapOfStr*(value: UnionKey3Union): typeof(value.key2) =
   assert(value.kind == 2)
   return value.key2
 
 proc isEnum*(value: UnionKey3Union): bool =
   value.kind == 3
 
-proc asEnum*(value: UnionKey3Union): auto =
+proc asEnum*(value: UnionKey3Union): typeof(value.key3) =
   assert(value.kind == 3)
   return value.key3
 
 proc isStr*(value: UnionKey3Union): bool =
   value.kind == 4
 
-proc asStr*(value: UnionKey3Union): auto =
+proc asStr*(value: UnionKey3Union): typeof(value.key4) =
   assert(value.kind == 4)
   return value.key4
 

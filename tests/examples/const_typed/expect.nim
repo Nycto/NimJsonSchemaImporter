@@ -166,7 +166,7 @@ proc toJsonHook*(source: Const_typedUnion): JsonNode =
 proc isObject*(value: Const_typedUnion): bool =
   value.kind == 0
 
-proc asObject*(value: Const_typedUnion): auto =
+proc asObject*(value: Const_typedUnion): typeof(value.key0) =
   assert(value.kind == 0)
   return value.key0
 
