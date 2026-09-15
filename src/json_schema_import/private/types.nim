@@ -116,6 +116,37 @@ proc `==`*(a, b: TypeDef): bool {.noSideEffect.} =
       NeverType:
     return true
 
+proc closesOnto*(typ: TypeDef, sref: SchemaRef): bool =
+  ## Whether an edge anywhere inside a type points back at the given reference
+
+  template recurse(sub: TypeDef): bool =
+    not sub.isNil and sub.closesOnto(sref)
+
+  case typ.kind
+  of RefType:
+    return typ.schemaRef == sref
+  of ObjType:
+    for _, prop in typ.properties:
+      if recurse(prop.typ):
+        return true
+  of ArrayType:
+    return recurse(typ.items)
+  of MapType:
+    return recurse(typ.entries)
+  of OptionalType:
+    return recurse(typ.subtype)
+  of TupleType:
+    for element in typ.elements:
+      if recurse(element):
+        return true
+  of UnionType:
+    for subtype in typ.subtypes:
+      if recurse(subtype):
+        return true
+  of EnumType, IntegerType, StringType, NumberType, BoolType, NullType, JsonType,
+      ConstValueType, NeverType:
+    discard
+
 proc `$`*(typ: TypeDef): string =
   case typ.kind
   of ObjType:

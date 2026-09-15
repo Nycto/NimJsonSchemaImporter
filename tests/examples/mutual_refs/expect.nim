@@ -16,6 +16,15 @@ proc `=copy`(a: var Mutual_refsAnswer;
              b: Mutual_refsAnswer) {.error.}
 proc `=copy`(a: var Mutual_refsQuestion;
              b: Mutual_refsQuestion) {.error.}
+proc equals(_: typedesc[Mutual_refsQuestion]; a, b: Mutual_refsQuestion): bool
+proc `==`*(a, b: Mutual_refsQuestion): bool
+proc stringify(_: typedesc[Mutual_refsQuestion]; value: Mutual_refsQuestion): string
+proc `$`*(value: Mutual_refsQuestion): string
+proc fromJsonHook*(target: var Mutual_refsQuestion; source: JsonNode)
+proc toJsonHook*(source: Mutual_refsQuestion): JsonNode
+proc toStream*(source: Mutual_refsQuestion; target: Stream)
+proc fromStream*(typ: typedesc[Mutual_refsQuestion];
+                 source: var JsonParser): Mutual_refsQuestion
 proc `=copy`(a: var Mutual_refs; b: Mutual_refs) {.error.}
 proc equals(_: typedesc[Mutual_refsAnswer]; a, b: Mutual_refsAnswer): bool =
   equals(typeof(a.text), a.text, b.text) and

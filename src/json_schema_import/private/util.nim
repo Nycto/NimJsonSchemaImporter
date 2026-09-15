@@ -122,3 +122,16 @@ proc markPublic*(ident: NimNode): NimNode =
     result[0] = ident[0].markPublic
   else:
     return postfix(ident, "*")
+
+proc asDeclarations*(node: NimNode): NimNode =
+  ## Strips every proc in a generated block back to its signature
+  result = newStmtList()
+  case node.kind
+  of nnkProcDef:
+    result.add(node.copyNimTree)
+    result[^1].body = newEmptyNode()
+  of nnkStmtList:
+    for child in node:
+      result.add(child.asDeclarations)
+  else:
+    discard

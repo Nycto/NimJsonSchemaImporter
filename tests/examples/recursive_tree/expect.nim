@@ -10,6 +10,15 @@ type
     children*: seq[ref Recursive_tree]
 proc `=copy`(a: var Recursive_tree; b: Recursive_tree) {.
     error.}
+proc equals(_: typedesc[Recursive_tree]; a, b: Recursive_tree): bool
+proc `==`*(a, b: Recursive_tree): bool
+proc stringify(_: typedesc[Recursive_tree]; value: Recursive_tree): string
+proc `$`*(value: Recursive_tree): string
+proc fromJsonHook*(target: var Recursive_tree; source: JsonNode)
+proc toJsonHook*(source: Recursive_tree): JsonNode
+proc toStream*(source: Recursive_tree; target: Stream)
+proc fromStream*(typ: typedesc[Recursive_tree];
+                 source: var JsonParser): Recursive_tree
 proc equals(_: typedesc[Recursive_tree]; a, b: Recursive_tree): bool =
   equals(typeof(a.name), a.name, b.name) and
       equals(typeof(a.weight), a.weight, b.weight) and

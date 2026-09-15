@@ -66,6 +66,12 @@ proc genRef(typ: TypeDef, ctx: GenContext): NimNode =
 
   return nnkRefTy.newTree(ctx.cache[typ.schemaRef])
 
+proc declare(ctx: GenContext, typ: TypeDef, procs: NimNode) =
+  ## Declares a type's procs ahead of their definitions, when an edge closes onto it
+  if typ.closesOnto(typ.sref):
+    ctx.declarations.add(procs.asDeclarations)
+  ctx.procs.add(procs)
+
 proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   ## Generates code for an object type
   assert(typ.kind == ObjType)
@@ -93,13 +99,16 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     ctx.declarations.add quote do:
       proc `copyProc`(a: var `result`, b: `result`) {.error.}
 
-  ctx.procs.add(
-    typ.buildEquals(result),
-    typ.buildDollars(result),
-    typ.buildObjectDecoder(result),
-    typ.buildObjectEncoder(result),
-    typ.buildSaxObjEncoder(result),
-    typ.buildSaxObjDecoder(result),
+  ctx.declare(
+    typ,
+    newStmtList(
+      typ.buildEquals(result),
+      typ.buildDollars(result),
+      typ.buildObjectDecoder(result),
+      typ.buildObjectEncoder(result),
+      typ.buildSaxObjEncoder(result),
+      typ.buildSaxObjDecoder(result),
+    ),
   )
 
 proc genConst(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
@@ -199,15 +208,18 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     nnkObjectTy.newTree(newEmptyNode(), newEmptyNode(), nnkRecList.newTree(cases)),
   )
 
-  ctx.procs.add(
-    typ.buildEquals(result),
-    typ.buildDollars(result),
-    typ.buildUnionDecoder(result, ctx.refTypes),
-    typ.buildUnionEncoder(result),
-    typ.buildUnionUnpacker(result),
-    typ.buildUnionBinSerde(result),
-    typ.buildSaxUnionEncoder(result),
-    typ.buildSaxUnionDecoder(result),
+  ctx.declare(
+    typ,
+    newStmtList(
+      typ.buildEquals(result),
+      typ.buildDollars(result),
+      typ.buildUnionDecoder(result, ctx.refTypes),
+      typ.buildUnionEncoder(result),
+      typ.buildUnionUnpacker(result),
+      typ.buildUnionBinSerde(result),
+      typ.buildSaxUnionEncoder(result),
+      typ.buildSaxUnionDecoder(result),
+    ),
   )
 
 proc genMap(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
