@@ -1,0 +1,1 @@
+RecursiveMerge(next: RecursiveMergeNode(next: RecursiveMergeNode(next: ∅)), name: "head")

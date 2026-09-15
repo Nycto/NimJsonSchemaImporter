@@ -268,6 +268,10 @@ proc genType(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     result = genConst(typ, name, ctx)
   of RefType:
     result = genRef(typ, ctx)
+  of NoteType:
+    # Generated only for the name an edge inside points at, which isn't this property's
+    discard genType(typ.note, nil, ctx)
+    result = genType(typ.inner, name, ctx)
   else:
     raise newException(AssertionDefect, "Could not generate code for " & $typ.kind)
 
@@ -290,7 +294,7 @@ proc genDeclarations*(schema: JsonSchema, conf: JsonSchemaConfig): GeneratedOutp
   let rootChain = rootName(conf.rootTypeName)
 
   result.rootType =
-    if schema.rootType.kind in namedKinds:
+    if schema.rootType.stripNotes.kind in namedKinds:
       schema.rootType.genType(rootChain, ctx)
     else:
       let alias = ctx.genName(rootChain, schema.rootType)

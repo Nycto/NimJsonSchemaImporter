@@ -203,15 +203,8 @@ proc mergeOrdered(a, b: TypeDef, history: History): TypeDef =
 
   return nil
 
-proc mergeTypes*(a, b: TypeDef, history: History): TypeDef =
-  ## Intersects two interpretations of the same schema node
-  assert(not a.isNil or not b.isNil)
-
-  if a.isNil:
-    return b
-  elif b.isNil:
-    return a
-
+proc mergeShapes(a, b: TypeDef, history: History): TypeDef =
+  ## Intersects two types, neither of which carries a note
   result = mergeOrdered(a, b, history)
   if not result.isNil:
     return
@@ -245,3 +238,25 @@ proc mergeTypes*(a, b: TypeDef, history: History): TypeDef =
   raise newException(
     ValueError, fmt"Unable to reconcile {a.kind} with {b.kind} at {history}"
   )
+
+proc mergeTypes*(a, b: TypeDef, history: History): TypeDef =
+  ## Intersects two interpretations of the same schema node
+  assert(not a.isNil or not b.isNil)
+
+  if a.isNil:
+    return b
+  elif b.isNil:
+    return a
+
+  if a.kind == NoteType:
+    return mergeTypes(a.inner, b, history).withNote(a.note)
+  elif b.kind == NoteType:
+    return mergeTypes(a, b.inner, history).withNote(b.note)
+
+  # The merge builds a new type in place of its operands, which would leave any edge onto
+  # one of them with nothing to point at
+  result = mergeShapes(a, b, history)
+  if a.isEdgeTarget:
+    result = result.withNote(a)
+  if b.isEdgeTarget:
+    result = result.withNote(b)

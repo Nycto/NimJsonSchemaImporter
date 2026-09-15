@@ -18,6 +18,8 @@ type
     OptionalType
     ConstValueType
     NeverType ## A schema nothing can satisfy, written as a `false` subschema
+    NoteType
+      ## A type carrying a note: another type that has to be generated alongside it
 
   PropDef* = tuple[propName: string, typ: TypeDef, required: bool, nullable: bool]
     ## The details of an object property
@@ -51,6 +53,9 @@ type
       discard
     of ConstValueType:
       value*: JsonNode
+    of NoteType:
+      note*: TypeDef ## Replaced by `inner`, but an edge inside still points at its name
+      inner*: TypeDef ## The type this node actually describes
 
   JsonSchema* = ref object
     rootType*: TypeDef
@@ -63,6 +68,8 @@ proc hasRealField*(typ: TypeDef): bool =
       false
     of OptionalType:
       hasRealField(typ.subtype)
+    of NoteType:
+      hasRealField(typ.inner)
     else:
       true
 
@@ -90,6 +97,8 @@ proc hash*(typ: TypeDef): Hash {.noSideEffect.} =
     discard
   of ConstValueType:
     result = result !& hash(typ.value)
+  of NoteType:
+    result = result !& hash(typ.note.sref) !& hash(typ.inner)
 
 proc `==`*(a, b: TypeDef): bool {.noSideEffect.} =
   if a.kind != b.kind:
@@ -112,6 +121,8 @@ proc `==`*(a, b: TypeDef): bool {.noSideEffect.} =
     return a.entries == b.entries
   of OptionalType:
     return a.subtype == b.subtype
+  of NoteType:
+    return a.note.sref == b.note.sref and a.inner == b.inner
   of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, ConstValueType,
       NeverType:
     return true
@@ -135,6 +146,8 @@ proc closesOnto*(typ: TypeDef, sref: SchemaRef): bool =
     return recurse(typ.entries)
   of OptionalType:
     return recurse(typ.subtype)
+  of NoteType:
+    return recurse(typ.inner)
   of TupleType:
     for element in typ.elements:
       if recurse(element):
@@ -146,6 +159,16 @@ proc closesOnto*(typ: TypeDef, sref: SchemaRef): bool =
   of EnumType, IntegerType, StringType, NumberType, BoolType, NullType, JsonType,
       ConstValueType, NeverType:
     discard
+
+proc isEdgeTarget*(typ: TypeDef): bool =
+  ## Whether an edge inside a type needs the type's own name to point at
+  not typ.sref.isNil and typ.closesOnto(typ.sref)
+
+proc withNote*(inner, note: TypeDef): TypeDef =
+  ## Keeps a type an edge closes onto alive next to whatever replaced it
+  if inner.sref == note.sref:
+    return inner
+  return TypeDef(kind: NoteType, note: note, inner: inner)
 
 proc `$`*(typ: TypeDef): string =
   case typ.kind
@@ -181,6 +204,8 @@ proc `$`*(typ: TypeDef): string =
     result = "(Never)"
   of ConstValueType:
     result = fmt"(Const {typ.value})"
+  of NoteType:
+    result = fmt"(Note {typ.note.sref} {typ.inner})"
 
   if not typ.sref.isNil:
     result = fmt"({typ.sref} {result})"
@@ -194,6 +219,11 @@ proc withRef*(typ: TypeDef, sref: SchemaRef): TypeDef =
   ## like it would do the job, but the VM aliases the two bodies instead of copying.
   if typ.sref.isNil:
     typ.sref = sref
+    return typ
+
+  # Relabelling would take away the name an edge inside points at. The old name serves just
+  # as well, unless an edge needs the new one too.
+  if typ.isEdgeTarget and not typ.closesOnto(sref):
     return typ
 
   result =
@@ -216,18 +246,29 @@ proc withRef*(typ: TypeDef, sref: SchemaRef): TypeDef =
       TypeDef(kind: OptionalType, subtype: typ.subtype)
     of ConstValueType:
       TypeDef(kind: ConstValueType, value: typ.value)
+    of NoteType:
+      TypeDef(kind: NoteType, note: typ.note, inner: typ.inner)
     of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, NeverType:
       TypeDef(kind: typ.kind)
 
   result.id = typ.id
   result.sref = sref
+  if typ.isEdgeTarget:
+    result = result.withNote(typ)
 
 const SELF_OPTIONAL* = {MapType, ArrayType}
   ## These are field types that don't need to be wrapped in optional values
 
+proc stripNotes*(typ: TypeDef): TypeDef =
+  ## Looks past any notes, to the type a value actually has
+  result = typ
+  while result.kind == NoteType:
+    result = result.inner
+
 proc optional*(typ: TypeDef): TypeDef =
   return
-    if typ.kind in SELF_OPTIONAL or typ.kind in {ConstValueType, OptionalType}:
+    if typ.stripNotes.kind in SELF_OPTIONAL or
+        typ.stripNotes.kind in {ConstValueType, OptionalType}:
       typ
     else:
       TypeDef(kind: OptionalType, subtype: typ)
@@ -259,6 +300,7 @@ proc abbrev*(typ: TypeDef): string =
     of JsonType: "Json"
     of ConstValueType: "Const"
     of NeverType: "Never"
+    of NoteType: typ.inner.abbrev
 
 proc abbrevAll(typs: seq[TypeDef]): string =
   ## Names a type built out of a list of others by what each of them is
@@ -288,7 +330,7 @@ iterator nameFragments*(typ: TypeDef): string =
     of OptionalType:
       yield fmt"Of{typ.subtype.abbrev}"
     of EnumType, RefType, IntegerType, StringType, NumberType, BoolType, NullType,
-        JsonType, ConstValueType, NeverType:
+        JsonType, ConstValueType, NeverType, NoteType:
       discard
 
 proc chooseName*(typ: TypeDef): string =

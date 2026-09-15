@@ -1,0 +1,12 @@
+{
+  "$id": "https://example.com/recursive-merge",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "A recursive definition folded into a merge, which leaves the edge inside it nothing to point at",
+  "allOf": [
+    { "$ref": "#/$defs/node" },
+    { "required": [ "name" ], "properties": { "name": { "type": "string" } } }
+  ],
+  "$defs": {
+    "node": { "type": "object", "properties": { "next": { "$ref": "#/$defs/node" } } }
+  }
+}

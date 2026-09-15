@@ -77,7 +77,7 @@ proc parseObj(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
         else:
           subtype.optional(),
       required: key in required,
-      nullable: subtype.kind == OptionalType,
+      nullable: subtype.stripNotes.kind == OptionalType,
     )
 
 proc parseRequired(node: JsonNode, history: History): TypeDef =

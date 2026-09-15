@@ -1,12 +1,31 @@
 import
-  std/[unittest, os, strutils, tables],
+  std/[unittest, os, strutils, tables, json],
   json_schema_import {.all.},
   json_schema_import/private/[parse, schemaRef, types]
+
+proc resolver(url: string): JsonNode =
+  ## A fetched document whose root is a union that an edge inside closes back onto
+  doAssert(url == "https://example.com/base.json", "Unsupported test url: " & url)
+  return %*{
+    "type": "object",
+    "oneOf": [{"required": ["type"]}, {"required": ["$ref"]}],
+    "properties": {"items": {"$ref": "#/definitions/items"}},
+    "definitions": {
+      "items": {
+        "oneOf": [
+          {"type": "object", "properties": {"$ref": {"type": "string"}}},
+          {"allOf": [{"$ref": "#"}, {"properties": {"format": {"type": "string"}}}]},
+        ]
+      }
+    },
+  }
 
 proc generate(schema: string): string {.compileTime.} =
   ## What codegen reports for a schema, or "" when it generates one
   try:
-    discard parseJsonSchema(schema, JsonSchemaConfig(rootTypeName: "Root"))
+    discard parseJsonSchema(
+      schema, JsonSchemaConfig(rootTypeName: "Root", urlResolver: resolver)
+    )
     return ""
   except ValueError as e:
     return e.msg
@@ -249,6 +268,51 @@ suite "A cycle with no type to close onto":
     check(genError(MUTUAL_REFS) == "")
     check(genError(RECURSIVE_TREE) == "")
     check(genError(RECURSIVE_UNION) == "")
+
+  test "A fetched target a merge folded away is still generated":
+    const schema = """{
+        "allOf": [
+          { "$ref": "https://example.com/base.json" },
+          { "required": [ "name" ], "properties": { "name": { "type": "string" } } }
+        ]
+      }"""
+    check(genError(schema) == "")
+
+  test "A target relabelled by a reference to it is still generated":
+    const schema = """{
+        "$ref": "#/$defs/alias",
+        "$defs": {
+          "alias": { "$ref": "#/$defs/node" },
+          "node": { "type": "object", "properties": { "next": { "$ref": "#/$defs/node" } } }
+        }
+      }"""
+    check(genError(schema) == "")
+
+suite "A merge that folds away a type":
+  test "Notes it when an edge inside closes onto it":
+    let typ = """{
+        "allOf": [
+          { "$ref": "#/$defs/node" },
+          { "required": [ "name" ], "properties": { "name": { "type": "string" } } }
+        ],
+        "$defs": {
+          "node": { "type": "object", "properties": { "next": { "$ref": "#/$defs/node" } } }
+        }
+      }""".root
+    check(typ.kind == NoteType)
+    check(typ.note.sref == parseRef("#/$defs/node"))
+    check(typ.inner.kind == ObjType)
+    check("name" in typ.inner.properties)
+
+  test "Leaves it alone when nothing closes onto it":
+    let typ = """{
+        "allOf": [
+          { "$ref": "#/$defs/leaf" },
+          { "required": [ "name" ], "properties": { "name": { "type": "string" } } }
+        ],
+        "$defs": { "leaf": { "type": "object", "properties": { "id": { "type": "string" } } } }
+      }""".root
+    check(typ.kind == ObjType)
 
 suite "The committed recursive examples":
   test "All parse to a finite tree":

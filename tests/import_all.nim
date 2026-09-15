@@ -45,3 +45,4 @@ importJsonSchema(
   "examples/enum_value_collision/schema.json", conf("EnumValueCollision")
 )
 importJsonSchema("examples/union_ref_to_union/schema.json", conf("UnionRefToUnion"))
+importJsonSchema("examples/recursive_merge/schema.json", conf("RecursiveMerge"))

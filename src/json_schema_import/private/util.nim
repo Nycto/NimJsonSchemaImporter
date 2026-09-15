@@ -79,12 +79,12 @@ type PropCategory* = enum
 proc classify*(propType: TypeDef, required: bool): PropCategory =
   ## Classifies an object property for encoder/decoder codegen, matching the
   ## three cases every `buildObject*`/`buildSaxObj*` builder branches on.
-  if propType.kind in SELF_OPTIONAL:
+  if propType.stripNotes.kind in SELF_OPTIONAL:
     pcSelfOptional
   elif required or not propType.hasRealField:
     pcRequired
   else:
-    assert(propType.kind == OptionalType)
+    assert(propType.stripNotes.kind == OptionalType)
     pcOptional
 
 proc orDiscard*(stmts: NimNode): NimNode =
