@@ -173,9 +173,9 @@ proc fromBinary*[T: ref object | ref tuple](
   if not fromBinary(bool, source, idx):
     return nil
 
+  # Decoded whole, since a variant object cannot have its discriminant assigned field by field
   result = new(T)
-  for _, value in result[].fieldPairs:
-    value = fromBinary(typeof(value), source, idx)
+  result[] = fromBinary(typeof(result[]), source, idx)
 
 proc toBinary*(target: var string, source: JsonNode) =
   ## Serializes a JSON node into binary format and appends it to the target string.

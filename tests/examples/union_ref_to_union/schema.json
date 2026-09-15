@@ -1,0 +1,23 @@
+{
+  "$id": "https://example.com/union-ref-to-union",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "A union with an arm referencing a schema that is itself a union",
+  "type": "object",
+  "oneOf": [
+    { "required": [ "type" ] },
+    { "required": [ "$ref" ] }
+  ],
+  "properties": {
+    "type": { "type": "string" },
+    "$ref": { "type": "string" },
+    "items": { "$ref": "#/$defs/items" }
+  },
+  "$defs": {
+    "items": {
+      "oneOf": [
+        { "type": "integer" },
+        { "$ref": "#" }
+      ]
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import std/[macros, tables, sets, json, jsonutils, options, sequtils]
-import types, schemaRef, util
+import types, schemaRef, util, history
 
 type RefTypes* = Table[SchemaRef, TypeDef]
   ## The named types an edge can close onto, looked up by the reference naming them
@@ -103,7 +103,9 @@ proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
     return quote:
       JsonNode(kind: JArray, elems: @`elems`)
 
-proc buildIsType(typ: TypeDef, value: NimNode, refs: RefTypes): NimNode =
+proc buildIsType(
+    typ: TypeDef, value: NimNode, refs: RefTypes, followed: History
+): NimNode =
   case typ.kind
   of StringType, EnumType:
     return value.isJsonKind(JString)
@@ -124,12 +126,18 @@ proc buildIsType(typ: TypeDef, value: NimNode, refs: RefTypes): NimNode =
   of JsonType:
     return true.newLit
   of OptionalType:
-    return typ.subtype.buildIsType(value, refs)
+    return typ.subtype.buildIsType(value, refs, followed)
   of UnionType:
-    raiseAssert("Unions should not contain other unions")
+    # Only reachable through an edge, since a parsed union has its nested arms flattened
+    result = false.newLit
+    for subtype in typ.subtypes:
+      result = infix(result, "or", subtype.buildIsType(value, refs, followed))
   of RefType:
-    # An edge is told apart by whatever it closes onto, which is never itself an edge
-    return refs[typ.schemaRef].buildIsType(value, refs)
+    # An edge is told apart by whatever it closes onto. One already being followed adds no
+    # arm the enclosing test is not already checking.
+    if typ.schemaRef in followed:
+      return false.newLit
+    return refs[typ.schemaRef].buildIsType(value, refs, followed.addRef(typ.schemaRef))
   of TupleType:
     return infix(
       value.isJsonKind(JArray),
@@ -154,7 +162,9 @@ proc buildUnionDecoder*(typ: TypeDef, typeName: NimNode, refs: RefTypes): NimNod
     let key = i.unionKey
     let builder = quote:
       `target` = `typeName`(kind: `i`, `key`: jsonTo(`source`, typeof(`target`.`key`)))
-    branches.add(nnkElifBranch.newTree(buildIsType(subtype, source, refs), builder))
+    branches.add(
+      nnkElifBranch.newTree(buildIsType(subtype, source, refs, nil), builder)
+    )
 
   let errorMessage = newLit("Unable to deserialize json node to " & typeName.getName)
   let throw = quote:
