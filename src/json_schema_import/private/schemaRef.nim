@@ -110,17 +110,24 @@ proc getName*(sref: SchemaRef): string =
     of SubRef, AnchorRef:
       return sref.name
 
-proc within*(sref, document: SchemaRef): SchemaRef =
-  ## Pins a reference to the document it was written in, so `#/...` in a fetched one stays there
+proc resolve*(sref: SchemaRef, base: Uri): SchemaRef =
+  ## Pins a reference to the base URI in effect where it was written
   if sref.kind == UrlRef:
     let next =
       if sref.next.isNil:
         SchemaRef(kind: RootRef)
       else:
         sref.next
-    return SchemaRef(kind: UrlRef, url: sref.url, next: next)
-  elif not document.isNil and document.kind == UrlRef:
-    return SchemaRef(kind: UrlRef, url: document.url, next: sref)
+    # An absolute reference names its own resource, so the base says nothing about it
+    let url =
+      if base == default(Uri) or parseUri(sref.url).scheme != "":
+        sref.url
+      else:
+        $combine(base, parseUri(sref.url))
+    return SchemaRef(kind: UrlRef, url: url, next: next)
+  elif base != default(Uri):
+    # A fragment resolves within the resource the nearest `$id` declares, not the document
+    return SchemaRef(kind: UrlRef, url: $base, next: sref)
   else:
     return sref
 

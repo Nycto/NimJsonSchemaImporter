@@ -112,6 +112,45 @@ suite "Embedded resources":
 
     check(root.prop("zip").kind == IntegerType)
 
+  test "A fragment resolves inside the embedded $id it is written under":
+    let root = parseSchema(
+      %*{
+        "$id": "http://example.com/defs1.json",
+        "required": ["foo"],
+        "properties": {
+          "foo": {
+            "$id": "defs2.json",
+            "required": ["bar"],
+            "$defs": {"inner": {"properties": {"bar": {"type": "string"}}}},
+            "$ref": "#/$defs/inner",
+          }
+        },
+      },
+      resolver,
+    ).rootType
+
+    check(root.prop("foo").prop("bar").kind == StringType)
+
+  test "A reference to an embedded resource reaches the same $defs":
+    let root = parseSchema(
+      %*{
+        "$id": "http://example.com/abs1.json",
+        "required": ["foo"],
+        "$ref": "abs2.json",
+        "properties": {
+          "foo": {
+            "$id": "http://example.com/abs2.json",
+            "required": ["bar"],
+            "$defs": {"inner": {"properties": {"bar": {"type": "string"}}}},
+            "$ref": "#/$defs/inner",
+          }
+        },
+      },
+      resolver,
+    ).rootType
+
+    check(root.prop("foo").prop("bar").kind == StringType)
+
   test "An embedded $id is itself relative to the one above it":
     let root = parseSchema(
       %*{

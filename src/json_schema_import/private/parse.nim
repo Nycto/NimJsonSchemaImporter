@@ -1,4 +1,4 @@
-import std/json, types, schemaRef, describe, describeparse, lower, ../config
+import std/json, types, describe, describeparse, lower, ../config
 
 proc parseSchema*(node: JsonNode, resolver: UrlResolver): JsonSchema =
   let desc = describeSchema(node, resolver)
@@ -13,7 +13,7 @@ proc parseSchema*(node: JsonNode, resolver: UrlResolver): JsonSchema =
   # An edge onto the root looks the root up by its reference, which only a root that was
   # itself a `$ref` already carries
   if result.rootType.sref.isNil:
-    result.rootType.sref = SchemaRef(kind: RootRef)
+    result.rootType.sref = node.rootRef
 
 proc parseSchema*(node: string, resolver: UrlResolver): JsonSchema =
   node.parseJson.parseSchema(resolver)
