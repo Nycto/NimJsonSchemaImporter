@@ -1,0 +1,11 @@
+{
+  "kind": "Feature",
+  "basicAuth": {
+    "user": "someone"
+  },
+  "feature": {
+    "name": "thing"
+  },
+  "scheme": "basicAuth",
+  "mode": "Mode"
+}

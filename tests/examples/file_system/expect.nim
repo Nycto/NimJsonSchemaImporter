@@ -4,23 +4,23 @@ import json_schema_import/private/stringify as jsonSchemaStringify
 import json_schema_import/private/[equality, bin, sax]
 
 type
-  File_systemType* = enum
+  File_systemType* {.pure.} = enum
     Disk = "disk"
   File_systemDiskDevice* {.byref.} = object
     `type`*: File_systemType
     device*: string
-  File_systemStorageType* = enum
+  File_systemStorageType* {.pure.} = enum
     Disk = "disk"
   File_systemDiskUUID* {.byref.} = object
     `type`*: File_systemStorageType
     label*: string
-  File_systemStorageType2* = enum
+  File_systemStorageType2* {.pure.} = enum
     Nfs = "nfs"
   File_systemNfs* {.byref.} = object
     `type`*: File_systemStorageType2
     remotePath*: string
     server*: string
-  File_systemStorageType3* = enum
+  File_systemStorageType3* {.pure.} = enum
     Tmpfs = "tmpfs"
   File_systemTmpfs* {.byref.} = object
     `type`*: File_systemStorageType3
@@ -35,7 +35,7 @@ type
       key2*: File_systemNfs
     of 3:
       key3*: File_systemTmpfs
-  File_systemFstype* = enum
+  File_systemFstype* {.pure.} = enum
     Ext3 = "ext3", Ext4 = "ext4", Btrfs = "btrfs"
   File_system* {.byref.} = object
     storage*: File_systemUnion

@@ -33,16 +33,16 @@ type
       key0*: OrderedTable[string, AsepriteFrame]
     of 1:
       key1*: seq[AsepriteArrayFrame]
-  AsepriteFormat* = enum
+  AsepriteFormat* {.pure.} = enum
     RGBA8888 = "RGBA8888", I8 = "I8"
-  AsepriteDirection* = enum
+  AsepriteDirection* {.pure.} = enum
     Forward = "forward", Reverse = "reverse", Pingpong = "pingpong"
   AsepriteFrameTag* {.byref.} = object
     direction*: AsepriteDirection
     `from`*: BiggestFloat
     name*: string
     to*: BiggestFloat
-  AsepriteBlendMode* = enum
+  AsepriteBlendMode* {.pure.} = enum
     Normal = "normal", Darken = "darken", Multiply = "multiply",
     Color_burn = "color_burn", Lighten = "lighten", Screen = "screen",
     Color_dodge = "color_dodge", Addition = "addition", Overlay = "overlay",

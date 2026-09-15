@@ -4,7 +4,7 @@ import json_schema_import/private/stringify as jsonSchemaStringify
 import json_schema_import/private/[equality, bin, sax]
 
 type
-  Nullable_mergeNullableEnum* = enum
+  Nullable_mergeNullableEnum* {.pure.} = enum
     Alpha = "alpha", Beta = "beta"
   Nullable_mergeNullableObject* {.byref.} = object
     inner*: string

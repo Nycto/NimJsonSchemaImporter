@@ -4,7 +4,7 @@ import json_schema_import/private/stringify as jsonSchemaStringify
 import json_schema_import/private/[equality, bin, sax]
 
 type
-  Merged_scalarsTypedEnum* = enum
+  Merged_scalarsTypedEnum* {.pure.} = enum
     Alpha = "alpha", Beta = "beta"
   Merged_scalars* {.byref.} = object
     typedEnum*: Merged_scalarsTypedEnum
