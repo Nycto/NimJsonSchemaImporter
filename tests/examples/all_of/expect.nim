@@ -18,12 +18,9 @@ type
     narrowed*: All_ofNarrowed
 proc `=copy`(a: var All_ofCombined; b: All_ofCombined) {.
     error.}
-proc toJsonHook*(source: All_ofCombined): JsonNode
 proc `=copy`(a: var All_ofExtended; b: All_ofExtended) {.
     error.}
-proc toJsonHook*(source: All_ofExtended): JsonNode
 proc `=copy`(a: var All_of; b: All_of) {.error.}
-proc toJsonHook*(source: All_of): JsonNode
 proc equals(_: typedesc[All_ofCombined]; a, b: All_ofCombined): bool =
   equals(typeof(a.a), a.a, b.a) and equals(typeof(a.b), a.b, b.b)
 

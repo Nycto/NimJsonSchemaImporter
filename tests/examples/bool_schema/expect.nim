@@ -17,9 +17,7 @@ type
     closedBag*: Bool_schemaClosedBag
 proc `=copy`(a: var Bool_schemaClosedBag;
              b: Bool_schemaClosedBag) {.error.}
-proc toJsonHook*(source: Bool_schemaClosedBag): JsonNode
 proc `=copy`(a: var Bool_schema; b: Bool_schema) {.error.}
-proc toJsonHook*(source: Bool_schema): JsonNode
 proc equals(_: typedesc[Bool_schemaClosedBag]; a, b: Bool_schemaClosedBag): bool =
   equals(typeof(a.named), a.named, b.named)
 

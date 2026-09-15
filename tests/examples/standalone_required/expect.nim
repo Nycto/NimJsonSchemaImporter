@@ -17,16 +17,12 @@ type
     untyped*: Standalone_requiredUntyped
 proc `=copy`(a: var Standalone_requiredSplit;
              b: Standalone_requiredSplit) {.error.}
-proc toJsonHook*(source: Standalone_requiredSplit): JsonNode
 proc `=copy`(a: var Standalone_requiredTightened;
              b: Standalone_requiredTightened) {.error.}
-proc toJsonHook*(source: Standalone_requiredTightened): JsonNode
 proc `=copy`(a: var Standalone_requiredUntyped;
              b: Standalone_requiredUntyped) {.error.}
-proc toJsonHook*(source: Standalone_requiredUntyped): JsonNode
 proc `=copy`(a: var Standalone_required;
              b: Standalone_required) {.error.}
-proc toJsonHook*(source: Standalone_required): JsonNode
 proc equals(_: typedesc[Standalone_requiredSplit];
             a, b: Standalone_requiredSplit): bool =
   equals(typeof(a.a), a.a, b.a)

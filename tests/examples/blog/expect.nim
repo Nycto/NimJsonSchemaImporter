@@ -14,9 +14,7 @@ type
     author*: BlogAuthor
     tags*: seq[string]
 proc `=copy`(a: var BlogAuthor; b: BlogAuthor) {.error.}
-proc toJsonHook*(source: BlogAuthor): JsonNode
 proc `=copy`(a: var Blog; b: Blog) {.error.}
-proc toJsonHook*(source: Blog): JsonNode
 proc equals(_: typedesc[BlogAuthor]; a, b: BlogAuthor): bool =
   equals(typeof(a.username), a.username, b.username) and
       equals(typeof(a.email), a.email, b.email)

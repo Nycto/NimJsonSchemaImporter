@@ -31,8 +31,6 @@ proc hash(node: NimNode): Hash =
   for child in node:
     result = result !& hash(child)
 
-let source {.compileTime.} = ident("source")
-
 proc addType(ctx: GenContext, name, typ: NimNode) =
   ctx.usedNames.incl(name.getName.toUpperAscii)
   ctx.types.incl(nnkTypeDef.newTree(name.markPublic, newEmptyNode(), typ))
@@ -73,9 +71,6 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     let copyProc = nnkAccQuoted.newTree(ident("=copy"))
     ctx.declarations.add quote do:
       proc `copyProc`(a: var `result`, b: `result`) {.error.}
-
-  ctx.declarations.add quote do:
-    proc toJsonHook*(`source`: `result`): JsonNode
 
   ctx.procs.add(
     typ.buildEquals(result),

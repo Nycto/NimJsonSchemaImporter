@@ -17,9 +17,7 @@ type
     emergencyContact*: Option[HealthEmergencyContact]
 proc `=copy`(a: var HealthEmergencyContact;
              b: HealthEmergencyContact) {.error.}
-proc toJsonHook*(source: HealthEmergencyContact): JsonNode
 proc `=copy`(a: var Health; b: Health) {.error.}
-proc toJsonHook*(source: Health): JsonNode
 proc equals(_: typedesc[HealthEmergencyContact]; a, b: HealthEmergencyContact): bool =
   equals(typeof(a.username), a.username, b.username) and
       equals(typeof(a.email), a.email, b.email)

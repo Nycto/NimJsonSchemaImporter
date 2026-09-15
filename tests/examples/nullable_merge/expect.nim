@@ -14,10 +14,8 @@ type
     nullableObject*: Nullable_mergeNullableObject
 proc `=copy`(a: var Nullable_mergeNullableObject;
              b: Nullable_mergeNullableObject) {.error.}
-proc toJsonHook*(source: Nullable_mergeNullableObject): JsonNode
 proc `=copy`(a: var Nullable_merge; b: Nullable_merge) {.
     error.}
-proc toJsonHook*(source: Nullable_merge): JsonNode
 proc equals(_: typedesc[Nullable_mergeNullableObject];
             a, b: Nullable_mergeNullableObject): bool =
   equals(typeof(a.inner), a.inner, b.inner)

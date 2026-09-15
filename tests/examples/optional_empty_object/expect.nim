@@ -10,10 +10,8 @@ type
     custom*: Option[Optional_empty_objectCustom]
 proc `=copy`(a: var Optional_empty_objectCustom;
              b: Optional_empty_objectCustom) {.error.}
-proc toJsonHook*(source: Optional_empty_objectCustom): JsonNode
 proc `=copy`(a: var Optional_empty_object;
              b: Optional_empty_object) {.error.}
-proc toJsonHook*(source: Optional_empty_object): JsonNode
 proc equals(_: typedesc[Optional_empty_objectCustom];
             a, b: Optional_empty_objectCustom): bool =
   true

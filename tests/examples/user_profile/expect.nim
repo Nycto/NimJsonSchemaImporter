@@ -12,7 +12,6 @@ type
     location*: Option[string]
     interests*: seq[string]
 proc `=copy`(a: var User_profile; b: User_profile) {.error.}
-proc toJsonHook*(source: User_profile): JsonNode
 proc equals(_: typedesc[User_profile]; a, b: User_profile): bool =
   equals(typeof(a.username), a.username, b.username) and
       equals(typeof(a.email), a.email, b.email) and

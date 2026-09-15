@@ -24,10 +24,8 @@ type
     either*: TuplesUnion
     span*: Option[(BiggestInt, BiggestInt)]
 proc `=copy`(a: var TuplesRecord; b: TuplesRecord) {.error.}
-proc toJsonHook*(source: TuplesRecord): JsonNode
 proc `=copy`(a: var TuplesTagged; b: TuplesTagged) {.error.}
 proc `=copy`(a: var Tuples; b: Tuples) {.error.}
-proc toJsonHook*(source: Tuples): JsonNode
 proc equals(_: typedesc[TuplesRecord]; a, b: TuplesRecord): bool =
   equals(typeof(a.tag), a.tag, b.tag)
 

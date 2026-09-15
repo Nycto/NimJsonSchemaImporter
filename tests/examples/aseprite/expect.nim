@@ -85,34 +85,23 @@ type
     meta*: AsepriteMeta
 proc `=copy`(a: var AsepriteRectangle;
              b: AsepriteRectangle) {.error.}
-proc toJsonHook*(source: AsepriteRectangle): JsonNode
 proc `=copy`(a: var AsepriteSize; b: AsepriteSize) {.error.}
-proc toJsonHook*(source: AsepriteSize): JsonNode
 proc `=copy`(a: var AsepriteFrame; b: AsepriteFrame) {.
     error.}
-proc toJsonHook*(source: AsepriteFrame): JsonNode
 proc `=copy`(a: var AsepriteArrayFrame;
              b: AsepriteArrayFrame) {.error.}
-proc toJsonHook*(source: AsepriteArrayFrame): JsonNode
 proc `=copy`(a: var AsepriteFrameTag; b: AsepriteFrameTag) {.
     error.}
-proc toJsonHook*(source: AsepriteFrameTag): JsonNode
 proc `=copy`(a: var AsepriteLayer; b: AsepriteLayer) {.
     error.}
-proc toJsonHook*(source: AsepriteLayer): JsonNode
 proc `=copy`(a: var AsepritePoint; b: AsepritePoint) {.
     error.}
-proc toJsonHook*(source: AsepritePoint): JsonNode
 proc `=copy`(a: var AsepriteSliceKey; b: AsepriteSliceKey) {.
     error.}
-proc toJsonHook*(source: AsepriteSliceKey): JsonNode
 proc `=copy`(a: var AsepriteSlice; b: AsepriteSlice) {.
     error.}
-proc toJsonHook*(source: AsepriteSlice): JsonNode
 proc `=copy`(a: var AsepriteMeta; b: AsepriteMeta) {.error.}
-proc toJsonHook*(source: AsepriteMeta): JsonNode
 proc `=copy`(a: var Aseprite; b: Aseprite) {.error.}
-proc toJsonHook*(source: Aseprite): JsonNode
 proc equals(_: typedesc[AsepriteRectangle]; a, b: AsepriteRectangle): bool =
   equals(typeof(a.h), a.h, b.h) and equals(typeof(a.w), a.w, b.w) and
       equals(typeof(a.x), a.x, b.x) and

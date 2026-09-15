@@ -9,7 +9,6 @@ type
     count*: Option[BiggestInt]
   Array_root* = seq[Array_root2]
 proc `=copy`(a: var Array_root2; b: Array_root2) {.error.}
-proc toJsonHook*(source: Array_root2): JsonNode
 proc equals(_: typedesc[Array_root2]; a, b: Array_root2): bool =
   equals(typeof(a.name), a.name, b.name) and
       equals(typeof(a.count), a.count, b.count)

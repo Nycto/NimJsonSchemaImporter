@@ -44,18 +44,13 @@ type
     readonly*: Option[bool]
 proc `=copy`(a: var File_systemDiskDevice;
              b: File_systemDiskDevice) {.error.}
-proc toJsonHook*(source: File_systemDiskDevice): JsonNode
 proc `=copy`(a: var File_systemDiskUUID;
              b: File_systemDiskUUID) {.error.}
-proc toJsonHook*(source: File_systemDiskUUID): JsonNode
 proc `=copy`(a: var File_systemNfs; b: File_systemNfs) {.
     error.}
-proc toJsonHook*(source: File_systemNfs): JsonNode
 proc `=copy`(a: var File_systemTmpfs; b: File_systemTmpfs) {.
     error.}
-proc toJsonHook*(source: File_systemTmpfs): JsonNode
 proc `=copy`(a: var File_system; b: File_system) {.error.}
-proc toJsonHook*(source: File_system): JsonNode
 proc equals(_: typedesc[File_systemDiskDevice]; a, b: File_systemDiskDevice): bool =
   equals(typeof(a.`type`), a.`type`, b.`type`) and
       equals(typeof(a.device), a.device, b.device)

@@ -14,12 +14,9 @@ type
     anyValue*: OrderedTable[string, BiggestInt]
 proc `=copy`(a: var Open_objectPartlyOpen;
              b: Open_objectPartlyOpen) {.error.}
-proc toJsonHook*(source: Open_objectPartlyOpen): JsonNode
 proc `=copy`(a: var Open_objectClosed;
              b: Open_objectClosed) {.error.}
-proc toJsonHook*(source: Open_objectClosed): JsonNode
 proc `=copy`(a: var Open_object; b: Open_object) {.error.}
-proc toJsonHook*(source: Open_object): JsonNode
 proc equals(_: typedesc[Open_objectPartlyOpen]; a, b: Open_objectPartlyOpen): bool =
   equals(typeof(a.known), a.known, b.known)
 

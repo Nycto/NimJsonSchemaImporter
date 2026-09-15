@@ -7,7 +7,6 @@ type
   Consts* {.byref.} = object
     nonConstField*: Option[string]
 proc `=copy`(a: var Consts; b: Consts) {.error.}
-proc toJsonHook*(source: Consts): JsonNode
 proc equals(_: typedesc[Consts]; a, b: Consts): bool =
   equals(typeof(a.nonConstField), a.nonConstField, b.nonConstField)
 

@@ -8,7 +8,6 @@ type
     name*: string
     values*: seq[JsonNode]
 proc `=copy`(a: var Untyped_array; b: Untyped_array) {.error.}
-proc toJsonHook*(source: Untyped_array): JsonNode
 proc equals(_: typedesc[Untyped_array]; a, b: Untyped_array): bool =
   equals(typeof(a.name), a.name, b.name) and
       equals(typeof(a.values), a.values, b.values)
