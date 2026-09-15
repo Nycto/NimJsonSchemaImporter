@@ -1,0 +1,15 @@
+{
+  "name": "root",
+  "child": {
+    "name": "held as the union arm"
+  },
+  "index": {
+    "first": {
+      "name": "held as a map entry"
+    },
+    "second": {
+      "name": "nested once more",
+      "child": "a string on the other arm"
+    }
+  }
+}

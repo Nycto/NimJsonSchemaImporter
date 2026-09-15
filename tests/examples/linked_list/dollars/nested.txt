@@ -1,0 +1,1 @@
+LinkedList(value: "first", next: LinkedList(value: "second", next: LinkedList(value: "third", next: ∅)))

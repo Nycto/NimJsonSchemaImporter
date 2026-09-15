@@ -1,0 +1,1 @@
+MutualRefs(top: MutualRefsQuestion(prompt: "Is it recursive?", answer: MutualRefsAnswer(text: "Mutually so", followUp: MutualRefsQuestion(prompt: "Which one is emitted first?", answer: MutualRefsAnswer(text: "Neither, they are declared ahead of their bodies", followUp: ∅)))))

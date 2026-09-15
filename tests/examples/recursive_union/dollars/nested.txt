@@ -1,0 +1,1 @@
+RecursiveUnion(name: "root", child: RecursiveUnion(name: "held as the union arm", child: ∅, index: {}), index: {"first": RecursiveUnion(name: "held as a map entry", child: ∅, index: {}), "second": RecursiveUnion(name: "nested once more", child: "a string on the other arm", index: {})})
