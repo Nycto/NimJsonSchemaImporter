@@ -1,9 +1,17 @@
 import std/[options, json, tables], util
 
-proc equals*[T: SomeNumber | SomeOrdinal | string | JsonNode](
-    _: typedesc[T], a, b: T
-): bool =
+proc equals*[T: SomeNumber | SomeOrdinal | string](_: typedesc[T], a, b: T): bool =
   return a == b
+
+proc equals*(_: typedesc[JsonNode], a, b: JsonNode): bool =
+  ## Concrete so that `JsonNode`, itself a `ref object`, outranks the `ref T` overload
+  return a == b
+
+proc equals*[T](_: typedesc[ref T], a, b: ref T): bool =
+  ## A recursive schema generates a `ref`, and nil is how it bottoms out
+  if a.isNil or b.isNil:
+    return a.isNil == b.isNil
+  return equals(T, a[], b[])
 
 proc equals*[T](_: typedesc[seq[T]], a, b: seq[T]): bool =
   if a.len == b.len:

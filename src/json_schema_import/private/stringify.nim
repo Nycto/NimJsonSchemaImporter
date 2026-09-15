@@ -1,9 +1,9 @@
 import std/[tables, options, json], util
 
 proc stringify*(_: typedesc[string], value: string): string
-proc stringify*[T: SomeNumber | SomeOrdinal | JsonNode](
-  _: typedesc[T], value: T
-): string
+proc stringify*[T: SomeNumber | SomeOrdinal](_: typedesc[T], value: T): string
+proc stringify*(_: typedesc[JsonNode], value: JsonNode): string
+proc stringify*[T](_: typedesc[ref T], value: ref T): string
 
 proc stringify*[T](_: typedesc[Option[T]], value: Option[T]): string
 proc stringify*[T](_: typedesc[seq[T]], values: seq[T]): string
@@ -13,10 +13,19 @@ proc stringify*[T: tuple](_: typedesc[T], value: T): string
 proc stringify*(_: typedesc[string], value: string): string =
   "\"" & value & "\""
 
-proc stringify*[T: SomeNumber | SomeOrdinal | JsonNode](
-    _: typedesc[T], value: T
-): string =
+proc stringify*[T: SomeNumber | SomeOrdinal](_: typedesc[T], value: T): string =
   $value
+
+proc stringify*(_: typedesc[JsonNode], value: JsonNode): string =
+  ## Concrete so that `JsonNode`, itself a `ref object`, outranks the `ref T` overload
+  $value
+
+proc stringify*[T](_: typedesc[ref T], value: ref T): string =
+  ## A recursive schema generates a `ref`, and nil is how it bottoms out
+  if value.isNil:
+    "nil"
+  else:
+    stringify(T, value[])
 
 proc stringify*[T](_: typedesc[Option[T]], value: Option[T]): string =
   if value.isSome:
