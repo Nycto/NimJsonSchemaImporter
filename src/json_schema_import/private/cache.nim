@@ -1,7 +1,7 @@
 import std/[hashes, strutils, compilesettings, staticos, macros], ../config, util
 
 const
-  json_schema_version* = "7fbc37338f83b152e5ac2402086b6e2138f1d4f0"
+  json_schema_version* = "2a234c049ea7609991d23e88e8cc1c60e02e31e2"
     ## Version of the generated code produced by this library, which has to
     ## change whenever the generator emits something different. It is the sha1
     ## of the checked in code generation snapshots, so it changes when the
