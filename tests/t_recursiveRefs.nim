@@ -125,6 +125,16 @@ suite "A reference that closes a cycle":
     check("(Ref #)" in printed)
     check("children" in printed)
 
+suite "The root schema":
+  test "Is labelled with its own reference":
+    # An edge onto the root looks the root up by this, and the root is reached without ever
+    # going through `parseRef`, so nothing else would label it.
+    check(RECURSIVE_TREE.root.sref == parseRef("#"))
+    check(MUTUAL_REFS.root.sref == parseRef("#"))
+
+  test "Keeps the reference it resolved through when it is itself a ref":
+    check(LINKED_LIST.root.sref == parseRef("#/$defs/node"))
+
 suite "A reference that does not close a cycle":
   test "Still resolves to a real type once it has been mentioned before":
     # The first mention resolves and memoizes `node`; the second must get that type back

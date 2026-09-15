@@ -404,9 +404,14 @@ proc parseSchema*(node: JsonNode, resolver: UrlResolver): JsonSchema =
   let ctx =
     ParseContext(doc: node, resolver: resolver, refs: initTable[SchemaRef, TypeDef]())
 
-  # The root never goes through `parseRef`, so the chain is opened with it by hand for a
-  # `"$ref": "#"` inside to read as the cycle it is.
-  result.rootType = parseType(node, ctx, addRef(nil, SchemaRef(kind: RootRef)))
+  # The root never goes through `parseRef`, so the chain is opened with its reference by
+  # hand. The type it produces takes that reference too, since an edge onto the root looks
+  # the root up by it, but only when nothing else named it: a root that is itself a `$ref`
+  # already carries the reference it resolved through, and that one has to win.
+  let rootRef = SchemaRef(kind: RootRef)
+  result.rootType = parseType(node, ctx, addRef(nil, rootRef))
+  if result.rootType.sref.isNil:
+    result.rootType.sref = rootRef
 
   if result.rootType.kind == NeverType:
     raise newException(
