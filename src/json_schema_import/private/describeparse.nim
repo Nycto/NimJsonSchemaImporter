@@ -12,11 +12,21 @@ type DescribeContext* = ref object
     ## Every reference resolved so far, by the reference
 
 proc id(node: JsonNode): Uri =
-  if node.kind == JObject and node.hasKey("$id"):
+  ## The base URI a node's `$id` names, empty when it names none. A `properties` map
+  ## can hold a key called `$id`, so only a string counts as the keyword.
+  let field =
+    if node.kind == JObject:
+      node{"$id"}
+    else:
+      nil
+  if not field.isNil and field.kind == JString:
     try:
-      return parseUri(node{"$id"}.getStr)
+      return parseUri(field.getStr)
     except:
       discard
+
+proc hasId(node: JsonNode): bool =
+  node.id != default(Uri)
 
 iterator requiredKeys(node: JsonNode): string =
   ## The keys named by a `required` list; draft 3's boolean `required` names none
@@ -193,7 +203,7 @@ proc ownDescription(
 
 proc withId(history: History, node: JsonNode): History =
   ## Records the base URI a node's `$id` sets, if it has one
-  if node.kind == JObject and "$id" in node and not history.ownsBase(node):
+  if node.hasId and not history.ownsBase(node):
     history.addId(id(node))
   else:
     history
@@ -298,7 +308,7 @@ proc collectIds(node: JsonNode, history: History, found: var Table[string, JsonN
   case node.kind
   of JObject:
     var history = history
-    if "$id" in node:
+    if node.hasId:
       history = history.addId(id(node))
       found[$history.base] = node
     for key, child in node:
