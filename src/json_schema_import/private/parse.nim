@@ -139,15 +139,28 @@ proc parseRef(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
   node.expectKind(JObject)
   let sref = parseRef(node{"$ref"}.getStr)
 
+  # A reference still open closes a cycle, so it is cut into a leaf naming it. Asked before
+  # the memo, which holds nothing for an open reference and so cannot tell one from a
+  # reference never visited at all.
+  if sref in history:
+    return TypeDef(kind: RefType, schemaRef: sref)
+
   # Resolving a reference and parsing whatever it lands on is a pure function of the
   # reference, and schemas lean on that heavily -- every reference inside a definition
   # is re-walked once per site that reaches the definition, so the work grows with the
   # number of paths through the schema rather than its size. Memoizing collapses it
-  # back down. `history` only ever feeds error messages, so it is safe to ignore here.
+  # back down.
   if sref in ctx.refs:
     return ctx.refs[sref]
 
-  result = sref.resolve(ctx).parseType(ctx, history).withRef(sref)
+  let inner = history.addRef(sref)
+  result = sref.resolve(ctx).parseType(ctx, inner).withRef(sref)
+
+  # A reference resolving to nothing but itself describes no value and names no type
+  if result.kind == RefType:
+    raise
+      newException(ValueError, fmt"Reference {sref} resolves only to itself: {inner}")
+
   ctx.refs[sref] = result
 
 proc parseTypeStr(typ: string, history: History): TypeDef =
@@ -390,7 +403,11 @@ proc parseSchema*(node: JsonNode, resolver: UrlResolver): JsonSchema =
   result = JsonSchema()
   let ctx =
     ParseContext(doc: node, resolver: resolver, refs: initTable[SchemaRef, TypeDef]())
-  result.rootType = parseType(node, ctx, nil)
+
+  # The root never goes through `parseRef`, so the chain is opened with it by hand for a
+  # `"$ref": "#"` inside to read as the cycle it is.
+  result.rootType = parseType(node, ctx, addRef(nil, SchemaRef(kind: RootRef)))
+
   if result.rootType.kind == NeverType:
     raise newException(
       ValueError,
