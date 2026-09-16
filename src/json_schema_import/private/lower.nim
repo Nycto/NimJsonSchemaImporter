@@ -33,7 +33,6 @@ proc lowerObject(variant: Variant, ctx: Lowering): TypeDef =
         else:
           typ.optional(),
       required: required,
-      nullable: typ.stripNotes.kind == OptionalType,
     )
 
 proc lowerArray(variant: Variant, ctx: Lowering): TypeDef =

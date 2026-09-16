@@ -70,7 +70,6 @@ suite "Lowering objects":
   test "A required property that may be null stays optional":
     let typ = describe(obj({"a": d(vkString, vkNull)}, "a")).lower
     check(typ.properties["a"].typ.kind == OptionalType)
-    check(typ.properties["a"].nullable)
 
   test "Property names are made safe and unique":
     let typ = describe(obj({"_a": d(vkString), "a": d(vkString)})).lower

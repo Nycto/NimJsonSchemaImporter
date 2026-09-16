@@ -21,13 +21,8 @@ type
     NoteType
       ## A type carrying a note: another type that has to be generated alongside it
 
-  PropDef* = tuple[propName: string, typ: TypeDef, required: bool, nullable: bool]
+  PropDef* = tuple[propName: string, typ: TypeDef, required: bool]
     ## The details of an object property
-    ##
-    ## `typ` is wrapped in an `Option` both by a property that isn't required and by one
-    ## the schema lets hold `null`, so `nullable` records which of the two it was. The
-    ## merge needs to tell them apart: the wrapping a missing `required` added comes back
-    ## off when another keyword supplies it, but a `null` the schema asked for stays.
 
   TypeDef* = ref object
     sref*: SchemaRef
