@@ -91,3 +91,18 @@ task cachetest, "Verifies generated code is cached, reused and invalidated":
   )
 
   echo "Cache written, reused and invalidated as expected"
+
+task suite, "Runs JSON-Schema-Test-Suite, checking failures against its blocklist":
+  ## Arguments after the task name go to the runner: suite file names such as
+  ## `draft7/type.json` to narrow the run, or `--update` to rewrite the blocklist
+  var args = ""
+  var afterTask = false
+  for param in commandLineParams():
+    if afterTask:
+      args &= " " & param.quoteShell
+    elif param == "suite":
+      afterTask = true
+  exec(
+    "nim c -r --hints:off -o:" & nimcacheDir() & "/suite_runner tests/suite/runner.nim" &
+      args
+  )

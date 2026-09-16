@@ -12,6 +12,17 @@ jobs:
     - run: nimble readme
     - run: nim e ./src/json_schema_import.nim
 
+  suite:
+    runs-on: ubuntu-latest
+    container: nimlang/choosenim
+    steps:
+    - run: choosenim update -y 2.2.0
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - run: git config --global --add safe.directory "$(pwd)"
+    - run: nimble suite
+
   examples:
     runs-on: ubuntu-latest
     steps:

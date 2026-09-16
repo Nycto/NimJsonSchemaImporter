@@ -1,0 +1,86 @@
+##
+## Runs the JSON-Schema-Test-Suite against the library. Each suite file becomes a Nim
+## module that imports every schema in it and checks that valid instances decode and
+## invalid ones raise.
+##
+
+import
+  std/[json, os, osproc, strutils, strformat, sequtils, appdirs, paths],
+  ./[loader, blocklist, report]
+
+const
+  suiteRoot = currentSourcePath.parentDir
+  srcDir = suiteRoot & "/../../src"
+
+let buildDir = getCacheDir("json_schema_import_suite".Path).string
+
+proc dir(file: SuiteFile): string =
+  buildDir & "/" & file.name
+
+proc moduleSource(file: SuiteFile): string =
+  result &= "import json_schema_import, std/json\n"
+  result &= &"import {escape(suiteRoot & \"/remotes\")}\n"
+
+  for i, suiteCase in file.cases:
+    let typ = &"Case{i}"
+    result.add &"importJsonSchema(\"case{i}.json\", conf(\"{typ}\"))\n"
+    for test in suiteCase.tests:
+      result.add &"check[{typ}]({escape(label(file.name, suiteCase, test))}, {escape($test.data)}, {test.valid})\n"
+
+proc write(file: SuiteFile) =
+  removeDir(file.dir)
+  createDir(file.dir)
+  for i, suiteCase in file.cases:
+    writeFile(file.dir & &"/case{i}.json", $suiteCase.schema)
+  writeFile(file.dir & "/main.nim", moduleSource(file))
+
+proc command(file: SuiteFile): string =
+  let d = file.dir.quoteShell
+  &"nim c --hints:off --warnings:off -p:{srcDir.quoteShell} --nimcache:{d}/nimcache " &
+    &"-o:{d}/main {d}/main.nim > {d}/build.log 2>&1 && {d}/main > {d}/run.log 2>&1"
+
+proc run(files: seq[SuiteFile]): Results =
+  ## Compiles and runs a module per file. A file that will not compile fails all its
+  ## tests.
+  var commands: seq[string]
+  for file in files:
+    file.write()
+    commands.add(file.command)
+  discard execProcesses(commands, options = {poEvalCommand}, n = countProcessors())
+  for file in files:
+    if file.dir.compiled:
+      file.dir.collect(result)
+    else:
+      echo "COMPILE FAILED: ", file.dir, "/build.log"
+
+proc runTests(update: bool, filters: seq[string]) =
+  let suite = loadSuite()
+  let selected = suite.filterIt(filters.len == 0 or it.name in filters)
+
+  let results = run(selected)
+
+  if update:
+    writeBlocklist(suite, results)
+    echo "Rewrote ", blocklistPath
+    return
+
+  let errors = report(suite, selected, results, loadBlocklist())
+  if errors > 0:
+    echo &"{errors} problem(s)"
+    quit(1)
+
+proc main() =
+  var update = false
+  var filters: seq[string]
+  for arg in commandLineParams():
+    if arg == "--update":
+      update = true
+    else:
+      filters.add(arg)
+
+  if update and filters.len > 0:
+    quit("--update rewrites the whole blocklist, so it runs the whole suite", 1)
+
+  runTests(update, filters)
+
+main()
