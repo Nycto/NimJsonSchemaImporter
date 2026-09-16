@@ -139,6 +139,19 @@ proc narrowString(a, b: Variant): Variant =
   if values.len > 0:
     return Variant(kind: vkString, values: some(values), id: firstId(a, b))
 
+proc isClosed(variant: Variant): bool =
+  not variant.items.isNil and variant.items.isNever
+
+proc slot(variant: Variant, i: int): Description =
+  ## What an array says about its `i`th item, where nil is no constraint. `items` is
+  ## already folded into the slots, and a closed tail says nothing about them.
+  if variant.prefix.isSome and i < variant.prefix.get.len:
+    variant.prefix.get[i]
+  elif variant.isClosed:
+    nil
+  else:
+    variant.items
+
 proc narrowArray(a, b: Variant): Variant =
   if a.isBare:
     return b
@@ -146,23 +159,21 @@ proc narrowArray(a, b: Variant): Variant =
     return a
 
   result = Variant(kind: vkArray, items: narrow(a.items, b.items), id: firstId(a, b))
-
-  if a.prefix.isSome and b.prefix.isSome and a.prefix.get.len != b.prefix.get.len:
-    raise newException(ValueError, "Mismatched tuple lengths")
-
-  let slots = if a.prefix.isSome: a.prefix else: b.prefix
-  if slots.isNone:
+  if a.prefix.isNone and b.prefix.isNone:
     return
 
-  # `items` covers the slots too, except when it is `false`, which only closes the tail
+  # The longer tuple wins, unless the shorter one's tail is closed
+  var length = 0
+  for side in [a, b]:
+    if side.prefix.isSome:
+      length = max(length, side.prefix.get.len)
+  for side in [a, b]:
+    if side.prefix.isSome and side.isClosed:
+      length = min(length, side.prefix.get.len)
+
   var elements: seq[Description]
-  for i, slot in slots.get:
-    var element = slot
-    if a.prefix.isSome and b.prefix.isSome:
-      element = intersect(element, b.prefix.get[i])
-    if not result.items.isNil and not result.items.isNever:
-      element = intersect(element, result.items)
-    elements.add(element)
+  for i in 0 ..< length:
+    elements.add(narrow(a.slot(i), b.slot(i)))
   result.prefix = some(elements)
 
 proc narrowObject(a, b: Variant): Variant =

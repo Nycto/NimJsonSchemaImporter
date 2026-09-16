@@ -155,10 +155,17 @@ suite "Intersecting arrays":
     )
     check(merged.kinds == @[vkString])
 
-  test "Tuples of different lengths are rejected":
-    expect ValueError:
-      discard
-        intersect(describe(tup(anyValue())), describe(tup(anyValue(), anyValue())))
+  test "A shorter tuple is padded out by its items":
+    let short = tup(describe(v(vkString)))
+    short.items = describe(v(vkInteger))
+    let merged = intersect(describe(short), describe(tup(anyValue(), anyValue())))
+    check(merged.variants[0].prefix.get.mapIt(it.kinds) == @[@[vkString], @[vkInteger]])
+
+  test "A shorter tuple with a closed tail truncates the longer one":
+    let closed = tup(describe(v(vkString)))
+    closed.items = never()
+    let merged = intersect(describe(tup(anyValue(), anyValue())), describe(closed))
+    check(merged.variants[0].prefix.get.mapIt(it.kinds) == @[@[vkString]])
 
   test "An array const narrows an array":
     check(intersect(describe(fixed(%*[1])), describe(arr(nil))).kinds == @[vkConst])

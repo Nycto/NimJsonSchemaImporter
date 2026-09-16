@@ -852,24 +852,12 @@ draft2020-12/uniqueItems.json :: uniqueItems=false with an array of items :: non
 draft2020-12/uniqueItems.json :: uniqueItems=false with an array of items :: non-unique array extended from [true, false] is valid
 draft2020-12/vocabulary.json :: schema that uses custom metaschema with with no validation vocabulary :: applicator vocabulary still works
 draft2019-09/additionalItems.json :: additionalItems as schema :: additional items match schema
-draft2019-09/additionalItems.json :: additionalItems as schema :: additional items do not match schema
-draft2019-09/additionalItems.json :: when items is schema, additionalItems does nothing :: valid with a array of type integers
-draft2019-09/additionalItems.json :: when items is schema, additionalItems does nothing :: invalid with a array of mixed types
-draft2019-09/additionalItems.json :: when items is schema, boolean additionalItems does nothing :: all items match schema
 draft2019-09/additionalItems.json :: array of items with no additionalItems permitted :: empty array
 draft2019-09/additionalItems.json :: array of items with no additionalItems permitted :: fewer number of items present (1)
 draft2019-09/additionalItems.json :: array of items with no additionalItems permitted :: fewer number of items present (2)
-draft2019-09/additionalItems.json :: array of items with no additionalItems permitted :: equal number of items present
-draft2019-09/additionalItems.json :: array of items with no additionalItems permitted :: additional items are not permitted
-draft2019-09/additionalItems.json :: additionalItems as false without items :: items defaults to empty schema so everything is valid
-draft2019-09/additionalItems.json :: additionalItems as false without items :: ignores non-arrays
 draft2019-09/additionalItems.json :: additionalItems are allowed by default :: only the first item is validated
 draft2019-09/additionalItems.json :: additionalItems does not look in applicators, invalid case :: items defined in allOf are not examined
 draft2019-09/additionalItems.json :: items validation adjusts the starting index for additionalItems :: valid items
-draft2019-09/additionalItems.json :: items validation adjusts the starting index for additionalItems :: wrong type of second item
-draft2019-09/additionalItems.json :: additionalItems with heterogeneous array :: heterogeneous invalid instance
-draft2019-09/additionalItems.json :: additionalItems with heterogeneous array :: valid instance
-draft2019-09/additionalItems.json :: additionalItems with null instance elements :: allows null elements
 draft2019-09/additionalProperties.json :: additionalProperties being false does not allow other properties :: an additional property is invalid
 draft2019-09/additionalProperties.json :: additionalProperties being false does not allow other properties :: ignores arrays
 draft2019-09/additionalProperties.json :: additionalProperties being false does not allow other properties :: ignores strings
@@ -1664,24 +1652,12 @@ draft2019-09/uniqueItems.json :: uniqueItems=false with an array of items :: non
 draft2019-09/uniqueItems.json :: uniqueItems=false with an array of items :: non-unique array extended from [true, false] is valid
 draft2019-09/vocabulary.json :: schema that uses custom metaschema with with no validation vocabulary :: applicator vocabulary still works
 draft7/additionalItems.json :: additionalItems as schema :: additional items match schema
-draft7/additionalItems.json :: additionalItems as schema :: additional items do not match schema
-draft7/additionalItems.json :: when items is schema, additionalItems does nothing :: valid with a array of type integers
-draft7/additionalItems.json :: when items is schema, additionalItems does nothing :: invalid with a array of mixed types
-draft7/additionalItems.json :: when items is schema, boolean additionalItems does nothing :: all items match schema
 draft7/additionalItems.json :: array of items with no additionalItems permitted :: empty array
 draft7/additionalItems.json :: array of items with no additionalItems permitted :: fewer number of items present (1)
 draft7/additionalItems.json :: array of items with no additionalItems permitted :: fewer number of items present (2)
-draft7/additionalItems.json :: array of items with no additionalItems permitted :: equal number of items present
-draft7/additionalItems.json :: array of items with no additionalItems permitted :: additional items are not permitted
-draft7/additionalItems.json :: additionalItems as false without items :: items defaults to empty schema so everything is valid
-draft7/additionalItems.json :: additionalItems as false without items :: ignores non-arrays
 draft7/additionalItems.json :: additionalItems are allowed by default :: only the first item is validated
 draft7/additionalItems.json :: additionalItems does not look in applicators, invalid case :: items defined in allOf are not examined
 draft7/additionalItems.json :: items validation adjusts the starting index for additionalItems :: valid items
-draft7/additionalItems.json :: items validation adjusts the starting index for additionalItems :: wrong type of second item
-draft7/additionalItems.json :: additionalItems with heterogeneous array :: heterogeneous invalid instance
-draft7/additionalItems.json :: additionalItems with heterogeneous array :: valid instance
-draft7/additionalItems.json :: additionalItems with null instance elements :: allows null elements
 draft7/additionalProperties.json :: additionalProperties being false does not allow other properties :: an additional property is invalid
 draft7/additionalProperties.json :: additionalProperties being false does not allow other properties :: ignores arrays
 draft7/additionalProperties.json :: additionalProperties being false does not allow other properties :: ignores strings
