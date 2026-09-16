@@ -74,6 +74,7 @@ proc admits(kind, other: VariantKind): bool =
   kind == other or kind == vkAny or (kind == vkNumber and other == vkInteger)
 
 proc intersect*(a, b: Description): Description
+proc intersectKinds(a, b: Variant): Variant
 
 proc narrow(a, b: Description): Description =
   ## Intersects two optional constraints, where nil is no constraint at all
@@ -161,8 +162,6 @@ proc narrowArray(a, b: Variant): Variant =
       element = intersect(element, b.prefix.get[i])
     if not result.items.isNil and not result.items.isNever:
       element = intersect(element, result.items)
-    if element.isNever:
-      return nil
     elements.add(element)
   result.prefix = some(elements)
 
@@ -188,13 +187,29 @@ proc narrowObject(a, b: Variant): Variant =
   for key, prop in b.properties:
     result.properties[key] = narrow(result.properties.getOrDefault(key), prop)
 
-  # An object missing a key it has to hold is no object at all
-  for key in result.required:
-    if key in result.properties and result.properties[key].isNever:
-      return nil
+proc isEmpty*(variant: Variant): bool =
+  ## Whether nothing satisfies a variant: an object missing a key it has to hold, or a
+  ## tuple with a slot nothing fills
+  case variant.kind
+  of vkObject:
+    for key in variant.required:
+      if key in variant.properties and variant.properties[key].isNever:
+        return true
+  of vkArray:
+    if variant.prefix.isSome:
+      for slot in variant.prefix.get:
+        if slot.isNever:
+          return true
+  else:
+    discard
 
 proc intersectVariant*(a, b: Variant): Variant =
   ## The variant satisfying both, or nil when no value can
+  result = intersectKinds(a, b)
+  if not result.isNil and result.isEmpty:
+    return nil
+
+proc intersectKinds(a, b: Variant): Variant =
   if a.kind == vkEdge or b.kind == vkAny:
     return a
   if b.kind == vkEdge or a.kind == vkAny:
