@@ -1,4 +1,4 @@
-import std/[json, sets, options, tables], schemaRef
+import std/[json, sets, options, tables, uri, sequtils], schemaRef
 
 type
   VariantKind* = enum
@@ -16,6 +16,10 @@ type
 
   Variant* = ref object
     ## One type a schema node allows, and what it says about that type
+    sref*: SchemaRef ## The reference this variant was reached through, if any
+    id*: Uri
+    folded*: seq[Description]
+      ## Labelled types a combine absorbed; an edge may still name one
     case kind*: VariantKind
     of vkString:
       values*: Option[OrderedSet[string]] ## Set by an `enum`
@@ -35,6 +39,10 @@ type
       discard
 
   Description* = ref object ## Every type a schema node allows
+    sref*: SchemaRef
+      ## Names the description as a whole, which is a union when it has many
+    id*: Uri
+    folded*: seq[Description]
     variants*: seq[Variant]
       ## Kept in the order the schema lists them; empty accepts nothing
 
@@ -76,6 +84,47 @@ proc narrow(a, b: Description): Description =
   else:
     intersect(a, b)
 
+proc isBare(variant: Variant): bool =
+  ## Whether a container variant says nothing beyond its kind
+  case variant.kind
+  of vkArray:
+    variant.items.isNil and variant.prefix.isNone
+  of vkObject:
+    not variant.shaped and variant.properties.len == 0 and variant.required.len == 0 and
+      variant.additional.isNil
+  else:
+    false
+
+proc clone*(variant: Variant): Variant =
+  ## Copies a variant. Built field by field, since the VM aliases `result[] = variant[]`.
+  result =
+    case variant.kind
+    of vkString:
+      Variant(kind: vkString, values: variant.values)
+    of vkArray:
+      Variant(kind: vkArray, items: variant.items, prefix: variant.prefix)
+    of vkObject:
+      Variant(
+        kind: vkObject,
+        properties: variant.properties,
+        required: variant.required,
+        additional: variant.additional,
+        shaped: variant.shaped,
+      )
+    of vkConst:
+      Variant(kind: vkConst, value: variant.value)
+    of vkEdge:
+      Variant(kind: vkEdge, target: variant.target)
+    of vkNull, vkBool, vkInteger, vkNumber, vkAny:
+      Variant(kind: variant.kind)
+  result.sref = variant.sref
+  result.id = variant.id
+  for desc in variant.folded:
+    result.folded.add(desc)
+
+proc firstId(a, b: Variant): Uri =
+  if a.id == default(Uri): b.id else: a.id
+
 proc narrowString(a, b: Variant): Variant =
   if a.values.isNone:
     return b
@@ -87,10 +136,15 @@ proc narrowString(a, b: Variant): Variant =
     if value in b.values.get:
       values.incl(value)
   if values.len > 0:
-    return Variant(kind: vkString, values: some(values))
+    return Variant(kind: vkString, values: some(values), id: firstId(a, b))
 
 proc narrowArray(a, b: Variant): Variant =
-  result = Variant(kind: vkArray, items: narrow(a.items, b.items))
+  if a.isBare:
+    return b
+  if b.isBare:
+    return a
+
+  result = Variant(kind: vkArray, items: narrow(a.items, b.items), id: firstId(a, b))
 
   if a.prefix.isSome and b.prefix.isSome and a.prefix.get.len != b.prefix.get.len:
     raise newException(ValueError, "Mismatched tuple lengths")
@@ -113,8 +167,14 @@ proc narrowArray(a, b: Variant): Variant =
   result.prefix = some(elements)
 
 proc narrowObject(a, b: Variant): Variant =
+  if a.isBare:
+    return b
+  if b.isBare:
+    return a
+
   result = Variant(
     kind: vkObject,
+    id: firstId(a, b),
     additional: narrow(a.additional, b.additional),
     shaped: a.shaped or b.shaped,
   )
@@ -167,15 +227,62 @@ proc intersectVariant*(a, b: Variant): Variant =
   else:
     discard
 
+iterator spread(desc: Description): Variant =
+  ## The variants of a description, with its label moved onto the variant it names
+  if desc.sref.isNil or desc.variants.len != 1:
+    for variant in desc.variants:
+      yield variant
+  else:
+    let inner = desc.variants[0]
+    let variant = inner.clone
+    variant.sref = desc.sref
+    if variant.id == default(Uri):
+      variant.id = desc.id
+    variant.folded.add(desc.folded)
+    if not inner.sref.isNil and inner.sref != desc.sref:
+      variant.folded.add(describe(inner))
+    yield variant
+
+proc leftovers(desc: Description): seq[Description] =
+  ## Whatever `spread` could not carry over onto a variant
+  if desc.sref.isNil:
+    desc.folded
+  elif desc.variants.len != 1:
+    @[desc]
+  else:
+    @[]
+
+proc absorb(merged, loser: Variant): Variant =
+  ## Keeps a labelled variant a combine discarded where an edge can still find it
+  if merged == loser or (loser.sref.isNil and loser.folded.len == 0):
+    return merged
+
+  result = merged.clone
+  if loser.sref.isNil:
+    result.folded.add(loser.folded)
+  else:
+    result.folded.add(describe(loser))
+
 proc union*(a, b: Description): Description =
   ## Values satisfying either side, keeping each alternative as its own variant
-  Description(variants: a.variants & b.variants)
+  Description(
+    variants: a.spread.toSeq & b.spread.toSeq, folded: a.leftovers & b.leftovers
+  )
 
 proc intersect*(a, b: Description): Description =
   ## Values satisfying both sides, distributed over every pair of alternatives
-  result = never()
-  for left in a.variants:
-    for right in b.variants:
+  result = Description(folded: a.leftovers & b.leftovers)
+  for left in a.spread:
+    for right in b.spread:
       let merged = intersectVariant(left, right)
       if not merged.isNil:
-        result.variants.add(merged)
+        result.variants.add(merged.absorb(left).absorb(right))
+
+proc relabel*(desc: Description, sref: SchemaRef): Description =
+  ## Names a description after the reference it was reached through
+  if desc.sref.isNil:
+    desc.sref = sref
+    return desc
+
+  # Already named, and memoized under that name, so it is copied rather than renamed
+  return Description(sref: sref, id: desc.id, variants: desc.variants, folded: @[desc])

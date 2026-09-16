@@ -1,6 +1,6 @@
 import
-  std/[unittest, json, sets, options, sequtils, tables],
-  json_schema_import/private/describe
+  std/[unittest, json, sets, options, sequtils, tables, uri],
+  json_schema_import/private/[describe, schemaRef]
 
 proc v(kind: VariantKind): Variant =
   Variant(kind: kind)
@@ -162,3 +162,75 @@ suite "Intersecting arrays":
 
   test "An array const narrows an array":
     check(intersect(describe(fixed(%*[1])), describe(arr(nil))).kinds == @[vkConst])
+
+proc labelled(desc: Description, name: string): Description =
+  desc.relabel(parseRef("#/$defs/" & name))
+
+proc named(variant: Variant): string =
+  $variant.sref
+
+suite "Labels":
+  test "A union moves a label onto the one variant it names":
+    let joined = union(describe(obj({:})).labelled("a"), describe(v(vkString)))
+    check(joined.variants[0].named == "#/$defs/a")
+    check(joined.variants[1].sref.isNil)
+    check(joined.folded.len == 0)
+
+  test "A label naming many variants is kept aside once they are spread out":
+    let inner = describe(v(vkString), v(vkInteger)).labelled("u")
+    let joined = union(inner, describe(v(vkNull)))
+    check(joined.variants.len == 3)
+    check(joined.folded == @[inner])
+
+  test "Survives an intersection that adds nothing to it":
+    let merged = intersect(anyValue(), describe(obj({:})).labelled("a"))
+    check(merged.variants[0].named == "#/$defs/a")
+    check(merged.variants[0].folded.len == 0)
+
+  test "Survives a bare object beside it":
+    let merged =
+      intersect(describe(Variant(kind: vkObject)), describe(obj({:})).labelled("a"))
+    check(merged.variants[0].named == "#/$defs/a")
+
+  test "Is folded away when both sides add something":
+    let merged = intersect(
+      describe(obj({"x": anyValue()})).labelled("a"),
+      describe(obj({"y": anyValue()})).labelled("b"),
+    )
+    let variant = merged.variants[0]
+    check(variant.sref.isNil)
+    check(variant.folded.len == 2)
+    check(variant.folded[0].variants[0].named == "#/$defs/a")
+    check(variant.folded[1].variants[0].named == "#/$defs/b")
+
+  test "Is folded away by an edge that absorbs it":
+    let merged =
+      intersect(describe(Variant(kind: vkEdge)), describe(obj({:})).labelled("a"))
+    check(merged.variants[0].kind == vkEdge)
+    check(merged.variants[0].folded[0].variants[0].named == "#/$defs/a")
+
+  test "Does not rewrite the variant it was moved from":
+    let target = describe(obj({"x": anyValue()})).labelled("a")
+    discard intersect(target, describe(obj({"y": anyValue()})))
+    check(target.variants[0].sref.isNil)
+    check(target.variants[0].folded.len == 0)
+
+  test "Relabelling names an unnamed description in place":
+    let desc = describe(v(vkString))
+    check(desc.labelled("a") == desc)
+    check($desc.sref == "#/$defs/a")
+
+  test "Relabelling copies a named description, keeping the old name aside":
+    let desc = describe(v(vkString)).labelled("a")
+    let copy = desc.labelled("b")
+    check($copy.sref == "#/$defs/b")
+    check($desc.sref == "#/$defs/a")
+    check(copy.folded == @[desc])
+
+  test "A merged variant takes the first id either side had":
+    let a = obj({"x": anyValue()})
+    let b = obj({"y": anyValue()})
+    b.id = parseUri("https://example.com/b")
+    check(
+      $intersect(describe(a), describe(b)).variants[0].id == "https://example.com/b"
+    )
