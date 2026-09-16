@@ -101,7 +101,7 @@ proc formatCodeDump*(code: NimNode): string =
   # module symbol and a proc symbol of the same name cannot coexist in one scope. That
   # only matters once this dump is `include`d rather than compiled as its own module.
   result &= "import json_schema_import/private/stringify as jsonSchemaStringify\n"
-  result &= "import json_schema_import/private/[equality, bin, sax]\n"
+  result &= "import json_schema_import/private/[equality, bin, sax, empty]\n"
   result &= code.repr.replace(re2"\`gensym_?\d+", "")
   result &= "\n{.pop.}\n"
 

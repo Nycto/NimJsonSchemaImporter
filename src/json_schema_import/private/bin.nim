@@ -1,10 +1,17 @@
-import std/[options, json, tables]
+import std/[options, json, tables], empty
 
 iterator eachByte(source: string, idx: var int, kind: typedesc): (int, byte) =
   ## Iterates over each byte of a value in the source string.
   for i in 0 ..< sizeof(kind):
     yield (i, source[idx + i].byte)
   idx += sizeof(kind)
+
+proc toBinary*(target: var string, source: Empty) =
+  ## A null carries no data, so nothing is written
+  discard
+
+proc fromBinary*(_: typedesc[Empty], source: string, idx: var int): Empty =
+  discard
 
 proc toBinary*(target: var string, source: bool) =
   ## Serializes a boolean value into binary format and appends it to the target string.

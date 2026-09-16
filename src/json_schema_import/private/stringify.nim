@@ -1,8 +1,9 @@
-import std/[tables, options, json], util
+import std/[tables, options, json], util, empty
 
 proc stringify*(_: typedesc[string], value: string): string
 proc stringify*[T: SomeNumber | SomeOrdinal](_: typedesc[T], value: T): string
 proc stringify*(_: typedesc[JsonNode], value: JsonNode): string
+proc stringify*(_: typedesc[Empty], value: Empty): string
 proc stringify*[T](_: typedesc[ref T], value: ref T): string
 
 proc stringify*[T](_: typedesc[Option[T]], value: Option[T]): string
@@ -19,6 +20,9 @@ proc stringify*[T: SomeNumber | SomeOrdinal](_: typedesc[T], value: T): string =
 proc stringify*(_: typedesc[JsonNode], value: JsonNode): string =
   ## Concrete so that `JsonNode`, itself a `ref object`, outranks the `ref T` overload
   $value
+
+proc stringify*(_: typedesc[Empty], value: Empty): string =
+  "null"
 
 proc stringify*[T](_: typedesc[ref T], value: ref T): string =
   ## A recursive schema generates a `ref`, and nil is how it bottoms out

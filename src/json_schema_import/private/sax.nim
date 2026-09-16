@@ -3,7 +3,7 @@
 ##
 ##
 
-import std/[streams, parsejson, tables, macros, sets, json, options, strutils]
+import std/[streams, parsejson, tables, macros, sets, json, options, strutils], empty
 
 export parsejson, streams
 
@@ -15,6 +15,9 @@ proc toStream*(source: SomeNumber, target: Stream) =
 
 proc toStream*(source: bool, target: Stream) =
   target.write(if source: "true" else: "false")
+
+proc toStream*(source: Empty, target: Stream) =
+  target.write("null")
 
 proc toStream*[T](source: Option[T], target: Stream) =
   if source.isSome:
@@ -159,6 +162,11 @@ proc fromStream*(typ: typedesc[bool], source: var JsonParser): bool =
     result = false
   else:
     raiseParseErr(source, "bool")
+  discard getTok(source)
+
+proc fromStream*(typ: typedesc[Empty], source: var JsonParser): Empty =
+  if source.tok != tkNull:
+    raiseParseErr(source, "null")
   discard getTok(source)
 
 proc fromStream*[T](typ: typedesc[Option[T]], source: var JsonParser): Option[T] =

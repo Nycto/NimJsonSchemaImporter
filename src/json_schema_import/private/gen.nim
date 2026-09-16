@@ -10,7 +10,8 @@ import
   equalsgen,
   dollargen,
   bingen,
-  saxgen
+  saxgen,
+  empty
 
 type
   GenContext = ref object
@@ -257,7 +258,7 @@ proc genType(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   of BoolType:
     result = bindSym("bool")
   of NullType:
-    result = bindSym("pointer")
+    result = bindSym("Empty")
   of JsonType:
     result = bindSym("JsonNode")
   of MapType:
