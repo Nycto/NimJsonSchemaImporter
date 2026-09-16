@@ -1,6 +1,6 @@
 import
   std/[unittest, json, sets, options, tables],
-  json_schema_import/private/[describe, lower, types]
+  json_schema_import/private/[describe, lower, types, schemaRef]
 
 proc v(kind: VariantKind): Variant =
   Variant(kind: kind)
@@ -115,3 +115,51 @@ suite "Lowering arrays":
     let typ = describe(Variant(kind: vkArray, items: never())).lower
     check(typ.kind == TupleType)
     check(typ.elements.len == 0)
+
+proc named(desc: Description, name: string): Description =
+  desc.relabel(parseRef("#/$defs/" & name))
+
+proc edge(name: string): Description =
+  describe(Variant(kind: vkEdge, target: parseRef("#/$defs/" & name)))
+
+suite "Lowering labels":
+  test "A labelled description names its type":
+    check($d(vkString).named("a").lower.sref == "#/$defs/a")
+
+  test "A labelled variant names its arm of a union":
+    let arm = v(vkString)
+    arm.sref = parseRef("#/$defs/a")
+    let typ = describe(arm, v(vkInteger)).named("u").lower
+    check($typ.sref == "#/$defs/u")
+    check($typ.subtypes[0].sref == "#/$defs/a")
+    check(typ.subtypes[1].sref.isNil)
+
+  test "A reference reached twice lowers to the same type":
+    let shared = describe(obj({"x": d(vkString)})).named("a")
+    let typ = describe(obj({"first": shared, "second": shared})).lower
+    check(typ.properties["first"].typ.subtype == typ.properties["second"].typ.subtype)
+    check(
+      cast[pointer](typ.properties["first"].typ.subtype) ==
+        cast[pointer](typ.properties["second"].typ.subtype)
+    )
+
+  test "A folded type an edge closes onto is kept as a note":
+    let node = describe(obj({"next": edge("node")})).named("node")
+    let merged = intersect(node, describe(obj({"name": d(vkString)})))
+    let typ = merged.lower
+    check(typ.kind == NoteType)
+    check($typ.note.sref == "#/$defs/node")
+    check(typ.inner.kind == ObjType)
+    check("name" in typ.inner.properties)
+
+  test "A folded type nothing closes onto is dropped":
+    let leaf = describe(obj({"id": d(vkString)})).named("leaf")
+    let typ = intersect(leaf, describe(obj({"name": d(vkString)}))).lower
+    check(typ.kind == ObjType)
+    check(typ.properties.len == 2)
+
+  test "Renaming a type an edge closes onto keeps the original alive":
+    let node = describe(obj({"next": edge("node")})).named("node")
+    let typ = node.named("alias").lower
+    check(typ.stripNotes.kind == ObjType)
+    check(typ.closesOnto(parseRef("#/$defs/node")))
