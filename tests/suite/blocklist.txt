@@ -629,205 +629,87 @@ draft2020-12/type.json :: array type matches arrays :: null is not an array
 draft2020-12/type.json :: null type matches only the null object :: an integer is not null
 draft2020-12/type.json :: null type matches only the null object :: zero is not null
 draft2020-12/type.json :: null type matches only the null object :: null is null
-draft2020-12/unevaluatedItems.json :: unevaluatedItems true :: with no unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems true :: with unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems false :: with no unevaluated items
 draft2020-12/unevaluatedItems.json :: unevaluatedItems false :: with unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems as schema :: with no unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems as schema :: with valid unevaluated items
 draft2020-12/unevaluatedItems.json :: unevaluatedItems as schema :: with invalid unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with uniform items :: unevaluatedItems doesn't apply
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with tuple :: with no unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with tuple :: with unevaluated items
 draft2020-12/unevaluatedItems.json :: unevaluatedItems with items and prefixItems :: unevaluatedItems doesn't apply
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with items :: valid under items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with items :: invalid under items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with nested tuple :: with no unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with nested tuple :: with unevaluated items
 draft2020-12/unevaluatedItems.json :: unevaluatedItems with nested items :: with only (valid) additional items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with nested items :: with no additional items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with nested items :: with invalid additional item
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with nested prefixItems and items :: with no additional items
 draft2020-12/unevaluatedItems.json :: unevaluatedItems with nested prefixItems and items :: with additional items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with nested unevaluatedItems :: with no additional items
 draft2020-12/unevaluatedItems.json :: unevaluatedItems with nested unevaluatedItems :: with additional items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with anyOf :: when one schema matches and has no unevaluated items
 draft2020-12/unevaluatedItems.json :: unevaluatedItems with anyOf :: when one schema matches and has unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with anyOf :: when two schemas match and has no unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with anyOf :: when two schemas match and has unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with oneOf :: with no unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with oneOf :: with unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with not :: with unevaluated items
 draft2020-12/unevaluatedItems.json :: unevaluatedItems with if/then/else :: when if matches and it has no unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with if/then/else :: when if matches and it has unevaluated items
 draft2020-12/unevaluatedItems.json :: unevaluatedItems with if/then/else :: when if doesn't match and it has no unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with if/then/else :: when if doesn't match and it has unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with boolean schemas :: with no unevaluated items
 draft2020-12/unevaluatedItems.json :: unevaluatedItems with boolean schemas :: with unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with $ref :: with no unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with $ref :: with unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems before $ref :: with no unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems before $ref :: with unevaluated items
 draft2020-12/unevaluatedItems.json :: unevaluatedItems with $dynamicRef :: with no unevaluated items
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with $dynamicRef :: with unevaluated items
 draft2020-12/unevaluatedItems.json :: unevaluatedItems can't see inside cousins :: always fails
 draft2020-12/unevaluatedItems.json :: item is evaluated in an uncle schema to unevaluatedItems :: no extra items
 draft2020-12/unevaluatedItems.json :: item is evaluated in an uncle schema to unevaluatedItems :: uncle keyword evaluation is not significant
 draft2020-12/unevaluatedItems.json :: unevaluatedItems depends on adjacent contains :: second item is evaluated by contains
-draft2020-12/unevaluatedItems.json :: unevaluatedItems depends on adjacent contains :: contains fails, second item is not evaluated
-draft2020-12/unevaluatedItems.json :: unevaluatedItems depends on adjacent contains :: contains passes, second item is not evaluated
-draft2020-12/unevaluatedItems.json :: unevaluatedItems depends on multiple nested contains :: 5 not evaluated, passes unevaluatedItems
 draft2020-12/unevaluatedItems.json :: unevaluatedItems depends on multiple nested contains :: 7 not evaluated, fails unevaluatedItems
-draft2020-12/unevaluatedItems.json :: unevaluatedItems and contains interact to control item dependency relationship :: empty array is valid
-draft2020-12/unevaluatedItems.json :: unevaluatedItems and contains interact to control item dependency relationship :: only a's are valid
-draft2020-12/unevaluatedItems.json :: unevaluatedItems and contains interact to control item dependency relationship :: a's and b's are valid
-draft2020-12/unevaluatedItems.json :: unevaluatedItems and contains interact to control item dependency relationship :: a's, b's and c's are valid
 draft2020-12/unevaluatedItems.json :: unevaluatedItems and contains interact to control item dependency relationship :: only b's are invalid
 draft2020-12/unevaluatedItems.json :: unevaluatedItems and contains interact to control item dependency relationship :: only c's are invalid
 draft2020-12/unevaluatedItems.json :: unevaluatedItems and contains interact to control item dependency relationship :: only b's and c's are invalid
 draft2020-12/unevaluatedItems.json :: unevaluatedItems and contains interact to control item dependency relationship :: only a's and c's are invalid
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with minContains = 0 :: empty array is valid
 draft2020-12/unevaluatedItems.json :: unevaluatedItems with minContains = 0 :: no items evaluated by contains
 draft2020-12/unevaluatedItems.json :: unevaluatedItems with minContains = 0 :: some but not all items evaluated by contains
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with minContains = 0 :: all items evaluated by contains
-draft2020-12/unevaluatedItems.json :: non-array instances are valid :: ignores booleans
-draft2020-12/unevaluatedItems.json :: non-array instances are valid :: ignores integers
-draft2020-12/unevaluatedItems.json :: non-array instances are valid :: ignores floats
-draft2020-12/unevaluatedItems.json :: non-array instances are valid :: ignores objects
-draft2020-12/unevaluatedItems.json :: non-array instances are valid :: ignores strings
-draft2020-12/unevaluatedItems.json :: non-array instances are valid :: ignores null
-draft2020-12/unevaluatedItems.json :: unevaluatedItems with null instance elements :: allows null elements
-draft2020-12/unevaluatedItems.json :: unevaluatedItems can see annotations from if without then and else :: valid in case if is evaluated
 draft2020-12/unevaluatedItems.json :: unevaluatedItems can see annotations from if without then and else :: invalid in case if is evaluated
-draft2020-12/unevaluatedItems.json :: Evaluated items collection needs to consider instance location :: with an unevaluated item that exists at another location
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties true :: with no unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties true :: with unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties schema :: with no unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties schema :: with valid unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties schema :: with invalid unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties false :: with no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties false :: with unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with adjacent properties :: with no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with adjacent properties :: with unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with adjacent patternProperties :: with no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with adjacent patternProperties :: with unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with adjacent bool additionalProperties :: with no additional properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with adjacent bool additionalProperties :: with additional properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with adjacent non-bool additionalProperties :: with no additional properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with adjacent non-bool additionalProperties :: with additional properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with nested properties :: with no additional properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with nested properties :: with additional properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with nested patternProperties :: with no additional properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with nested patternProperties :: with additional properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with nested additionalProperties :: with no additional properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with nested additionalProperties :: with additional properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with nested unevaluatedProperties :: with no nested unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with nested unevaluatedProperties :: with nested unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with anyOf :: when one matches and has no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with anyOf :: when one matches and has unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with anyOf :: when two match and has no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with anyOf :: when two match and has unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with oneOf :: with no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with oneOf :: with unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with not :: with unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with if/then/else :: when if is true and has no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with if/then/else :: when if is true and has unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with if/then/else :: when if is false and has no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with if/then/else :: when if is false and has unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, then not defined :: when if is true and has no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, then not defined :: when if is true and has unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, then not defined :: when if is false and has no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, then not defined :: when if is false and has unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, else not defined :: when if is true and has no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, else not defined :: when if is true and has unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, else not defined :: when if is false and has no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, else not defined :: when if is false and has unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with dependentSchemas :: with no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with dependentSchemas :: with unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with boolean schemas :: with no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with boolean schemas :: with unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with $ref :: with no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with $ref :: with unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties before $ref :: with no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties before $ref :: with unevaluated properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with $dynamicRef :: with no unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with $dynamicRef :: with unevaluated properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties can't see inside cousins :: always fails
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties can't see inside cousins (reverse order) :: always fails
-draft2020-12/unevaluatedProperties.json :: nested unevaluatedProperties, outer false, inner true, properties outside :: with no nested unevaluated properties
-draft2020-12/unevaluatedProperties.json :: nested unevaluatedProperties, outer false, inner true, properties outside :: with nested unevaluated properties
-draft2020-12/unevaluatedProperties.json :: nested unevaluatedProperties, outer false, inner true, properties inside :: with no nested unevaluated properties
-draft2020-12/unevaluatedProperties.json :: nested unevaluatedProperties, outer false, inner true, properties inside :: with nested unevaluated properties
 draft2020-12/unevaluatedProperties.json :: nested unevaluatedProperties, outer true, inner false, properties outside :: with no nested unevaluated properties
 draft2020-12/unevaluatedProperties.json :: nested unevaluatedProperties, outer true, inner false, properties outside :: with nested unevaluated properties
-draft2020-12/unevaluatedProperties.json :: nested unevaluatedProperties, outer true, inner false, properties inside :: with no nested unevaluated properties
 draft2020-12/unevaluatedProperties.json :: nested unevaluatedProperties, outer true, inner false, properties inside :: with nested unevaluated properties
 draft2020-12/unevaluatedProperties.json :: cousin unevaluatedProperties, true and false, true with properties :: with no nested unevaluated properties
 draft2020-12/unevaluatedProperties.json :: cousin unevaluatedProperties, true and false, true with properties :: with nested unevaluated properties
-draft2020-12/unevaluatedProperties.json :: cousin unevaluatedProperties, true and false, false with properties :: with no nested unevaluated properties
 draft2020-12/unevaluatedProperties.json :: cousin unevaluatedProperties, true and false, false with properties :: with nested unevaluated properties
-draft2020-12/unevaluatedProperties.json :: property is evaluated in an uncle schema to unevaluatedProperties :: no extra properties
 draft2020-12/unevaluatedProperties.json :: property is evaluated in an uncle schema to unevaluatedProperties :: uncle keyword evaluation is not significant
 draft2020-12/unevaluatedProperties.json :: in-place applicator siblings, allOf has unevaluated :: base case: both properties present
-draft2020-12/unevaluatedProperties.json :: in-place applicator siblings, allOf has unevaluated :: in place applicator siblings, bar is missing
 draft2020-12/unevaluatedProperties.json :: in-place applicator siblings, allOf has unevaluated :: in place applicator siblings, foo is missing
 draft2020-12/unevaluatedProperties.json :: in-place applicator siblings, anyOf has unevaluated :: base case: both properties present
 draft2020-12/unevaluatedProperties.json :: in-place applicator siblings, anyOf has unevaluated :: in place applicator siblings, bar is missing
-draft2020-12/unevaluatedProperties.json :: in-place applicator siblings, anyOf has unevaluated :: in place applicator siblings, foo is missing
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + single cyclic ref :: Empty is valid
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + single cyclic ref :: Single is valid
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + single cyclic ref :: Unevaluated on 1st level is invalid
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + single cyclic ref :: Nested is valid
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + single cyclic ref :: Unevaluated on 2nd level is invalid
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + single cyclic ref :: Deep nested is valid
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + single cyclic ref :: Unevaluated on 3rd level is invalid
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: Empty is invalid (no x or y)
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: a and b are invalid (no x or y)
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: x and y are invalid
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: a and x are valid
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: a and y are valid
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: a and b and x are valid
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: a and b and y are valid
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: a and b and x and y are invalid
-draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: Empty is invalid
-draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: a is valid
-draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: b is valid
-draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: c is valid
-draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: d is valid
 draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: a + b is invalid
 draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: a + c is invalid
 draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: a + d is invalid
 draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: b + c is invalid
 draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: b + d is invalid
 draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: c + d is invalid
-draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: xx is valid
-draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: xx + foox is valid
 draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: xx + foo is invalid
 draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: xx + a is invalid
 draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: xx + b is invalid
 draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: xx + c is invalid
 draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: xx + d is invalid
-draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: all is valid
-draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: all + foo is valid
 draft2020-12/unevaluatedProperties.json :: dynamic evalation inside nested refs :: all + a is invalid
-draft2020-12/unevaluatedProperties.json :: non-object instances are valid :: ignores booleans
-draft2020-12/unevaluatedProperties.json :: non-object instances are valid :: ignores integers
-draft2020-12/unevaluatedProperties.json :: non-object instances are valid :: ignores floats
-draft2020-12/unevaluatedProperties.json :: non-object instances are valid :: ignores arrays
-draft2020-12/unevaluatedProperties.json :: non-object instances are valid :: ignores strings
-draft2020-12/unevaluatedProperties.json :: non-object instances are valid :: ignores null
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties with null valued instance properties :: allows null valued properties
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties not affected by propertyNames :: allows only number properties
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties not affected by propertyNames :: string property is invalid
-draft2020-12/unevaluatedProperties.json :: unevaluatedProperties can see annotations from if without then and else :: valid in case if is evaluated
 draft2020-12/unevaluatedProperties.json :: unevaluatedProperties can see annotations from if without then and else :: invalid in case if is evaluated
 draft2020-12/unevaluatedProperties.json :: dependentSchemas with unevaluatedProperties :: unevaluatedProperties doesn't consider dependentSchemas
 draft2020-12/unevaluatedProperties.json :: dependentSchemas with unevaluatedProperties :: unevaluatedProperties doesn't see bar when foo2 is absent
-draft2020-12/unevaluatedProperties.json :: dependentSchemas with unevaluatedProperties :: unevaluatedProperties sees bar when foo2 is present
 draft2020-12/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location :: with an unevaluated property that exists at another location
-draft2020-12/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location with patternProperties :: with only the nested evaluated property
 draft2020-12/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location with patternProperties :: with an unevaluated property that exists at another location
-draft2020-12/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location with additionalProperties :: with only the nested evaluated property
 draft2020-12/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location with additionalProperties :: with an unevaluated property that exists at another location
 draft2020-12/uniqueItems.json :: uniqueItems validation :: non-unique array of integers is invalid
 draft2020-12/uniqueItems.json :: uniqueItems validation :: non-unique array of more than two integers is invalid
@@ -1444,190 +1326,81 @@ draft2019-09/type.json :: array type matches arrays :: null is not an array
 draft2019-09/type.json :: null type matches only the null object :: an integer is not null
 draft2019-09/type.json :: null type matches only the null object :: zero is not null
 draft2019-09/type.json :: null type matches only the null object :: null is null
-draft2019-09/unevaluatedItems.json :: unevaluatedItems true :: with no unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems true :: with unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems false :: with no unevaluated items
 draft2019-09/unevaluatedItems.json :: unevaluatedItems false :: with unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems as schema :: with no unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems as schema :: with valid unevaluated items
 draft2019-09/unevaluatedItems.json :: unevaluatedItems as schema :: with invalid unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with uniform items :: unevaluatedItems doesn't apply
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with tuple :: with no unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with tuple :: with unevaluated items
 draft2019-09/unevaluatedItems.json :: unevaluatedItems with items and additionalItems :: unevaluatedItems doesn't apply
 draft2019-09/unevaluatedItems.json :: unevaluatedItems with ignored additionalItems :: invalid under unevaluatedItems
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with ignored additionalItems :: all valid under unevaluatedItems
 draft2019-09/unevaluatedItems.json :: unevaluatedItems with ignored applicator additionalItems :: invalid under unevaluatedItems
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with ignored applicator additionalItems :: all valid under unevaluatedItems
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with nested tuple :: with no unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with nested tuple :: with unevaluated items
 draft2019-09/unevaluatedItems.json :: unevaluatedItems with nested items :: with only (valid) additional items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with nested items :: with no additional items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with nested items :: with invalid additional item
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with nested items and additionalItems :: with no additional items
 draft2019-09/unevaluatedItems.json :: unevaluatedItems with nested items and additionalItems :: with additional items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with nested unevaluatedItems :: with no additional items
 draft2019-09/unevaluatedItems.json :: unevaluatedItems with nested unevaluatedItems :: with additional items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with anyOf :: when one schema matches and has no unevaluated items
 draft2019-09/unevaluatedItems.json :: unevaluatedItems with anyOf :: when one schema matches and has unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with anyOf :: when two schemas match and has no unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with anyOf :: when two schemas match and has unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with oneOf :: with no unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with oneOf :: with unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with not :: with unevaluated items
 draft2019-09/unevaluatedItems.json :: unevaluatedItems with if/then/else :: when if matches and it has no unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with if/then/else :: when if matches and it has unevaluated items
 draft2019-09/unevaluatedItems.json :: unevaluatedItems with if/then/else :: when if doesn't match and it has no unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with if/then/else :: when if doesn't match and it has unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with boolean schemas :: with no unevaluated items
 draft2019-09/unevaluatedItems.json :: unevaluatedItems with boolean schemas :: with unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with $ref :: with no unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with $ref :: with unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems before $ref :: with no unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems before $ref :: with unevaluated items
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with $recursiveRef :: with no unevaluated items
 draft2019-09/unevaluatedItems.json :: unevaluatedItems with $recursiveRef :: with unevaluated items
 draft2019-09/unevaluatedItems.json :: unevaluatedItems can't see inside cousins :: always fails
 draft2019-09/unevaluatedItems.json :: item is evaluated in an uncle schema to unevaluatedItems :: no extra items
 draft2019-09/unevaluatedItems.json :: item is evaluated in an uncle schema to unevaluatedItems :: uncle keyword evaluation is not significant
-draft2019-09/unevaluatedItems.json :: non-array instances are valid :: ignores booleans
-draft2019-09/unevaluatedItems.json :: non-array instances are valid :: ignores integers
-draft2019-09/unevaluatedItems.json :: non-array instances are valid :: ignores floats
-draft2019-09/unevaluatedItems.json :: non-array instances are valid :: ignores objects
-draft2019-09/unevaluatedItems.json :: non-array instances are valid :: ignores strings
-draft2019-09/unevaluatedItems.json :: non-array instances are valid :: ignores null
-draft2019-09/unevaluatedItems.json :: unevaluatedItems with null instance elements :: allows null elements
-draft2019-09/unevaluatedItems.json :: unevaluatedItems can see annotations from if without then and else :: valid in case if is evaluated
 draft2019-09/unevaluatedItems.json :: unevaluatedItems can see annotations from if without then and else :: invalid in case if is evaluated
-draft2019-09/unevaluatedItems.json :: Evaluated items collection needs to consider instance location :: with an unevaluated item that exists at another location
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties true :: with no unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties true :: with unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties schema :: with no unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties schema :: with valid unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties schema :: with invalid unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties false :: with no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties false :: with unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with adjacent properties :: with no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with adjacent properties :: with unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with adjacent patternProperties :: with no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with adjacent patternProperties :: with unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with adjacent bool additionalProperties :: with no additional properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with adjacent bool additionalProperties :: with additional properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with adjacent non-bool additionalProperties :: with no additional properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with adjacent non-bool additionalProperties :: with additional properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with nested properties :: with no additional properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with nested properties :: with additional properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with nested patternProperties :: with no additional properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with nested patternProperties :: with additional properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with nested additionalProperties :: with no additional properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with nested additionalProperties :: with additional properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with nested unevaluatedProperties :: with no nested unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with nested unevaluatedProperties :: with nested unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with anyOf :: when one matches and has no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with anyOf :: when one matches and has unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with anyOf :: when two match and has no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with anyOf :: when two match and has unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with oneOf :: with no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with oneOf :: with unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with not :: with unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with if/then/else :: when if is true and has no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with if/then/else :: when if is true and has unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with if/then/else :: when if is false and has no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with if/then/else :: when if is false and has unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, then not defined :: when if is true and has no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, then not defined :: when if is true and has unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, then not defined :: when if is false and has no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, then not defined :: when if is false and has unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, else not defined :: when if is true and has no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, else not defined :: when if is true and has unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, else not defined :: when if is false and has no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with if/then/else, else not defined :: when if is false and has unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with dependentSchemas :: with no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with dependentSchemas :: with unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with boolean schemas :: with no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with boolean schemas :: with unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with $ref :: with no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with $ref :: with unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties before $ref :: with no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties before $ref :: with unevaluated properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with $recursiveRef :: with no unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with $recursiveRef :: with unevaluated properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties can't see inside cousins :: always fails
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties can't see inside cousins (reverse order) :: always fails
-draft2019-09/unevaluatedProperties.json :: nested unevaluatedProperties, outer false, inner true, properties outside :: with no nested unevaluated properties
-draft2019-09/unevaluatedProperties.json :: nested unevaluatedProperties, outer false, inner true, properties outside :: with nested unevaluated properties
-draft2019-09/unevaluatedProperties.json :: nested unevaluatedProperties, outer false, inner true, properties inside :: with no nested unevaluated properties
-draft2019-09/unevaluatedProperties.json :: nested unevaluatedProperties, outer false, inner true, properties inside :: with nested unevaluated properties
 draft2019-09/unevaluatedProperties.json :: nested unevaluatedProperties, outer true, inner false, properties outside :: with no nested unevaluated properties
 draft2019-09/unevaluatedProperties.json :: nested unevaluatedProperties, outer true, inner false, properties outside :: with nested unevaluated properties
-draft2019-09/unevaluatedProperties.json :: nested unevaluatedProperties, outer true, inner false, properties inside :: with no nested unevaluated properties
 draft2019-09/unevaluatedProperties.json :: nested unevaluatedProperties, outer true, inner false, properties inside :: with nested unevaluated properties
 draft2019-09/unevaluatedProperties.json :: cousin unevaluatedProperties, true and false, true with properties :: with no nested unevaluated properties
 draft2019-09/unevaluatedProperties.json :: cousin unevaluatedProperties, true and false, true with properties :: with nested unevaluated properties
-draft2019-09/unevaluatedProperties.json :: cousin unevaluatedProperties, true and false, false with properties :: with no nested unevaluated properties
 draft2019-09/unevaluatedProperties.json :: cousin unevaluatedProperties, true and false, false with properties :: with nested unevaluated properties
-draft2019-09/unevaluatedProperties.json :: property is evaluated in an uncle schema to unevaluatedProperties :: no extra properties
 draft2019-09/unevaluatedProperties.json :: property is evaluated in an uncle schema to unevaluatedProperties :: uncle keyword evaluation is not significant
 draft2019-09/unevaluatedProperties.json :: in-place applicator siblings, allOf has unevaluated :: base case: both properties present
-draft2019-09/unevaluatedProperties.json :: in-place applicator siblings, allOf has unevaluated :: in place applicator siblings, bar is missing
 draft2019-09/unevaluatedProperties.json :: in-place applicator siblings, allOf has unevaluated :: in place applicator siblings, foo is missing
 draft2019-09/unevaluatedProperties.json :: in-place applicator siblings, anyOf has unevaluated :: base case: both properties present
 draft2019-09/unevaluatedProperties.json :: in-place applicator siblings, anyOf has unevaluated :: in place applicator siblings, bar is missing
-draft2019-09/unevaluatedProperties.json :: in-place applicator siblings, anyOf has unevaluated :: in place applicator siblings, foo is missing
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + single cyclic ref :: Empty is valid
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + single cyclic ref :: Single is valid
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + single cyclic ref :: Unevaluated on 1st level is invalid
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + single cyclic ref :: Nested is valid
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + single cyclic ref :: Unevaluated on 2nd level is invalid
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + single cyclic ref :: Deep nested is valid
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + single cyclic ref :: Unevaluated on 3rd level is invalid
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: Empty is invalid (no x or y)
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: a and b are invalid (no x or y)
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: x and y are invalid
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: a and x are valid
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: a and y are valid
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: a and b and x are valid
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: a and b and y are valid
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties + ref inside allOf / oneOf :: a and b and x and y are invalid
-draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: Empty is invalid
-draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: a is valid
-draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: b is valid
-draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: c is valid
-draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: d is valid
 draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: a + b is invalid
 draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: a + c is invalid
 draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: a + d is invalid
 draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: b + c is invalid
 draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: b + d is invalid
 draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: c + d is invalid
-draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: xx is valid
-draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: xx + foox is valid
 draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: xx + foo is invalid
 draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: xx + a is invalid
 draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: xx + b is invalid
 draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: xx + c is invalid
 draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: xx + d is invalid
-draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: all is valid
-draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: all + foo is valid
 draft2019-09/unevaluatedProperties.json :: dynamic evalation inside nested refs :: all + a is invalid
-draft2019-09/unevaluatedProperties.json :: non-object instances are valid :: ignores booleans
-draft2019-09/unevaluatedProperties.json :: non-object instances are valid :: ignores integers
-draft2019-09/unevaluatedProperties.json :: non-object instances are valid :: ignores floats
-draft2019-09/unevaluatedProperties.json :: non-object instances are valid :: ignores arrays
-draft2019-09/unevaluatedProperties.json :: non-object instances are valid :: ignores strings
-draft2019-09/unevaluatedProperties.json :: non-object instances are valid :: ignores null
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties with null valued instance properties :: allows null valued properties
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties not affected by propertyNames :: allows only number properties
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties not affected by propertyNames :: string property is invalid
-draft2019-09/unevaluatedProperties.json :: unevaluatedProperties can see annotations from if without then and else :: valid in case if is evaluated
 draft2019-09/unevaluatedProperties.json :: unevaluatedProperties can see annotations from if without then and else :: invalid in case if is evaluated
 draft2019-09/unevaluatedProperties.json :: dependentSchemas with unevaluatedProperties :: unevaluatedProperties doesn't consider dependentSchemas
 draft2019-09/unevaluatedProperties.json :: dependentSchemas with unevaluatedProperties :: unevaluatedProperties doesn't see bar when foo2 is absent
-draft2019-09/unevaluatedProperties.json :: dependentSchemas with unevaluatedProperties :: unevaluatedProperties sees bar when foo2 is present
 draft2019-09/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location :: with an unevaluated property that exists at another location
-draft2019-09/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location with patternProperties :: with only the nested evaluated property
 draft2019-09/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location with patternProperties :: with an unevaluated property that exists at another location
-draft2019-09/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location with additionalProperties :: with only the nested evaluated property
 draft2019-09/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location with additionalProperties :: with an unevaluated property that exists at another location
 draft2019-09/uniqueItems.json :: uniqueItems validation :: non-unique array of integers is invalid
 draft2019-09/uniqueItems.json :: uniqueItems validation :: non-unique array of more than two integers is invalid

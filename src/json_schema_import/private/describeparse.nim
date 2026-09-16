@@ -192,7 +192,11 @@ proc ownDescription(
   result.folded = allowed.folded
 
 proc describeRef(node: JsonNode, ctx: DescribeContext, history: History): Description =
-  let sref = parseRef(node{"$ref"}.getStr).within(history.document)
+  var sref = parseRef(node{"$ref"}.getStr)
+  if sref.kind == UrlRef and history.base != default(Uri):
+    let url = $combine(history.base, parseUri(sref.url))
+    sref = SchemaRef(kind: UrlRef, url: url, next: sref.next)
+  sref = sref.within(history.document)
 
   # A reference still open closes a cycle, so it is cut into an edge naming it
   if sref in history:
@@ -235,6 +239,11 @@ proc describeNode*(
         never()
   if node.kind != JObject:
     raise newException(ValueError, fmt"Unable to parse type {node} at {history}")
+  let history =
+    if "$id" in node:
+      history.addId(id(node))
+    else:
+      history
 
   # Folded in a fixed order, which is the order object properties come out in
   var parts: seq[Description]
@@ -267,7 +276,32 @@ proc describeNode*(
   if parts.len > 1 and result.id == default(Uri):
     result.id = id(node)
 
+proc collectIds(node: JsonNode, history: History, found: var Table[string, JsonNode]) =
+  ## Every subschema a document embeds under an `$id`, by the URL it resolves to
+  case node.kind
+  of JObject:
+    var history = history
+    if "$id" in node:
+      history = history.addId(id(node))
+      found[$history.base] = node
+    for key, child in node:
+      if key notin ["enum", "const", "examples", "default"]:
+        child.collectIds(history, found)
+  of JArray:
+    for child in node:
+      child.collectIds(history, found)
+  else:
+    discard
+
 proc describeSchema*(node: JsonNode, resolver: UrlResolver): Description =
   ## Describes a whole document, starting at its root
-  let ctx = DescribeContext(doc: node, resolver: resolver)
+  var found = initTable[string, JsonNode]()
+  node.collectIds(nil, found)
+  let embedded = found
+  let fetch = proc(url: string): JsonNode =
+    if url in embedded:
+      embedded[url]
+    else:
+      resolver(url)
+  let ctx = DescribeContext(doc: node, resolver: fetch)
   node.describeNode(ctx, addRef(nil, SchemaRef(kind: RootRef)))

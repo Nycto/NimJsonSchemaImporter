@@ -78,3 +78,32 @@ suite "References into fetched documents":
     let next = root.prop("list").prop("next").subtype
     check(next.kind == RefType)
     check($next.schemaRef == "https://example.com/list.json#")
+
+suite "Embedded resources":
+  test "A relative reference resolves against the $id around it":
+    let root = parseSchema(
+      %*{
+        "$id": "https://example.com/schemas/root",
+        "type": "object",
+        "required": ["zip"],
+        "properties": {"zip": {"$ref": "./zip"}},
+        "$defs": {"zip": {"$id": "https://example.com/schemas/zip", "type": "integer"}},
+      },
+      resolver,
+    ).rootType
+
+    check(root.prop("zip").kind == IntegerType)
+
+  test "An embedded $id is itself relative to the one above it":
+    let root = parseSchema(
+      %*{
+        "$id": "https://example.com/schemas/root",
+        "type": "object",
+        "required": ["zip"],
+        "properties": {"zip": {"$ref": "zip"}},
+        "$defs": {"zip": {"$id": "./zip", "type": "integer"}},
+      },
+      resolver,
+    ).rootType
+
+    check(root.prop("zip").kind == IntegerType)
