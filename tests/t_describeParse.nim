@@ -1,5 +1,5 @@
 import
-  std/[unittest, json, sets, options, sequtils, tables],
+  std/[unittest, json, sets, options, sequtils, tables, strutils],
   json_schema_import/private/[describe, describeparse, history, schemaRef]
 
 proc parse(schema: string): Description =
@@ -111,3 +111,71 @@ suite "Describing arrays":
     check(
       """{"type": ["array", "null"], "prefixItems": [false]}""".parse.kinds == @[vkNull]
     )
+
+proc root(schema: string): Description =
+  describeSchema(schema.parseJson, nil)
+
+suite "Describing references":
+  test "A reference is labelled with where it points":
+    let desc = """{"$ref": "#/$defs/a", "$defs": {"a": {"type": "string"}}}""".root
+    check($desc.sref == "#/$defs/a")
+    check(desc.kinds == @[vkString])
+
+  test "A reference closing a cycle is cut into an edge":
+    let desc = """{"properties": {"next": {"$ref": "#"}}}""".root
+    let next = desc.variants[0].properties["next"]
+    check(next.kinds == @[vkEdge])
+    check($next.variants[0].target == "#")
+
+  test "A reference reached twice is described once":
+    let desc = """{
+      "properties": {"a": {"$ref": "#/$defs/x"}, "b": {"$ref": "#/$defs/x"}},
+      "$defs": {"x": {"properties": {}}}
+    }""".root
+    check(desc.variants[0].properties["a"] == desc.variants[0].properties["b"])
+
+  test "A reference resolving only to itself is rejected, naming the descent":
+    try:
+      discard """{
+        "properties": {"held": {"$ref": "#/$defs/a"}},
+        "$defs": {"a": {"$ref": "#/$defs/a"}}
+      }""".root
+      fail()
+    except ValueError as e:
+      check("resolves only to itself" in e.msg)
+      check("#/properties/held -> #/$defs/a" in e.msg)
+
+  test "Keywords beside a reference narrow it":
+    let desc = """{
+      "$ref": "#/$defs/a", "required": ["name"],
+      "$defs": {"a": {"properties": {"name": {"type": "string"}}}}
+    }""".root
+    check(desc.variants[0].required.toSeq == @["name"])
+    check(desc.variants[0].sref.isNil)
+
+  test "A format beside a reference does not name a string":
+    let desc =
+      """{"$ref": "#/$defs/n", "format": "int32", "$defs": {"n": {"type": "integer"}}}""".root
+    check(desc.kinds == @[vkInteger])
+
+suite "Describing combinators":
+  test "allOf intersects every branch":
+    let desc = """{"allOf": [{"type": "string"}, {"enum": ["a", "b"]}]}""".root
+    check(desc.kinds == @[vkString])
+    check(desc.variants[0].values.isSome)
+
+  test "oneOf and anyOf keep every branch in order":
+    let desc = """{"oneOf": [{"type": "integer"}, {"type": ["string", "null"]}]}""".root
+    check(desc.kinds == @[vkInteger, vkString, vkNull])
+
+  test "Keywords beside a union are distributed over it, dropping what they rule out":
+    let desc =
+      """{"type": "string", "anyOf": [{"type": "integer"}, {"enum": ["a"]}]}""".root
+    check(desc.kinds == @[vkString])
+    check(desc.variants[0].values.isSome)
+
+  test "An empty allOf or union is rejected":
+    expect ValueError:
+      discard """{"allOf": []}""".root
+    expect ValueError:
+      discard """{"oneOf": []}""".root

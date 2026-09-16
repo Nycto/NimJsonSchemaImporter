@@ -194,6 +194,38 @@ proc ownDescription(
       result.variants.add(variant)
   result.folded = allowed.folded
 
+proc describeRef(node: JsonNode, ctx: DescribeContext, history: History): Description =
+  let sref = parseRef(node{"$ref"}.getStr).within(history.document)
+
+  # A reference still open closes a cycle, so it is cut into an edge naming it
+  if sref in history:
+    return describe(Variant(kind: vkEdge, target: sref))
+
+  # Every site reaching a definition would otherwise walk it again
+  if sref in ctx.refs:
+    return ctx.refs[sref]
+
+  let inner = history.addRef(sref)
+  result = sref.resolve(ctx.doc, ctx.resolver).describeNode(ctx, inner).relabel(sref)
+
+  if result.variants.len == 1 and result.variants[0].kind == vkEdge:
+    raise
+      newException(ValueError, fmt"Reference {sref} resolves only to itself: {inner}")
+
+  ctx.refs[sref] = result
+
+proc describeAlternatives(
+    node: JsonNode, key: string, ctx: DescribeContext, history: History
+): Description =
+  ## The union of every branch of a `oneOf` or `anyOf`
+  let branches = node{key}
+  if branches.kind != JArray or branches.len == 0:
+    raise newException(ValueError, fmt"Empty union at {history.add(key)}")
+
+  result = branches[0].describeNode(ctx, history.add(key))
+  for i in 1 ..< branches.len:
+    result = result.union(branches[i].describeNode(ctx, history.add(key)))
+
 proc describeNode*(
     node: JsonNode, ctx: DescribeContext, history: History
 ): Description =
@@ -207,6 +239,38 @@ proc describeNode*(
   if node.kind != JObject:
     raise newException(ValueError, fmt"Unable to parse type {node} at {history}")
 
-  result = node.ownDescription(ctx, history)
-  if result.isNil:
-    result = anyValue()
+  # Folded in a fixed order, which is the order object properties come out in
+  var parts: seq[Description]
+  if "$ref" in node:
+    parts.add(node.describeRef(ctx, history))
+
+  let own = node.ownDescription(ctx, history)
+  if not own.isNil:
+    own.id = id(node)
+    parts.add(own)
+
+  if "allOf" in node:
+    let branches = node{"allOf"}
+    let within = history.add("allOf")
+    if branches.kind != JArray or branches.len == 0:
+      raise newException(ValueError, fmt"Empty allOf at {within}")
+    for i in 0 ..< branches.len:
+      parts.add(branches[i].describeNode(ctx, within.add($i)))
+
+  for key in ["oneOf", "anyOf"]:
+    if key in node:
+      parts.add(node.describeAlternatives(key, ctx, history))
+
+  if parts.len == 0:
+    return anyValue()
+
+  result = parts[0]
+  for i in 1 ..< parts.len:
+    result = intersect(result, parts[i])
+  if parts.len > 1 and result.id == default(Uri):
+    result.id = id(node)
+
+proc describeSchema*(node: JsonNode, resolver: UrlResolver): Description =
+  ## Describes a whole document, starting at its root
+  let ctx = DescribeContext(doc: node, resolver: resolver)
+  node.describeNode(ctx, addRef(nil, SchemaRef(kind: RootRef)))
