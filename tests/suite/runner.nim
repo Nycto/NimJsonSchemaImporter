@@ -1,7 +1,8 @@
 ##
 ## Runs the JSON-Schema-Test-Suite against the library. Each suite file becomes a Nim
 ## module that imports every schema in it and checks that valid instances decode and
-## invalid ones raise.
+## invalid ones raise. Every case is gated on a probe of the generator, so a schema the
+## library cannot import fails only its own tests.
 ##
 
 import
@@ -24,9 +25,20 @@ proc moduleSource(file: SuiteFile): string =
   for i, suiteCase in file.cases:
     let typ = &"Case{i}"
     let schemaPath = escape(file.dir & &"/case{i}.json")
-    result.add &"when acceptsNothing({schemaPath}):\n"
+    let notice =
+      escape("UNSUPPORTED " & file.name & " :: " & suiteCase.description & ": ")
+    result.add &"const probe{i} = probe({schemaPath}, \"{typ}\")\n"
+
+    result.add &"when probe{i}.kind == Never:\n"
     for test in suiteCase.tests:
       result.add &"  rejected({escape(label(file.name, suiteCase, test))}, {test.valid})\n"
+
+    result.add &"elif probe{i}.kind == Unsupported:\n"
+    result.add "  static:\n"
+    result.add &"    echo {notice}, probe{i}.reason\n"
+    for test in suiteCase.tests:
+      result.add &"  unsupported({escape(label(file.name, suiteCase, test))})\n"
+
     result.add "else:\n"
     result.add &"  importJsonSchema(\"case{i}.json\", conf(\"{typ}\"))\n"
     for test in suiteCase.tests:
