@@ -10,28 +10,7 @@ draft2020-12/additionalProperties.json :: additionalProperties does not look in 
 draft2020-12/additionalProperties.json :: dependentSchemas with additionalProperties :: additionalProperties doesn't consider dependentSchemas
 draft2020-12/additionalProperties.json :: dependentSchemas with additionalProperties :: additionalProperties can't see bar
 draft2020-12/additionalProperties.json :: dependentSchemas with additionalProperties :: additionalProperties can't see bar even when foo2 is present
-draft2020-12/allOf.json :: allOf :: allOf
-draft2020-12/allOf.json :: allOf :: mismatch second
-draft2020-12/allOf.json :: allOf :: mismatch first
-draft2020-12/allOf.json :: allOf :: wrong type
-draft2020-12/allOf.json :: allOf with base schema :: valid
-draft2020-12/allOf.json :: allOf with base schema :: mismatch base schema
-draft2020-12/allOf.json :: allOf with base schema :: mismatch first allOf
-draft2020-12/allOf.json :: allOf with base schema :: mismatch second allOf
-draft2020-12/allOf.json :: allOf with base schema :: mismatch both
-draft2020-12/allOf.json :: allOf simple types :: valid
 draft2020-12/allOf.json :: allOf simple types :: mismatch one
-draft2020-12/allOf.json :: allOf with boolean schemas, all true :: any value is valid
-draft2020-12/allOf.json :: allOf with boolean schemas, some false :: any value is invalid
-draft2020-12/allOf.json :: allOf with boolean schemas, all false :: any value is invalid
-draft2020-12/allOf.json :: allOf with one empty schema :: any data is valid
-draft2020-12/allOf.json :: allOf with two empty schemas :: any data is valid
-draft2020-12/allOf.json :: allOf with the first empty schema :: number is valid
-draft2020-12/allOf.json :: allOf with the first empty schema :: string is invalid
-draft2020-12/allOf.json :: allOf with the last empty schema :: number is valid
-draft2020-12/allOf.json :: allOf with the last empty schema :: string is invalid
-draft2020-12/allOf.json :: nested allOf, to check validation semantics :: null is valid
-draft2020-12/allOf.json :: nested allOf, to check validation semantics :: anything non-null is invalid
 draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: false, oneOf: false
 draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: false, oneOf: true
 draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: true, oneOf: false
@@ -39,7 +18,6 @@ draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, any
 draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: false, oneOf: false
 draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: false, oneOf: true
 draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: true, oneOf: false
-draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: true, oneOf: true
 draft2020-12/anchor.json :: Location-independent identifier :: match
 draft2020-12/anchor.json :: Location-independent identifier :: mismatch
 draft2020-12/anchor.json :: Location-independent identifier with absolute URI :: match
@@ -48,42 +26,8 @@ draft2020-12/anchor.json :: Location-independent identifier with base URI change
 draft2020-12/anchor.json :: Location-independent identifier with base URI change in subschema :: mismatch
 draft2020-12/anchor.json :: same $anchor with different base uri :: $ref resolves to /$defs/A/allOf/1
 draft2020-12/anchor.json :: same $anchor with different base uri :: $ref does not resolve to /$defs/A/allOf/0
-draft2020-12/anyOf.json :: anyOf :: first anyOf valid
-draft2020-12/anyOf.json :: anyOf :: second anyOf valid
-draft2020-12/anyOf.json :: anyOf :: both anyOf valid
 draft2020-12/anyOf.json :: anyOf :: neither anyOf valid
-draft2020-12/anyOf.json :: anyOf with base schema :: mismatch base schema
-draft2020-12/anyOf.json :: anyOf with base schema :: one anyOf valid
 draft2020-12/anyOf.json :: anyOf with base schema :: both anyOf invalid
-draft2020-12/anyOf.json :: anyOf with boolean schemas, all true :: any value is valid
-draft2020-12/anyOf.json :: anyOf with boolean schemas, some true :: any value is valid
-draft2020-12/anyOf.json :: anyOf with boolean schemas, all false :: any value is invalid
-draft2020-12/anyOf.json :: anyOf complex types :: first anyOf valid (complex)
-draft2020-12/anyOf.json :: anyOf complex types :: second anyOf valid (complex)
-draft2020-12/anyOf.json :: anyOf complex types :: both anyOf valid (complex)
-draft2020-12/anyOf.json :: anyOf complex types :: neither anyOf valid (complex)
-draft2020-12/anyOf.json :: anyOf with one empty schema :: string is valid
-draft2020-12/anyOf.json :: anyOf with one empty schema :: number is valid
-draft2020-12/anyOf.json :: nested anyOf, to check validation semantics :: null is valid
-draft2020-12/anyOf.json :: nested anyOf, to check validation semantics :: anything non-null is invalid
-draft2020-12/boolean_schema.json :: boolean schema 'true' :: number is valid
-draft2020-12/boolean_schema.json :: boolean schema 'true' :: string is valid
-draft2020-12/boolean_schema.json :: boolean schema 'true' :: boolean true is valid
-draft2020-12/boolean_schema.json :: boolean schema 'true' :: boolean false is valid
-draft2020-12/boolean_schema.json :: boolean schema 'true' :: null is valid
-draft2020-12/boolean_schema.json :: boolean schema 'true' :: object is valid
-draft2020-12/boolean_schema.json :: boolean schema 'true' :: empty object is valid
-draft2020-12/boolean_schema.json :: boolean schema 'true' :: array is valid
-draft2020-12/boolean_schema.json :: boolean schema 'true' :: empty array is valid
-draft2020-12/boolean_schema.json :: boolean schema 'false' :: number is invalid
-draft2020-12/boolean_schema.json :: boolean schema 'false' :: string is invalid
-draft2020-12/boolean_schema.json :: boolean schema 'false' :: boolean true is invalid
-draft2020-12/boolean_schema.json :: boolean schema 'false' :: boolean false is invalid
-draft2020-12/boolean_schema.json :: boolean schema 'false' :: null is invalid
-draft2020-12/boolean_schema.json :: boolean schema 'false' :: object is invalid
-draft2020-12/boolean_schema.json :: boolean schema 'false' :: empty object is invalid
-draft2020-12/boolean_schema.json :: boolean schema 'false' :: array is invalid
-draft2020-12/boolean_schema.json :: boolean schema 'false' :: empty array is invalid
 draft2020-12/const.json :: const validation :: another value is invalid
 draft2020-12/const.json :: const validation :: another type is invalid
 draft2020-12/const.json :: const with object :: another object is invalid
@@ -321,35 +265,13 @@ draft2020-12/if-then-else.json :: if appears at the end when serialized (keyword
 draft2020-12/if-then-else.json :: if appears at the end when serialized (keyword processing sequence) :: invalid redirects to else and fails
 draft2020-12/if-then-else.json :: then: false fails when condition matches :: matches if → then=false → invalid
 draft2020-12/if-then-else.json :: else: false fails when condition does not match :: does not match if → else executes → invalid
-draft2020-12/items.json :: a schema given for items :: valid items
-draft2020-12/items.json :: a schema given for items :: wrong type of items
-draft2020-12/items.json :: a schema given for items :: ignores non-arrays
-draft2020-12/items.json :: a schema given for items :: JavaScript pseudo-array is valid
-draft2020-12/items.json :: items with boolean schema (true) :: any array is valid
-draft2020-12/items.json :: items with boolean schema (true) :: empty array is valid
-draft2020-12/items.json :: items with boolean schema (false) :: any non-empty array is invalid
-draft2020-12/items.json :: items with boolean schema (false) :: empty array is valid
-draft2020-12/items.json :: items and subitems :: valid items
-draft2020-12/items.json :: items and subitems :: too many items
-draft2020-12/items.json :: items and subitems :: too many sub-items
-draft2020-12/items.json :: items and subitems :: wrong item
-draft2020-12/items.json :: items and subitems :: wrong sub-item
 draft2020-12/items.json :: items and subitems :: fewer items is valid
-draft2020-12/items.json :: nested items :: valid nested array
-draft2020-12/items.json :: nested items :: nested array with invalid type
 draft2020-12/items.json :: nested items :: not deep enough
 draft2020-12/items.json :: prefixItems with no additional items allowed :: empty array
 draft2020-12/items.json :: prefixItems with no additional items allowed :: fewer number of items present (1)
 draft2020-12/items.json :: prefixItems with no additional items allowed :: fewer number of items present (2)
-draft2020-12/items.json :: prefixItems with no additional items allowed :: equal number of items present
-draft2020-12/items.json :: prefixItems with no additional items allowed :: additional items are not permitted
-draft2020-12/items.json :: items does not look in applicators, valid case :: prefixItems in allOf does not constrain items, invalid case
 draft2020-12/items.json :: items does not look in applicators, valid case :: prefixItems in allOf does not constrain items, valid case
 draft2020-12/items.json :: prefixItems validation adjusts the starting index for items :: valid items
-draft2020-12/items.json :: prefixItems validation adjusts the starting index for items :: wrong type of second item
-draft2020-12/items.json :: items with heterogeneous array :: heterogeneous invalid instance
-draft2020-12/items.json :: items with heterogeneous array :: valid instance
-draft2020-12/items.json :: items with null instance elements :: allows null elements
 draft2020-12/maxContains.json :: maxContains with contains :: empty data
 draft2020-12/maxContains.json :: maxContains with contains :: all elements match, invalid maxContains
 draft2020-12/maxContains.json :: maxContains with contains :: some elements match, invalid maxContains
@@ -417,33 +339,15 @@ draft2020-12/not.json :: forbid everything with boolean schema true :: empty obj
 draft2020-12/not.json :: forbid everything with boolean schema true :: array is invalid
 draft2020-12/not.json :: forbid everything with boolean schema true :: empty array is invalid
 draft2020-12/not.json :: collect annotations inside a 'not', even if collection is disabled :: annotations are still collected inside a 'not'
-draft2020-12/oneOf.json :: oneOf :: first oneOf valid
-draft2020-12/oneOf.json :: oneOf :: second oneOf valid
 draft2020-12/oneOf.json :: oneOf :: both oneOf valid
 draft2020-12/oneOf.json :: oneOf :: neither oneOf valid
-draft2020-12/oneOf.json :: oneOf with base schema :: mismatch base schema
-draft2020-12/oneOf.json :: oneOf with base schema :: one oneOf valid
 draft2020-12/oneOf.json :: oneOf with base schema :: both oneOf valid
 draft2020-12/oneOf.json :: oneOf with boolean schemas, all true :: any value is invalid
-draft2020-12/oneOf.json :: oneOf with boolean schemas, one true :: any value is valid
 draft2020-12/oneOf.json :: oneOf with boolean schemas, more than one true :: any value is invalid
-draft2020-12/oneOf.json :: oneOf with boolean schemas, all false :: any value is invalid
-draft2020-12/oneOf.json :: oneOf complex types :: first oneOf valid (complex)
-draft2020-12/oneOf.json :: oneOf complex types :: second oneOf valid (complex)
 draft2020-12/oneOf.json :: oneOf complex types :: both oneOf valid (complex)
-draft2020-12/oneOf.json :: oneOf complex types :: neither oneOf valid (complex)
-draft2020-12/oneOf.json :: oneOf with empty schema :: one valid - valid
 draft2020-12/oneOf.json :: oneOf with empty schema :: both valid - invalid
-draft2020-12/oneOf.json :: oneOf with required :: both invalid - invalid
-draft2020-12/oneOf.json :: oneOf with required :: first valid - valid
-draft2020-12/oneOf.json :: oneOf with required :: second valid - valid
 draft2020-12/oneOf.json :: oneOf with required :: both valid - invalid
-draft2020-12/oneOf.json :: oneOf with missing optional property :: first oneOf valid
-draft2020-12/oneOf.json :: oneOf with missing optional property :: second oneOf valid
 draft2020-12/oneOf.json :: oneOf with missing optional property :: both oneOf valid
-draft2020-12/oneOf.json :: oneOf with missing optional property :: neither oneOf valid
-draft2020-12/oneOf.json :: nested oneOf, to check validation semantics :: null is valid
-draft2020-12/oneOf.json :: nested oneOf, to check validation semantics :: anything non-null is invalid
 draft2020-12/pattern.json :: pattern validation :: a non-matching pattern is invalid
 draft2020-12/pattern.json :: pattern with Unicode property escape requires unicode mode :: Digits do not match
 draft2020-12/patternProperties.json :: patternProperties validates properties matching a regex :: a single invalid match is invalid
@@ -456,17 +360,13 @@ draft2020-12/patternProperties.json :: regexes are not anchored by default and a
 draft2020-12/patternProperties.json :: patternProperties with boolean schemas :: object with property matching schema false is invalid
 draft2020-12/patternProperties.json :: patternProperties with boolean schemas :: object with both properties is invalid
 draft2020-12/patternProperties.json :: patternProperties with boolean schemas :: object with a property matching both true and false is invalid
-draft2020-12/prefixItems.json :: a schema given for prefixItems :: correct types
-draft2020-12/prefixItems.json :: a schema given for prefixItems :: wrong types
 draft2020-12/prefixItems.json :: a schema given for prefixItems :: incomplete array of items
 draft2020-12/prefixItems.json :: a schema given for prefixItems :: array with additional items
 draft2020-12/prefixItems.json :: a schema given for prefixItems :: empty array
 draft2020-12/prefixItems.json :: a schema given for prefixItems :: JavaScript pseudo-array is valid
 draft2020-12/prefixItems.json :: prefixItems with boolean schemas :: array with one item is valid
-draft2020-12/prefixItems.json :: prefixItems with boolean schemas :: array with two items is invalid
 draft2020-12/prefixItems.json :: prefixItems with boolean schemas :: empty array is valid
 draft2020-12/prefixItems.json :: additional items are allowed by default :: only the first item is validated
-draft2020-12/prefixItems.json :: prefixItems with null instance elements :: allows null elements
 draft2020-12/properties.json :: object properties validation :: ignores arrays
 draft2020-12/properties.json :: object properties validation :: ignores other non-objects
 draft2020-12/properties.json :: properties, patternProperties, additionalProperties interaction :: property invalidates property
@@ -728,28 +628,7 @@ draft2019-09/additionalProperties.json :: additionalProperties does not look in 
 draft2019-09/additionalProperties.json :: dependentSchemas with additionalProperties :: additionalProperties doesn't consider dependentSchemas
 draft2019-09/additionalProperties.json :: dependentSchemas with additionalProperties :: additionalProperties can't see bar
 draft2019-09/additionalProperties.json :: dependentSchemas with additionalProperties :: additionalProperties can't see bar even when foo2 is present
-draft2019-09/allOf.json :: allOf :: allOf
-draft2019-09/allOf.json :: allOf :: mismatch second
-draft2019-09/allOf.json :: allOf :: mismatch first
-draft2019-09/allOf.json :: allOf :: wrong type
-draft2019-09/allOf.json :: allOf with base schema :: valid
-draft2019-09/allOf.json :: allOf with base schema :: mismatch base schema
-draft2019-09/allOf.json :: allOf with base schema :: mismatch first allOf
-draft2019-09/allOf.json :: allOf with base schema :: mismatch second allOf
-draft2019-09/allOf.json :: allOf with base schema :: mismatch both
-draft2019-09/allOf.json :: allOf simple types :: valid
 draft2019-09/allOf.json :: allOf simple types :: mismatch one
-draft2019-09/allOf.json :: allOf with boolean schemas, all true :: any value is valid
-draft2019-09/allOf.json :: allOf with boolean schemas, some false :: any value is invalid
-draft2019-09/allOf.json :: allOf with boolean schemas, all false :: any value is invalid
-draft2019-09/allOf.json :: allOf with one empty schema :: any data is valid
-draft2019-09/allOf.json :: allOf with two empty schemas :: any data is valid
-draft2019-09/allOf.json :: allOf with the first empty schema :: number is valid
-draft2019-09/allOf.json :: allOf with the first empty schema :: string is invalid
-draft2019-09/allOf.json :: allOf with the last empty schema :: number is valid
-draft2019-09/allOf.json :: allOf with the last empty schema :: string is invalid
-draft2019-09/allOf.json :: nested allOf, to check validation semantics :: null is valid
-draft2019-09/allOf.json :: nested allOf, to check validation semantics :: anything non-null is invalid
 draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: false, oneOf: false
 draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: false, oneOf: true
 draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: true, oneOf: false
@@ -757,7 +636,6 @@ draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, any
 draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: false, oneOf: false
 draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: false, oneOf: true
 draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: true, oneOf: false
-draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: true, oneOf: true
 draft2019-09/anchor.json :: Location-independent identifier :: match
 draft2019-09/anchor.json :: Location-independent identifier :: mismatch
 draft2019-09/anchor.json :: Location-independent identifier with absolute URI :: match
@@ -766,42 +644,8 @@ draft2019-09/anchor.json :: Location-independent identifier with base URI change
 draft2019-09/anchor.json :: Location-independent identifier with base URI change in subschema :: mismatch
 draft2019-09/anchor.json :: same $anchor with different base uri :: $ref resolves to /$defs/A/allOf/1
 draft2019-09/anchor.json :: same $anchor with different base uri :: $ref does not resolve to /$defs/A/allOf/0
-draft2019-09/anyOf.json :: anyOf :: first anyOf valid
-draft2019-09/anyOf.json :: anyOf :: second anyOf valid
-draft2019-09/anyOf.json :: anyOf :: both anyOf valid
 draft2019-09/anyOf.json :: anyOf :: neither anyOf valid
-draft2019-09/anyOf.json :: anyOf with base schema :: mismatch base schema
-draft2019-09/anyOf.json :: anyOf with base schema :: one anyOf valid
 draft2019-09/anyOf.json :: anyOf with base schema :: both anyOf invalid
-draft2019-09/anyOf.json :: anyOf with boolean schemas, all true :: any value is valid
-draft2019-09/anyOf.json :: anyOf with boolean schemas, some true :: any value is valid
-draft2019-09/anyOf.json :: anyOf with boolean schemas, all false :: any value is invalid
-draft2019-09/anyOf.json :: anyOf complex types :: first anyOf valid (complex)
-draft2019-09/anyOf.json :: anyOf complex types :: second anyOf valid (complex)
-draft2019-09/anyOf.json :: anyOf complex types :: both anyOf valid (complex)
-draft2019-09/anyOf.json :: anyOf complex types :: neither anyOf valid (complex)
-draft2019-09/anyOf.json :: anyOf with one empty schema :: string is valid
-draft2019-09/anyOf.json :: anyOf with one empty schema :: number is valid
-draft2019-09/anyOf.json :: nested anyOf, to check validation semantics :: null is valid
-draft2019-09/anyOf.json :: nested anyOf, to check validation semantics :: anything non-null is invalid
-draft2019-09/boolean_schema.json :: boolean schema 'true' :: number is valid
-draft2019-09/boolean_schema.json :: boolean schema 'true' :: string is valid
-draft2019-09/boolean_schema.json :: boolean schema 'true' :: boolean true is valid
-draft2019-09/boolean_schema.json :: boolean schema 'true' :: boolean false is valid
-draft2019-09/boolean_schema.json :: boolean schema 'true' :: null is valid
-draft2019-09/boolean_schema.json :: boolean schema 'true' :: object is valid
-draft2019-09/boolean_schema.json :: boolean schema 'true' :: empty object is valid
-draft2019-09/boolean_schema.json :: boolean schema 'true' :: array is valid
-draft2019-09/boolean_schema.json :: boolean schema 'true' :: empty array is valid
-draft2019-09/boolean_schema.json :: boolean schema 'false' :: number is invalid
-draft2019-09/boolean_schema.json :: boolean schema 'false' :: string is invalid
-draft2019-09/boolean_schema.json :: boolean schema 'false' :: boolean true is invalid
-draft2019-09/boolean_schema.json :: boolean schema 'false' :: boolean false is invalid
-draft2019-09/boolean_schema.json :: boolean schema 'false' :: null is invalid
-draft2019-09/boolean_schema.json :: boolean schema 'false' :: object is invalid
-draft2019-09/boolean_schema.json :: boolean schema 'false' :: empty object is invalid
-draft2019-09/boolean_schema.json :: boolean schema 'false' :: array is invalid
-draft2019-09/boolean_schema.json :: boolean schema 'false' :: empty array is invalid
 draft2019-09/const.json :: const validation :: another value is invalid
 draft2019-09/const.json :: const validation :: another type is invalid
 draft2019-09/const.json :: const with object :: another object is invalid
@@ -995,34 +839,14 @@ draft2019-09/if-then-else.json :: if appears at the end when serialized (keyword
 draft2019-09/if-then-else.json :: if appears at the end when serialized (keyword processing sequence) :: invalid redirects to else and fails
 draft2019-09/if-then-else.json :: then: false fails when condition matches :: matches if → then=false → invalid
 draft2019-09/if-then-else.json :: else: false fails when condition does not match :: does not match if → else executes → invalid
-draft2019-09/items.json :: a schema given for items :: valid items
-draft2019-09/items.json :: a schema given for items :: wrong type of items
-draft2019-09/items.json :: a schema given for items :: ignores non-arrays
-draft2019-09/items.json :: a schema given for items :: JavaScript pseudo-array is valid
-draft2019-09/items.json :: an array of schemas for items :: correct types
-draft2019-09/items.json :: an array of schemas for items :: wrong types
 draft2019-09/items.json :: an array of schemas for items :: incomplete array of items
 draft2019-09/items.json :: an array of schemas for items :: array with additional items
 draft2019-09/items.json :: an array of schemas for items :: empty array
 draft2019-09/items.json :: an array of schemas for items :: JavaScript pseudo-array is valid
-draft2019-09/items.json :: items with boolean schema (true) :: any array is valid
-draft2019-09/items.json :: items with boolean schema (true) :: empty array is valid
-draft2019-09/items.json :: items with boolean schema (false) :: any non-empty array is invalid
-draft2019-09/items.json :: items with boolean schema (false) :: empty array is valid
 draft2019-09/items.json :: items with boolean schemas :: array with one item is valid
-draft2019-09/items.json :: items with boolean schemas :: array with two items is invalid
 draft2019-09/items.json :: items with boolean schemas :: empty array is valid
-draft2019-09/items.json :: items and subitems :: valid items
-draft2019-09/items.json :: items and subitems :: too many items
-draft2019-09/items.json :: items and subitems :: too many sub-items
-draft2019-09/items.json :: items and subitems :: wrong item
-draft2019-09/items.json :: items and subitems :: wrong sub-item
 draft2019-09/items.json :: items and subitems :: fewer items is valid
-draft2019-09/items.json :: nested items :: valid nested array
-draft2019-09/items.json :: nested items :: nested array with invalid type
 draft2019-09/items.json :: nested items :: not deep enough
-draft2019-09/items.json :: single-form items with null instance elements :: allows null elements
-draft2019-09/items.json :: array-form items with null instance elements :: allows null elements
 draft2019-09/maxContains.json :: maxContains with contains :: empty data
 draft2019-09/maxContains.json :: maxContains with contains :: all elements match, invalid maxContains
 draft2019-09/maxContains.json :: maxContains with contains :: some elements match, invalid maxContains
@@ -1090,33 +914,15 @@ draft2019-09/not.json :: forbid everything with boolean schema true :: empty obj
 draft2019-09/not.json :: forbid everything with boolean schema true :: array is invalid
 draft2019-09/not.json :: forbid everything with boolean schema true :: empty array is invalid
 draft2019-09/not.json :: collect annotations inside a 'not', even if collection is disabled :: annotations are still collected inside a 'not'
-draft2019-09/oneOf.json :: oneOf :: first oneOf valid
-draft2019-09/oneOf.json :: oneOf :: second oneOf valid
 draft2019-09/oneOf.json :: oneOf :: both oneOf valid
 draft2019-09/oneOf.json :: oneOf :: neither oneOf valid
-draft2019-09/oneOf.json :: oneOf with base schema :: mismatch base schema
-draft2019-09/oneOf.json :: oneOf with base schema :: one oneOf valid
 draft2019-09/oneOf.json :: oneOf with base schema :: both oneOf valid
 draft2019-09/oneOf.json :: oneOf with boolean schemas, all true :: any value is invalid
-draft2019-09/oneOf.json :: oneOf with boolean schemas, one true :: any value is valid
 draft2019-09/oneOf.json :: oneOf with boolean schemas, more than one true :: any value is invalid
-draft2019-09/oneOf.json :: oneOf with boolean schemas, all false :: any value is invalid
-draft2019-09/oneOf.json :: oneOf complex types :: first oneOf valid (complex)
-draft2019-09/oneOf.json :: oneOf complex types :: second oneOf valid (complex)
 draft2019-09/oneOf.json :: oneOf complex types :: both oneOf valid (complex)
-draft2019-09/oneOf.json :: oneOf complex types :: neither oneOf valid (complex)
-draft2019-09/oneOf.json :: oneOf with empty schema :: one valid - valid
 draft2019-09/oneOf.json :: oneOf with empty schema :: both valid - invalid
-draft2019-09/oneOf.json :: oneOf with required :: both invalid - invalid
-draft2019-09/oneOf.json :: oneOf with required :: first valid - valid
-draft2019-09/oneOf.json :: oneOf with required :: second valid - valid
 draft2019-09/oneOf.json :: oneOf with required :: both valid - invalid
-draft2019-09/oneOf.json :: oneOf with missing optional property :: first oneOf valid
-draft2019-09/oneOf.json :: oneOf with missing optional property :: second oneOf valid
 draft2019-09/oneOf.json :: oneOf with missing optional property :: both oneOf valid
-draft2019-09/oneOf.json :: oneOf with missing optional property :: neither oneOf valid
-draft2019-09/oneOf.json :: nested oneOf, to check validation semantics :: null is valid
-draft2019-09/oneOf.json :: nested oneOf, to check validation semantics :: anything non-null is invalid
 draft2019-09/pattern.json :: pattern validation :: a non-matching pattern is invalid
 draft2019-09/patternProperties.json :: patternProperties validates properties matching a regex :: a single invalid match is invalid
 draft2019-09/patternProperties.json :: patternProperties validates properties matching a regex :: multiple invalid matches is invalid
@@ -1394,28 +1200,7 @@ draft7/additionalProperties.json :: additionalProperties being false does not al
 draft7/additionalProperties.json :: non-ASCII pattern with additionalProperties :: not matching the pattern is invalid
 draft7/additionalProperties.json :: additionalProperties with schema :: an additional invalid property is invalid
 draft7/additionalProperties.json :: additionalProperties does not look in applicators :: properties defined in allOf are not examined
-draft7/allOf.json :: allOf :: allOf
-draft7/allOf.json :: allOf :: mismatch second
-draft7/allOf.json :: allOf :: mismatch first
-draft7/allOf.json :: allOf :: wrong type
-draft7/allOf.json :: allOf with base schema :: valid
-draft7/allOf.json :: allOf with base schema :: mismatch base schema
-draft7/allOf.json :: allOf with base schema :: mismatch first allOf
-draft7/allOf.json :: allOf with base schema :: mismatch second allOf
-draft7/allOf.json :: allOf with base schema :: mismatch both
-draft7/allOf.json :: allOf simple types :: valid
 draft7/allOf.json :: allOf simple types :: mismatch one
-draft7/allOf.json :: allOf with boolean schemas, all true :: any value is valid
-draft7/allOf.json :: allOf with boolean schemas, some false :: any value is invalid
-draft7/allOf.json :: allOf with boolean schemas, all false :: any value is invalid
-draft7/allOf.json :: allOf with one empty schema :: any data is valid
-draft7/allOf.json :: allOf with two empty schemas :: any data is valid
-draft7/allOf.json :: allOf with the first empty schema :: number is valid
-draft7/allOf.json :: allOf with the first empty schema :: string is invalid
-draft7/allOf.json :: allOf with the last empty schema :: number is valid
-draft7/allOf.json :: allOf with the last empty schema :: string is invalid
-draft7/allOf.json :: nested allOf, to check validation semantics :: null is valid
-draft7/allOf.json :: nested allOf, to check validation semantics :: anything non-null is invalid
 draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: false, oneOf: false
 draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: false, oneOf: true
 draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: true, oneOf: false
@@ -1423,43 +1208,8 @@ draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: tr
 draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: false, oneOf: false
 draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: false, oneOf: true
 draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: true, oneOf: false
-draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: true, oneOf: true
-draft7/anyOf.json :: anyOf :: first anyOf valid
-draft7/anyOf.json :: anyOf :: second anyOf valid
-draft7/anyOf.json :: anyOf :: both anyOf valid
 draft7/anyOf.json :: anyOf :: neither anyOf valid
-draft7/anyOf.json :: anyOf with base schema :: mismatch base schema
-draft7/anyOf.json :: anyOf with base schema :: one anyOf valid
 draft7/anyOf.json :: anyOf with base schema :: both anyOf invalid
-draft7/anyOf.json :: anyOf with boolean schemas, all true :: any value is valid
-draft7/anyOf.json :: anyOf with boolean schemas, some true :: any value is valid
-draft7/anyOf.json :: anyOf with boolean schemas, all false :: any value is invalid
-draft7/anyOf.json :: anyOf complex types :: first anyOf valid (complex)
-draft7/anyOf.json :: anyOf complex types :: second anyOf valid (complex)
-draft7/anyOf.json :: anyOf complex types :: both anyOf valid (complex)
-draft7/anyOf.json :: anyOf complex types :: neither anyOf valid (complex)
-draft7/anyOf.json :: anyOf with one empty schema :: string is valid
-draft7/anyOf.json :: anyOf with one empty schema :: number is valid
-draft7/anyOf.json :: nested anyOf, to check validation semantics :: null is valid
-draft7/anyOf.json :: nested anyOf, to check validation semantics :: anything non-null is invalid
-draft7/boolean_schema.json :: boolean schema 'true' :: number is valid
-draft7/boolean_schema.json :: boolean schema 'true' :: string is valid
-draft7/boolean_schema.json :: boolean schema 'true' :: boolean true is valid
-draft7/boolean_schema.json :: boolean schema 'true' :: boolean false is valid
-draft7/boolean_schema.json :: boolean schema 'true' :: null is valid
-draft7/boolean_schema.json :: boolean schema 'true' :: object is valid
-draft7/boolean_schema.json :: boolean schema 'true' :: empty object is valid
-draft7/boolean_schema.json :: boolean schema 'true' :: array is valid
-draft7/boolean_schema.json :: boolean schema 'true' :: empty array is valid
-draft7/boolean_schema.json :: boolean schema 'false' :: number is invalid
-draft7/boolean_schema.json :: boolean schema 'false' :: string is invalid
-draft7/boolean_schema.json :: boolean schema 'false' :: boolean true is invalid
-draft7/boolean_schema.json :: boolean schema 'false' :: boolean false is invalid
-draft7/boolean_schema.json :: boolean schema 'false' :: null is invalid
-draft7/boolean_schema.json :: boolean schema 'false' :: object is invalid
-draft7/boolean_schema.json :: boolean schema 'false' :: empty object is invalid
-draft7/boolean_schema.json :: boolean schema 'false' :: array is invalid
-draft7/boolean_schema.json :: boolean schema 'false' :: empty array is invalid
 draft7/const.json :: const validation :: another value is invalid
 draft7/const.json :: const validation :: another type is invalid
 draft7/const.json :: const with object :: another object is invalid
@@ -1636,34 +1386,14 @@ draft7/if-then-else.json :: if appears at the end when serialized (keyword proce
 draft7/if-then-else.json :: if appears at the end when serialized (keyword processing sequence) :: invalid redirects to else and fails
 draft7/if-then-else.json :: then: false fails when condition matches :: matches if → then=false → invalid
 draft7/if-then-else.json :: else: false fails when condition does not match :: does not match if → else executes → invalid
-draft7/items.json :: a schema given for items :: valid items
-draft7/items.json :: a schema given for items :: wrong type of items
-draft7/items.json :: a schema given for items :: ignores non-arrays
-draft7/items.json :: a schema given for items :: JavaScript pseudo-array is valid
-draft7/items.json :: an array of schemas for items :: correct types
-draft7/items.json :: an array of schemas for items :: wrong types
 draft7/items.json :: an array of schemas for items :: incomplete array of items
 draft7/items.json :: an array of schemas for items :: array with additional items
 draft7/items.json :: an array of schemas for items :: empty array
 draft7/items.json :: an array of schemas for items :: JavaScript pseudo-array is valid
-draft7/items.json :: items with boolean schema (true) :: any array is valid
-draft7/items.json :: items with boolean schema (true) :: empty array is valid
-draft7/items.json :: items with boolean schema (false) :: any non-empty array is invalid
-draft7/items.json :: items with boolean schema (false) :: empty array is valid
 draft7/items.json :: items with boolean schemas :: array with one item is valid
-draft7/items.json :: items with boolean schemas :: array with two items is invalid
 draft7/items.json :: items with boolean schemas :: empty array is valid
-draft7/items.json :: items and subitems :: valid items
-draft7/items.json :: items and subitems :: too many items
-draft7/items.json :: items and subitems :: too many sub-items
-draft7/items.json :: items and subitems :: wrong item
-draft7/items.json :: items and subitems :: wrong sub-item
 draft7/items.json :: items and subitems :: fewer items is valid
-draft7/items.json :: nested items :: valid nested array
-draft7/items.json :: nested items :: nested array with invalid type
 draft7/items.json :: nested items :: not deep enough
-draft7/items.json :: single-form items with null instance elements :: allows null elements
-draft7/items.json :: array-form items with null instance elements :: allows null elements
 draft7/maxItems.json :: maxItems validation :: too long is invalid
 draft7/maxItems.json :: maxItems validation with a decimal :: too long is invalid
 draft7/maxLength.json :: maxLength validation :: too long is invalid
@@ -1709,33 +1439,15 @@ draft7/not.json :: forbid everything with boolean schema true :: object is inval
 draft7/not.json :: forbid everything with boolean schema true :: empty object is invalid
 draft7/not.json :: forbid everything with boolean schema true :: array is invalid
 draft7/not.json :: forbid everything with boolean schema true :: empty array is invalid
-draft7/oneOf.json :: oneOf :: first oneOf valid
-draft7/oneOf.json :: oneOf :: second oneOf valid
 draft7/oneOf.json :: oneOf :: both oneOf valid
 draft7/oneOf.json :: oneOf :: neither oneOf valid
-draft7/oneOf.json :: oneOf with base schema :: mismatch base schema
-draft7/oneOf.json :: oneOf with base schema :: one oneOf valid
 draft7/oneOf.json :: oneOf with base schema :: both oneOf valid
 draft7/oneOf.json :: oneOf with boolean schemas, all true :: any value is invalid
-draft7/oneOf.json :: oneOf with boolean schemas, one true :: any value is valid
 draft7/oneOf.json :: oneOf with boolean schemas, more than one true :: any value is invalid
-draft7/oneOf.json :: oneOf with boolean schemas, all false :: any value is invalid
-draft7/oneOf.json :: oneOf complex types :: first oneOf valid (complex)
-draft7/oneOf.json :: oneOf complex types :: second oneOf valid (complex)
 draft7/oneOf.json :: oneOf complex types :: both oneOf valid (complex)
-draft7/oneOf.json :: oneOf complex types :: neither oneOf valid (complex)
-draft7/oneOf.json :: oneOf with empty schema :: one valid - valid
 draft7/oneOf.json :: oneOf with empty schema :: both valid - invalid
-draft7/oneOf.json :: oneOf with required :: both invalid - invalid
-draft7/oneOf.json :: oneOf with required :: first valid - valid
-draft7/oneOf.json :: oneOf with required :: second valid - valid
 draft7/oneOf.json :: oneOf with required :: both valid - invalid
-draft7/oneOf.json :: oneOf with missing optional property :: first oneOf valid
-draft7/oneOf.json :: oneOf with missing optional property :: second oneOf valid
 draft7/oneOf.json :: oneOf with missing optional property :: both oneOf valid
-draft7/oneOf.json :: oneOf with missing optional property :: neither oneOf valid
-draft7/oneOf.json :: nested oneOf, to check validation semantics :: null is valid
-draft7/oneOf.json :: nested oneOf, to check validation semantics :: anything non-null is invalid
 draft7/pattern.json :: pattern validation :: a non-matching pattern is invalid
 draft7/patternProperties.json :: patternProperties validates properties matching a regex :: a single invalid match is invalid
 draft7/patternProperties.json :: patternProperties validates properties matching a regex :: multiple invalid matches is invalid

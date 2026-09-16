@@ -23,9 +23,14 @@ proc moduleSource(file: SuiteFile): string =
 
   for i, suiteCase in file.cases:
     let typ = &"Case{i}"
-    result.add &"importJsonSchema(\"case{i}.json\", conf(\"{typ}\"))\n"
+    let schemaPath = escape(file.dir & &"/case{i}.json")
+    result.add &"when acceptsNothing({schemaPath}):\n"
     for test in suiteCase.tests:
-      result.add &"check[{typ}]({escape(label(file.name, suiteCase, test))}, {escape($test.data)}, {test.valid})\n"
+      result.add &"  rejected({escape(label(file.name, suiteCase, test))}, {test.valid})\n"
+    result.add "else:\n"
+    result.add &"  importJsonSchema(\"case{i}.json\", conf(\"{typ}\"))\n"
+    for test in suiteCase.tests:
+      result.add &"  check[{typ}]({escape(label(file.name, suiteCase, test))}, {escape($test.data)}, {test.valid})\n"
 
 proc write(file: SuiteFile) =
   removeDir(file.dir)
