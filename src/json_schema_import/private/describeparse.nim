@@ -11,9 +11,6 @@ type DescribeContext* = ref object
   refs: Table[SchemaRef, Description]
     ## Every reference resolved so far, by the reference
 
-proc newDescribeContext*(doc: JsonNode, resolver: UrlResolver): DescribeContext =
-  DescribeContext(doc: doc, resolver: resolver)
-
 proc id(node: JsonNode): Uri =
   if node.kind == JObject and node.hasKey("$id"):
     try:
