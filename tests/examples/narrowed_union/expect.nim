@@ -5,11 +5,11 @@ import json_schema_import/private/[equality, bin, sax]
 
 type
   Narrowed_unionNarrowed* {.byref.} = object
+    shared*: string
     a*: BiggestInt
-    shared*: string
   Narrowed_unionNarrowed2* {.byref.} = object
-    b*: BiggestInt
     shared*: string
+    b*: BiggestInt
   Narrowed_unionUnion* {.byref.} = object
     case kind*: range[0 .. 1]
     of 0:
@@ -37,7 +37,7 @@ proc `=copy`(a: var Narrowed_unionNarrowedMap;
 proc `=copy`(a: var Narrowed_union; b: Narrowed_union) {.
     error.}
 proc equals(_: typedesc[Narrowed_unionNarrowed]; a, b: Narrowed_unionNarrowed): bool =
-  equals(typeof(a.a), a.a, b.a) and equals(typeof(a.shared), a.shared, b.shared)
+  equals(typeof(a.shared), a.shared, b.shared) and equals(typeof(a.a), a.a, b.a)
 
 proc `==`*(a, b: Narrowed_unionNarrowed): bool =
   return equals(Narrowed_unionNarrowed, a, b)
@@ -45,36 +45,36 @@ proc `==`*(a, b: Narrowed_unionNarrowed): bool =
 proc stringify(_: typedesc[Narrowed_unionNarrowed];
                value: Narrowed_unionNarrowed): string =
   stringifyObj("Narrowed_unionNarrowed",
-               ("a", stringify(typeof(value.a), value.a)),
-               ("shared", stringify(typeof(value.shared), value.shared)))
+               ("shared", stringify(typeof(value.shared), value.shared)),
+               ("a", stringify(typeof(value.a), value.a)))
 
 proc `$`*(value: Narrowed_unionNarrowed): string =
   stringify(Narrowed_unionNarrowed, value)
 
 proc fromJsonHook*(target: var Narrowed_unionNarrowed; source: JsonNode) =
-  assert(hasKey(source, "a"),
-         "a" & " is missing while decoding " & "Narrowed_unionNarrowed")
-  target.a = jsonTo(source{"a"}, typeof(target.a))
   assert(hasKey(source, "shared"),
          "shared" & " is missing while decoding " & "Narrowed_unionNarrowed")
   target.shared = jsonTo(source{"shared"}, typeof(target.shared))
+  assert(hasKey(source, "a"),
+         "a" & " is missing while decoding " & "Narrowed_unionNarrowed")
+  target.a = jsonTo(source{"a"}, typeof(target.a))
 
 proc toJsonHook*(source: Narrowed_unionNarrowed): JsonNode =
   result = newJObject()
-  result{"a"} = newJInt(source.a)
   result{"shared"} = newJString(source.shared)
+  result{"a"} = newJInt(source.a)
 
 proc toStream*(source: Narrowed_unionNarrowed; target: Stream) =
   var hasEmitted: bool
   target.write('{')
   hasEmitted.writeComma(target)
-  write(target, escapeJson("a"))
-  write(target, ':')
-  toStream(source.a, target)
-  hasEmitted.writeComma(target)
   write(target, escapeJson("shared"))
   write(target, ':')
   toStream(source.shared, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("a"))
+  write(target, ':')
+  toStream(source.a, target)
   target.write('}')
 
 proc fromStream*(typ: typedesc[Narrowed_unionNarrowed];
@@ -82,11 +82,11 @@ proc fromStream*(typ: typedesc[Narrowed_unionNarrowed];
   var seen: set[0 .. 1]
   for key in objectKeys(source):
     case key
-    of "a":
-      result.a = fromStream(typeof(result.a), source)
-      seen.incl(0)
     of "shared":
       result.shared = fromStream(typeof(result.shared), source)
+      seen.incl(0)
+    of "a":
+      result.a = fromStream(typeof(result.a), source)
       seen.incl(1)
     else:
       skipValue(source)
@@ -96,7 +96,7 @@ converter forNarrowed_unionUnion*(value: Narrowed_unionNarrowed): Narrowed_union
   return Narrowed_unionUnion(kind: 0, key0: value)
 
 proc equals(_: typedesc[Narrowed_unionNarrowed2]; a, b: Narrowed_unionNarrowed2): bool =
-  equals(typeof(a.b), a.b, b.b) and equals(typeof(a.shared), a.shared, b.shared)
+  equals(typeof(a.shared), a.shared, b.shared) and equals(typeof(a.b), a.b, b.b)
 
 proc `==`*(a, b: Narrowed_unionNarrowed2): bool =
   return equals(Narrowed_unionNarrowed2, a, b)
@@ -104,36 +104,36 @@ proc `==`*(a, b: Narrowed_unionNarrowed2): bool =
 proc stringify(_: typedesc[Narrowed_unionNarrowed2];
                value: Narrowed_unionNarrowed2): string =
   stringifyObj("Narrowed_unionNarrowed2",
-               ("b", stringify(typeof(value.b), value.b)),
-               ("shared", stringify(typeof(value.shared), value.shared)))
+               ("shared", stringify(typeof(value.shared), value.shared)),
+               ("b", stringify(typeof(value.b), value.b)))
 
 proc `$`*(value: Narrowed_unionNarrowed2): string =
   stringify(Narrowed_unionNarrowed2, value)
 
 proc fromJsonHook*(target: var Narrowed_unionNarrowed2; source: JsonNode) =
-  assert(hasKey(source, "b"),
-         "b" & " is missing while decoding " & "Narrowed_unionNarrowed2")
-  target.b = jsonTo(source{"b"}, typeof(target.b))
   assert(hasKey(source, "shared"),
          "shared" & " is missing while decoding " & "Narrowed_unionNarrowed2")
   target.shared = jsonTo(source{"shared"}, typeof(target.shared))
+  assert(hasKey(source, "b"),
+         "b" & " is missing while decoding " & "Narrowed_unionNarrowed2")
+  target.b = jsonTo(source{"b"}, typeof(target.b))
 
 proc toJsonHook*(source: Narrowed_unionNarrowed2): JsonNode =
   result = newJObject()
-  result{"b"} = newJInt(source.b)
   result{"shared"} = newJString(source.shared)
+  result{"b"} = newJInt(source.b)
 
 proc toStream*(source: Narrowed_unionNarrowed2; target: Stream) =
   var hasEmitted: bool
   target.write('{')
   hasEmitted.writeComma(target)
-  write(target, escapeJson("b"))
-  write(target, ':')
-  toStream(source.b, target)
-  hasEmitted.writeComma(target)
   write(target, escapeJson("shared"))
   write(target, ':')
   toStream(source.shared, target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("b"))
+  write(target, ':')
+  toStream(source.b, target)
   target.write('}')
 
 proc fromStream*(typ: typedesc[Narrowed_unionNarrowed2];
@@ -141,11 +141,11 @@ proc fromStream*(typ: typedesc[Narrowed_unionNarrowed2];
   var seen: set[0 .. 1]
   for key in objectKeys(source):
     case key
-    of "b":
-      result.b = fromStream(typeof(result.b), source)
-      seen.incl(0)
     of "shared":
       result.shared = fromStream(typeof(result.shared), source)
+      seen.incl(0)
+    of "b":
+      result.b = fromStream(typeof(result.b), source)
       seen.incl(1)
     else:
       skipValue(source)
@@ -177,11 +177,11 @@ proc `$`*(value: Narrowed_unionUnion): string =
   stringify(Narrowed_unionUnion, value)
 
 proc fromJsonHook*(target: var Narrowed_unionUnion; source: JsonNode) =
-  if source.kind == JObject and hasKey(source, "a") and hasKey(source, "shared"):
+  if source.kind == JObject and hasKey(source, "shared") and hasKey(source, "a"):
     target = Narrowed_unionUnion(kind: 0,
                                  key0: jsonTo(source, typeof(target.key0)))
-  elif source.kind == JObject and hasKey(source, "b") and
-      hasKey(source, "shared"):
+  elif source.kind == JObject and hasKey(source, "shared") and
+      hasKey(source, "b"):
     target = Narrowed_unionUnion(kind: 1,
                                  key1: jsonTo(source, typeof(target.key1)))
   else:

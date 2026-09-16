@@ -1,1 +1,1 @@
-UnionRefToUnionUnion(type: "array", $ref: ∅, items: UnionRefToUnionUnion2($ref: "Pet", type: ∅, items: ∅))
+UnionRefToUnionUnion(type: "array", $ref: ∅, items: UnionRefToUnionUnion2(type: ∅, $ref: "Pet", items: ∅))

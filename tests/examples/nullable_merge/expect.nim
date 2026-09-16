@@ -11,7 +11,7 @@ type
   Nullable_merge* {.byref.} = object
     nullableEnum*: Option[Nullable_mergeNullableEnum]
     nullableScalar*: Option[string]
-    nullableObject*: Nullable_mergeNullableObject
+    nullableObject*: Option[Nullable_mergeNullableObject]
 proc `=copy`(a: var Nullable_mergeNullableObject;
              b: Nullable_mergeNullableObject) {.error.}
 proc `=copy`(a: var Nullable_merge; b: Nullable_merge) {.
@@ -103,7 +103,10 @@ proc toJsonHook*(source: Nullable_merge): JsonNode =
     newJString(unsafeGet(source.nullableScalar))
   else:
     newJNull()
-  result{"nullableObject"} = toJsonHook(source.nullableObject)
+  result{"nullableObject"} = if isSome(source.nullableObject):
+    toJsonHook(unsafeGet(source.nullableObject))
+  else:
+    newJNull()
 
 proc toStream*(source: Nullable_merge; target: Stream) =
   var hasEmitted: bool

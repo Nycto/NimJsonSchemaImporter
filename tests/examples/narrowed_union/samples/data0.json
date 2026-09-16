@@ -1,7 +1,7 @@
 {
   "narrowed": {
-    "a": 1,
-    "shared": "first"
+    "shared": "first",
+    "a": 1
   },
   "narrowedArray": [
     {

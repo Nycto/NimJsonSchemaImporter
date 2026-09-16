@@ -1,1 +1,1 @@
-NarrowedUnion(narrowed: NarrowedUnionNarrowed(a: 1, shared: "first"), narrowedArray: [NarrowedUnionNarrowedArray(x: 1, y: "one")], narrowedMap: {"key": NarrowedUnionNarrowedMap(m: "value", n: 2)})
+NarrowedUnion(narrowed: NarrowedUnionNarrowed(shared: "first", a: 1), narrowedArray: [NarrowedUnionNarrowedArray(x: 1, y: "one")], narrowedMap: {"key": NarrowedUnionNarrowedMap(m: "value", n: 2)})

@@ -15,8 +15,8 @@ type
     `$ref`*: Option[string]
     items*: Option[Union_ref_to_unionItems]
   Union_ref_to_unionUnion2* {.byref.} = object
-    `$ref`*: string
     `type`*: Option[string]
+    `$ref`*: string
     items*: Option[Union_ref_to_unionItems]
   Union_ref_to_union* {.byref.} = object
     case kind*: range[0 .. 1]
@@ -209,8 +209,8 @@ converter forUnion_ref_to_union*(value: Union_ref_to_unionUnion): Union_ref_to_u
 
 proc equals(_: typedesc[Union_ref_to_unionUnion2];
             a, b: Union_ref_to_unionUnion2): bool =
-  equals(typeof(a.`$ref`), a.`$ref`, b.`$ref`) and
-      equals(typeof(a.`type`), a.`type`, b.`type`) and
+  equals(typeof(a.`type`), a.`type`, b.`type`) and
+      equals(typeof(a.`$ref`), a.`$ref`, b.`$ref`) and
       equals(typeof(a.items), a.items, b.items)
 
 proc `==`*(a, b: Union_ref_to_unionUnion2): bool =
@@ -219,42 +219,42 @@ proc `==`*(a, b: Union_ref_to_unionUnion2): bool =
 proc stringify(_: typedesc[Union_ref_to_unionUnion2];
                value: Union_ref_to_unionUnion2): string =
   stringifyObj("Union_ref_to_unionUnion2",
-               ("$ref", stringify(typeof(value.`$ref`), value.`$ref`)),
                ("type", stringify(typeof(value.`type`), value.`type`)),
+               ("$ref", stringify(typeof(value.`$ref`), value.`$ref`)),
                ("items", stringify(typeof(value.items), value.items)))
 
 proc `$`*(value: Union_ref_to_unionUnion2): string =
   stringify(Union_ref_to_unionUnion2, value)
 
 proc fromJsonHook*(target: var Union_ref_to_unionUnion2; source: JsonNode) =
+  if hasKey(source, "type") and source{"type"}.kind != JNull:
+    target.`type` = some(jsonTo(source{"type"}, typeof(unsafeGet(target.`type`))))
   assert(hasKey(source, "$ref"),
          "$ref" & " is missing while decoding " & "Union_ref_to_unionUnion2")
   target.`$ref` = jsonTo(source{"$ref"}, typeof(target.`$ref`))
-  if hasKey(source, "type") and source{"type"}.kind != JNull:
-    target.`type` = some(jsonTo(source{"type"}, typeof(unsafeGet(target.`type`))))
   if hasKey(source, "items") and source{"items"}.kind != JNull:
     target.items = some(jsonTo(source{"items"}, typeof(unsafeGet(target.items))))
 
 proc toJsonHook*(source: Union_ref_to_unionUnion2): JsonNode =
   result = newJObject()
-  result{"$ref"} = newJString(source.`$ref`)
   if isSome(source.`type`):
     result{"type"} = newJString(unsafeGet(source.`type`))
+  result{"$ref"} = newJString(source.`$ref`)
   if isSome(source.items):
     result{"items"} = toJsonHook(unsafeGet(source.items))
 
 proc toStream*(source: Union_ref_to_unionUnion2; target: Stream) =
   var hasEmitted: bool
   target.write('{')
-  hasEmitted.writeComma(target)
-  write(target, escapeJson("$ref"))
-  write(target, ':')
-  toStream(source.`$ref`, target)
   if isSome(source.`type`):
     hasEmitted.writeComma(target)
     write(target, escapeJson("type"))
     write(target, ':')
     toStream(unsafeGet(source.`type`), target)
+  hasEmitted.writeComma(target)
+  write(target, escapeJson("$ref"))
+  write(target, ':')
+  toStream(source.`$ref`, target)
   if isSome(source.items):
     hasEmitted.writeComma(target)
     write(target, escapeJson("items"))
@@ -267,11 +267,11 @@ proc fromStream*(typ: typedesc[Union_ref_to_unionUnion2];
   var seen: set[0 .. 1]
   for key in objectKeys(source):
     case key
+    of "type":
+      result.`type` = some(fromStream(typeof(unsafeGet(result.`type`)), source))
     of "$ref":
       result.`$ref` = fromStream(typeof(result.`$ref`), source)
       seen.incl(0)
-    of "type":
-      result.`type` = some(fromStream(typeof(unsafeGet(result.`type`)), source))
     of "items":
       result.items = some(fromStream(typeof(unsafeGet(result.items)), source))
     else:

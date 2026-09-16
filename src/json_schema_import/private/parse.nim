@@ -5,6 +5,8 @@ import
   history,
   util,
   merge,
+  describeparse,
+  lower,
   ../config
 
 type ParseContext = ref object
@@ -400,18 +402,12 @@ proc parseType(node: JsonNode, ctx: ParseContext, history: History): TypeDef =
     result = TypeDef(kind: TupleType, id: result.id)
 
 proc parseSchema*(node: JsonNode, resolver: UrlResolver): JsonSchema =
-  result = JsonSchema()
-  let ctx =
-    ParseContext(doc: node, resolver: resolver, refs: initTable[SchemaRef, TypeDef]())
+  result = JsonSchema(rootType: describeSchema(node, resolver).lower)
 
-  # The root never goes through `parseRef`, so the chain is opened with its reference by
-  # hand. The type it produces takes that reference too, since an edge onto the root looks
-  # the root up by it, but only when nothing else named it: a root that is itself a `$ref`
-  # already carries the reference it resolved through, and that one has to win.
-  let rootRef = SchemaRef(kind: RootRef)
-  result.rootType = parseType(node, ctx, addRef(nil, rootRef))
+  # An edge onto the root looks the root up by its reference, which only a root that was
+  # itself a `$ref` already carries
   if result.rootType.sref.isNil:
-    result.rootType.sref = rootRef
+    result.rootType.sref = SchemaRef(kind: RootRef)
 
   if result.rootType.kind == NeverType:
     raise newException(
