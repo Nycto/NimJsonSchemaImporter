@@ -21,6 +21,12 @@ proc id(node: JsonNode): Uri =
     except:
       discard
 
+iterator requiredKeys(node: JsonNode): string =
+  ## The keys named by a `required` list; draft 3's boolean `required` names none
+  if "required" in node and node{"required"}.kind == JArray:
+    for key in node{"required"}:
+      yield key.getStr
+
 proc describeNode*(node: JsonNode, ctx: DescribeContext, history: History): Description
 
 proc typeVariant(name: string, history: History): Variant =
@@ -62,6 +68,58 @@ proc allowedTypes(node: JsonNode, ctx: DescribeContext, history: History): Descr
   else:
     raise newException(ValueError, fmt"Unsupported type {typ} at {history}")
 
+proc objectConstraint(node: JsonNode, ctx: DescribeContext, history: History): Variant =
+  ## What `properties`, `required` and `additionalProperties` say about an object
+  var required = false
+  for _ in node.requiredKeys:
+    required = true
+  if "properties" notin node and "additionalProperties" notin node and not required:
+    return nil
+
+  result = Variant(kind: vkObject, shaped: "properties" in node)
+  if "properties" in node:
+    for key, sub in node{"properties"}:
+      result.properties[key] = sub.describeNode(ctx, history.add("properties").add(key))
+
+  # A required key nothing else describes can hold anything at all
+  for key in node.requiredKeys:
+    result.required.incl(key)
+    if key notin result.properties:
+      result.properties[key] = anyValue()
+
+  if "additionalProperties" in node:
+    result.additional = node{"additionalProperties"}.describeNode(
+      ctx, history.add("additionalProperties")
+    )
+
+proc arrayConstraint(node: JsonNode, ctx: DescribeContext, history: History): Variant =
+  ## What `items` and `prefixItems` say about an array
+  if "items" notin node and "prefixItems" notin node:
+    return nil
+
+  # Before 2020-12, a tuple was written as an `items` holding a list
+  let items = node{"items"}
+  let slotsKey = if "prefixItems" in node: "prefixItems" else: "items"
+  let slots = node{slotsKey}
+
+  result = Variant(kind: vkArray)
+  if not items.isNil and items.kind != JArray:
+    result.items = items.describeNode(ctx, history.add("items"))
+
+  if not slots.isNil and slots.kind == JArray:
+    # `items` covers every slot too, unless it is `false`, which only closes the tail
+    let covers = not result.items.isNil and not result.items.isNever
+    var elements: seq[Description]
+    for i in 0 ..< slots.len:
+      let element = slots[i].describeNode(ctx, history.add(slotsKey).add($i))
+      elements.add(
+        if covers:
+          intersect(element, result.items)
+        else:
+          element
+      )
+    result.prefix = some(elements)
+
 proc scalarConstraints(node: JsonNode): seq[Variant] =
   ## What `enum` and `const` say about a node
   if "enum" in node:
@@ -98,6 +156,11 @@ proc ownDescription(
   ## What the keywords written on the node itself say, ignoring references and combinators,
   ## or nil when they say nothing at all
   var constraints = node.scalarConstraints
+  for constraint in [
+    node.objectConstraint(ctx, history), node.arrayConstraint(ctx, history)
+  ]:
+    if not constraint.isNil:
+      constraints.add(constraint)
   for constraint in constraints:
     constraint.id = id(node)
 
