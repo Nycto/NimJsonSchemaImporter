@@ -94,8 +94,6 @@ proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
     return input
   of ConstValueType:
     return typ.value.toLiteral()
-  of NeverType:
-    raiseAssert("A schema that accepts nothing has no value to encode")
   of NoteType:
     return input.createEncodeExpr(typ.inner)
   of TupleType:
@@ -148,8 +146,6 @@ proc buildIsType(
     )
   of ConstValueType:
     raiseAssert("Unimplemented")
-  of NeverType:
-    raiseAssert("A schema that accepts nothing has no value to test for")
   of NoteType:
     return typ.inner.buildIsType(value, refs, followed)
 

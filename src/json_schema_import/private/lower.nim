@@ -62,6 +62,8 @@ proc withNotes(typ: TypeDef, folded: seq[Description], ctx: Lowering): TypeDef =
   ## Keeps every absorbed type an edge still points at alive beside the one replacing it
   result = typ
   for desc in folded:
+    if desc.isNever:
+      continue
     let note = desc.lower(ctx)
     if note.isEdgeTarget:
       result = result.withNote(note)
@@ -101,8 +103,8 @@ proc lower(variant: Variant, ctx: Lowering): TypeDef =
   return named(variant.sref, ctx, build).withNotes(variant.folded, ctx)
 
 proc alternatives(desc: Description, ctx: Lowering): TypeDef =
-  ## The Nim type describing every variant of a description: nothing, one of them, or a
-  ## union choosing between them, made optional when `null` is one of the choices
+  ## The Nim type describing every variant of a description: one of them, or a union
+  ## choosing between them, made optional when `null` is one of the choices
   var nullable = false
   var seen = initHashSet[TypeDef]()
   var arms: seq[TypeDef]
@@ -117,7 +119,9 @@ proc alternatives(desc: Description, ctx: Lowering): TypeDef =
       arms.add(arm)
 
   if arms.len == 0:
-    return TypeDef(kind: if nullable: NullType else: NeverType, id: desc.id)
+    # Whatever holds a description that accepts nothing drops it before lowering
+    assert(nullable, "A description that accepts nothing has no type")
+    return TypeDef(kind: NullType, id: desc.id)
 
   result =
     if arms.len == 1:

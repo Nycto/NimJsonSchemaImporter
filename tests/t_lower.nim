@@ -32,8 +32,9 @@ suite "Lowering scalars":
     check(d(vkEdge).lower.kind == RefType)
 
 suite "Lowering alternatives":
-  test "Nothing at all":
-    check(never().lower.kind == NeverType)
+  test "Nothing at all has no type":
+    expect AssertionDefect:
+      discard never().lower
 
   test "Only null":
     check(d(vkNull).lower.kind == NullType)
@@ -162,3 +163,7 @@ suite "Lowering labels":
     let typ = node.named("alias").lower
     check(typ.stripNotes.kind == ObjType)
     check(typ.closesOnto(parseRef("#/$defs/node")))
+
+  test "A folded type that accepts nothing is dropped":
+    let typ = union(never().named("gone"), d(vkString)).lower
+    check(typ.kind == StringType)

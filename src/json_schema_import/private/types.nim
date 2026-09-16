@@ -17,7 +17,6 @@ type
     MapType
     OptionalType
     ConstValueType
-    NeverType ## A schema nothing can satisfy, written as a `false` subschema
     NoteType
       ## A type carrying a note: another type that has to be generated alongside it
 
@@ -44,7 +43,7 @@ type
       entries*: TypeDef
     of OptionalType:
       subtype*: TypeDef
-    of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, NeverType:
+    of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
       discard
     of ConstValueType:
       value*: JsonNode
@@ -88,7 +87,7 @@ proc hash*(typ: TypeDef): Hash {.noSideEffect.} =
     result = result !& hash(typ.entries)
   of OptionalType:
     result = result !& hash(typ.subtype)
-  of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, NeverType:
+  of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
     discard
   of ConstValueType:
     result = result !& hash(typ.value)
@@ -118,8 +117,7 @@ proc `==`*(a, b: TypeDef): bool {.noSideEffect.} =
     return a.subtype == b.subtype
   of NoteType:
     return a.note.sref == b.note.sref and a.inner == b.inner
-  of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, ConstValueType,
-      NeverType:
+  of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, ConstValueType:
     return true
 
 proc closesOnto*(typ: TypeDef, sref: SchemaRef): bool =
@@ -152,7 +150,7 @@ proc closesOnto*(typ: TypeDef, sref: SchemaRef): bool =
       if recurse(subtype):
         return true
   of EnumType, IntegerType, StringType, NumberType, BoolType, NullType, JsonType,
-      ConstValueType, NeverType:
+      ConstValueType:
     discard
 
 proc isEdgeTarget*(typ: TypeDef): bool =
@@ -195,8 +193,6 @@ proc `$`*(typ: TypeDef): string =
     result = "(Null)"
   of JsonType:
     result = "(Json)"
-  of NeverType:
-    result = "(Never)"
   of ConstValueType:
     result = fmt"(Const {typ.value})"
   of NoteType:
@@ -243,7 +239,7 @@ proc withRef*(typ: TypeDef, sref: SchemaRef): TypeDef =
       TypeDef(kind: ConstValueType, value: typ.value)
     of NoteType:
       TypeDef(kind: NoteType, note: typ.note, inner: typ.inner)
-    of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, NeverType:
+    of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
       TypeDef(kind: typ.kind)
 
   result.id = typ.id
@@ -294,7 +290,6 @@ proc abbrev*(typ: TypeDef): string =
     of NullType: "Null"
     of JsonType: "Json"
     of ConstValueType: "Const"
-    of NeverType: "Never"
     of NoteType: typ.inner.abbrev
 
 proc abbrevAll(typs: seq[TypeDef]): string =
@@ -325,7 +320,7 @@ iterator nameFragments*(typ: TypeDef): string =
     of OptionalType:
       yield fmt"Of{typ.subtype.abbrev}"
     of EnumType, RefType, IntegerType, StringType, NumberType, BoolType, NullType,
-        JsonType, ConstValueType, NeverType, NoteType:
+        JsonType, ConstValueType, NoteType:
       discard
 
 proc chooseName*(typ: TypeDef): string =
