@@ -74,6 +74,25 @@ suite "Describing objects":
     check(variant.additional.kinds == @[vkInteger])
     check("""{"additionalProperties": false}""".parse.variants[0].additional.isNever)
 
+  test "Pattern properties name a map without typing it":
+    let variant =
+      """{"patternProperties": {"^x-": {"type": "string"}}}""".parse.variants[0]
+    check(variant.kind == vkObject)
+    check(not variant.shaped)
+    check(variant.additional.kinds == @[vkAny])
+
+  test "A pattern reopens an object additionalProperties closed":
+    let variant = """{"patternProperties": {"^x-": true}, "additionalProperties": false}""".parse.variants[
+      0
+    ]
+    check(not variant.additional.isNever)
+
+  test "An empty pattern list leaves additionalProperties alone":
+    let variant = """{"patternProperties": {}, "additionalProperties": {"type": "string"}}""".parse.variants[
+      0
+    ]
+    check(variant.additional.kinds == @[vkString])
+
   test "Object keywords only narrow an object":
     let desc = """{"type": ["string", "object"], "properties": {}}""".parse
     check(desc.kinds == @[vkString, vkObject])
