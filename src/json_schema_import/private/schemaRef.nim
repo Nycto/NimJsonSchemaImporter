@@ -139,7 +139,9 @@ proc findAnchor(node: JsonNode, name: string, isResource: bool): JsonNode =
     let id = node{"$id"}.getStr
     if not isResource and id != "" and not id.startsWith("#"):
       return nil
-    if node{"$anchor"}.getStr == name or id == "#" & name:
+    # A `$dynamicAnchor` also names a plain fragment, which is all a `$ref` needs
+    if node{"$anchor"}.getStr == name or node{"$dynamicAnchor"}.getStr == name or
+        id == "#" & name:
       return node
     for key, child in node:
       if key notin ["enum", "const", "examples", "default"]:
