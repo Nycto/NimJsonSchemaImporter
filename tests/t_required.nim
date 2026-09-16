@@ -58,6 +58,21 @@ jsonSchema(
   %*{"additionalProperties": {"type": "string"}, "required": []},
 )
 
+jsonSchema(
+  JsonSchemaConfig(rootTypeName: "NullableObject"),
+  %*{
+    "type": "object",
+    "properties": {
+      "x": {
+        "type": ["object", "null"],
+        "properties": {"inner": {"type": "string"}},
+        "required": ["inner"],
+      }
+    },
+    "required": ["x"],
+  },
+)
+
 suite "A `required` that stands on its own":
   test "Split from the properties across allOf branches":
     let value = """{"a": "hello"}""".parseJson.jsonTo(SplitAllOf)
@@ -89,3 +104,9 @@ suite "A `required` that stands on its own":
   test "An empty required list leaves an open object open":
     let value = """{"k": "v"}""".parseJson.jsonTo(EmptyRequired)
     check(value["k"] == "v")
+
+  test "A required object that may be null keeps the null":
+    check("""{"x": null}""".parseJson.jsonTo(NullableObject).x.isNone)
+    check(
+      """{"x": {"inner": "i"}}""".parseJson.jsonTo(NullableObject).x.get.inner == "i"
+    )

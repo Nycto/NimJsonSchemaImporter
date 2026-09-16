@@ -1,4 +1,4 @@
-import std/[unittest, tables], json_schema_import/private/[parse, types]
+import std/[unittest, tables, sets], json_schema_import/private/[parse, types]
 
 proc parse(schema: string): TypeDef =
   ## Parses a schema without any url resolution, since none of these reach outwards
@@ -96,3 +96,37 @@ suite "A schema that accepts nothing":
   test "Is rejected when the root works out to one":
     expect ValueError:
       discard parse("""{"type": "string", "oneOf": [false]}""")
+
+suite "Types a combine rules out":
+  test "A type beside a union drops the arms it rules out":
+    let typ = parse(
+      """{"type": "string", "oneOf": [{"type": "integer"}, {"type": "string"}]}"""
+    )
+    check(typ.kind == StringType)
+
+  test "An integer is the number both sides allow":
+    check(
+      parse("""{"allOf": [{"type": "number"}, {"type": "integer"}]}""").kind ==
+        IntegerType
+    )
+
+  test "Two enums keep only the values they share":
+    let typ = parse("""{"allOf": [{"enum": ["a", "b"]}, {"enum": ["b", "c"]}]}""")
+    check(typ.kind == EnumType)
+    check(typ.values.len == 1)
+    check("b" in typ.values)
+
+  test "An object requiring a key nothing satisfies is dropped, sparing null":
+    let typ = parse(
+      """{"type": ["object", "null"], "required": ["a"], "properties": {"a": false}}"""
+    )
+    check(typ.kind == NullType)
+
+  test "A tuple slot nothing fills only drops the array":
+    check(
+      parse("""{"oneOf": [{"prefixItems": [false]}, {"type": "string"}]}""").kind ==
+        StringType
+    )
+
+  test "A null an enum lists is dropped when the type rules it out":
+    check(parse("""{"type": ["string"], "enum": ["a", null]}""").kind == EnumType)
