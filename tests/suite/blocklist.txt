@@ -1163,8 +1163,6 @@ draft7/contains.json :: items + contains :: does not match items, matches contai
 draft7/contains.json :: items + contains :: matches neither items nor contains
 draft7/contains.json :: contains with false if subschema :: empty array is invalid
 draft7/default.json :: the default keyword does not do anything if the property is missing :: an explicit property value is checked against maximum (failing)
-draft7/definitions.json :: validate definition against metaschema :: valid definition schema
-draft7/definitions.json :: validate definition against metaschema :: invalid definition schema
 draft7/dependencies.json :: dependencies :: missing dependency
 draft7/dependencies.json :: multiple dependencies :: missing dependency
 draft7/dependencies.json :: multiple dependencies :: missing other dependency
@@ -1389,80 +1387,12 @@ draft7/ref.json :: root pointer ref :: match
 draft7/ref.json :: root pointer ref :: recursive match
 draft7/ref.json :: root pointer ref :: mismatch
 draft7/ref.json :: root pointer ref :: recursive mismatch
-draft7/ref.json :: relative pointer ref to object :: match
-draft7/ref.json :: relative pointer ref to object :: mismatch
-draft7/ref.json :: relative pointer ref to array :: match array
-draft7/ref.json :: relative pointer ref to array :: mismatch array
-draft7/ref.json :: escaped pointer ref :: slash invalid
-draft7/ref.json :: escaped pointer ref :: tilde invalid
-draft7/ref.json :: escaped pointer ref :: percent invalid
-draft7/ref.json :: escaped pointer ref :: slash valid
-draft7/ref.json :: escaped pointer ref :: tilde valid
-draft7/ref.json :: escaped pointer ref :: percent valid
-draft7/ref.json :: nested refs :: nested ref valid
-draft7/ref.json :: nested refs :: nested ref invalid
-draft7/ref.json :: ref overrides any sibling keywords :: ref valid
-draft7/ref.json :: ref overrides any sibling keywords :: ref valid, maxItems ignored
-draft7/ref.json :: ref overrides any sibling keywords :: ref invalid
 draft7/ref.json :: $ref prevents a sibling $id from changing the base uri :: $ref resolves to /definitions/base_foo, data does not validate
 draft7/ref.json :: $ref prevents a sibling $id from changing the base uri :: $ref resolves to /definitions/base_foo, data validates
-draft7/ref.json :: remote ref, containing refs itself :: remote ref valid
 draft7/ref.json :: remote ref, containing refs itself :: remote ref invalid
-draft7/ref.json :: property named $ref that is not a reference :: property named $ref valid
-draft7/ref.json :: property named $ref that is not a reference :: property named $ref invalid
-draft7/ref.json :: property named $ref, containing an actual $ref :: property named $ref valid
-draft7/ref.json :: property named $ref, containing an actual $ref :: property named $ref invalid
-draft7/ref.json :: $ref to boolean schema true :: any value is valid
-draft7/ref.json :: $ref to boolean schema false :: any value is invalid
-draft7/ref.json :: Recursive references between schemas :: valid tree
-draft7/ref.json :: Recursive references between schemas :: invalid tree
-draft7/ref.json :: refs with quote :: object with numbers is valid
-draft7/ref.json :: refs with quote :: object with strings is invalid
-draft7/ref.json :: Location-independent identifier :: match
-draft7/ref.json :: Location-independent identifier :: mismatch
-draft7/ref.json :: Reference an anchor with a non-relative URI :: match
-draft7/ref.json :: Reference an anchor with a non-relative URI :: mismatch
-draft7/ref.json :: Location-independent identifier with base URI change in subschema :: match
-draft7/ref.json :: Location-independent identifier with base URI change in subschema :: mismatch
 draft7/ref.json :: naive replacement of $ref with its destination is not correct :: do not evaluate the $ref inside the enum, matching any string
 draft7/ref.json :: naive replacement of $ref with its destination is not correct :: do not evaluate the $ref inside the enum, definition exact match
-draft7/ref.json :: naive replacement of $ref with its destination is not correct :: match the enum exactly
-draft7/ref.json :: refs with relative uris and defs :: invalid on inner field
-draft7/ref.json :: refs with relative uris and defs :: invalid on outer field
-draft7/ref.json :: refs with relative uris and defs :: valid on both fields
-draft7/ref.json :: relative refs with absolute uris and defs :: invalid on inner field
-draft7/ref.json :: relative refs with absolute uris and defs :: invalid on outer field
-draft7/ref.json :: relative refs with absolute uris and defs :: valid on both fields
-draft7/ref.json :: $id must be resolved against nearest parent, not just immediate parent :: number is valid
-draft7/ref.json :: $id must be resolved against nearest parent, not just immediate parent :: non-number is invalid
 draft7/ref.json :: simple URN base URI with $ref via the URN :: valid under the URN IDed schema
-draft7/ref.json :: simple URN base URI with $ref via the URN :: invalid under the URN IDed schema
-draft7/ref.json :: simple URN base URI with JSON pointer :: a string is valid
-draft7/ref.json :: simple URN base URI with JSON pointer :: a non-string is invalid
-draft7/ref.json :: URN base URI with NSS :: a string is valid
-draft7/ref.json :: URN base URI with NSS :: a non-string is invalid
-draft7/ref.json :: URN base URI with r-component :: a string is valid
-draft7/ref.json :: URN base URI with r-component :: a non-string is invalid
-draft7/ref.json :: URN base URI with q-component :: a string is valid
-draft7/ref.json :: URN base URI with q-component :: a non-string is invalid
-draft7/ref.json :: URN base URI with URN and JSON pointer ref :: a string is valid
-draft7/ref.json :: URN base URI with URN and JSON pointer ref :: a non-string is invalid
-draft7/ref.json :: URN base URI with URN and anchor ref :: a string is valid
-draft7/ref.json :: URN base URI with URN and anchor ref :: a non-string is invalid
-draft7/ref.json :: ref to if :: a non-integer is invalid due to the $ref
-draft7/ref.json :: ref to if :: an integer is valid
-draft7/ref.json :: ref to then :: a non-integer is invalid due to the $ref
-draft7/ref.json :: ref to then :: an integer is valid
-draft7/ref.json :: ref to else :: a non-integer is invalid due to the $ref
-draft7/ref.json :: ref to else :: an integer is valid
-draft7/ref.json :: ref with absolute-path-reference :: a string is valid
-draft7/ref.json :: ref with absolute-path-reference :: an integer is invalid
-draft7/ref.json :: $id with file URI still resolves pointers - *nix :: number is valid
-draft7/ref.json :: $id with file URI still resolves pointers - *nix :: non-number is invalid
-draft7/ref.json :: $id with file URI still resolves pointers - windows :: number is valid
-draft7/ref.json :: $id with file URI still resolves pointers - windows :: non-number is invalid
-draft7/ref.json :: empty tokens in $ref json-pointer :: number is valid
-draft7/ref.json :: empty tokens in $ref json-pointer :: non-number is invalid
 draft7/required.json :: required validation :: ignores arrays
 draft7/required.json :: required validation :: ignores strings
 draft7/required.json :: required validation :: ignores other non-objects
