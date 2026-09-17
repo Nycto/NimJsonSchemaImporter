@@ -257,8 +257,9 @@ draft2020-12/if-then-else.json :: if appears at the end when serialized (keyword
 draft2020-12/if-then-else.json :: if appears at the end when serialized (keyword processing sequence) :: invalid redirects to else and fails
 draft2020-12/if-then-else.json :: then: false fails when condition matches :: matches if → then=false → invalid
 draft2020-12/if-then-else.json :: else: false fails when condition does not match :: does not match if → else executes → invalid
+draft2020-12/items.json :: a schema given for items :: ignores non-arrays
+draft2020-12/items.json :: a schema given for items :: JavaScript pseudo-array is valid
 draft2020-12/items.json :: items and subitems :: fewer items is valid
-draft2020-12/items.json :: nested items :: not deep enough
 draft2020-12/items.json :: prefixItems with no additional items allowed :: empty array
 draft2020-12/items.json :: prefixItems with no additional items allowed :: fewer number of items present (1)
 draft2020-12/items.json :: prefixItems with no additional items allowed :: fewer number of items present (2)
@@ -491,14 +492,7 @@ draft2020-12/required.json :: required validation :: ignores null
 draft2020-12/required.json :: required validation :: ignores boolean
 draft2020-12/required.json :: required properties whose names are Javascript object property names :: ignores arrays
 draft2020-12/required.json :: required properties whose names are Javascript object property names :: ignores other non-objects
-draft2020-12/type.json :: integer type matches integers :: a float with zero fractional part is an integer
 draft2020-12/type.json :: string type matches strings :: null is not a string
-draft2020-12/type.json :: array type matches arrays :: an integer is not an array
-draft2020-12/type.json :: array type matches arrays :: a float is not an array
-draft2020-12/type.json :: array type matches arrays :: a string is not an array
-draft2020-12/type.json :: array type matches arrays :: an object is not an array
-draft2020-12/type.json :: array type matches arrays :: a boolean is not an array
-draft2020-12/type.json :: array type matches arrays :: null is not an array
 draft2020-12/unevaluatedItems.json :: unevaluatedItems false :: with unevaluated items
 draft2020-12/unevaluatedItems.json :: unevaluatedItems as schema :: with invalid unevaluated items
 draft2020-12/unevaluatedItems.json :: unevaluatedItems with items and prefixItems :: unevaluatedItems doesn't apply
@@ -823,6 +817,8 @@ draft2019-09/if-then-else.json :: if appears at the end when serialized (keyword
 draft2019-09/if-then-else.json :: if appears at the end when serialized (keyword processing sequence) :: invalid redirects to else and fails
 draft2019-09/if-then-else.json :: then: false fails when condition matches :: matches if → then=false → invalid
 draft2019-09/if-then-else.json :: else: false fails when condition does not match :: does not match if → else executes → invalid
+draft2019-09/items.json :: a schema given for items :: ignores non-arrays
+draft2019-09/items.json :: a schema given for items :: JavaScript pseudo-array is valid
 draft2019-09/items.json :: an array of schemas for items :: incomplete array of items
 draft2019-09/items.json :: an array of schemas for items :: array with additional items
 draft2019-09/items.json :: an array of schemas for items :: empty array
@@ -830,7 +826,6 @@ draft2019-09/items.json :: an array of schemas for items :: JavaScript pseudo-ar
 draft2019-09/items.json :: items with boolean schemas :: array with one item is valid
 draft2019-09/items.json :: items with boolean schemas :: empty array is valid
 draft2019-09/items.json :: items and subitems :: fewer items is valid
-draft2019-09/items.json :: nested items :: not deep enough
 draft2019-09/maxContains.json :: maxContains with contains :: empty data
 draft2019-09/maxContains.json :: maxContains with contains :: all elements match, invalid maxContains
 draft2019-09/maxContains.json :: maxContains with contains :: some elements match, invalid maxContains
@@ -1064,14 +1059,7 @@ draft2019-09/required.json :: required validation :: ignores null
 draft2019-09/required.json :: required validation :: ignores boolean
 draft2019-09/required.json :: required properties whose names are Javascript object property names :: ignores arrays
 draft2019-09/required.json :: required properties whose names are Javascript object property names :: ignores other non-objects
-draft2019-09/type.json :: integer type matches integers :: a float with zero fractional part is an integer
 draft2019-09/type.json :: string type matches strings :: null is not a string
-draft2019-09/type.json :: array type matches arrays :: an integer is not an array
-draft2019-09/type.json :: array type matches arrays :: a float is not an array
-draft2019-09/type.json :: array type matches arrays :: a string is not an array
-draft2019-09/type.json :: array type matches arrays :: an object is not an array
-draft2019-09/type.json :: array type matches arrays :: a boolean is not an array
-draft2019-09/type.json :: array type matches arrays :: null is not an array
 draft2019-09/unevaluatedItems.json :: unevaluatedItems false :: with unevaluated items
 draft2019-09/unevaluatedItems.json :: unevaluatedItems as schema :: with invalid unevaluated items
 draft2019-09/unevaluatedItems.json :: unevaluatedItems with items and additionalItems :: unevaluatedItems doesn't apply
@@ -1370,6 +1358,8 @@ draft7/if-then-else.json :: if appears at the end when serialized (keyword proce
 draft7/if-then-else.json :: if appears at the end when serialized (keyword processing sequence) :: invalid redirects to else and fails
 draft7/if-then-else.json :: then: false fails when condition matches :: matches if → then=false → invalid
 draft7/if-then-else.json :: else: false fails when condition does not match :: does not match if → else executes → invalid
+draft7/items.json :: a schema given for items :: ignores non-arrays
+draft7/items.json :: a schema given for items :: JavaScript pseudo-array is valid
 draft7/items.json :: an array of schemas for items :: incomplete array of items
 draft7/items.json :: an array of schemas for items :: array with additional items
 draft7/items.json :: an array of schemas for items :: empty array
@@ -1377,7 +1367,6 @@ draft7/items.json :: an array of schemas for items :: JavaScript pseudo-array is
 draft7/items.json :: items with boolean schemas :: array with one item is valid
 draft7/items.json :: items with boolean schemas :: empty array is valid
 draft7/items.json :: items and subitems :: fewer items is valid
-draft7/items.json :: nested items :: not deep enough
 draft7/maxItems.json :: maxItems validation :: too long is invalid
 draft7/maxItems.json :: maxItems validation with a decimal :: too long is invalid
 draft7/maxLength.json :: maxLength validation :: too long is invalid
@@ -1543,14 +1532,7 @@ draft7/required.json :: required validation :: ignores null
 draft7/required.json :: required validation :: ignores boolean
 draft7/required.json :: required properties whose names are Javascript object property names :: ignores arrays
 draft7/required.json :: required properties whose names are Javascript object property names :: ignores other non-objects
-draft7/type.json :: integer type matches integers :: a float with zero fractional part is an integer
 draft7/type.json :: string type matches strings :: null is not a string
-draft7/type.json :: array type matches arrays :: an integer is not an array
-draft7/type.json :: array type matches arrays :: a float is not an array
-draft7/type.json :: array type matches arrays :: a string is not an array
-draft7/type.json :: array type matches arrays :: an object is not an array
-draft7/type.json :: array type matches arrays :: a boolean is not an array
-draft7/type.json :: array type matches arrays :: null is not an array
 draft7/uniqueItems.json :: uniqueItems validation :: non-unique array of integers is invalid
 draft7/uniqueItems.json :: uniqueItems validation :: non-unique array of more than two integers is invalid
 draft7/uniqueItems.json :: uniqueItems validation :: numbers are unique if mathematically unequal
