@@ -128,9 +128,11 @@ proc findAnchor(node: JsonNode, name: string, isResource: bool): JsonNode =
   ## Searches one schema resource for an `$anchor`, stopping at embedded `$id`s
   case node.kind
   of JObject:
-    if not isResource and "$id" in node:
+    # Before 2019-09, an anchor was written as an `$id` holding only a fragment
+    let id = node{"$id"}.getStr
+    if not isResource and id != "" and not id.startsWith("#"):
       return nil
-    if node{"$anchor"}.getStr == name:
+    if node{"$anchor"}.getStr == name or id == "#" & name:
       return node
     for key, child in node:
       if key notin ["enum", "const", "examples", "default"]:
@@ -159,29 +161,41 @@ proc child(sref: SchemaRef, node: JsonNode): JsonNode =
     else:
       nil
   if result == nil:
-    raise newException(
-      ValueError, fmt"Unable to resolve reference: {sref} against {node}"
-    )
+    raise
+      newException(ValueError, fmt"Unable to resolve reference: {sref} against {node}")
 
-proc resolve*(sref: SchemaRef, node: JsonNode, resolveUrl: UrlResolver): JsonNode =
-  if sref == nil:
-    return node
-
-  case sref.kind
-  of UrlRef:
-    let doc = resolveUrl(sref.url)
-    if doc == nil:
-      raise newException(ValueError, fmt"Unable to resolve url: {sref.url}")
-    return sref.next.resolve(doc, resolveUrl)
-  of RootRef:
-    return sref.next.resolve(node, resolveUrl)
-  of SubRef:
-    return sref.next.resolve(sref.child(node), resolveUrl)
-  of AnchorRef:
-    let found = findAnchor(node, sref.name, true)
-    if found != nil:
-      return sref.next.resolve(found, resolveUrl)
+proc anchor(sref: SchemaRef, node: JsonNode): JsonNode =
+  ## Finds the node an `AnchorRef` names within the resource holding it
+  result = findAnchor(node, sref.name, true)
+  if result == nil:
     raise newException(ValueError, fmt"Unable to find anchor reference: {sref}")
+
+proc fetch(sref: SchemaRef, resolveUrl: UrlResolver): JsonNode =
+  ## Retrieves the document a `UrlRef` points at
+  result = resolveUrl(sref.url)
+  if result == nil:
+    raise newException(ValueError, fmt"Unable to resolve url: {sref.url}")
+
+iterator walk*(sref: SchemaRef, node: JsonNode, resolveUrl: UrlResolver): JsonNode =
+  ## The document a reference starts in, then every node it steps into up to its target
+  var cursor = sref
+  var current = node
+  if cursor.kind == UrlRef:
+    current = cursor.fetch(resolveUrl)
+    cursor = cursor.next
+  yield current
+
+  while cursor != nil:
+    case cursor.kind
+    of UrlRef, RootRef:
+      discard
+    of SubRef:
+      current = cursor.child(current)
+      yield current
+    of AnchorRef:
+      current = cursor.anchor(current)
+      yield current
+    cursor = cursor.next
 
 proc `==`*(a, b: SchemaRef): bool =
   ## Whether two references point at the same place

@@ -191,6 +191,31 @@ proc ownDescription(
       result.variants.add(variant)
   result.folded = allowed.folded
 
+proc withId(history: History, node: JsonNode): History =
+  ## Records the base URI a node's `$id` sets, if it has one
+  if node.kind == JObject and "$id" in node:
+    history.addId(id(node))
+  else:
+    history
+
+proc enterRef(
+    history: History, sref: SchemaRef, ctx: DescribeContext
+): (JsonNode, History) =
+  ## The node a reference points at, and the history describing it starts from
+  var inner = history.addRef(sref)
+  if sref.kind == UrlRef:
+    # A fetched document resolves its own references against where it came from
+    inner = inner.addId(parseUri(sref.url))
+
+  var path: seq[JsonNode]
+  for step in sref.walk(ctx.doc, ctx.resolver):
+    path.add(step)
+
+  # Every `$id` passed on the way sets the base too; the target records its own
+  for i in 1 ..< path.len - 1:
+    inner = inner.withId(path[i])
+  return (path[^1], inner)
+
 proc describeRef(node: JsonNode, ctx: DescribeContext, history: History): Description =
   var sref = parseRef(node{"$ref"}.getStr)
   if sref.kind == UrlRef and history.base != default(Uri):
@@ -206,8 +231,8 @@ proc describeRef(node: JsonNode, ctx: DescribeContext, history: History): Descri
   if sref in ctx.refs:
     return ctx.refs[sref]
 
-  let inner = history.addRef(sref)
-  result = sref.resolve(ctx.doc, ctx.resolver).describeNode(ctx, inner).relabel(sref)
+  let (target, inner) = history.enterRef(sref, ctx)
+  result = target.describeNode(ctx, inner).relabel(sref)
 
   if result.variants.len == 1 and result.variants[0].kind == vkEdge:
     raise
@@ -239,11 +264,7 @@ proc describeNode*(
         never()
   if node.kind != JObject:
     raise newException(ValueError, fmt"Unable to parse type {node} at {history}")
-  let history =
-    if "$id" in node:
-      history.addId(id(node))
-    else:
-      history
+  let history = history.withId(node)
 
   # Folded in a fixed order, which is the order object properties come out in
   var parts: seq[Description]
