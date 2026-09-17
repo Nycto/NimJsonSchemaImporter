@@ -94,7 +94,8 @@ task cachetest, "Verifies generated code is cached, reused and invalidated":
 
 task suite, "Runs JSON-Schema-Test-Suite, checking failures against its blocklist":
   ## Arguments after the task name go to the runner: suite file names such as
-  ## `draft7/type.json` to narrow the run, or `--update` to rewrite the blocklist
+  ## `draft7/type.json` to narrow the run, `--update` to rewrite the blocklist, or
+  ## `--stream` to echo build output as it happens
   var args = ""
   var afterTask = false
   for param in commandLineParams():
