@@ -193,7 +193,7 @@ proc ownDescription(
 
 proc withId(history: History, node: JsonNode): History =
   ## Records the base URI a node's `$id` sets, if it has one
-  if node.kind == JObject and "$id" in node:
+  if node.kind == JObject and "$id" in node and not history.ownsBase(node):
     history.addId(id(node))
   else:
     history
@@ -202,14 +202,14 @@ proc enterRef(
     history: History, sref: SchemaRef, ctx: DescribeContext
 ): (JsonNode, History) =
   ## The node a reference points at, and the history describing it starts from
-  var inner = history.addRef(sref)
-  if sref.kind == UrlRef:
-    # A fetched document resolves its own references against where it came from
-    inner = inner.addId(parseUri(sref.url))
-
   var path: seq[JsonNode]
   for step in sref.walk(ctx.doc, ctx.resolver):
     path.add(step)
+
+  var inner = history.addRef(sref)
+  if sref.kind == UrlRef:
+    # A fetched document is based where it came from, which already covers its `$id`
+    inner = inner.addId(parseUri(sref.url), path[0])
 
   # Every `$id` passed on the way sets the base too; the target records its own
   for i in 1 ..< path.len - 1:

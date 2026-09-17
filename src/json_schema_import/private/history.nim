@@ -1,4 +1,4 @@
-import std/[strformat, uri], schemaRef
+import std/[strformat, uri, json], schemaRef
 
 type
   HistoryKind = enum ## The kind of step a link in the chain records
@@ -15,6 +15,7 @@ type
       sref: SchemaRef
     of IdStep:
       uri: Uri
+      owner: JsonNode ## The node the base belongs to, when it was set on its behalf
 
 proc add*(parent: History, name: auto): History =
   ## Records stepping into a key of the current schema node
@@ -36,7 +37,7 @@ proc base*(history: History): Uri =
     if node.kind == IdStep:
       return node.uri
 
-proc addId*(parent: History, id: Uri): History =
+proc addId*(parent: History, id: Uri, owner: JsonNode = nil): History =
   ## Records entering a schema node with an `$id`, resolved against the base above it
   let above = parent.base
   let uri =
@@ -44,7 +45,13 @@ proc addId*(parent: History, id: Uri): History =
       id
     else:
       combine(above, id)
-  History(kind: IdStep, parent: parent, uri: uri)
+  History(kind: IdStep, parent: parent, uri: uri, owner: owner)
+
+proc ownsBase*(history: History, node: JsonNode): bool =
+  ## Whether the nearest base was already set for `node`, so its own `$id` is accounted for
+  for step in history:
+    if step.kind == IdStep:
+      return not step.owner.isNil and system.`==`(step.owner, node)
 
 proc contains*(history: History, sref: SchemaRef): bool =
   ## Whether a reference is still being resolved somewhere further up the descent
