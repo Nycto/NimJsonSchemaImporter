@@ -76,11 +76,13 @@ proc allowedTypes(node: JsonNode, ctx: DescribeContext, history: History): Descr
     raise newException(ValueError, fmt"Unsupported type {typ} at {history}")
 
 proc objectConstraint(node: JsonNode, ctx: DescribeContext, history: History): Variant =
-  ## What `properties`, `required` and `additionalProperties` say about an object
+  ## What `properties`, `required`, `patternProperties` and `additionalProperties` say
+  ## about an object
   var required = false
   for _ in node.requiredKeys:
     required = true
-  if "properties" notin node and "additionalProperties" notin node and not required:
+  if "properties" notin node and "additionalProperties" notin node and
+      "patternProperties" notin node and not required:
     return nil
 
   result = Variant(kind: vkObject, shaped: "properties" in node)
@@ -98,6 +100,11 @@ proc objectConstraint(node: JsonNode, ctx: DescribeContext, history: History): V
     result.additional = node{"additionalProperties"}.describeNode(
       ctx, history.add("additionalProperties")
     )
+
+  # Matching a pattern is validation, so which keys a pattern describes is unknowable and
+  # the values stay open. That any pattern is written at all still says this is a map
+  if "patternProperties" in node and node{"patternProperties"}.len > 0:
+    result.additional = anyValue()
 
 proc arrayConstraint(node: JsonNode, ctx: DescribeContext, history: History): Variant =
   ## What `items` and `prefixItems` say about an array

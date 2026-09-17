@@ -345,6 +345,9 @@ draft2020-12/pattern.json :: pattern validation :: a non-matching pattern is inv
 draft2020-12/pattern.json :: pattern with Unicode property escape requires unicode mode :: Digits do not match
 draft2020-12/patternProperties.json :: patternProperties validates properties matching a regex :: a single invalid match is invalid
 draft2020-12/patternProperties.json :: patternProperties validates properties matching a regex :: multiple invalid matches is invalid
+draft2020-12/patternProperties.json :: patternProperties validates properties matching a regex :: ignores arrays
+draft2020-12/patternProperties.json :: patternProperties validates properties matching a regex :: ignores strings
+draft2020-12/patternProperties.json :: patternProperties validates properties matching a regex :: ignores other non-objects
 draft2020-12/patternProperties.json :: multiple simultaneous patternProperties are validated :: an invalid due to one is invalid
 draft2020-12/patternProperties.json :: multiple simultaneous patternProperties are validated :: an invalid due to the other is invalid
 draft2020-12/patternProperties.json :: multiple simultaneous patternProperties are validated :: an invalid due to both is invalid
@@ -874,6 +877,9 @@ draft2019-09/oneOf.json :: oneOf with missing optional property :: both oneOf va
 draft2019-09/pattern.json :: pattern validation :: a non-matching pattern is invalid
 draft2019-09/patternProperties.json :: patternProperties validates properties matching a regex :: a single invalid match is invalid
 draft2019-09/patternProperties.json :: patternProperties validates properties matching a regex :: multiple invalid matches is invalid
+draft2019-09/patternProperties.json :: patternProperties validates properties matching a regex :: ignores arrays
+draft2019-09/patternProperties.json :: patternProperties validates properties matching a regex :: ignores strings
+draft2019-09/patternProperties.json :: patternProperties validates properties matching a regex :: ignores other non-objects
 draft2019-09/patternProperties.json :: multiple simultaneous patternProperties are validated :: an invalid due to one is invalid
 draft2019-09/patternProperties.json :: multiple simultaneous patternProperties are validated :: an invalid due to the other is invalid
 draft2019-09/patternProperties.json :: multiple simultaneous patternProperties are validated :: an invalid due to both is invalid
@@ -1360,6 +1366,9 @@ draft7/oneOf.json :: oneOf with missing optional property :: both oneOf valid
 draft7/pattern.json :: pattern validation :: a non-matching pattern is invalid
 draft7/patternProperties.json :: patternProperties validates properties matching a regex :: a single invalid match is invalid
 draft7/patternProperties.json :: patternProperties validates properties matching a regex :: multiple invalid matches is invalid
+draft7/patternProperties.json :: patternProperties validates properties matching a regex :: ignores arrays
+draft7/patternProperties.json :: patternProperties validates properties matching a regex :: ignores strings
+draft7/patternProperties.json :: patternProperties validates properties matching a regex :: ignores other non-objects
 draft7/patternProperties.json :: multiple simultaneous patternProperties are validated :: an invalid due to one is invalid
 draft7/patternProperties.json :: multiple simultaneous patternProperties are validated :: an invalid due to the other is invalid
 draft7/patternProperties.json :: multiple simultaneous patternProperties are validated :: an invalid due to both is invalid
