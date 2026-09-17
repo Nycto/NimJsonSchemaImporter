@@ -81,49 +81,28 @@ draft2020-12/dependentSchemas.json :: dependencies with escaped characters :: qu
 draft2020-12/dependentSchemas.json :: dependencies with escaped characters :: quoted quote invalid under dependent schema
 draft2020-12/dependentSchemas.json :: dependent subschema incompatible with root :: matches root
 draft2020-12/dependentSchemas.json :: dependent subschema incompatible with root :: matches both
-draft2020-12/dynamicRef.json :: A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor :: An array of strings is valid
 draft2020-12/dynamicRef.json :: A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor :: An array containing non-strings is invalid
-draft2020-12/dynamicRef.json :: A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor :: An array of strings is valid
 draft2020-12/dynamicRef.json :: A $dynamicRef to an $anchor in the same schema resource behaves like a normal $ref to an $anchor :: An array containing non-strings is invalid
 draft2020-12/dynamicRef.json :: A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor :: An array of strings is valid
 draft2020-12/dynamicRef.json :: A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor :: An array containing non-strings is invalid
-draft2020-12/dynamicRef.json :: A $dynamicRef resolves to the first $dynamicAnchor still in scope that is encountered when the schema is evaluated :: An array of strings is valid
 draft2020-12/dynamicRef.json :: A $dynamicRef resolves to the first $dynamicAnchor still in scope that is encountered when the schema is evaluated :: An array containing non-strings is invalid
 draft2020-12/dynamicRef.json :: A $dynamicRef without anchor in fragment behaves identical to $ref :: An array of strings is invalid
-draft2020-12/dynamicRef.json :: A $dynamicRef without anchor in fragment behaves identical to $ref :: An array of numbers is valid
-draft2020-12/dynamicRef.json :: A $dynamicRef with intermediate scopes that don't include a matching $dynamicAnchor does not affect dynamic scope resolution :: An array of strings is valid
 draft2020-12/dynamicRef.json :: A $dynamicRef with intermediate scopes that don't include a matching $dynamicAnchor does not affect dynamic scope resolution :: An array containing non-strings is invalid
-draft2020-12/dynamicRef.json :: An $anchor with the same name as a $dynamicAnchor is not used for dynamic scope resolution :: Any array is valid
-draft2020-12/dynamicRef.json :: A $dynamicRef without a matching $dynamicAnchor in the same schema resource behaves like a normal $ref to $anchor :: Any array is valid
-draft2020-12/dynamicRef.json :: A $dynamicRef with a non-matching $dynamicAnchor in the same schema resource behaves like a normal $ref to $anchor :: Any array is valid
-draft2020-12/dynamicRef.json :: A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope :: The recursive part is valid against the root
 draft2020-12/dynamicRef.json :: A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope :: The recursive part is not valid against the root
-draft2020-12/dynamicRef.json :: A $dynamicRef that initially resolves to a schema without a matching $dynamicAnchor behaves like a normal $ref to $anchor :: The recursive part doesn't need to validate against the root
-draft2020-12/dynamicRef.json :: multiple dynamic paths to the $dynamicRef keyword :: number list with number values
 draft2020-12/dynamicRef.json :: multiple dynamic paths to the $dynamicRef keyword :: number list with string values
 draft2020-12/dynamicRef.json :: multiple dynamic paths to the $dynamicRef keyword :: string list with number values
-draft2020-12/dynamicRef.json :: multiple dynamic paths to the $dynamicRef keyword :: string list with string values
 draft2020-12/dynamicRef.json :: after leaving a dynamic scope, it is not used by a $dynamicRef :: string matches /$defs/thingy, but the $dynamicRef does not stop here
 draft2020-12/dynamicRef.json :: after leaving a dynamic scope, it is not used by a $dynamicRef :: first_scope is not in dynamic scope for the $dynamicRef
-draft2020-12/dynamicRef.json :: after leaving a dynamic scope, it is not used by a $dynamicRef :: /then/$defs/thingy is the final stop for the $dynamicRef
 draft2020-12/dynamicRef.json :: strict-tree schema, guards against misspelled properties :: instance with misspelled field
-draft2020-12/dynamicRef.json :: strict-tree schema, guards against misspelled properties :: instance with correct field
 draft2020-12/dynamicRef.json :: tests for implementation dynamic anchor and reference link :: incorrect parent schema
 draft2020-12/dynamicRef.json :: tests for implementation dynamic anchor and reference link :: incorrect extended schema
-draft2020-12/dynamicRef.json :: tests for implementation dynamic anchor and reference link :: correct extended schema
 draft2020-12/dynamicRef.json :: $ref and $dynamicAnchor are independent of order - $defs first :: incorrect parent schema
 draft2020-12/dynamicRef.json :: $ref and $dynamicAnchor are independent of order - $defs first :: incorrect extended schema
-draft2020-12/dynamicRef.json :: $ref and $dynamicAnchor are independent of order - $defs first :: correct extended schema
 draft2020-12/dynamicRef.json :: $ref and $dynamicAnchor are independent of order - $ref first :: incorrect parent schema
 draft2020-12/dynamicRef.json :: $ref and $dynamicAnchor are independent of order - $ref first :: incorrect extended schema
-draft2020-12/dynamicRef.json :: $ref and $dynamicAnchor are independent of order - $ref first :: correct extended schema
-draft2020-12/dynamicRef.json :: $ref to $dynamicRef finds detached $dynamicAnchor :: number is valid
 draft2020-12/dynamicRef.json :: $ref to $dynamicRef finds detached $dynamicAnchor :: non-number is invalid
-draft2020-12/dynamicRef.json :: $dynamicRef points to a boolean schema :: follow $dynamicRef to a true schema
 draft2020-12/dynamicRef.json :: $dynamicRef points to a boolean schema :: follow $dynamicRef to a false schema
-draft2020-12/dynamicRef.json :: $dynamicRef skips over intermediate resources - direct reference :: integer property passes
 draft2020-12/dynamicRef.json :: $dynamicRef skips over intermediate resources - direct reference :: string property fails
-draft2020-12/dynamicRef.json :: $dynamicRef avoids the root of each schema, but scopes are still registered :: data is sufficient for schema at second#/$defs/length
 draft2020-12/dynamicRef.json :: $dynamicRef avoids the root of each schema, but scopes are still registered :: data is not sufficient for schema at second#/$defs/length
 draft2020-12/enum.json :: simple enum validation :: something else is invalid
 draft2020-12/enum.json :: heterogeneous enum validation :: something else is invalid
@@ -382,81 +361,15 @@ draft2020-12/ref.json :: root pointer ref :: match
 draft2020-12/ref.json :: root pointer ref :: recursive match
 draft2020-12/ref.json :: root pointer ref :: mismatch
 draft2020-12/ref.json :: root pointer ref :: recursive mismatch
-draft2020-12/ref.json :: relative pointer ref to object :: match
-draft2020-12/ref.json :: relative pointer ref to object :: mismatch
-draft2020-12/ref.json :: relative pointer ref to array :: match array
-draft2020-12/ref.json :: relative pointer ref to array :: mismatch array
-draft2020-12/ref.json :: escaped pointer ref :: slash invalid
-draft2020-12/ref.json :: escaped pointer ref :: tilde invalid
-draft2020-12/ref.json :: escaped pointer ref :: percent invalid
-draft2020-12/ref.json :: escaped pointer ref :: slash valid
-draft2020-12/ref.json :: escaped pointer ref :: tilde valid
-draft2020-12/ref.json :: escaped pointer ref :: percent valid
-draft2020-12/ref.json :: nested refs :: nested ref valid
-draft2020-12/ref.json :: nested refs :: nested ref invalid
-draft2020-12/ref.json :: ref applies alongside sibling keywords :: ref valid, maxItems valid
 draft2020-12/ref.json :: ref applies alongside sibling keywords :: ref valid, maxItems invalid
-draft2020-12/ref.json :: ref applies alongside sibling keywords :: ref invalid
 draft2020-12/ref.json :: remote ref, containing refs itself :: remote ref valid
 draft2020-12/ref.json :: remote ref, containing refs itself :: remote ref invalid
-draft2020-12/ref.json :: property named $ref that is not a reference :: property named $ref valid
-draft2020-12/ref.json :: property named $ref that is not a reference :: property named $ref invalid
-draft2020-12/ref.json :: property named $ref, containing an actual $ref :: property named $ref valid
-draft2020-12/ref.json :: property named $ref, containing an actual $ref :: property named $ref invalid
-draft2020-12/ref.json :: $ref to boolean schema true :: any value is valid
-draft2020-12/ref.json :: $ref to boolean schema false :: any value is invalid
-draft2020-12/ref.json :: Recursive references between schemas :: valid tree
-draft2020-12/ref.json :: Recursive references between schemas :: invalid tree
-draft2020-12/ref.json :: refs with quote :: object with numbers is valid
-draft2020-12/ref.json :: refs with quote :: object with strings is invalid
 draft2020-12/ref.json :: ref creates new scope when adjacent to keywords :: referenced subschema doesn't see annotations from properties
 draft2020-12/ref.json :: naive replacement of $ref with its destination is not correct :: do not evaluate the $ref inside the enum, matching any string
 draft2020-12/ref.json :: naive replacement of $ref with its destination is not correct :: do not evaluate the $ref inside the enum, definition exact match
-draft2020-12/ref.json :: naive replacement of $ref with its destination is not correct :: match the enum exactly
-draft2020-12/ref.json :: refs with relative uris and defs :: invalid on inner field
-draft2020-12/ref.json :: refs with relative uris and defs :: invalid on outer field
-draft2020-12/ref.json :: refs with relative uris and defs :: valid on both fields
-draft2020-12/ref.json :: relative refs with absolute uris and defs :: invalid on inner field
-draft2020-12/ref.json :: relative refs with absolute uris and defs :: invalid on outer field
-draft2020-12/ref.json :: relative refs with absolute uris and defs :: valid on both fields
-draft2020-12/ref.json :: $id must be resolved against nearest parent, not just immediate parent :: number is valid
-draft2020-12/ref.json :: $id must be resolved against nearest parent, not just immediate parent :: non-number is invalid
-draft2020-12/ref.json :: order of evaluation: $id and $ref :: data is valid against first definition
 draft2020-12/ref.json :: order of evaluation: $id and $ref :: data is invalid against first definition
-draft2020-12/ref.json :: order of evaluation: $id and $anchor and $ref :: data is valid against first definition
 draft2020-12/ref.json :: order of evaluation: $id and $anchor and $ref :: data is invalid against first definition
-draft2020-12/ref.json :: order of evaluation: $id and $ref on nested schema :: data is valid against nested sibling
-draft2020-12/ref.json :: order of evaluation: $id and $ref on nested schema :: data is invalid against nested sibling
 draft2020-12/ref.json :: simple URN base URI with $ref via the URN :: valid under the URN IDed schema
-draft2020-12/ref.json :: simple URN base URI with $ref via the URN :: invalid under the URN IDed schema
-draft2020-12/ref.json :: simple URN base URI with JSON pointer :: a string is valid
-draft2020-12/ref.json :: simple URN base URI with JSON pointer :: a non-string is invalid
-draft2020-12/ref.json :: URN base URI with NSS :: a string is valid
-draft2020-12/ref.json :: URN base URI with NSS :: a non-string is invalid
-draft2020-12/ref.json :: URN base URI with r-component :: a string is valid
-draft2020-12/ref.json :: URN base URI with r-component :: a non-string is invalid
-draft2020-12/ref.json :: URN base URI with q-component :: a string is valid
-draft2020-12/ref.json :: URN base URI with q-component :: a non-string is invalid
-draft2020-12/ref.json :: URN base URI with URN and JSON pointer ref :: a string is valid
-draft2020-12/ref.json :: URN base URI with URN and JSON pointer ref :: a non-string is invalid
-draft2020-12/ref.json :: URN base URI with URN and anchor ref :: a string is valid
-draft2020-12/ref.json :: URN base URI with URN and anchor ref :: a non-string is invalid
-draft2020-12/ref.json :: URN ref with nested pointer ref :: a string is valid
-draft2020-12/ref.json :: URN ref with nested pointer ref :: a non-string is invalid
-draft2020-12/ref.json :: ref to if :: a non-integer is invalid due to the $ref
-draft2020-12/ref.json :: ref to if :: an integer is valid
-draft2020-12/ref.json :: ref to then :: a non-integer is invalid due to the $ref
-draft2020-12/ref.json :: ref to then :: an integer is valid
-draft2020-12/ref.json :: ref to else :: a non-integer is invalid due to the $ref
-draft2020-12/ref.json :: ref to else :: an integer is valid
-draft2020-12/ref.json :: ref with absolute-path-reference :: a string is valid
-draft2020-12/ref.json :: ref with absolute-path-reference :: an integer is invalid
-draft2020-12/ref.json :: $id with file URI still resolves pointers - *nix :: number is valid
-draft2020-12/ref.json :: $id with file URI still resolves pointers - *nix :: non-number is invalid
-draft2020-12/ref.json :: $id with file URI still resolves pointers - windows :: number is valid
-draft2020-12/ref.json :: $id with file URI still resolves pointers - windows :: non-number is invalid
-draft2020-12/ref.json :: empty tokens in $ref json-pointer :: number is valid
-draft2020-12/ref.json :: empty tokens in $ref json-pointer :: non-number is invalid
 draft2020-12/required.json :: required validation :: ignores arrays
 draft2020-12/required.json :: required validation :: ignores strings
 draft2020-12/required.json :: required validation :: ignores other non-objects
@@ -919,81 +832,15 @@ draft2019-09/ref.json :: root pointer ref :: match
 draft2019-09/ref.json :: root pointer ref :: recursive match
 draft2019-09/ref.json :: root pointer ref :: mismatch
 draft2019-09/ref.json :: root pointer ref :: recursive mismatch
-draft2019-09/ref.json :: relative pointer ref to object :: match
-draft2019-09/ref.json :: relative pointer ref to object :: mismatch
-draft2019-09/ref.json :: relative pointer ref to array :: match array
-draft2019-09/ref.json :: relative pointer ref to array :: mismatch array
-draft2019-09/ref.json :: escaped pointer ref :: slash invalid
-draft2019-09/ref.json :: escaped pointer ref :: tilde invalid
-draft2019-09/ref.json :: escaped pointer ref :: percent invalid
-draft2019-09/ref.json :: escaped pointer ref :: slash valid
-draft2019-09/ref.json :: escaped pointer ref :: tilde valid
-draft2019-09/ref.json :: escaped pointer ref :: percent valid
-draft2019-09/ref.json :: nested refs :: nested ref valid
-draft2019-09/ref.json :: nested refs :: nested ref invalid
-draft2019-09/ref.json :: ref applies alongside sibling keywords :: ref valid, maxItems valid
 draft2019-09/ref.json :: ref applies alongside sibling keywords :: ref valid, maxItems invalid
-draft2019-09/ref.json :: ref applies alongside sibling keywords :: ref invalid
 draft2019-09/ref.json :: remote ref, containing refs itself :: remote ref valid
 draft2019-09/ref.json :: remote ref, containing refs itself :: remote ref invalid
-draft2019-09/ref.json :: property named $ref that is not a reference :: property named $ref valid
-draft2019-09/ref.json :: property named $ref that is not a reference :: property named $ref invalid
-draft2019-09/ref.json :: property named $ref, containing an actual $ref :: property named $ref valid
-draft2019-09/ref.json :: property named $ref, containing an actual $ref :: property named $ref invalid
-draft2019-09/ref.json :: $ref to boolean schema true :: any value is valid
-draft2019-09/ref.json :: $ref to boolean schema false :: any value is invalid
-draft2019-09/ref.json :: Recursive references between schemas :: valid tree
-draft2019-09/ref.json :: Recursive references between schemas :: invalid tree
-draft2019-09/ref.json :: refs with quote :: object with numbers is valid
-draft2019-09/ref.json :: refs with quote :: object with strings is invalid
 draft2019-09/ref.json :: ref creates new scope when adjacent to keywords :: referenced subschema doesn't see annotations from properties
 draft2019-09/ref.json :: naive replacement of $ref with its destination is not correct :: do not evaluate the $ref inside the enum, matching any string
 draft2019-09/ref.json :: naive replacement of $ref with its destination is not correct :: do not evaluate the $ref inside the enum, definition exact match
-draft2019-09/ref.json :: naive replacement of $ref with its destination is not correct :: match the enum exactly
-draft2019-09/ref.json :: refs with relative uris and defs :: invalid on inner field
-draft2019-09/ref.json :: refs with relative uris and defs :: invalid on outer field
-draft2019-09/ref.json :: refs with relative uris and defs :: valid on both fields
-draft2019-09/ref.json :: relative refs with absolute uris and defs :: invalid on inner field
-draft2019-09/ref.json :: relative refs with absolute uris and defs :: invalid on outer field
-draft2019-09/ref.json :: relative refs with absolute uris and defs :: valid on both fields
-draft2019-09/ref.json :: $id must be resolved against nearest parent, not just immediate parent :: number is valid
-draft2019-09/ref.json :: $id must be resolved against nearest parent, not just immediate parent :: non-number is invalid
-draft2019-09/ref.json :: order of evaluation: $id and $ref :: data is valid against first definition
 draft2019-09/ref.json :: order of evaluation: $id and $ref :: data is invalid against first definition
-draft2019-09/ref.json :: order of evaluation: $id and $anchor and $ref :: data is valid against first definition
 draft2019-09/ref.json :: order of evaluation: $id and $anchor and $ref :: data is invalid against first definition
-draft2019-09/ref.json :: order of evaluation: $id and $ref on nested schema :: data is valid against nested sibling
-draft2019-09/ref.json :: order of evaluation: $id and $ref on nested schema :: data is invalid against nested sibling
 draft2019-09/ref.json :: simple URN base URI with $ref via the URN :: valid under the URN IDed schema
-draft2019-09/ref.json :: simple URN base URI with $ref via the URN :: invalid under the URN IDed schema
-draft2019-09/ref.json :: simple URN base URI with JSON pointer :: a string is valid
-draft2019-09/ref.json :: simple URN base URI with JSON pointer :: a non-string is invalid
-draft2019-09/ref.json :: URN base URI with NSS :: a string is valid
-draft2019-09/ref.json :: URN base URI with NSS :: a non-string is invalid
-draft2019-09/ref.json :: URN base URI with r-component :: a string is valid
-draft2019-09/ref.json :: URN base URI with r-component :: a non-string is invalid
-draft2019-09/ref.json :: URN base URI with q-component :: a string is valid
-draft2019-09/ref.json :: URN base URI with q-component :: a non-string is invalid
-draft2019-09/ref.json :: URN base URI with URN and JSON pointer ref :: a string is valid
-draft2019-09/ref.json :: URN base URI with URN and JSON pointer ref :: a non-string is invalid
-draft2019-09/ref.json :: URN base URI with URN and anchor ref :: a string is valid
-draft2019-09/ref.json :: URN base URI with URN and anchor ref :: a non-string is invalid
-draft2019-09/ref.json :: URN ref with nested pointer ref :: a string is valid
-draft2019-09/ref.json :: URN ref with nested pointer ref :: a non-string is invalid
-draft2019-09/ref.json :: ref to if :: a non-integer is invalid due to the $ref
-draft2019-09/ref.json :: ref to if :: an integer is valid
-draft2019-09/ref.json :: ref to then :: a non-integer is invalid due to the $ref
-draft2019-09/ref.json :: ref to then :: an integer is valid
-draft2019-09/ref.json :: ref to else :: a non-integer is invalid due to the $ref
-draft2019-09/ref.json :: ref to else :: an integer is valid
-draft2019-09/ref.json :: ref with absolute-path-reference :: a string is valid
-draft2019-09/ref.json :: ref with absolute-path-reference :: an integer is invalid
-draft2019-09/ref.json :: $id with file URI still resolves pointers - *nix :: number is valid
-draft2019-09/ref.json :: $id with file URI still resolves pointers - *nix :: non-number is invalid
-draft2019-09/ref.json :: $id with file URI still resolves pointers - windows :: number is valid
-draft2019-09/ref.json :: $id with file URI still resolves pointers - windows :: non-number is invalid
-draft2019-09/ref.json :: empty tokens in $ref json-pointer :: number is valid
-draft2019-09/ref.json :: empty tokens in $ref json-pointer :: non-number is invalid
 draft2019-09/ref.json :: $ref with $recursiveAnchor :: extra items allowed for inner arrays
 draft2019-09/ref.json :: $ref with $recursiveAnchor :: extra items disallowed for root
 draft2019-09/required.json :: required validation :: ignores arrays
