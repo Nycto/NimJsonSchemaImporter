@@ -454,37 +454,6 @@ draft2020-12/ref.json :: $id with file URI still resolves pointers - windows :: 
 draft2020-12/ref.json :: $id with file URI still resolves pointers - windows :: non-number is invalid
 draft2020-12/ref.json :: empty tokens in $ref json-pointer :: number is valid
 draft2020-12/ref.json :: empty tokens in $ref json-pointer :: non-number is invalid
-draft2020-12/refRemote.json :: remote ref :: remote ref valid
-draft2020-12/refRemote.json :: remote ref :: remote ref invalid
-draft2020-12/refRemote.json :: fragment within remote ref :: remote fragment valid
-draft2020-12/refRemote.json :: fragment within remote ref :: remote fragment invalid
-draft2020-12/refRemote.json :: anchor within remote ref :: remote anchor valid
-draft2020-12/refRemote.json :: anchor within remote ref :: remote anchor invalid
-draft2020-12/refRemote.json :: ref within remote ref :: ref within ref valid
-draft2020-12/refRemote.json :: ref within remote ref :: ref within ref invalid
-draft2020-12/refRemote.json :: base URI change :: base URI change ref valid
-draft2020-12/refRemote.json :: base URI change :: base URI change ref invalid
-draft2020-12/refRemote.json :: base URI change - change folder :: number is valid
-draft2020-12/refRemote.json :: base URI change - change folder :: string is invalid
-draft2020-12/refRemote.json :: base URI change - change folder in subschema :: number is valid
-draft2020-12/refRemote.json :: base URI change - change folder in subschema :: string is invalid
-draft2020-12/refRemote.json :: root ref in remote ref :: string is valid
-draft2020-12/refRemote.json :: root ref in remote ref :: null is valid
-draft2020-12/refRemote.json :: root ref in remote ref :: object is invalid
-draft2020-12/refRemote.json :: remote ref with ref to defs :: invalid
-draft2020-12/refRemote.json :: remote ref with ref to defs :: valid
-draft2020-12/refRemote.json :: Location-independent identifier in remote ref :: integer is valid
-draft2020-12/refRemote.json :: Location-independent identifier in remote ref :: string is invalid
-draft2020-12/refRemote.json :: retrieved nested refs resolve relative to their URI not $id :: number is invalid
-draft2020-12/refRemote.json :: retrieved nested refs resolve relative to their URI not $id :: string is valid
-draft2020-12/refRemote.json :: remote HTTP ref with different $id :: number is invalid
-draft2020-12/refRemote.json :: remote HTTP ref with different $id :: string is valid
-draft2020-12/refRemote.json :: remote HTTP ref with different URN $id :: number is invalid
-draft2020-12/refRemote.json :: remote HTTP ref with different URN $id :: string is valid
-draft2020-12/refRemote.json :: remote HTTP ref with nested absolute ref :: number is invalid
-draft2020-12/refRemote.json :: remote HTTP ref with nested absolute ref :: string is valid
-draft2020-12/refRemote.json :: $ref to $ref finds detached $anchor :: number is valid
-draft2020-12/refRemote.json :: $ref to $ref finds detached $anchor :: non-number is invalid
 draft2020-12/required.json :: required validation :: ignores arrays
 draft2020-12/required.json :: required validation :: ignores strings
 draft2020-12/required.json :: required validation :: ignores other non-objects
@@ -1021,37 +990,6 @@ draft2019-09/ref.json :: empty tokens in $ref json-pointer :: number is valid
 draft2019-09/ref.json :: empty tokens in $ref json-pointer :: non-number is invalid
 draft2019-09/ref.json :: $ref with $recursiveAnchor :: extra items allowed for inner arrays
 draft2019-09/ref.json :: $ref with $recursiveAnchor :: extra items disallowed for root
-draft2019-09/refRemote.json :: remote ref :: remote ref valid
-draft2019-09/refRemote.json :: remote ref :: remote ref invalid
-draft2019-09/refRemote.json :: fragment within remote ref :: remote fragment valid
-draft2019-09/refRemote.json :: fragment within remote ref :: remote fragment invalid
-draft2019-09/refRemote.json :: anchor within remote ref :: remote anchor valid
-draft2019-09/refRemote.json :: anchor within remote ref :: remote anchor invalid
-draft2019-09/refRemote.json :: ref within remote ref :: ref within ref valid
-draft2019-09/refRemote.json :: ref within remote ref :: ref within ref invalid
-draft2019-09/refRemote.json :: base URI change :: base URI change ref valid
-draft2019-09/refRemote.json :: base URI change :: base URI change ref invalid
-draft2019-09/refRemote.json :: base URI change - change folder :: number is valid
-draft2019-09/refRemote.json :: base URI change - change folder :: string is invalid
-draft2019-09/refRemote.json :: base URI change - change folder in subschema :: number is valid
-draft2019-09/refRemote.json :: base URI change - change folder in subschema :: string is invalid
-draft2019-09/refRemote.json :: root ref in remote ref :: string is valid
-draft2019-09/refRemote.json :: root ref in remote ref :: null is valid
-draft2019-09/refRemote.json :: root ref in remote ref :: object is invalid
-draft2019-09/refRemote.json :: remote ref with ref to defs :: invalid
-draft2019-09/refRemote.json :: remote ref with ref to defs :: valid
-draft2019-09/refRemote.json :: Location-independent identifier in remote ref :: integer is valid
-draft2019-09/refRemote.json :: Location-independent identifier in remote ref :: string is invalid
-draft2019-09/refRemote.json :: retrieved nested refs resolve relative to their URI not $id :: number is invalid
-draft2019-09/refRemote.json :: retrieved nested refs resolve relative to their URI not $id :: string is valid
-draft2019-09/refRemote.json :: remote HTTP ref with different $id :: number is invalid
-draft2019-09/refRemote.json :: remote HTTP ref with different $id :: string is valid
-draft2019-09/refRemote.json :: remote HTTP ref with different URN $id :: number is invalid
-draft2019-09/refRemote.json :: remote HTTP ref with different URN $id :: string is valid
-draft2019-09/refRemote.json :: remote HTTP ref with nested absolute ref :: number is invalid
-draft2019-09/refRemote.json :: remote HTTP ref with nested absolute ref :: string is valid
-draft2019-09/refRemote.json :: $ref to $ref finds detached $anchor :: number is valid
-draft2019-09/refRemote.json :: $ref to $ref finds detached $anchor :: non-number is invalid
 draft2019-09/required.json :: required validation :: ignores arrays
 draft2019-09/required.json :: required validation :: ignores strings
 draft2019-09/required.json :: required validation :: ignores other non-objects

@@ -316,13 +316,15 @@ proc collectIds(node: JsonNode, history: History, found: var Table[string, JsonN
 
 proc describeSchema*(node: JsonNode, resolver: UrlResolver): Description =
   ## Describes a whole document, starting at its root
-  var found = initTable[string, JsonNode]()
-  node.collectIds(nil, found)
-  let embedded = found
+  var embedded = initTable[string, JsonNode]()
+  node.collectIds(nil, embedded)
   let fetch = proc(url: string): JsonNode =
     if url in embedded:
-      embedded[url]
-    else:
-      resolver(url)
+      return embedded[url]
+    result = resolver(url)
+    if result != nil:
+      # A fetched document is based where it came from, and brings its own `$id`s
+      result.collectIds(addId(nil, parseUri(url), result), embedded)
+      embedded[url] = result
   let ctx = DescribeContext(doc: node, resolver: fetch)
   node.describeNode(ctx, addRef(nil, SchemaRef(kind: RootRef)))

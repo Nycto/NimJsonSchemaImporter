@@ -14,6 +14,12 @@ proc resolver(url: string): JsonNode =
     %*{"type": "object", "properties": {"next": {"$ref": "#"}}}
   of "https://example.com/fragment.json":
     %*{"definitions": {"zip": {"type": "integer"}}}
+  of "https://example.com/nested.json":
+    %*{
+      "$ref": "https://example.com/the-nested-id.json",
+      "$defs":
+        {"zip": {"$id": "https://example.com/the-nested-id.json", "type": "integer"}},
+    }
   else:
     raiseAssert("Unsupported test url: " & url)
 
@@ -78,6 +84,18 @@ suite "References into fetched documents":
     let next = root.prop("list").prop("next").subtype
     check(next.kind == RefType)
     check($next.schemaRef == "https://example.com/list.json#")
+
+  test "An $id embedded in a fetched document resolves without another fetch":
+    let root = parseSchema(
+      %*{
+        "type": "object",
+        "required": ["zip"],
+        "properties": {"zip": {"$ref": "https://example.com/nested.json"}},
+      },
+      resolver,
+    ).rootType
+
+    check(root.prop("zip").kind == IntegerType)
 
 suite "Embedded resources":
   test "A relative reference resolves against the $id around it":
