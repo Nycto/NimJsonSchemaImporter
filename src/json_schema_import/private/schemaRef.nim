@@ -1,4 +1,4 @@
-import ../config, std/[strutils, parseutils, json, strformat, hashes]
+import ../config, std/[strutils, parseutils, json, strformat, hashes, uri]
 
 type
   RefKind* = enum
@@ -62,6 +62,8 @@ proc parseSubref(input: string, offset: int): SchemaRef =
   let parsedChars = parseUntil(input, token, '/', offset + 1)
   input.required(parsedChars > 0)
 
+  # Fragments are percent-encoded, then JSON pointer escaped
+  token = token.decodeUrl(decodePlus = false).multiReplace(("~1", "/"), ("~0", "~"))
   return SchemaRef(
     kind: SubRef, name: token, next: parseSubref(input, offset + parsedChars + 1)
   )
@@ -143,6 +145,24 @@ proc findAnchor(node: JsonNode, name: string, isResource: bool): JsonNode =
   else:
     discard
 
+proc child(sref: SchemaRef, node: JsonNode): JsonNode =
+  ## Steps into the object key or array index a `SubRef` names
+  result =
+    case node.kind
+    of JObject:
+      node{sref.name}
+    of JArray:
+      try:
+        node{parseInt(sref.name)}
+      except ValueError:
+        nil
+    else:
+      nil
+  if result == nil:
+    raise newException(
+      ValueError, fmt"Unable to resolve reference: {sref} against {node}"
+    )
+
 proc resolve*(sref: SchemaRef, node: JsonNode, resolveUrl: UrlResolver): JsonNode =
   if sref == nil:
     return node
@@ -156,11 +176,7 @@ proc resolve*(sref: SchemaRef, node: JsonNode, resolveUrl: UrlResolver): JsonNod
   of RootRef:
     return sref.next.resolve(node, resolveUrl)
   of SubRef:
-    if sref.name notin node:
-      raise newException(
-        ValueError, fmt"Unable to resolve reference: {sref} against {node}"
-      )
-    return sref.next.resolve(node{sref.name}, resolveUrl)
+    return sref.next.resolve(sref.child(node), resolveUrl)
   of AnchorRef:
     let found = findAnchor(node, sref.name, true)
     if found != nil:
