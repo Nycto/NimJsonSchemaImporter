@@ -273,8 +273,6 @@ proc genType(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     # Generated only for the name an edge inside points at, which isn't this property's
     discard genType(typ.note, nil, ctx)
     result = genType(typ.inner, name, ctx)
-  else:
-    raise newException(AssertionDefect, "Could not generate code for " & $typ.kind)
 
   if not typ.sref.isNil:
     ctx.cache[typ.sref] = result
