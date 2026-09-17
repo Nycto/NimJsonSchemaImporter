@@ -6,6 +6,12 @@ suite "Parsing schema references":
     check(parseRef("#/foo").dump == "(Root)/(Sub:foo)")
     check(parseRef("#/foo/bar/baz").dump == "(Root)/(Sub:foo)/(Sub:bar)/(Sub:baz)")
 
+  test "Can parse empty pointer tokens":
+    check(parseRef("#/").dump == "(Root)/(Sub:)")
+    check(
+      parseRef("#/$defs//$defs/").dump == "(Root)/(Sub:$defs)/(Sub:)/(Sub:$defs)/(Sub:)"
+    )
+
   test "Can parse anchor references":
     check(parseRef("#foo").dump == "(Anchor:foo)")
     check(parseRef("#foo/bar/baz").dump == "(Anchor:foo)/(Sub:bar)/(Sub:baz)")

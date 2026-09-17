@@ -58,9 +58,9 @@ proc parseSubref(input: string, offset: int): SchemaRef =
 
   input.required(input[offset] == '/')
 
+  # An empty token is a legal pointer step: it names the key `""`
   var token: string
   let parsedChars = parseUntil(input, token, '/', offset + 1)
-  input.required(parsedChars > 0)
 
   # Fragments are percent-encoded, then JSON pointer escaped
   token = token.decodeUrl(decodePlus = false).multiReplace(("~1", "/"), ("~0", "~"))
