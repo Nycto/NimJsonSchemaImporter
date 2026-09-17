@@ -3,10 +3,16 @@ import
   json_schema_import,
   json_schema_import/private/[describe, describeparse]
 
-const remoteHost = "http://localhost:1234/"
+const
+  remoteHost = "http://localhost:1234/"
+  draft7Meta = "http://json-schema.org/draft-07/schema"
 
 proc suiteResolver(url: string): JsonNode =
-  ## Serves the suite's `remotes` directory, which its tests expect at `remoteHost`
+  ## Serves the suite's `remotes` directory, which its tests expect at `remoteHost`,
+  ## plus the metaschemas a real validator would already have
+  if url.split('#')[0] == draft7Meta:
+    return
+      staticRead(currentSourcePath.parentDir & "/metaschemas/draft-07.json").parseJson
   if not url.startsWith(remoteHost):
     return nil
   let path =
