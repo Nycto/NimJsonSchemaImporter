@@ -122,6 +122,27 @@ proc within*(sref, document: SchemaRef): SchemaRef =
   else:
     return sref
 
+proc findAnchor(node: JsonNode, name: string, isResource: bool): JsonNode =
+  ## Searches one schema resource for an `$anchor`, stopping at embedded `$id`s
+  case node.kind
+  of JObject:
+    if not isResource and "$id" in node:
+      return nil
+    if node{"$anchor"}.getStr == name:
+      return node
+    for key, child in node:
+      if key notin ["enum", "const", "examples", "default"]:
+        result = findAnchor(child, name, false)
+        if result != nil:
+          return
+  of JArray:
+    for child in node:
+      result = findAnchor(child, name, false)
+      if result != nil:
+        return
+  else:
+    discard
+
 proc resolve*(sref: SchemaRef, node: JsonNode, resolveUrl: UrlResolver): JsonNode =
   if sref == nil:
     return node
@@ -141,9 +162,9 @@ proc resolve*(sref: SchemaRef, node: JsonNode, resolveUrl: UrlResolver): JsonNod
       )
     return sref.next.resolve(node{sref.name}, resolveUrl)
   of AnchorRef:
-    for key, entry in node{"$defs"}:
-      if "$anchor" in entry and entry{"$anchor"}.getStr == sref.name:
-        return entry
+    let found = findAnchor(node, sref.name, true)
+    if found != nil:
+      return sref.next.resolve(found, resolveUrl)
     raise newException(ValueError, fmt"Unable to find anchor reference: {sref}")
 
 proc `==`*(a, b: SchemaRef): bool =
