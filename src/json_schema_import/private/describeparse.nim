@@ -217,11 +217,7 @@ proc enterRef(
   return (path[^1], inner)
 
 proc describeRef(node: JsonNode, ctx: DescribeContext, history: History): Description =
-  var sref = parseRef(node{"$ref"}.getStr)
-  if sref.kind == UrlRef and history.base != default(Uri):
-    let url = $combine(history.base, parseUri(sref.url))
-    sref = SchemaRef(kind: UrlRef, url: url, next: sref.next)
-  sref = sref.within(history.document)
+  let sref = parseRef(node{"$ref"}.getStr).resolve(history.base)
 
   # A reference still open closes a cycle, so it is cut into an edge naming it
   if sref in history:
@@ -314,6 +310,10 @@ proc collectIds(node: JsonNode, history: History, found: var Table[string, JsonN
   else:
     discard
 
+proc rootRef*(node: JsonNode): SchemaRef =
+  ## How a document names itself, which is its `$id` when it declares one
+  SchemaRef(kind: RootRef).resolve(id(node))
+
 proc describeSchema*(node: JsonNode, resolver: UrlResolver): Description =
   ## Describes a whole document, starting at its root
   var embedded = initTable[string, JsonNode]()
@@ -327,4 +327,4 @@ proc describeSchema*(node: JsonNode, resolver: UrlResolver): Description =
       result.collectIds(addId(nil, parseUri(url), result), embedded)
       embedded[url] = result
   let ctx = DescribeContext(doc: node, resolver: fetch)
-  node.describeNode(ctx, addRef(nil, SchemaRef(kind: RootRef)))
+  node.describeNode(ctx, addRef(nil, node.rootRef))
