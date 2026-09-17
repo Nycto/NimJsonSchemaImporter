@@ -151,6 +151,20 @@ suite "Embedded resources":
 
     check(root.prop("foo").prop("bar").kind == StringType)
 
+  test "A property named $id does not declare a resource":
+    let root = parseSchema(
+      %*{
+        "$id": "https://example.com/schemas/root",
+        "type": "object",
+        "required": ["zip"],
+        "properties": {"$id": {"type": "string"}, "zip": {"$ref": "#/$defs/zip"}},
+        "$defs": {"zip": {"type": "integer"}},
+      },
+      resolver,
+    ).rootType
+
+    check(root.prop("zip").kind == IntegerType)
+
   test "An embedded $id is itself relative to the one above it":
     let root = parseSchema(
       %*{
