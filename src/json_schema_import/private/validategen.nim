@@ -6,17 +6,51 @@ let path {.compileTime.} = ident("path")
 
 const STRING_ASSERTIONS = {MinLenValid, MaxLenValid, PatternValid}
 
-proc predicate(node: ValidateNode, access: NimNode): NimNode =
+proc propertyCount(typ: TypeDef, access: NimNode): NimNode =
+  ## How many properties a value holds, which is what the schema counts
+  ##
+  ## A map keeps its own count. An object spells one field per property, so the count
+  ## is fixed for the required ones and asked of each optional one, deciding presence
+  ## exactly the way the encoders decide what to write.
+  if typ.kind != ObjType:
+    return newCall(bindSym"len", access)
+
+  result = newLit(0)
+  for _, (propName, propType, required) in typ.properties:
+    let term =
+      case classify(propType, required)
+      of pcRequired:
+        newLit(1)
+      of pcOptional:
+        newCall(
+          bindSym"ord",
+          newCall(bindSym"isSome", newDotExpr(access, safePropName(propName))),
+        )
+      of pcSelfOptional:
+        newCall(
+          bindSym"ord",
+          infix(
+            newCall(bindSym"len", newDotExpr(access, safePropName(propName))),
+            ">",
+            newLit(0),
+          ),
+        )
+    result = infix(result, "+", term)
+
+proc predicate(node: ValidateNode, typ: TypeDef, access: NimNode): NimNode =
   ## The boolean expression asserting a node of the tree, whole
   template call(name: untyped, arg: NimNode): NimNode =
     newCall(bindSym(astToStr(name)), access, arg)
 
+  template counting(name: untyped): NimNode =
+    newCall(bindSym(astToStr(name)), typ.propertyCount(access), node.count.newLit)
+
   return
     case node.kind
     of AndValid:
-      infix(node.l.predicate(access), "and", node.r.predicate(access))
+      infix(node.l.predicate(typ, access), "and", node.r.predicate(typ, access))
     of OrValid:
-      infix(node.l.predicate(access), "or", node.r.predicate(access))
+      infix(node.l.predicate(typ, access), "or", node.r.predicate(typ, access))
     of MinLenValid:
       call(satisfiesMinLength, node.len.newLit)
     of MaxLenValid:
@@ -33,6 +67,16 @@ proc predicate(node: ValidateNode, access: NimNode): NimNode =
       call(satisfiesExclusiveMaximum, node.bound.newLit)
     of MultipleOfValid:
       call(satisfiesMultipleOf, node.bound.newLit)
+    of MinItemsValid:
+      call(satisfiesMinItems, node.count.newLit)
+    of MaxItemsValid:
+      call(satisfiesMaxItems, node.count.newLit)
+    of MinPropsValid:
+      counting(satisfiesMinProperties)
+    of MaxPropsValid:
+      counting(satisfiesMaxProperties)
+    of UniqueItemsValid:
+      newCall(bindSym("satisfiesUniqueItems"), access)
 
 proc walk(typ: TypeDef, access, location: NimNode): NimNode
 
@@ -44,7 +88,7 @@ proc assertions(typ: TypeDef, access, location: NimNode): NimNode =
   result = newStmtList()
   for assertion in typ.validation.conjuncts:
     if assertion.checkable(typ):
-      let test = assertion.predicate(access)
+      let test = assertion.predicate(typ, access)
       let named = ($assertion).newLit
       result.add quote do:
         if not (`test`):

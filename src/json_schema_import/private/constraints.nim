@@ -12,6 +12,11 @@ type
     ExclusiveMinValid
     ExclusiveMaxValid
     MultipleOfValid
+    MinItemsValid
+    MaxItemsValid
+    MinPropsValid
+    MaxPropsValid
+    UniqueItemsValid
 
   ValidateNode* = ref object
     ## Constraints riding alongside a type, which narrow the values it accepts without
@@ -25,10 +30,15 @@ type
       pattern*: string
     of MinimumValid, MaximumValid, ExclusiveMinValid, ExclusiveMaxValid, MultipleOfValid:
       bound*: BiggestFloat
+    of MinItemsValid, MaxItemsValid, MinPropsValid, MaxPropsValid:
+      count*: int
+    of UniqueItemsValid:
+      discard ## `uniqueItems: false` asserts nothing, so only the true case is built
 
 type
   LengthKind* = range[MinLenValid .. MaxLenValid]
   BoundKind* = range[MinimumValid .. MultipleOfValid]
+  CountKind* = range[MinItemsValid .. MaxPropsValid]
 
 proc lengthAssertion*(kind: LengthKind, len: int): ValidateNode =
   ## Builds a length node from a kind only known at runtime
@@ -37,6 +47,10 @@ proc lengthAssertion*(kind: LengthKind, len: int): ValidateNode =
 proc boundAssertion*(kind: BoundKind, bound: BiggestFloat): ValidateNode =
   ## Builds a numeric node from a kind only known at runtime
   return ValidateNode(kind: kind, bound: bound)
+
+proc countAssertion*(kind: CountKind, count: int): ValidateNode =
+  ## Builds a count node from a kind only known at runtime
+  return ValidateNode(kind: kind, count: count)
 
 proc allOf*(a, b: ValidateNode): ValidateNode =
   ## Both sides, where a side asserting nothing leaves the other alone
@@ -87,6 +101,16 @@ proc `$`*(node: ValidateNode): string =
       &"exclusiveMaximum: {num(node.bound)}"
     of MultipleOfValid:
       &"multipleOf: {num(node.bound)}"
+    of MinItemsValid:
+      &"minItems: {node.count}"
+    of MaxItemsValid:
+      &"maxItems: {node.count}"
+    of MinPropsValid:
+      &"minProperties: {node.count}"
+    of MaxPropsValid:
+      &"maxProperties: {node.count}"
+    of UniqueItemsValid:
+      "uniqueItems"
 
 proc `==`*(a, b: ValidateNode): bool =
   if a.isNil or b.isNil:
@@ -104,6 +128,10 @@ proc `==`*(a, b: ValidateNode): bool =
       a.pattern == b.pattern
     of MinimumValid, MaximumValid, ExclusiveMinValid, ExclusiveMaxValid, MultipleOfValid:
       a.bound == b.bound
+    of MinItemsValid, MaxItemsValid, MinPropsValid, MaxPropsValid:
+      a.count == b.count
+    of UniqueItemsValid:
+      true
 
 proc hash*(node: ValidateNode): Hash {.noSideEffect.} =
   if node.isNil:
@@ -119,6 +147,10 @@ proc hash*(node: ValidateNode): Hash {.noSideEffect.} =
     result = result !& hash(node.pattern)
   of MinimumValid, MaximumValid, ExclusiveMinValid, ExclusiveMaxValid, MultipleOfValid:
     result = result !& hash(node.bound)
+  of MinItemsValid, MaxItemsValid, MinPropsValid, MaxPropsValid:
+    result = result !& hash(node.count)
+  of UniqueItemsValid:
+    discard
 
 iterator conjuncts*(node: ValidateNode): ValidateNode =
   ## Walks a top level `and` chain, so each side can be checked and reported on its own

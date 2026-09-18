@@ -420,6 +420,12 @@ proc checkable*(node: ValidateNode, typ: TypeDef): bool =
     typ.kind == StringType and node.pattern.compilable
   of MinimumValid, MaximumValid, ExclusiveMinValid, ExclusiveMaxValid, MultipleOfValid:
     typ.kind in {IntegerType, NumberType}
+  of MinItemsValid, MaxItemsValid, UniqueItemsValid:
+    # A tuple's length is fixed by the slots it was given, so no value of one could
+    # fail a count, and its elements are each their own type rather than one repeated
+    typ.kind == ArrayType
+  of MinPropsValid, MaxPropsValid:
+    typ.kind in {MapType, ObjType}
 
 proc assertsOwn*(typ: TypeDef): bool =
   ## Whether the type's own assertions reach anything the Nim type can answer

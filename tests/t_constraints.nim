@@ -47,3 +47,21 @@ suite "Rendering constraints":
 
   test "Asserting nothing has a name too":
     check($ValidateNode(nil) == "anything")
+
+suite "Counting assertions":
+  test "Count leaves read back as the keyword that made them":
+    check($countAssertion(MinItemsValid, 1) == "minItems: 1")
+    check($countAssertion(MaxItemsValid, 2) == "maxItems: 2")
+    check($countAssertion(MinPropsValid, 1) == "minProperties: 1")
+    check($countAssertion(MaxPropsValid, 0) == "maxProperties: 0")
+    check($ValidateNode(kind: UniqueItemsValid) == "uniqueItems")
+
+  test "Counts differing only in their limit are different assertions":
+    check(countAssertion(MinItemsValid, 1) == countAssertion(MinItemsValid, 1))
+    check(countAssertion(MinItemsValid, 1) != countAssertion(MinItemsValid, 2))
+    check(countAssertion(MinItemsValid, 1) != countAssertion(MinPropsValid, 1))
+
+  test "Uniqueness carries nothing, so every instance of it is the same one":
+    let unique = ValidateNode(kind: UniqueItemsValid)
+    check(unique == ValidateNode(kind: UniqueItemsValid))
+    check(hash(unique) == hash(ValidateNode(kind: UniqueItemsValid)))
