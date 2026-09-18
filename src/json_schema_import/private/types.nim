@@ -1,5 +1,5 @@
 import std/[sets, tables, strformat, hashes, sequtils, strutils, uri, json]
-import schemaRef, namechain, constraints
+import schemaRef, namechain, constraints, regex
 
 type
   TypeDefKind* = enum
@@ -369,6 +369,67 @@ proc optional*(typ: TypeDef): TypeDef =
 proc refName(sref: SchemaRef): string =
   ## The fragment a type reached through a reference is named after
   return if sref.getName == "": "Root" else: sref.getName
+
+proc compilable(pattern: string): bool =
+  ## Whether the regex engine can hold the pattern at all
+  ##
+  ## A schema's patterns are ECMA-262 and not all of them survive the trip. One that
+  ## does not would otherwise raise while the generated code compiles, which `probe`
+  ## cannot catch and which takes every other case in the file down with it.
+  try:
+    discard re2(pattern)
+    return true
+  except CatchableError, Defect:
+    return false
+
+proc checkable*(node: ValidateNode, typ: TypeDef): bool =
+  ## Whether the Nim type this landed on can answer the assertion
+  ##
+  ## An `enum` beside a length keyword lowers to a Nim enum, which has no length to
+  ## measure. Declining to check leaves the type wider than the schema, which is the
+  ## safe direction: the membership the enum already enforces does most of the work.
+  case node.kind
+  of AndValid, OrValid:
+    checkable(node.l, typ) and checkable(node.r, typ)
+  of MinLenValid, MaxLenValid:
+    typ.kind == StringType
+  of PatternValid:
+    typ.kind == StringType and node.pattern.compilable
+  of MinimumValid, MaximumValid, ExclusiveMinValid, ExclusiveMaxValid, MultipleOfValid:
+    typ.kind in {IntegerType, NumberType}
+
+proc assertsOwn*(typ: TypeDef): bool =
+  ## Whether the type's own assertions reach anything the Nim type can answer
+  let typ = typ.stripNotes
+  for assertion in typ.validation.conjuncts:
+    if assertion.checkable(typ):
+      return true
+  return false
+
+proc asserts*(typ: TypeDef): bool =
+  ## Whether walking into this type from outside reaches anything worth checking
+  ##
+  ## An object stops the walk, since its own `validate` covers both what it asserts and
+  ## what its properties hold. So does a union, which asserts nothing jointly: `lower`
+  ## hands every assertion to the arm it came from.
+  let typ = typ.stripNotes
+  if typ.kind in {ObjType, UnionType}:
+    return false
+  if typ.assertsOwn:
+    return true
+
+  return
+    case typ.kind
+    of OptionalType:
+      typ.subtype.asserts
+    of ArrayType:
+      typ.items.asserts
+    of MapType:
+      typ.entries.asserts
+    of TupleType:
+      typ.elements.anyIt(it.asserts)
+    else:
+      false
 
 proc abbrev*(typ: TypeDef): string =
   ## Returns an abbreviated name of a type
