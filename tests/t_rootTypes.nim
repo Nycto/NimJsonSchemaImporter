@@ -27,9 +27,15 @@ suite "Schemas rooted at something other than an object":
     check("[1,2,3]".parseJson.jsonTo(ArrContainer) == value)
 
   test "A string at the root":
-    let value: StrContainer = "hello"
+    # Distinct, rather than an alias, because this root asserts a `maxLength` and an
+    # alias would hang that assertion on every string in the program
+    let value = StrContainer("hello")
     check(value.toJson == %"hello")
     check("\"hello\"".parseJson.jsonTo(StrContainer) == value)
+
+  test "A root that asserts something is held to it while decoding":
+    expect ValueError:
+      discard "\"a string that runs past twenty five\"".parseJson.jsonTo(StrContainer)
 
   test "A number at the root":
     let value: NumContainer = 1.5

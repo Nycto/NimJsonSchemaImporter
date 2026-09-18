@@ -11,9 +11,16 @@ import std/[unittest, json, jsonutils, options]
 import json_schema_import, util
 
 importJsonSchema("examples/basic/schema.json", conf("Uncached"))
+importJsonSchema("examples/string_root/schema.json", conf("UncachedRoot"))
 
 suite "Validating a schema the cache will not hold":
   test "An object is held to what its properties assert":
     check(jsonTo(%*{"age": 4}, Uncached).age.get == 4)
     expect ValueError:
       discard jsonTo(%*{"age": -1}, Uncached)
+
+  test "A distinct root is held to what it asserts":
+    check(jsonTo(%*"short enough", UncachedRoot) == UncachedRoot("short enough"))
+    expect ValueError:
+      discard
+        jsonTo(%*"a string that is altogether too long to be allowed", UncachedRoot)

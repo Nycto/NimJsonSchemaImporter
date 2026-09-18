@@ -1,4 +1,5 @@
-import types, util, validategen, std/[macros, tables, json, options, streams]
+import
+  types, util, validategen, std/[macros, tables, json, options, streams, typetraits]
 
 let source {.compileTime.} = ident("source")
 let target {.compileTime.} = ident("target")
@@ -107,6 +108,17 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
       for `key` in objectKeys(`source`):
         `cases`
       assert(card(`seen`) == `requiredCount`)
+      `checked`
+
+proc buildSaxDistinctSerde*(typ: TypeDef, typeName: NimNode): NimNode =
+  ## A distinct streams as the type it wraps, then validates itself
+  let checked = validateDecoded(typeName, ident("result"))
+  return quote:
+    proc `toStream`*(`source`: `typeName`, `target`: Stream) =
+      `toStream`(distinctBase(`typeName`)(`source`), `target`)
+
+    proc fromStream*(typ: typedesc[`typeName`], `source`: var JsonParser): `typeName` =
+      result = `typeName`(fromStream(distinctBase(`typeName`), `source`))
       `checked`
 
 proc buildSaxConstEncoder*(typ: TypeDef, typeName: NimNode): NimNode =

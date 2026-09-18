@@ -236,6 +236,24 @@ proc genOptional(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   assert(typ.kind == OptionalType)
   return nnkBracketExpr.newTree(bindSym("Option"), genType(typ.subtype, name, ctx))
 
+proc genDistinct(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
+  ## A type of its own, wrapping one that could not carry procs on its own behalf
+  assert(typ.kind == DistinctType)
+  result = ctx.genName(name, typ)
+
+  ctx.addType(result, nnkDistinctTy.newTree(typ.base.genType(name, ctx)))
+  ctx.declare(
+    typ,
+    newStmtList(
+      typ.buildEquals(result),
+      typ.buildDollars(result),
+      typ.buildValidate(result),
+      typ.buildDistinctSerde(result),
+      typ.buildDistinctBinSerde(result),
+      typ.buildSaxDistinctSerde(result),
+    ),
+  )
+
 proc genType(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   ## Generates code for an arbitrary type
   if not typ.sref.isNil and typ.sref in ctx.cache:
@@ -272,6 +290,8 @@ proc genType(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     result = genConst(typ, name, ctx)
   of RefType:
     result = genRef(typ, ctx)
+  of DistinctType:
+    result = genDistinct(typ, name, ctx)
   of NoteType:
     # Generated only for the name an edge inside points at, which isn't this property's
     discard genType(typ.note, nil, ctx)
@@ -280,7 +300,6 @@ proc genType(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
   if not typ.sref.isNil:
     ctx.cache[typ.sref] = result
 
-const namedKinds = {ObjType, EnumType, UnionType, ConstValueType}
   ## Kinds that declare a type of their own, so a schema rooted at one of them already
   ## has a name to refer to it by
 
@@ -296,7 +315,7 @@ proc genDeclarations*(schema: JsonSchema, conf: JsonSchemaConfig): GeneratedOutp
   let rootChain = rootName(conf.rootTypeName)
 
   result.rootType =
-    if schema.rootType.stripNotes.kind in namedKinds:
+    if schema.rootType.stripNotes.kind in NAMED_KINDS:
       schema.rootType.genType(rootChain, ctx)
     else:
       let alias = ctx.genName(rootChain, schema.rootType)

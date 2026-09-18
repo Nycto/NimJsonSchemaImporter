@@ -18,6 +18,7 @@ type
     MapType
     OptionalType
     ConstValueType
+    DistinctType
     NoteType
       ## A type carrying a note: another type that has to be generated alongside it
 
@@ -50,6 +51,9 @@ type
       discard
     of ConstValueType:
       value*: JsonNode
+    of DistinctType:
+      base*: TypeDef
+        ## The type this one wraps, and delegates everything it does not assert to
     of NoteType:
       note*: TypeDef ## Replaced by `inner`, but an edge inside still points at its name
       inner*: TypeDef ## The type this node actually describes
@@ -65,6 +69,8 @@ proc hasRealField*(typ: TypeDef): bool =
       false
     of OptionalType:
       hasRealField(typ.subtype)
+    of DistinctType:
+      hasRealField(typ.base)
     of NoteType:
       hasRealField(typ.inner)
     else:
@@ -94,6 +100,8 @@ proc hash*(typ: TypeDef): Hash {.noSideEffect.} =
     discard
   of ConstValueType:
     result = result !& hash(typ.value)
+  of DistinctType:
+    result = result !& hash(typ.base)
   of NoteType:
     result = result !& hash(typ.note.sref) !& hash(typ.inner)
 
@@ -118,6 +126,8 @@ proc `==`*(a, b: TypeDef): bool {.noSideEffect.} =
     return a.entries == b.entries
   of OptionalType:
     return a.subtype == b.subtype
+  of DistinctType:
+    return a.base == b.base
   of NoteType:
     return a.note.sref == b.note.sref and a.inner == b.inner
   of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, ConstValueType:
@@ -161,6 +171,8 @@ proc hash*(typ: TypeDefShape): Hash =
     result = result !& hash(typ.subtypes.len)
   of ConstValueType:
     result = result !& hash(typ.value)
+  of DistinctType:
+    result = result !& hash(typ.base.asShape)
   of NoteType:
     result = result !& hash(typ.note.sref)
   of ArrayType, MapType, OptionalType, IntegerType, StringType, NumberType, BoolType,
@@ -198,6 +210,8 @@ proc `==`*(a, b: TypeDefShape): bool =
     return a.entries.asShape == b.entries.asShape
   of OptionalType:
     return a.subtype.asShape == b.subtype.asShape
+  of DistinctType:
+    return a.base.asShape == b.base.asShape
   of NoteType:
     return a.note.sref == b.note.sref and a.inner.asShape == b.inner.asShape
   of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, ConstValueType:
@@ -222,6 +236,8 @@ proc closesOnto*(typ: TypeDef, sref: SchemaRef): bool =
     return recurse(typ.entries)
   of OptionalType:
     return recurse(typ.subtype)
+  of DistinctType:
+    return recurse(typ.base)
   of NoteType:
     return recurse(typ.inner)
   of TupleType:
@@ -264,6 +280,8 @@ proc `$`*(typ: TypeDef): string =
     result = fmt"(Map {typ.entries})"
   of OptionalType:
     result = fmt"(Optional {typ.subtype})"
+  of DistinctType:
+    result = fmt"(Distinct {typ.base})"
   of IntegerType:
     result = "(Integer)"
   of StringType:
@@ -313,6 +331,8 @@ proc copyType*(typ: TypeDef): TypeDef =
       TypeDef(kind: OptionalType, subtype: typ.subtype)
     of ConstValueType:
       TypeDef(kind: ConstValueType, value: typ.value)
+    of DistinctType:
+      TypeDef(kind: DistinctType, base: typ.base)
     of NoteType:
       TypeDef(kind: NoteType, note: typ.note, inner: typ.inner)
     of IntegerType, StringType, NumberType, BoolType, NullType, JsonType:
@@ -369,6 +389,9 @@ proc optional*(typ: TypeDef): TypeDef =
 proc refName(sref: SchemaRef): string =
   ## The fragment a type reached through a reference is named after
   return if sref.getName == "": "Root" else: sref.getName
+
+const NAMED_KINDS* = {ObjType, EnumType, UnionType, ConstValueType, DistinctType}
+  ## Kinds that reserve a name of their own, rather than spelling out what they are
 
 proc compilable(pattern: string): bool =
   ## Whether the regex engine can hold the pattern at all
@@ -428,6 +451,8 @@ proc asserts*(typ: TypeDef): bool =
       typ.entries.asserts
     of TupleType:
       typ.elements.anyIt(it.asserts)
+    of DistinctType:
+      typ.base.asserts
     else:
       false
 
@@ -453,6 +478,7 @@ proc abbrev*(typ: TypeDef): string =
     of NullType: "Null"
     of JsonType: "Json"
     of ConstValueType: "Const"
+    of DistinctType: typ.base.abbrev
     of NoteType: typ.inner.abbrev
 
 proc abbrevAll(typs: seq[TypeDef]): string =
@@ -464,6 +490,10 @@ proc abbrevAll(typs: seq[TypeDef]): string =
 
 iterator nameFragments*(typ: TypeDef): string =
   ## Produces fragments of a descriptive name for a type
+  # A distinct is named for what it wraps: being distinct is a property of the type,
+  # not something its name should say
+  let typ = if typ.kind == DistinctType and typ.sref.isNil: typ.base else: typ
+
   if typ.sref != nil:
     yield typ.sref.getName().capitalizeAscii
   else:
@@ -483,7 +513,7 @@ iterator nameFragments*(typ: TypeDef): string =
     of OptionalType:
       yield fmt"Of{typ.subtype.abbrev}"
     of EnumType, RefType, IntegerType, StringType, NumberType, BoolType, NullType,
-        JsonType, ConstValueType, NoteType:
+        JsonType, ConstValueType, DistinctType, NoteType:
       discard
 
 proc chooseName*(typ: TypeDef): string =

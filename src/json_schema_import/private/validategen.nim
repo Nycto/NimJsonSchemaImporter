@@ -1,4 +1,4 @@
-import types, util, constraints, validate
+import types, util, constraints, validate, std/typetraits
 import std/[macros, genasts, sequtils, tables, options]
 
 let value {.compileTime.} = ident("value")
@@ -155,6 +155,12 @@ proc buildUnionValidate(typ: TypeDef): NimNode =
     )
     result.add(nnkOfBranch.newTree(i.newLit, body.orDiscard))
 
+proc buildDistinctValidate(typ: TypeDef, typeName: NimNode): NimNode =
+  ## A distinct has no properties to walk: its assertions sit on what it wraps, so the
+  ## walk starts at the wrapped value rather than at a field
+  let base = newCall(bindSym("distinctBase"), typeName)
+  return typ.base.walk(newCall(base, value), path)
+
 proc buildValidate*(typ: TypeDef, typeName: NimNode): NimNode =
   ## A proc asserting what a value's own schema says about it, where the schema says
   ## anything at all. Where it says nothing, the generic no-op in `validate` stands in.
@@ -168,6 +174,8 @@ proc buildValidate*(typ: TypeDef, typeName: NimNode): NimNode =
       if not typ.subtypes.anyIt(it.asserts):
         return newStmtList()
       buildUnionValidate(typ)
+    of DistinctType:
+      buildDistinctValidate(typ, typeName)
     else:
       return newStmtList()
 

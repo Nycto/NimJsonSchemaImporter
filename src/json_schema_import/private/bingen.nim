@@ -1,4 +1,4 @@
-import types, util, bin, std/[macros, tables]
+import types, util, bin, std/[macros, tables, typetraits]
 
 let source {.compileTime.} = ident("source")
 let target {.compileTime.} = ident("target")
@@ -32,6 +32,17 @@ proc unionDecode(typ: TypeDef, typeName: NimNode): NimNode =
       return
         `typeName`(kind: `i`, `key`: fromBinary(typeof(result.`key`), `source`, `idx`))
     result.add(nnkOfBranch.newTree(i.newLit, action))
+
+proc buildDistinctBinSerde*(typ: TypeDef, typeName: NimNode): NimNode =
+  ## A distinct is binary as the type it wraps: the wrapper carries no bytes of its own
+  return quote:
+    proc toBinary*(`target`: var string, `source`: `typeName`) =
+      toBinary(`target`, distinctBase(`typeName`)(`source`))
+
+    proc fromBinary*(
+        _: typedesc[`typeName`], `source`: string, `idx`: var int
+    ): `typeName` =
+      return `typeName`(fromBinary(distinctBase(`typeName`), `source`, `idx`))
 
 proc buildUnionBinSerde*(typ: TypeDef, typeName: NimNode): NimNode =
   doAssert(typ.kind == UnionType)

@@ -146,4 +146,11 @@ proc lower(desc: Description, ctx: Lowering): TypeDef =
 
 proc lower*(desc: Description): TypeDef =
   ## The Nim type describing a description
-  desc.lower(Lowering())
+  result = desc.lower(Lowering())
+
+  # A root asserting something needs a name of its own to hang the check on, because an
+  # alias *is* the type it aliases and the assertion would follow every value of it.
+  # Only the root can want this: everything below is reached through an owner that
+  # walks it, and a root that asserts nothing gains nothing from paying for it.
+  if result.kind notin NAMED_KINDS and result.asserts:
+    result = TypeDef(kind: DistinctType, base: result, id: result.id)

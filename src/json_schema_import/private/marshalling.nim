@@ -1,4 +1,4 @@
-import std/[macros, tables, sets, json, jsonutils, options, sequtils]
+import std/[macros, tables, sets, json, jsonutils, options, sequtils, typetraits]
 import types, schemaRef, util, history, validategen
 
 type RefTypes* = Table[SchemaRef, TypeDef]
@@ -80,7 +80,7 @@ proc createEncodeExpr(input: NimNode, typ: TypeDef): NimNode =
     return newCall(bindSym("newJFloat"), input)
   of BoolType:
     return newCall(bindSym("newJBool"), input)
-  of ObjType, UnionType:
+  of ObjType, UnionType, DistinctType:
     return newCall(ident("toJsonHook"), input)
   of EnumType:
     return newCall(bindSym("%"), input)
@@ -127,6 +127,9 @@ proc buildIsType(
     return true.newLit
   of OptionalType:
     return typ.subtype.buildIsType(value, refs, followed)
+  of DistinctType:
+    # A distinct accepts exactly what it wraps: being distinct is a Nim concern
+    return typ.base.buildIsType(value, refs, followed)
   of UnionType:
     # Only reachable through an edge, since a parsed union has its nested arms flattened
     result = false.newLit
@@ -244,6 +247,17 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
   return quote:
     proc fromJsonHook*(`target`: var `typeName`, `source`: JsonNode) =
       `body`
+      `checked`
+
+proc buildDistinctSerde*(typ: TypeDef, typeName: NimNode): NimNode =
+  ## A distinct encodes and decodes as the type it wraps, then validates itself
+  let checked = validateDecoded(typeName, target)
+  return quote:
+    proc toJsonHook*(source: `typeName`): JsonNode =
+      return toJson(distinctBase(`typeName`)(source))
+
+    proc fromJsonHook*(`target`: var `typeName`, source: JsonNode) =
+      `target` = `typeName`(jsonTo(source, distinctBase(`typeName`)))
       `checked`
 
 proc buildObjectEncoder*(typ: TypeDef, typeName: NimNode): NimNode =

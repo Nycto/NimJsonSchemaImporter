@@ -1,4 +1,4 @@
-import types, util, stringify, std/[macros, genasts, tables, json]
+import types, util, stringify, std/[macros, genasts, tables, json, typetraits]
 
 let value {.compileTime.} = ident("value")
 
@@ -35,6 +35,9 @@ proc buildDollars*(typ: TypeDef, typeName: NimNode): NimNode =
       buildUnionDollar(typ, typeName)
     of ConstValueType:
       newLit($typ.value)
+    of DistinctType:
+      genAst(typeName, value):
+        stringify(distinctBase(typeName), distinctBase(typeName)(value))
     else:
       return newStmtList()
 

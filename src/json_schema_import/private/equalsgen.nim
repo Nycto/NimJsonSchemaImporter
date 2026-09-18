@@ -1,4 +1,4 @@
-import types, util, std/[macros, genasts, tables]
+import types, util, std/[macros, genasts, tables, typetraits]
 
 let a {.compileTime.} = ident("a")
 let b {.compileTime.} = ident("b")
@@ -34,6 +34,11 @@ proc buildUnionEquals(typ: TypeDef, typeName: NimNode): NimNode =
       return false
     cases
 
+proc buildDistinctEquals(typeName: NimNode): NimNode =
+  ## A distinct is equal by what it wraps, reached through `distinctBase`
+  return genAst(typeName, a, b):
+    equals(distinctBase(typeName), distinctBase(typeName)(a), distinctBase(typeName)(b))
+
 proc buildEquals*(typ: TypeDef, typeName: NimNode): NimNode =
   let body =
     case typ.kind
@@ -44,6 +49,8 @@ proc buildEquals*(typ: TypeDef, typeName: NimNode): NimNode =
     of ConstValueType:
       # Two values of a const type are the same value, by construction
       newLit(true)
+    of DistinctType:
+      buildDistinctEquals(typeName)
     else:
       return newStmtList()
 

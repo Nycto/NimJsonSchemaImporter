@@ -1,1 +1,1 @@
-a string at the root
+"a string at the root"

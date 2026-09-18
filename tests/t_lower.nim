@@ -175,11 +175,17 @@ suite "Lowering constraints":
   proc str(validation: ValidateNode = nil): Variant =
     Variant(kind: vkString, validation: validation)
 
+  proc held(desc: Description): TypeDef =
+    ## The type a root lowers to, past the `distinct` an asserting root is wrapped in
+    result = desc.lower
+    if result.kind == DistinctType:
+      result = result.base
+
   test "A variant hands its constraint to the type it becomes":
-    check(describe(str(minLen)).lower.validation == minLen)
+    check(describe(str(minLen)).held.validation == minLen)
 
   test "Arms sharing a Nim type accept what either of them accepts":
-    let lowered = Description(variants: @[str(minLen), str(maxLen)]).lower
+    let lowered = Description(variants: @[str(minLen), str(maxLen)]).held
     check(lowered.kind == StringType)
     check(lowered.validation == anyOf(minLen, maxLen))
 
@@ -191,9 +197,31 @@ suite "Lowering constraints":
   test "Merging arms does not write onto the type either came from":
     let first = str(minLen)
     discard Description(variants: @[first, str(maxLen)]).lower
-    check(describe(first).lower.validation == minLen)
+    check(describe(first).held.validation == minLen)
 
   test "Arms of different types stay apart, each keeping its own":
-    let lowered = Description(variants: @[str(minLen), Variant(kind: vkInteger)]).lower
+    let lowered = Description(variants: @[str(minLen), Variant(kind: vkInteger)]).held
     check(lowered.kind == UnionType)
     check(lowered.subtypes[0].validation == minLen)
+
+suite "Lowering a root that asserts something":
+  let minLen = ValidateNode(kind: MinLenValid, len: 3)
+
+  test "It is wrapped in a type of its own, since an alias could carry no check":
+    let lowered = describe(Variant(kind: vkString, validation: minLen)).lower
+    check(lowered.kind == DistinctType)
+    check(lowered.base.kind == StringType)
+    check(lowered.base.validation == minLen)
+
+  test "A root asserting nothing is left as it was":
+    check(describe(Variant(kind: vkString)).lower.kind == StringType)
+
+  test "A root that already names itself needs no wrapper":
+    let obj = Variant(kind: vkObject, shaped: true)
+    check(describe(obj).lower.kind == ObjType)
+
+  test "An assertion the type cannot answer is not one worth wrapping for":
+    # A length beside an `enum` lowers to a Nim enum, which has no length to measure
+    let enumeration =
+      Variant(kind: vkString, values: some(toOrderedSet(["ab"])), validation: minLen)
+    check(describe(enumeration).lower.kind == EnumType)
