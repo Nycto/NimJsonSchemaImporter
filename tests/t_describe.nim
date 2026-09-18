@@ -1,6 +1,6 @@
 import
   std/[unittest, json, sets, options, sequtils, tables, uri],
-  json_schema_import/private/[describe, schemaRef]
+  json_schema_import/private/[constraints, describe, schemaRef]
 
 proc v(kind: VariantKind): Variant =
   Variant(kind: kind)
@@ -241,3 +241,36 @@ suite "Labels":
     check(
       $intersect(describe(a), describe(b)).variants[0].id == "https://example.com/b"
     )
+
+suite "Intersecting constraints":
+  let minLen = ValidateNode(kind: MinLenValid, len: 3)
+  let maxLen = ValidateNode(kind: MaxLenValid, len: 5)
+
+  proc str(validation: ValidateNode = nil): Description =
+    describe(Variant(kind: vkString, validation: validation))
+
+  proc only(desc: Description): ValidateNode =
+    check(desc.variants.len == 1)
+    return desc.variants[0].validation
+
+  test "Both sides are asserted":
+    check(intersect(str(minLen), str(maxLen)).only == allOf(minLen, maxLen))
+
+  test "A side asserting nothing leaves the other alone":
+    check(intersect(str(), str(maxLen)).only == maxLen)
+    check(intersect(str(maxLen), str()).only == maxLen)
+    check(intersect(str(), str()).only == nil)
+
+  test "Merging does not write onto either side":
+    let left = str(minLen)
+    discard intersect(left, str(maxLen))
+    check(left.only == minLen)
+
+  test "A constraint survives the shape being narrowed":
+    let narrowed = intersect(str(minLen), describe(enumOf("abc", "de")))
+    check(narrowed.only == minLen)
+    check(narrowed.variants[0].values.get == toOrderedSet(["abc", "de"]))
+
+  test "Alternatives keep their own, since a union asserts nothing jointly":
+    let both = union(str(minLen), str(maxLen))
+    check(both.variants.mapIt(it.validation) == @[minLen, maxLen])

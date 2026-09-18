@@ -1,4 +1,4 @@
-import std/[json, sets, options, tables, uri, sequtils], schemaRef
+import std/[json, sets, options, tables, uri, sequtils], schemaRef, constraints
 
 type
   VariantKind* = enum
@@ -18,6 +18,8 @@ type
     ## One type a schema node allows, and what it says about that type
     sref*: SchemaRef ## The reference this variant was reached through, if any
     id*: Uri
+    validation*: ValidateNode
+      ## Assertions this variant's values have to satisfy, which say nothing about shape
     folded*: seq[Description]
       ## Labelled types a combine absorbed; an edge may still name one
     case kind*: VariantKind
@@ -120,6 +122,7 @@ proc clone*(variant: Variant): Variant =
       Variant(kind: variant.kind)
   result.sref = variant.sref
   result.id = variant.id
+  result.validation = variant.validation
   for desc in variant.folded:
     result.folded.add(desc)
 
@@ -220,7 +223,7 @@ proc intersectVariant*(a, b: Variant): Variant =
   if not result.isNil and result.isEmpty:
     return nil
 
-proc intersectKinds(a, b: Variant): Variant =
+proc intersectShapes(a, b: Variant): Variant =
   if a.kind == vkEdge or b.kind == vkAny:
     return a
   if b.kind == vkEdge or a.kind == vkAny:
@@ -252,6 +255,17 @@ proc intersectKinds(a, b: Variant): Variant =
     return narrowObject(a, b)
   else:
     discard
+
+proc intersectKinds(a, b: Variant): Variant =
+  ## The narrower shape, carrying what both sides assert about the values it holds
+  result = intersectShapes(a, b)
+
+  let merged = allOf(a.validation, b.validation)
+  if not result.isNil and merged != result.validation:
+    # `intersectShapes` hands back one of its arguments as often as not, so the
+    # constraint cannot be written onto it in place
+    result = result.clone
+    result.validation = merged
 
 iterator spread(desc: Description): Variant =
   ## The variants of a description, with its label moved onto the variant it names
