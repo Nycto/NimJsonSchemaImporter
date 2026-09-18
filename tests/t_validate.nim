@@ -43,6 +43,46 @@ suite "Numeric assertions":
   test "Nothing is a multiple of nothing":
     check(not satisfiesMultipleOf(0, 0.0))
 
+suite "Counting assertions":
+  test "Item counts include their endpoint":
+    check(satisfiesMinItems([1, 2], 2))
+    check(satisfiesMaxItems([1, 2], 2))
+    check(not satisfiesMinItems([1], 2))
+    check(not satisfiesMaxItems([1, 2, 3], 2))
+
+  test "An empty array counts as none":
+    check(satisfiesMaxItems(newSeq[int](), 0))
+    check(not satisfiesMinItems(newSeq[int](), 1))
+
+  test "Property counts include their endpoint":
+    check(satisfiesMinProperties(2, 2))
+    check(satisfiesMaxProperties(2, 2))
+    check(not satisfiesMinProperties(1, 2))
+    check(not satisfiesMaxProperties(3, 2))
+
+suite "Uniqueness assertions":
+  test "Repeats of any kind are caught":
+    check(satisfiesUniqueItems([1, 2, 3]))
+    check(not satisfiesUniqueItems([1, 2, 1]))
+    check(satisfiesUniqueItems(["a", "b"]))
+    check(not satisfiesUniqueItems(["a", "a"]))
+
+  test "Nothing repeats in an array of one or none":
+    check(satisfiesUniqueItems(newSeq[int]()))
+    check(satisfiesUniqueItems([1]))
+
+  test "Structures are compared by what they hold, not by identity":
+    check(not satisfiesUniqueItems([@[1, 2], @[1, 2]]))
+    check(satisfiesUniqueItems([@[1, 2], @[2, 1]]))
+
+  test "A JSON object repeats whatever order its keys were written in":
+    check(not satisfiesUniqueItems([%*{"a": 1, "b": 2}, %*{"b": 2, "a": 1}]))
+    check(satisfiesUniqueItems([%*{"a": 1}, %*{"a": 2}]))
+
+  test "A boolean is not the number beside it":
+    check(satisfiesUniqueItems([%*true, %*1]))
+    check(satisfiesUniqueItems([%*false, %*0]))
+
 suite "Reporting a failure":
   test "The message names the path and what it did not satisfy":
     expect ValueError:

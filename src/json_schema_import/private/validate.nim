@@ -1,7 +1,7 @@
 ## The runtime half of the generated `validate` procs: one predicate per assertion
 ## keyword, and the single place a failed assertion is reported from
 
-import std/[math, unicode], regex
+import std/[math, unicode], regex, equality
 
 proc validate*[T](_: typedesc[T], value: T, path: string = "") =
   ## Stands in for every type whose schema asserts nothing about its values, so a
@@ -42,3 +42,27 @@ proc satisfiesMultipleOf*(value: SomeNumber, bound: BiggestFloat): bool =
     return false
   let scaled = value.BiggestFloat / bound
   return scaled == scaled.round
+
+proc satisfiesMinItems*[T](value: openArray[T], count: int): bool =
+  return value.len >= count
+
+proc satisfiesMaxItems*[T](value: openArray[T], count: int): bool =
+  return value.len <= count
+
+proc satisfiesUniqueItems*[T](value: openArray[T]): bool =
+  ## Compared pairwise rather than through a set: `equals` is all a generated type
+  ## promises, and an array a schema asks to be unique is short in practice
+  mixin equals
+  for i in 1 ..< value.len:
+    for j in 0 ..< i:
+      if equals(T, value[i], value[j]):
+        return false
+  return true
+
+proc satisfiesMinProperties*(present, count: int): bool =
+  ## Counted by the caller, since an object spells its properties as fields while a
+  ## map carries them in one place
+  return present >= count
+
+proc satisfiesMaxProperties*(present, count: int): bool =
+  return present <= count
