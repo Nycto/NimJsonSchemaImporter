@@ -9,6 +9,7 @@ import
   namechain,
   equalsgen,
   dollargen,
+  validategen,
   bingen,
   saxgen,
   empty
@@ -105,6 +106,7 @@ proc genObj(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     newStmtList(
       typ.buildEquals(result),
       typ.buildDollars(result),
+      typ.buildValidate(result),
       typ.buildObjectDecoder(result),
       typ.buildObjectEncoder(result),
       typ.buildSaxObjEncoder(result),
@@ -214,6 +216,7 @@ proc genUnion(typ: TypeDef, name: NameChain, ctx: GenContext): NimNode =
     newStmtList(
       typ.buildEquals(result),
       typ.buildDollars(result),
+      typ.buildValidate(result),
       typ.buildUnionDecoder(result, ctx.refTypes),
       typ.buildUnionEncoder(result),
       typ.buildUnionUnpacker(result),

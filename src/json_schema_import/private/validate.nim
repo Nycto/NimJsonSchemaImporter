@@ -3,6 +3,11 @@
 
 import std/[math, unicode], regex
 
+proc validate*[T](_: typedesc[T], value: T, path: string = "") =
+  ## Stands in for every type whose schema asserts nothing about its values, so a
+  ## caller never has to know whether a generated `validate` exists
+  discard
+
 proc invalid*(path, constraint: string) {.noreturn.} =
   ## Reports the first assertion a value failed, named by the path that reached it
   raise newException(ValueError, path & " does not satisfy " & constraint)

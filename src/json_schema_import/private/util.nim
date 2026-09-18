@@ -97,10 +97,12 @@ proc orDiscard*(stmts: NimNode): NimNode =
 proc formatCodeDump*(code: NimNode): string =
   result = "{.push warning[UnusedImport]:off.}\n"
   result &= "import std/[json, jsonutils, tables, options]\n"
-  # `stringify` is aliased because the generated code declares procs by that name, and a
-  # module symbol and a proc symbol of the same name cannot coexist in one scope. That
-  # only matters once this dump is `include`d rather than compiled as its own module.
+  # `stringify` and `validate` are aliased because the generated code declares procs by
+  # those names, and a module symbol and a proc symbol of the same name cannot coexist in
+  # one scope. That only matters once this dump is `include`d rather than compiled as its
+  # own module, which is what the on-disk cache does.
   result &= "import json_schema_import/private/stringify as jsonSchemaStringify\n"
+  result &= "import json_schema_import/private/validate as jsonSchemaValidate\n"
   result &= "import json_schema_import/private/[equality, bin, sax, empty]\n"
   result &= code.repr.replace(re2"\`gensym_?\d+", "")
   result &= "\n{.pop.}\n"

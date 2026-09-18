@@ -1,6 +1,7 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
 import json_schema_import/private/stringify as jsonSchemaStringify
+import json_schema_import/private/validate as jsonSchemaValidate
 import json_schema_import/private/[equality, bin, sax, empty]
 
 type
@@ -66,6 +67,11 @@ proc stringify(_: typedesc[File_systemDiskDevice]; value: File_systemDiskDevice)
 proc `$`*(value: File_systemDiskDevice): string =
   stringify(File_systemDiskDevice, value)
 
+proc validate*(_: typedesc[File_systemDiskDevice]; value: File_systemDiskDevice;
+               path: string = "File_systemDiskDevice") =
+  if not (satisfiesPattern(value.device, "^/dev/[^/]+(/[^/]+)*$")):
+    invalid(path & "/" & "device", "pattern: \"^/dev/[^/]+(/[^/]+)*$\"")
+
 proc fromJsonHook*(target: var File_systemDiskDevice; source: JsonNode) =
   assert(hasKey(source, "type"),
          "type" & " is missing while decoding " & "File_systemDiskDevice")
@@ -124,6 +130,11 @@ proc stringify(_: typedesc[File_systemDiskUUID]; value: File_systemDiskUUID): st
 
 proc `$`*(value: File_systemDiskUUID): string =
   stringify(File_systemDiskUUID, value)
+
+proc validate*(_: typedesc[File_systemDiskUUID]; value: File_systemDiskUUID;
+               path: string = "File_systemDiskUUID") =
+  if not (satisfiesPattern(value.label, "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$")):
+    invalid(path & "/" & "label", "pattern: \"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$\"")
 
 proc fromJsonHook*(target: var File_systemDiskUUID; source: JsonNode) =
   assert(hasKey(source, "type"),
@@ -185,6 +196,11 @@ proc stringify(_: typedesc[File_systemNfs]; value: File_systemNfs): string =
 
 proc `$`*(value: File_systemNfs): string =
   stringify(File_systemNfs, value)
+
+proc validate*(_: typedesc[File_systemNfs]; value: File_systemNfs;
+               path: string = "File_systemNfs") =
+  if not (satisfiesPattern(value.remotePath, "^(/[^/]+)+$")):
+    invalid(path & "/" & "remotePath", "pattern: \"^(/[^/]+)+$\"")
 
 proc fromJsonHook*(target: var File_systemNfs; source: JsonNode) =
   assert(hasKey(source, "type"),
@@ -254,6 +270,13 @@ proc stringify(_: typedesc[File_systemTmpfs]; value: File_systemTmpfs): string =
 
 proc `$`*(value: File_systemTmpfs): string =
   stringify(File_systemTmpfs, value)
+
+proc validate*(_: typedesc[File_systemTmpfs]; value: File_systemTmpfs;
+               path: string = "File_systemTmpfs") =
+  if not (satisfiesMinimum(value.sizeInMB, 16.0'f64)):
+    invalid(path & "/" & "sizeInMB", "minimum: 16")
+  if not (satisfiesMaximum(value.sizeInMB, 512.0'f64)):
+    invalid(path & "/" & "sizeInMB", "maximum: 512")
 
 proc fromJsonHook*(target: var File_systemTmpfs; source: JsonNode) =
   assert(hasKey(source, "type"),

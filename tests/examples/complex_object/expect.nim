@@ -1,6 +1,7 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
 import json_schema_import/private/stringify as jsonSchemaStringify
+import json_schema_import/private/validate as jsonSchemaValidate
 import json_schema_import/private/[equality, bin, sax, empty]
 
 type
@@ -36,6 +37,11 @@ proc stringify(_: typedesc[Complex_objectAddress]; value: Complex_objectAddress)
 
 proc `$`*(value: Complex_objectAddress): string =
   stringify(Complex_objectAddress, value)
+
+proc validate*(_: typedesc[Complex_objectAddress]; value: Complex_objectAddress;
+               path: string = "Complex_objectAddress") =
+  if not (satisfiesPattern(value.postalCode, "\\d{5}")):
+    invalid(path & "/" & "postalCode", "pattern: \"\\\\d{5}\"")
 
 proc fromJsonHook*(target: var Complex_objectAddress; source: JsonNode) =
   assert(hasKey(source, "street"),
@@ -117,6 +123,11 @@ proc stringify(_: typedesc[Complex_object]; value: Complex_object): string =
 
 proc `$`*(value: Complex_object): string =
   stringify(Complex_object, value)
+
+proc validate*(_: typedesc[Complex_object]; value: Complex_object;
+               path: string = "Complex_object") =
+  if not (satisfiesMinimum(value.age, 0.0'f64)):
+    invalid(path & "/" & "age", "minimum: 0")
 
 proc fromJsonHook*(target: var Complex_object; source: JsonNode) =
   assert(hasKey(source, "name"),

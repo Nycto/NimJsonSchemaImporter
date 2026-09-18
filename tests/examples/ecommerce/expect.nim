@@ -1,6 +1,7 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
 import json_schema_import/private/stringify as jsonSchemaStringify
+import json_schema_import/private/validate as jsonSchemaValidate
 import json_schema_import/private/[equality, bin, sax, empty]
 
 type
@@ -28,6 +29,13 @@ proc stringify(_: typedesc[EcommerceProductSchema];
 
 proc `$`*(value: EcommerceProductSchema): string =
   stringify(EcommerceProductSchema, value)
+
+proc validate*(_: typedesc[EcommerceProductSchema];
+               value: EcommerceProductSchema;
+               path: string = "EcommerceProductSchema") =
+  if isSome(value.price):
+    if not (satisfiesMinimum(unsafeGet(value.price), 0.0'f64)):
+      invalid(path & "/" & "price", "minimum: 0")
 
 proc fromJsonHook*(target: var EcommerceProductSchema; source: JsonNode) =
   if hasKey(source, "name") and source{"name"}.kind != JNull:

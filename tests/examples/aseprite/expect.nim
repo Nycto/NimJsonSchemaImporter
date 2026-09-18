@@ -1,6 +1,7 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
 import json_schema_import/private/stringify as jsonSchemaStringify
+import json_schema_import/private/validate as jsonSchemaValidate
 import json_schema_import/private/[equality, bin, sax, empty]
 
 type
@@ -686,6 +687,12 @@ proc stringify(_: typedesc[AsepriteLayer]; value: AsepriteLayer): string =
 proc `$`*(value: AsepriteLayer): string =
   stringify(AsepriteLayer, value)
 
+proc validate*(_: typedesc[AsepriteLayer]; value: AsepriteLayer;
+               path: string = "AsepriteLayer") =
+  if isSome(value.color):
+    if not (satisfiesPattern(unsafeGet(value.color), "^#[0-9a-f]{8}$")):
+      invalid(path & "/" & "color", "pattern: \"^#[0-9a-f]{8}$\"")
+
 proc fromJsonHook*(target: var AsepriteLayer; source: JsonNode) =
   if hasKey(source, "blendMode") and source{"blendMode"}.kind != JNull:
     target.blendMode = some(jsonTo(source{"blendMode"},
@@ -927,6 +934,12 @@ proc stringify(_: typedesc[AsepriteSlice]; value: AsepriteSlice): string =
 
 proc `$`*(value: AsepriteSlice): string =
   stringify(AsepriteSlice, value)
+
+proc validate*(_: typedesc[AsepriteSlice]; value: AsepriteSlice;
+               path: string = "AsepriteSlice") =
+  if isSome(value.color):
+    if not (satisfiesPattern(unsafeGet(value.color), "^#[0-9a-f]{8}$")):
+      invalid(path & "/" & "color", "pattern: \"^#[0-9a-f]{8}$\"")
 
 proc fromJsonHook*(target: var AsepriteSlice; source: JsonNode) =
   if hasKey(source, "color") and source{"color"}.kind != JNull:

@@ -1,6 +1,7 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
 import json_schema_import/private/stringify as jsonSchemaStringify
+import json_schema_import/private/validate as jsonSchemaValidate
 import json_schema_import/private/[equality, bin, sax, empty]
 
 type
@@ -22,6 +23,16 @@ proc stringify(_: typedesc[Location]; value: Location): string =
 
 proc `$`*(value: Location): string =
   stringify(Location, value)
+
+proc validate*(_: typedesc[Location]; value: Location; path: string = "Location") =
+  if not (satisfiesMinimum(value.latitude, -90.0'f64)):
+    invalid(path & "/" & "latitude", "minimum: -90")
+  if not (satisfiesMaximum(value.latitude, 90.0'f64)):
+    invalid(path & "/" & "latitude", "maximum: 90")
+  if not (satisfiesMinimum(value.longitude, -180.0'f64)):
+    invalid(path & "/" & "longitude", "minimum: -180")
+  if not (satisfiesMaximum(value.longitude, 180.0'f64)):
+    invalid(path & "/" & "longitude", "maximum: 180")
 
 proc fromJsonHook*(target: var Location; source: JsonNode) =
   assert(hasKey(source, "latitude"),

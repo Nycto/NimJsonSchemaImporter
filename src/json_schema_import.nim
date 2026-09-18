@@ -5,10 +5,11 @@
 import std/[json, macros, jsonutils, strutils], json_schema_import/config
 import
   json_schema_import/private/
-    [parse, gen, util, equality, bin, sax, empty, json_hooks, cache]
+    [parse, gen, util, equality, bin, sax, empty, validate, json_hooks, cache]
 
 export
-  JsonSchemaConfig, UrlResolver, json, jsonutils, equality, bin, sax, empty, json_hooks
+  JsonSchemaConfig, UrlResolver, json, jsonutils, equality, bin, sax, empty, validate,
+  json_hooks
 
 proc defaultUrlResolver(uri: string): JsonNode =
   nil

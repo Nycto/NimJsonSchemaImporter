@@ -1,6 +1,7 @@
 {.push warning[UnusedImport]:off.}
 import std/[json, jsonutils, tables, options]
 import json_schema_import/private/stringify as jsonSchemaStringify
+import json_schema_import/private/validate as jsonSchemaValidate
 import json_schema_import/private/[equality, bin, sax, empty]
 
 type
@@ -25,6 +26,11 @@ proc stringify(_: typedesc[Basic]; value: Basic): string =
 
 proc `$`*(value: Basic): string =
   stringify(Basic, value)
+
+proc validate*(_: typedesc[Basic]; value: Basic; path: string = "Basic") =
+  if isSome(value.age):
+    if not (satisfiesMinimum(unsafeGet(value.age), 0.0'f64)):
+      invalid(path & "/" & "age", "minimum: 0")
 
 proc fromJsonHook*(target: var Basic; source: JsonNode) =
   if hasKey(source, "firstName") and source{"firstName"}.kind != JNull:
