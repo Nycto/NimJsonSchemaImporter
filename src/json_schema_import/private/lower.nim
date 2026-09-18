@@ -1,4 +1,4 @@
-import std/[sets, tables, options], types, describe, schemaRef, util
+import std/[sets, tables, options], types, describe, schemaRef, util, constraints
 
 type Lowering = ref object
   memo: Table[SchemaRef, TypeDef] ## Every type named by a reference, lowered once
@@ -95,6 +95,7 @@ proc shape(variant: Variant, ctx: Lowering): TypeDef =
     of vkObject:
       lowerObject(variant, ctx)
   result.id = variant.id
+  result.validation = variant.validation
 
 proc lower(variant: Variant, ctx: Lowering): TypeDef =
   ## The Nim type describing a single variant
@@ -106,17 +107,23 @@ proc alternatives(desc: Description, ctx: Lowering): TypeDef =
   ## The Nim type describing every variant of a description: one of them, or a union
   ## choosing between them, made optional when `null` is one of the choices
   var nullable = false
-  var seen = initHashSet[TypeDef]()
+  var seen = initTable[TypeDefShape, int]()
   var arms: seq[TypeDef]
   for variant in desc.variants:
     if variant.kind == vkNull:
       nullable = true
       continue
 
+    # Arms are deduped by the Nim type they generate, not by everything they carry
     let arm = variant.lower(ctx)
-    if arm notin seen:
-      seen.incl(arm)
+    let existing = seen.getOrDefault(arm.asShape, -1)
+    if existing < 0:
+      seen[arm.asShape] = arms.len
       arms.add(arm)
+    else:
+      # One Nim type standing in for several arms has to accept what any of them does
+      arms[existing] =
+        arms[existing].withValidation(anyOf(arms[existing].validation, arm.validation))
 
   if arms.len == 0:
     # Whatever holds a description that accepts nothing drops it before lowering

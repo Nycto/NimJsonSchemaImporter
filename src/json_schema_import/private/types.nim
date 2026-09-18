@@ -342,6 +342,13 @@ proc withRef*(typ: TypeDef, sref: SchemaRef): TypeDef =
   if typ.isEdgeTarget:
     result = result.withNote(typ)
 
+proc withValidation*(typ: TypeDef, validation: ValidateNode): TypeDef =
+  ## A copy asserting something else about the values it holds
+  if typ.validation == validation:
+    return typ
+  result = typ.copyType
+  result.validation = validation
+
 const SELF_OPTIONAL* = {MapType, ArrayType}
   ## These are field types that don't need to be wrapped in optional values
 

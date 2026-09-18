@@ -1,6 +1,6 @@
 import
   std/[unittest, json, sets, options, tables],
-  json_schema_import/private/[describe, lower, types, schemaRef]
+  json_schema_import/private/[constraints, describe, lower, types, schemaRef]
 
 proc v(kind: VariantKind): Variant =
   Variant(kind: kind)
@@ -167,3 +167,33 @@ suite "Lowering labels":
   test "A folded type that accepts nothing is dropped":
     let typ = union(never().named("gone"), d(vkString)).lower
     check(typ.kind == StringType)
+
+suite "Lowering constraints":
+  let minLen = ValidateNode(kind: MinLenValid, len: 3)
+  let maxLen = ValidateNode(kind: MaxLenValid, len: 5)
+
+  proc str(validation: ValidateNode = nil): Variant =
+    Variant(kind: vkString, validation: validation)
+
+  test "A variant hands its constraint to the type it becomes":
+    check(describe(str(minLen)).lower.validation == minLen)
+
+  test "Arms sharing a Nim type accept what either of them accepts":
+    let lowered = Description(variants: @[str(minLen), str(maxLen)]).lower
+    check(lowered.kind == StringType)
+    check(lowered.validation == anyOf(minLen, maxLen))
+
+  test "An unconstrained arm opens up the ones it shares a type with":
+    let lowered = Description(variants: @[str(minLen), str()]).lower
+    check(lowered.kind == StringType)
+    check(lowered.validation == nil)
+
+  test "Merging arms does not write onto the type either came from":
+    let first = str(minLen)
+    discard Description(variants: @[first, str(maxLen)]).lower
+    check(describe(first).lower.validation == minLen)
+
+  test "Arms of different types stay apart, each keeping its own":
+    let lowered = Description(variants: @[str(minLen), Variant(kind: vkInteger)]).lower
+    check(lowered.kind == UnionType)
+    check(lowered.subtypes[0].validation == minLen)
