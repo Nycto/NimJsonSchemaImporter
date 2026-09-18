@@ -10,16 +10,6 @@ draft2020-12/additionalProperties.json :: additionalProperties does not look in 
 draft2020-12/additionalProperties.json :: dependentSchemas with additionalProperties :: additionalProperties doesn't consider dependentSchemas
 draft2020-12/additionalProperties.json :: dependentSchemas with additionalProperties :: additionalProperties can't see bar
 draft2020-12/additionalProperties.json :: dependentSchemas with additionalProperties :: additionalProperties can't see bar even when foo2 is present
-draft2020-12/allOf.json :: allOf simple types :: mismatch one
-draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: false, oneOf: false
-draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: false, oneOf: true
-draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: true, oneOf: false
-draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: true, oneOf: true
-draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: false, oneOf: false
-draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: false, oneOf: true
-draft2020-12/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: true, oneOf: false
-draft2020-12/anyOf.json :: anyOf :: neither anyOf valid
-draft2020-12/anyOf.json :: anyOf with base schema :: both anyOf invalid
 draft2020-12/const.json :: const validation :: another value is invalid
 draft2020-12/const.json :: const validation :: another type is invalid
 draft2020-12/const.json :: const with object :: another object is invalid
@@ -59,10 +49,7 @@ draft2020-12/contains.json :: contains keyword with boolean schema true :: empty
 draft2020-12/contains.json :: contains keyword with boolean schema false :: any non-empty array is invalid
 draft2020-12/contains.json :: contains keyword with boolean schema false :: empty array is invalid
 draft2020-12/contains.json :: items + contains :: matches items, does not match contains
-draft2020-12/contains.json :: items + contains :: does not match items, matches contains
-draft2020-12/contains.json :: items + contains :: matches neither items nor contains
 draft2020-12/contains.json :: contains with false if subschema :: empty array is invalid
-draft2020-12/default.json :: the default keyword does not do anything if the property is missing :: an explicit property value is checked against maximum (failing)
 draft2020-12/defs.json :: validate definition against metaschema :: valid definition schema
 draft2020-12/defs.json :: validate definition against metaschema :: invalid definition schema
 draft2020-12/dependentRequired.json :: single dependency :: missing dependency
@@ -125,10 +112,8 @@ draft2020-12/enum.json :: empty enum :: null is invalid
 draft2020-12/enum.json :: empty enum :: object is invalid
 draft2020-12/enum.json :: empty enum :: array is invalid
 draft2020-12/enum.json :: empty enum :: boolean is invalid
-draft2020-12/exclusiveMaximum.json :: exclusiveMaximum validation :: boundary point is invalid
-draft2020-12/exclusiveMaximum.json :: exclusiveMaximum validation :: above the exclusiveMaximum is invalid
-draft2020-12/exclusiveMinimum.json :: exclusiveMinimum validation :: boundary point is invalid
-draft2020-12/exclusiveMinimum.json :: exclusiveMinimum validation :: below the exclusiveMinimum is invalid
+draft2020-12/exclusiveMaximum.json :: exclusiveMaximum validation :: ignores non-numbers
+draft2020-12/exclusiveMinimum.json :: exclusiveMinimum validation :: ignores non-numbers
 draft2020-12/format.json :: email format :: all string formats ignore integers
 draft2020-12/format.json :: email format :: all string formats ignore floats
 draft2020-12/format.json :: email format :: all string formats ignore objects
@@ -249,15 +234,12 @@ draft2020-12/maxContains.json :: maxContains with contains, value with a decimal
 draft2020-12/maxContains.json :: minContains < maxContains :: actual < minContains < maxContains
 draft2020-12/maxContains.json :: minContains < maxContains :: minContains < maxContains < actual
 draft2020-12/maxContains.json :: maxContains = 0 with minContains = 0 :: one matching item
-draft2020-12/maxItems.json :: maxItems validation :: too long is invalid
-draft2020-12/maxItems.json :: maxItems validation with a decimal :: too long is invalid
-draft2020-12/maxLength.json :: maxLength validation :: too long is invalid
-draft2020-12/maxLength.json :: maxLength validation with a decimal :: too long is invalid
-draft2020-12/maxProperties.json :: maxProperties validation :: too long is invalid
-draft2020-12/maxProperties.json :: maxProperties validation with a decimal :: too long is invalid
-draft2020-12/maxProperties.json :: maxProperties = 0 means the object is empty :: one property is invalid
-draft2020-12/maximum.json :: maximum validation :: above the maximum is invalid
-draft2020-12/maximum.json :: maximum validation with unsigned integer :: above the maximum is invalid
+draft2020-12/maxItems.json :: maxItems validation :: ignores non-arrays
+draft2020-12/maxLength.json :: maxLength validation :: ignores non-strings
+draft2020-12/maxProperties.json :: maxProperties validation :: ignores arrays
+draft2020-12/maxProperties.json :: maxProperties validation :: ignores strings
+draft2020-12/maxProperties.json :: maxProperties validation :: ignores other non-objects
+draft2020-12/maximum.json :: maximum validation :: ignores non-numbers
 draft2020-12/minContains.json :: minContains=1 with contains :: empty data
 draft2020-12/minContains.json :: minContains=1 with contains :: no elements match
 draft2020-12/minContains.json :: minContains=2 with contains :: empty data
@@ -272,19 +254,16 @@ draft2020-12/minContains.json :: maxContains < minContains :: invalid minContain
 draft2020-12/minContains.json :: maxContains < minContains :: invalid maxContains
 draft2020-12/minContains.json :: maxContains < minContains :: invalid maxContains and minContains
 draft2020-12/minContains.json :: minContains = 0 with maxContains :: too many
-draft2020-12/minItems.json :: minItems validation :: too short is invalid
-draft2020-12/minItems.json :: minItems validation with a decimal :: too short is invalid
-draft2020-12/minLength.json :: minLength validation :: too short is invalid
-draft2020-12/minLength.json :: minLength validation :: one grapheme is not long enough
-draft2020-12/minLength.json :: minLength validation with a decimal :: too short is invalid
-draft2020-12/minProperties.json :: minProperties validation :: too short is invalid
-draft2020-12/minProperties.json :: minProperties validation with a decimal :: too short is invalid
-draft2020-12/minimum.json :: minimum validation :: below the minimum is invalid
-draft2020-12/minimum.json :: minimum validation with signed integer :: float below the minimum is invalid
-draft2020-12/minimum.json :: minimum validation with signed integer :: int below the minimum is invalid
-draft2020-12/multipleOf.json :: by int :: int by int fail
-draft2020-12/multipleOf.json :: by number :: 35 is not multiple of 1.5
-draft2020-12/multipleOf.json :: by small number :: 0.00751 is not multiple of 0.0001
+draft2020-12/minItems.json :: minItems validation :: ignores non-arrays
+draft2020-12/minLength.json :: minLength validation :: ignores non-strings
+draft2020-12/minProperties.json :: minProperties validation :: ignores arrays
+draft2020-12/minProperties.json :: minProperties validation :: ignores strings
+draft2020-12/minProperties.json :: minProperties validation :: ignores other non-objects
+draft2020-12/minProperties.json :: minProperties validation :: ignores null
+draft2020-12/minProperties.json :: minProperties validation :: ignores booleans
+draft2020-12/minimum.json :: minimum validation :: ignores non-numbers
+draft2020-12/minimum.json :: minimum validation with signed integer :: ignores non-numbers
+draft2020-12/multipleOf.json :: by int :: ignores non-numbers
 draft2020-12/not.json :: not :: disallowed
 draft2020-12/not.json :: not multiple types :: mismatch
 draft2020-12/not.json :: not multiple types :: other mismatch
@@ -310,7 +289,6 @@ draft2020-12/not.json :: forbid everything with boolean schema true :: array is 
 draft2020-12/not.json :: forbid everything with boolean schema true :: empty array is invalid
 draft2020-12/not.json :: collect annotations inside a 'not', even if collection is disabled :: annotations are still collected inside a 'not'
 draft2020-12/oneOf.json :: oneOf :: both oneOf valid
-draft2020-12/oneOf.json :: oneOf :: neither oneOf valid
 draft2020-12/oneOf.json :: oneOf with base schema :: both oneOf valid
 draft2020-12/oneOf.json :: oneOf with boolean schemas, all true :: any value is invalid
 draft2020-12/oneOf.json :: oneOf with boolean schemas, more than one true :: any value is invalid
@@ -318,7 +296,11 @@ draft2020-12/oneOf.json :: oneOf complex types :: both oneOf valid (complex)
 draft2020-12/oneOf.json :: oneOf with empty schema :: both valid - invalid
 draft2020-12/oneOf.json :: oneOf with required :: both valid - invalid
 draft2020-12/oneOf.json :: oneOf with missing optional property :: both oneOf valid
-draft2020-12/pattern.json :: pattern validation :: a non-matching pattern is invalid
+draft2020-12/pattern.json :: pattern validation :: ignores booleans
+draft2020-12/pattern.json :: pattern validation :: ignores integers
+draft2020-12/pattern.json :: pattern validation :: ignores floats
+draft2020-12/pattern.json :: pattern validation :: ignores objects
+draft2020-12/pattern.json :: pattern validation :: ignores arrays
 draft2020-12/pattern.json :: pattern with Unicode property escape requires unicode mode :: Digits do not match
 draft2020-12/patternProperties.json :: patternProperties validates properties matching a regex :: a single invalid match is invalid
 draft2020-12/patternProperties.json :: patternProperties validates properties matching a regex :: multiple invalid matches is invalid
@@ -342,7 +324,6 @@ draft2020-12/prefixItems.json :: prefixItems with boolean schemas :: empty array
 draft2020-12/prefixItems.json :: additional items are allowed by default :: only the first item is validated
 draft2020-12/properties.json :: object properties validation :: ignores arrays
 draft2020-12/properties.json :: object properties validation :: ignores other non-objects
-draft2020-12/properties.json :: properties, patternProperties, additionalProperties interaction :: property invalidates property
 draft2020-12/properties.json :: properties, patternProperties, additionalProperties interaction :: patternProperty invalidates property
 draft2020-12/properties.json :: properties, patternProperties, additionalProperties interaction :: patternProperty invalidates nonproperty
 draft2020-12/properties.json :: properties, patternProperties, additionalProperties interaction :: additionalProperty invalidates others
@@ -359,15 +340,11 @@ draft2020-12/ref.json :: root pointer ref :: match
 draft2020-12/ref.json :: root pointer ref :: recursive match
 draft2020-12/ref.json :: root pointer ref :: mismatch
 draft2020-12/ref.json :: root pointer ref :: recursive mismatch
-draft2020-12/ref.json :: ref applies alongside sibling keywords :: ref valid, maxItems invalid
 draft2020-12/ref.json :: remote ref, containing refs itself :: remote ref valid
 draft2020-12/ref.json :: remote ref, containing refs itself :: remote ref invalid
 draft2020-12/ref.json :: ref creates new scope when adjacent to keywords :: referenced subschema doesn't see annotations from properties
 draft2020-12/ref.json :: naive replacement of $ref with its destination is not correct :: do not evaluate the $ref inside the enum, matching any string
 draft2020-12/ref.json :: naive replacement of $ref with its destination is not correct :: do not evaluate the $ref inside the enum, definition exact match
-draft2020-12/ref.json :: order of evaluation: $id and $ref :: data is invalid against first definition
-draft2020-12/ref.json :: order of evaluation: $id and $anchor and $ref :: data is invalid against first definition
-draft2020-12/ref.json :: simple URN base URI with $ref via the URN :: valid under the URN IDed schema
 draft2020-12/required.json :: required validation :: ignores arrays
 draft2020-12/required.json :: required validation :: ignores strings
 draft2020-12/required.json :: required validation :: ignores other non-objects
@@ -458,28 +435,13 @@ draft2020-12/unevaluatedProperties.json :: dependentSchemas with unevaluatedProp
 draft2020-12/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location :: with an unevaluated property that exists at another location
 draft2020-12/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location with patternProperties :: with an unevaluated property that exists at another location
 draft2020-12/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location with additionalProperties :: with an unevaluated property that exists at another location
-draft2020-12/uniqueItems.json :: uniqueItems validation :: non-unique array of integers is invalid
-draft2020-12/uniqueItems.json :: uniqueItems validation :: non-unique array of more than two integers is invalid
-draft2020-12/uniqueItems.json :: uniqueItems validation :: numbers are unique if mathematically unequal
-draft2020-12/uniqueItems.json :: uniqueItems validation :: non-unique array of strings is invalid
-draft2020-12/uniqueItems.json :: uniqueItems validation :: non-unique array of objects is invalid
-draft2020-12/uniqueItems.json :: uniqueItems validation :: property order of array of objects is ignored
-draft2020-12/uniqueItems.json :: uniqueItems validation :: non-unique array of nested objects is invalid
-draft2020-12/uniqueItems.json :: uniqueItems validation :: non-unique array of arrays is invalid
-draft2020-12/uniqueItems.json :: uniqueItems validation :: non-unique array of more than two arrays is invalid
-draft2020-12/uniqueItems.json :: uniqueItems validation :: non-unique heterogeneous types are invalid
-draft2020-12/uniqueItems.json :: uniqueItems validation :: objects are non-unique despite key order
-draft2020-12/uniqueItems.json :: uniqueItems with an array of items :: [false, false] from items array is not valid
-draft2020-12/uniqueItems.json :: uniqueItems with an array of items :: [true, true] from items array is not valid
-draft2020-12/uniqueItems.json :: uniqueItems with an array of items :: unique array extended from [false, true] is valid
-draft2020-12/uniqueItems.json :: uniqueItems with an array of items :: unique array extended from [true, false] is valid
-draft2020-12/uniqueItems.json :: uniqueItems with an array of items and additionalItems=false :: [false, false] from items array is not valid
-draft2020-12/uniqueItems.json :: uniqueItems with an array of items and additionalItems=false :: [true, true] from items array is not valid
+draft2020-12/uniqueItems.json :: uniqueItems with an array of items and additionalItems=false :: extra items are invalid even if unique
 draft2020-12/uniqueItems.json :: uniqueItems=false with an array of items :: unique array extended from [false, true] is valid
 draft2020-12/uniqueItems.json :: uniqueItems=false with an array of items :: unique array extended from [true, false] is valid
 draft2020-12/uniqueItems.json :: uniqueItems=false with an array of items :: non-unique array extended from [false, true] is valid
 draft2020-12/uniqueItems.json :: uniqueItems=false with an array of items :: non-unique array extended from [true, false] is valid
 draft2020-12/vocabulary.json :: schema that uses custom metaschema with with no validation vocabulary :: applicator vocabulary still works
+draft2020-12/vocabulary.json :: schema that uses custom metaschema with with no validation vocabulary :: no validation: invalid number, but it still validates
 draft2019-09/additionalItems.json :: additionalItems as schema :: additional items match schema
 draft2019-09/additionalItems.json :: array of items with no additionalItems permitted :: empty array
 draft2019-09/additionalItems.json :: array of items with no additionalItems permitted :: fewer number of items present (1)
@@ -497,16 +459,6 @@ draft2019-09/additionalProperties.json :: additionalProperties does not look in 
 draft2019-09/additionalProperties.json :: dependentSchemas with additionalProperties :: additionalProperties doesn't consider dependentSchemas
 draft2019-09/additionalProperties.json :: dependentSchemas with additionalProperties :: additionalProperties can't see bar
 draft2019-09/additionalProperties.json :: dependentSchemas with additionalProperties :: additionalProperties can't see bar even when foo2 is present
-draft2019-09/allOf.json :: allOf simple types :: mismatch one
-draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: false, oneOf: false
-draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: false, oneOf: true
-draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: true, oneOf: false
-draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: true, oneOf: true
-draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: false, oneOf: false
-draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: false, oneOf: true
-draft2019-09/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: true, oneOf: false
-draft2019-09/anyOf.json :: anyOf :: neither anyOf valid
-draft2019-09/anyOf.json :: anyOf with base schema :: both anyOf invalid
 draft2019-09/const.json :: const validation :: another value is invalid
 draft2019-09/const.json :: const validation :: another type is invalid
 draft2019-09/const.json :: const with object :: another object is invalid
@@ -546,10 +498,7 @@ draft2019-09/contains.json :: contains keyword with boolean schema true :: empty
 draft2019-09/contains.json :: contains keyword with boolean schema false :: any non-empty array is invalid
 draft2019-09/contains.json :: contains keyword with boolean schema false :: empty array is invalid
 draft2019-09/contains.json :: items + contains :: matches items, does not match contains
-draft2019-09/contains.json :: items + contains :: does not match items, matches contains
-draft2019-09/contains.json :: items + contains :: matches neither items nor contains
 draft2019-09/contains.json :: contains with false if subschema :: empty array is invalid
-draft2019-09/default.json :: the default keyword does not do anything if the property is missing :: an explicit property value is checked against maximum (failing)
 draft2019-09/defs.json :: validate definition against metaschema :: valid definition schema
 draft2019-09/defs.json :: validate definition against metaschema :: invalid definition schema
 draft2019-09/dependentRequired.json :: single dependency :: missing dependency
@@ -591,10 +540,8 @@ draft2019-09/enum.json :: empty enum :: null is invalid
 draft2019-09/enum.json :: empty enum :: object is invalid
 draft2019-09/enum.json :: empty enum :: array is invalid
 draft2019-09/enum.json :: empty enum :: boolean is invalid
-draft2019-09/exclusiveMaximum.json :: exclusiveMaximum validation :: boundary point is invalid
-draft2019-09/exclusiveMaximum.json :: exclusiveMaximum validation :: above the exclusiveMaximum is invalid
-draft2019-09/exclusiveMinimum.json :: exclusiveMinimum validation :: boundary point is invalid
-draft2019-09/exclusiveMinimum.json :: exclusiveMinimum validation :: below the exclusiveMinimum is invalid
+draft2019-09/exclusiveMaximum.json :: exclusiveMaximum validation :: ignores non-numbers
+draft2019-09/exclusiveMinimum.json :: exclusiveMinimum validation :: ignores non-numbers
 draft2019-09/format.json :: email format :: all string formats ignore integers
 draft2019-09/format.json :: email format :: all string formats ignore floats
 draft2019-09/format.json :: email format :: all string formats ignore objects
@@ -716,15 +663,12 @@ draft2019-09/maxContains.json :: maxContains with contains, value with a decimal
 draft2019-09/maxContains.json :: minContains < maxContains :: actual < minContains < maxContains
 draft2019-09/maxContains.json :: minContains < maxContains :: minContains < maxContains < actual
 draft2019-09/maxContains.json :: maxContains = 0 with minContains = 0 :: one matching item
-draft2019-09/maxItems.json :: maxItems validation :: too long is invalid
-draft2019-09/maxItems.json :: maxItems validation with a decimal :: too long is invalid
-draft2019-09/maxLength.json :: maxLength validation :: too long is invalid
-draft2019-09/maxLength.json :: maxLength validation with a decimal :: too long is invalid
-draft2019-09/maxProperties.json :: maxProperties validation :: too long is invalid
-draft2019-09/maxProperties.json :: maxProperties validation with a decimal :: too long is invalid
-draft2019-09/maxProperties.json :: maxProperties = 0 means the object is empty :: one property is invalid
-draft2019-09/maximum.json :: maximum validation :: above the maximum is invalid
-draft2019-09/maximum.json :: maximum validation with unsigned integer :: above the maximum is invalid
+draft2019-09/maxItems.json :: maxItems validation :: ignores non-arrays
+draft2019-09/maxLength.json :: maxLength validation :: ignores non-strings
+draft2019-09/maxProperties.json :: maxProperties validation :: ignores arrays
+draft2019-09/maxProperties.json :: maxProperties validation :: ignores strings
+draft2019-09/maxProperties.json :: maxProperties validation :: ignores other non-objects
+draft2019-09/maximum.json :: maximum validation :: ignores non-numbers
 draft2019-09/minContains.json :: minContains=1 with contains :: empty data
 draft2019-09/minContains.json :: minContains=1 with contains :: no elements match
 draft2019-09/minContains.json :: minContains=2 with contains :: empty data
@@ -739,19 +683,16 @@ draft2019-09/minContains.json :: maxContains < minContains :: invalid minContain
 draft2019-09/minContains.json :: maxContains < minContains :: invalid maxContains
 draft2019-09/minContains.json :: maxContains < minContains :: invalid maxContains and minContains
 draft2019-09/minContains.json :: minContains = 0 with maxContains :: too many
-draft2019-09/minItems.json :: minItems validation :: too short is invalid
-draft2019-09/minItems.json :: minItems validation with a decimal :: too short is invalid
-draft2019-09/minLength.json :: minLength validation :: too short is invalid
-draft2019-09/minLength.json :: minLength validation :: one grapheme is not long enough
-draft2019-09/minLength.json :: minLength validation with a decimal :: too short is invalid
-draft2019-09/minProperties.json :: minProperties validation :: too short is invalid
-draft2019-09/minProperties.json :: minProperties validation with a decimal :: too short is invalid
-draft2019-09/minimum.json :: minimum validation :: below the minimum is invalid
-draft2019-09/minimum.json :: minimum validation with signed integer :: float below the minimum is invalid
-draft2019-09/minimum.json :: minimum validation with signed integer :: int below the minimum is invalid
-draft2019-09/multipleOf.json :: by int :: int by int fail
-draft2019-09/multipleOf.json :: by number :: 35 is not multiple of 1.5
-draft2019-09/multipleOf.json :: by small number :: 0.00751 is not multiple of 0.0001
+draft2019-09/minItems.json :: minItems validation :: ignores non-arrays
+draft2019-09/minLength.json :: minLength validation :: ignores non-strings
+draft2019-09/minProperties.json :: minProperties validation :: ignores arrays
+draft2019-09/minProperties.json :: minProperties validation :: ignores strings
+draft2019-09/minProperties.json :: minProperties validation :: ignores other non-objects
+draft2019-09/minProperties.json :: minProperties validation :: ignores null
+draft2019-09/minProperties.json :: minProperties validation :: ignores booleans
+draft2019-09/minimum.json :: minimum validation :: ignores non-numbers
+draft2019-09/minimum.json :: minimum validation with signed integer :: ignores non-numbers
+draft2019-09/multipleOf.json :: by int :: ignores non-numbers
 draft2019-09/not.json :: not :: disallowed
 draft2019-09/not.json :: not multiple types :: mismatch
 draft2019-09/not.json :: not multiple types :: other mismatch
@@ -777,7 +718,6 @@ draft2019-09/not.json :: forbid everything with boolean schema true :: array is 
 draft2019-09/not.json :: forbid everything with boolean schema true :: empty array is invalid
 draft2019-09/not.json :: collect annotations inside a 'not', even if collection is disabled :: annotations are still collected inside a 'not'
 draft2019-09/oneOf.json :: oneOf :: both oneOf valid
-draft2019-09/oneOf.json :: oneOf :: neither oneOf valid
 draft2019-09/oneOf.json :: oneOf with base schema :: both oneOf valid
 draft2019-09/oneOf.json :: oneOf with boolean schemas, all true :: any value is invalid
 draft2019-09/oneOf.json :: oneOf with boolean schemas, more than one true :: any value is invalid
@@ -785,7 +725,11 @@ draft2019-09/oneOf.json :: oneOf complex types :: both oneOf valid (complex)
 draft2019-09/oneOf.json :: oneOf with empty schema :: both valid - invalid
 draft2019-09/oneOf.json :: oneOf with required :: both valid - invalid
 draft2019-09/oneOf.json :: oneOf with missing optional property :: both oneOf valid
-draft2019-09/pattern.json :: pattern validation :: a non-matching pattern is invalid
+draft2019-09/pattern.json :: pattern validation :: ignores booleans
+draft2019-09/pattern.json :: pattern validation :: ignores integers
+draft2019-09/pattern.json :: pattern validation :: ignores floats
+draft2019-09/pattern.json :: pattern validation :: ignores objects
+draft2019-09/pattern.json :: pattern validation :: ignores arrays
 draft2019-09/patternProperties.json :: patternProperties validates properties matching a regex :: a single invalid match is invalid
 draft2019-09/patternProperties.json :: patternProperties validates properties matching a regex :: multiple invalid matches is invalid
 draft2019-09/patternProperties.json :: patternProperties validates properties matching a regex :: ignores arrays
@@ -801,7 +745,6 @@ draft2019-09/patternProperties.json :: patternProperties with boolean schemas ::
 draft2019-09/patternProperties.json :: patternProperties with boolean schemas :: object with a property matching both true and false is invalid
 draft2019-09/properties.json :: object properties validation :: ignores arrays
 draft2019-09/properties.json :: object properties validation :: ignores other non-objects
-draft2019-09/properties.json :: properties, patternProperties, additionalProperties interaction :: property invalidates property
 draft2019-09/properties.json :: properties, patternProperties, additionalProperties interaction :: patternProperty invalidates property
 draft2019-09/properties.json :: properties, patternProperties, additionalProperties interaction :: patternProperty invalidates nonproperty
 draft2019-09/properties.json :: properties, patternProperties, additionalProperties interaction :: additionalProperty invalidates others
@@ -830,15 +773,11 @@ draft2019-09/ref.json :: root pointer ref :: match
 draft2019-09/ref.json :: root pointer ref :: recursive match
 draft2019-09/ref.json :: root pointer ref :: mismatch
 draft2019-09/ref.json :: root pointer ref :: recursive mismatch
-draft2019-09/ref.json :: ref applies alongside sibling keywords :: ref valid, maxItems invalid
 draft2019-09/ref.json :: remote ref, containing refs itself :: remote ref valid
 draft2019-09/ref.json :: remote ref, containing refs itself :: remote ref invalid
 draft2019-09/ref.json :: ref creates new scope when adjacent to keywords :: referenced subschema doesn't see annotations from properties
 draft2019-09/ref.json :: naive replacement of $ref with its destination is not correct :: do not evaluate the $ref inside the enum, matching any string
 draft2019-09/ref.json :: naive replacement of $ref with its destination is not correct :: do not evaluate the $ref inside the enum, definition exact match
-draft2019-09/ref.json :: order of evaluation: $id and $ref :: data is invalid against first definition
-draft2019-09/ref.json :: order of evaluation: $id and $anchor and $ref :: data is invalid against first definition
-draft2019-09/ref.json :: simple URN base URI with $ref via the URN :: valid under the URN IDed schema
 draft2019-09/ref.json :: $ref with $recursiveAnchor :: extra items allowed for inner arrays
 draft2019-09/ref.json :: $ref with $recursiveAnchor :: extra items disallowed for root
 draft2019-09/required.json :: required validation :: ignores arrays
@@ -925,28 +864,13 @@ draft2019-09/unevaluatedProperties.json :: dependentSchemas with unevaluatedProp
 draft2019-09/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location :: with an unevaluated property that exists at another location
 draft2019-09/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location with patternProperties :: with an unevaluated property that exists at another location
 draft2019-09/unevaluatedProperties.json :: Evaluated properties collection needs to consider instance location with additionalProperties :: with an unevaluated property that exists at another location
-draft2019-09/uniqueItems.json :: uniqueItems validation :: non-unique array of integers is invalid
-draft2019-09/uniqueItems.json :: uniqueItems validation :: non-unique array of more than two integers is invalid
-draft2019-09/uniqueItems.json :: uniqueItems validation :: numbers are unique if mathematically unequal
-draft2019-09/uniqueItems.json :: uniqueItems validation :: non-unique array of strings is invalid
-draft2019-09/uniqueItems.json :: uniqueItems validation :: non-unique array of objects is invalid
-draft2019-09/uniqueItems.json :: uniqueItems validation :: property order of array of objects is ignored
-draft2019-09/uniqueItems.json :: uniqueItems validation :: non-unique array of nested objects is invalid
-draft2019-09/uniqueItems.json :: uniqueItems validation :: non-unique array of arrays is invalid
-draft2019-09/uniqueItems.json :: uniqueItems validation :: non-unique array of more than two arrays is invalid
-draft2019-09/uniqueItems.json :: uniqueItems validation :: non-unique heterogeneous types are invalid
-draft2019-09/uniqueItems.json :: uniqueItems validation :: objects are non-unique despite key order
-draft2019-09/uniqueItems.json :: uniqueItems with an array of items :: [false, false] from items array is not valid
-draft2019-09/uniqueItems.json :: uniqueItems with an array of items :: [true, true] from items array is not valid
-draft2019-09/uniqueItems.json :: uniqueItems with an array of items :: unique array extended from [false, true] is valid
-draft2019-09/uniqueItems.json :: uniqueItems with an array of items :: unique array extended from [true, false] is valid
-draft2019-09/uniqueItems.json :: uniqueItems with an array of items and additionalItems=false :: [false, false] from items array is not valid
-draft2019-09/uniqueItems.json :: uniqueItems with an array of items and additionalItems=false :: [true, true] from items array is not valid
+draft2019-09/uniqueItems.json :: uniqueItems with an array of items and additionalItems=false :: extra items are invalid even if unique
 draft2019-09/uniqueItems.json :: uniqueItems=false with an array of items :: unique array extended from [false, true] is valid
 draft2019-09/uniqueItems.json :: uniqueItems=false with an array of items :: unique array extended from [true, false] is valid
 draft2019-09/uniqueItems.json :: uniqueItems=false with an array of items :: non-unique array extended from [false, true] is valid
 draft2019-09/uniqueItems.json :: uniqueItems=false with an array of items :: non-unique array extended from [true, false] is valid
 draft2019-09/vocabulary.json :: schema that uses custom metaschema with with no validation vocabulary :: applicator vocabulary still works
+draft2019-09/vocabulary.json :: schema that uses custom metaschema with with no validation vocabulary :: no validation: invalid number, but it still validates
 draft7/additionalItems.json :: additionalItems as schema :: additional items match schema
 draft7/additionalItems.json :: array of items with no additionalItems permitted :: empty array
 draft7/additionalItems.json :: array of items with no additionalItems permitted :: fewer number of items present (1)
@@ -961,16 +885,6 @@ draft7/additionalProperties.json :: additionalProperties being false does not al
 draft7/additionalProperties.json :: non-ASCII pattern with additionalProperties :: not matching the pattern is invalid
 draft7/additionalProperties.json :: additionalProperties with schema :: an additional invalid property is invalid
 draft7/additionalProperties.json :: additionalProperties does not look in applicators :: properties defined in allOf are not examined
-draft7/allOf.json :: allOf simple types :: mismatch one
-draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: false, oneOf: false
-draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: false, oneOf: true
-draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: true, oneOf: false
-draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: false, anyOf: true, oneOf: true
-draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: false, oneOf: false
-draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: false, oneOf: true
-draft7/allOf.json :: allOf combined with anyOf, oneOf :: allOf: true, anyOf: true, oneOf: false
-draft7/anyOf.json :: anyOf :: neither anyOf valid
-draft7/anyOf.json :: anyOf with base schema :: both anyOf invalid
 draft7/const.json :: const validation :: another value is invalid
 draft7/const.json :: const validation :: another type is invalid
 draft7/const.json :: const with object :: another object is invalid
@@ -1010,10 +924,7 @@ draft7/contains.json :: contains keyword with boolean schema true :: empty array
 draft7/contains.json :: contains keyword with boolean schema false :: any non-empty array is invalid
 draft7/contains.json :: contains keyword with boolean schema false :: empty array is invalid
 draft7/contains.json :: items + contains :: matches items, does not match contains
-draft7/contains.json :: items + contains :: does not match items, matches contains
-draft7/contains.json :: items + contains :: matches neither items nor contains
 draft7/contains.json :: contains with false if subschema :: empty array is invalid
-draft7/default.json :: the default keyword does not do anything if the property is missing :: an explicit property value is checked against maximum (failing)
 draft7/dependencies.json :: dependencies :: missing dependency
 draft7/dependencies.json :: multiple dependencies :: missing dependency
 draft7/dependencies.json :: multiple dependencies :: missing other dependency
@@ -1046,10 +957,8 @@ draft7/enum.json :: enum with 0 does not match false :: false is invalid
 draft7/enum.json :: enum with [0] does not match [false] :: [false] is invalid
 draft7/enum.json :: enum with 1 does not match true :: true is invalid
 draft7/enum.json :: enum with [1] does not match [true] :: [true] is invalid
-draft7/exclusiveMaximum.json :: exclusiveMaximum validation :: boundary point is invalid
-draft7/exclusiveMaximum.json :: exclusiveMaximum validation :: above the exclusiveMaximum is invalid
-draft7/exclusiveMinimum.json :: exclusiveMinimum validation :: boundary point is invalid
-draft7/exclusiveMinimum.json :: exclusiveMinimum validation :: below the exclusiveMinimum is invalid
+draft7/exclusiveMaximum.json :: exclusiveMaximum validation :: ignores non-numbers
+draft7/exclusiveMinimum.json :: exclusiveMinimum validation :: ignores non-numbers
 draft7/format.json :: email format :: all string formats ignore integers
 draft7/format.json :: email format :: all string formats ignore floats
 draft7/format.json :: email format :: all string formats ignore objects
@@ -1154,28 +1063,22 @@ draft7/items.json :: an array of schemas for items :: JavaScript pseudo-array is
 draft7/items.json :: items with boolean schemas :: array with one item is valid
 draft7/items.json :: items with boolean schemas :: empty array is valid
 draft7/items.json :: items and subitems :: fewer items is valid
-draft7/maxItems.json :: maxItems validation :: too long is invalid
-draft7/maxItems.json :: maxItems validation with a decimal :: too long is invalid
-draft7/maxLength.json :: maxLength validation :: too long is invalid
-draft7/maxLength.json :: maxLength validation with a decimal :: too long is invalid
-draft7/maxProperties.json :: maxProperties validation :: too long is invalid
-draft7/maxProperties.json :: maxProperties validation with a decimal :: too long is invalid
-draft7/maxProperties.json :: maxProperties = 0 means the object is empty :: one property is invalid
-draft7/maximum.json :: maximum validation :: above the maximum is invalid
-draft7/maximum.json :: maximum validation with unsigned integer :: above the maximum is invalid
-draft7/minItems.json :: minItems validation :: too short is invalid
-draft7/minItems.json :: minItems validation with a decimal :: too short is invalid
-draft7/minLength.json :: minLength validation :: too short is invalid
-draft7/minLength.json :: minLength validation :: one grapheme is not long enough
-draft7/minLength.json :: minLength validation with a decimal :: too short is invalid
-draft7/minProperties.json :: minProperties validation :: too short is invalid
-draft7/minProperties.json :: minProperties validation with a decimal :: too short is invalid
-draft7/minimum.json :: minimum validation :: below the minimum is invalid
-draft7/minimum.json :: minimum validation with signed integer :: float below the minimum is invalid
-draft7/minimum.json :: minimum validation with signed integer :: int below the minimum is invalid
-draft7/multipleOf.json :: by int :: int by int fail
-draft7/multipleOf.json :: by number :: 35 is not multiple of 1.5
-draft7/multipleOf.json :: by small number :: 0.00751 is not multiple of 0.0001
+draft7/maxItems.json :: maxItems validation :: ignores non-arrays
+draft7/maxLength.json :: maxLength validation :: ignores non-strings
+draft7/maxProperties.json :: maxProperties validation :: ignores arrays
+draft7/maxProperties.json :: maxProperties validation :: ignores strings
+draft7/maxProperties.json :: maxProperties validation :: ignores other non-objects
+draft7/maximum.json :: maximum validation :: ignores non-numbers
+draft7/minItems.json :: minItems validation :: ignores non-arrays
+draft7/minLength.json :: minLength validation :: ignores non-strings
+draft7/minProperties.json :: minProperties validation :: ignores arrays
+draft7/minProperties.json :: minProperties validation :: ignores strings
+draft7/minProperties.json :: minProperties validation :: ignores other non-objects
+draft7/minProperties.json :: minProperties validation :: ignores null
+draft7/minProperties.json :: minProperties validation :: ignores booleans
+draft7/minimum.json :: minimum validation :: ignores non-numbers
+draft7/minimum.json :: minimum validation with signed integer :: ignores non-numbers
+draft7/multipleOf.json :: by int :: ignores non-numbers
 draft7/not.json :: not :: disallowed
 draft7/not.json :: not multiple types :: mismatch
 draft7/not.json :: not multiple types :: other mismatch
@@ -1200,7 +1103,6 @@ draft7/not.json :: forbid everything with boolean schema true :: empty object is
 draft7/not.json :: forbid everything with boolean schema true :: array is invalid
 draft7/not.json :: forbid everything with boolean schema true :: empty array is invalid
 draft7/oneOf.json :: oneOf :: both oneOf valid
-draft7/oneOf.json :: oneOf :: neither oneOf valid
 draft7/oneOf.json :: oneOf with base schema :: both oneOf valid
 draft7/oneOf.json :: oneOf with boolean schemas, all true :: any value is invalid
 draft7/oneOf.json :: oneOf with boolean schemas, more than one true :: any value is invalid
@@ -1208,7 +1110,11 @@ draft7/oneOf.json :: oneOf complex types :: both oneOf valid (complex)
 draft7/oneOf.json :: oneOf with empty schema :: both valid - invalid
 draft7/oneOf.json :: oneOf with required :: both valid - invalid
 draft7/oneOf.json :: oneOf with missing optional property :: both oneOf valid
-draft7/pattern.json :: pattern validation :: a non-matching pattern is invalid
+draft7/pattern.json :: pattern validation :: ignores booleans
+draft7/pattern.json :: pattern validation :: ignores integers
+draft7/pattern.json :: pattern validation :: ignores floats
+draft7/pattern.json :: pattern validation :: ignores objects
+draft7/pattern.json :: pattern validation :: ignores arrays
 draft7/patternProperties.json :: patternProperties validates properties matching a regex :: a single invalid match is invalid
 draft7/patternProperties.json :: patternProperties validates properties matching a regex :: multiple invalid matches is invalid
 draft7/patternProperties.json :: patternProperties validates properties matching a regex :: ignores arrays
@@ -1224,7 +1130,6 @@ draft7/patternProperties.json :: patternProperties with boolean schemas :: objec
 draft7/patternProperties.json :: patternProperties with boolean schemas :: object with a property matching both true and false is invalid
 draft7/properties.json :: object properties validation :: ignores arrays
 draft7/properties.json :: object properties validation :: ignores other non-objects
-draft7/properties.json :: properties, patternProperties, additionalProperties interaction :: property invalidates property
 draft7/properties.json :: properties, patternProperties, additionalProperties interaction :: patternProperty invalidates property
 draft7/properties.json :: properties, patternProperties, additionalProperties interaction :: patternProperty invalidates nonproperty
 draft7/properties.json :: properties, patternProperties, additionalProperties interaction :: additionalProperty invalidates others
@@ -1241,12 +1146,11 @@ draft7/ref.json :: root pointer ref :: match
 draft7/ref.json :: root pointer ref :: recursive match
 draft7/ref.json :: root pointer ref :: mismatch
 draft7/ref.json :: root pointer ref :: recursive mismatch
+draft7/ref.json :: ref overrides any sibling keywords :: ref valid, maxItems ignored
 draft7/ref.json :: $ref prevents a sibling $id from changing the base uri :: $ref resolves to /definitions/base_foo, data does not validate
 draft7/ref.json :: $ref prevents a sibling $id from changing the base uri :: $ref resolves to /definitions/base_foo, data validates
-draft7/ref.json :: remote ref, containing refs itself :: remote ref invalid
 draft7/ref.json :: naive replacement of $ref with its destination is not correct :: do not evaluate the $ref inside the enum, matching any string
 draft7/ref.json :: naive replacement of $ref with its destination is not correct :: do not evaluate the $ref inside the enum, definition exact match
-draft7/ref.json :: simple URN base URI with $ref via the URN :: valid under the URN IDed schema
 draft7/required.json :: required validation :: ignores arrays
 draft7/required.json :: required validation :: ignores strings
 draft7/required.json :: required validation :: ignores other non-objects
@@ -1255,23 +1159,7 @@ draft7/required.json :: required validation :: ignores boolean
 draft7/required.json :: required properties whose names are Javascript object property names :: ignores arrays
 draft7/required.json :: required properties whose names are Javascript object property names :: ignores other non-objects
 draft7/type.json :: string type matches strings :: null is not a string
-draft7/uniqueItems.json :: uniqueItems validation :: non-unique array of integers is invalid
-draft7/uniqueItems.json :: uniqueItems validation :: non-unique array of more than two integers is invalid
-draft7/uniqueItems.json :: uniqueItems validation :: numbers are unique if mathematically unequal
-draft7/uniqueItems.json :: uniqueItems validation :: non-unique array of strings is invalid
-draft7/uniqueItems.json :: uniqueItems validation :: non-unique array of objects is invalid
-draft7/uniqueItems.json :: uniqueItems validation :: property order of array of objects is ignored
-draft7/uniqueItems.json :: uniqueItems validation :: non-unique array of nested objects is invalid
-draft7/uniqueItems.json :: uniqueItems validation :: non-unique array of arrays is invalid
-draft7/uniqueItems.json :: uniqueItems validation :: non-unique array of more than two arrays is invalid
-draft7/uniqueItems.json :: uniqueItems validation :: non-unique heterogeneous types are invalid
-draft7/uniqueItems.json :: uniqueItems validation :: objects are non-unique despite key order
-draft7/uniqueItems.json :: uniqueItems with an array of items :: [false, false] from items array is not valid
-draft7/uniqueItems.json :: uniqueItems with an array of items :: [true, true] from items array is not valid
-draft7/uniqueItems.json :: uniqueItems with an array of items :: unique array extended from [false, true] is valid
-draft7/uniqueItems.json :: uniqueItems with an array of items :: unique array extended from [true, false] is valid
-draft7/uniqueItems.json :: uniqueItems with an array of items and additionalItems=false :: [false, false] from items array is not valid
-draft7/uniqueItems.json :: uniqueItems with an array of items and additionalItems=false :: [true, true] from items array is not valid
+draft7/uniqueItems.json :: uniqueItems with an array of items and additionalItems=false :: extra items are invalid even if unique
 draft7/uniqueItems.json :: uniqueItems=false with an array of items :: unique array extended from [false, true] is valid
 draft7/uniqueItems.json :: uniqueItems=false with an array of items :: unique array extended from [true, false] is valid
 draft7/uniqueItems.json :: uniqueItems=false with an array of items :: non-unique array extended from [false, true] is valid
