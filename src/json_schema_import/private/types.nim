@@ -1,4 +1,5 @@
-import std/[sets, tables, strformat, hashes, strutils, uri, json], schemaRef, namechain
+import std/[sets, tables, strformat, hashes, sequtils, strutils, uri, json]
+import schemaRef, namechain, constraints
 
 type
   TypeDefKind* = enum
@@ -26,6 +27,8 @@ type
   TypeDef* = ref object
     sref*: SchemaRef
     id*: Uri
+    validation*: ValidateNode
+      ## Assertions that narrow the values this type accepts without changing the type
     case kind*: TypeDefKind
     of ObjType:
       properties*: OrderedTable[string, PropDef]
@@ -68,7 +71,7 @@ proc hasRealField*(typ: TypeDef): bool =
       true
 
 proc hash*(typ: TypeDef): Hash {.noSideEffect.} =
-  result = hash(typ.kind) !& hash(typ.sref)
+  result = hash(typ.kind) !& hash(typ.sref) !& hash(typ.validation)
 
   case typ.kind
   of ObjType:
@@ -95,7 +98,7 @@ proc hash*(typ: TypeDef): Hash {.noSideEffect.} =
     result = result !& hash(typ.note.sref) !& hash(typ.inner)
 
 proc `==`*(a, b: TypeDef): bool {.noSideEffect.} =
-  if a.kind != b.kind:
+  if a.kind != b.kind or a.validation != b.validation:
     return false
 
   case a.kind
@@ -117,6 +120,86 @@ proc `==`*(a, b: TypeDef): bool {.noSideEffect.} =
     return a.subtype == b.subtype
   of NoteType:
     return a.note.sref == b.note.sref and a.inner == b.inner
+  of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, ConstValueType:
+    return true
+
+type TypeDefShape* = distinct TypeDef
+  ## A type compared by the Nim shape it generates, which deliberately skips
+  ## `validation`: two arms asserting different things still generate one Nim type
+
+proc asShape*(typ: TypeDef): TypeDefShape =
+  return TypeDefShape(typ)
+
+proc hash*(typ: TypeDefShape): Hash {.noSideEffect.}
+proc `==`*(a, b: TypeDefShape): bool {.noSideEffect.}
+
+proc sameShape(a, b: seq[TypeDef]): bool =
+  if a.len != b.len:
+    return false
+  for i in 0 ..< a.len:
+    if a[i].asShape != b[i].asShape:
+      return false
+  return true
+
+proc hash*(typ: TypeDefShape): Hash =
+  ## Deliberately coarser than `hash(TypeDef)`: it only has to agree with the `==` below,
+  ## which settles the collisions this leaves behind
+  let typ = TypeDef(typ)
+  result = hash(typ.kind) !& hash(typ.sref)
+
+  case typ.kind
+  of ObjType:
+    for name, _ in typ.properties:
+      result = result !& hash(name)
+  of EnumType:
+    result = result !& hash(typ.values)
+  of RefType:
+    result = result !& hash(typ.schemaRef)
+  of TupleType:
+    result = result !& hash(typ.elements.len)
+  of UnionType:
+    result = result !& hash(typ.subtypes.len)
+  of ConstValueType:
+    result = result !& hash(typ.value)
+  of NoteType:
+    result = result !& hash(typ.note.sref)
+  of ArrayType, MapType, OptionalType, IntegerType, StringType, NumberType, BoolType,
+      NullType, JsonType:
+    discard
+
+proc `==`*(a, b: TypeDefShape): bool =
+  let a = TypeDef(a)
+  let b = TypeDef(b)
+  if a.kind != b.kind:
+    return false
+
+  case a.kind
+  of ObjType:
+    if a.properties.len != b.properties.len:
+      return false
+    let other = b.properties.pairs.toSeq
+    for i, (name, prop) in a.properties.pairs.toSeq:
+      if name != other[i][0] or prop.propName != other[i][1].propName or
+          prop.required != other[i][1].required or
+          prop.typ.asShape != other[i][1].typ.asShape:
+        return false
+    return true
+  of EnumType:
+    return a.values == b.values
+  of RefType:
+    return a.schemaRef == b.schemaRef
+  of ArrayType:
+    return a.items.asShape == b.items.asShape
+  of TupleType:
+    return sameShape(a.elements, b.elements)
+  of UnionType:
+    return sameShape(a.subtypes, b.subtypes)
+  of MapType:
+    return a.entries.asShape == b.entries.asShape
+  of OptionalType:
+    return a.subtype.asShape == b.subtype.asShape
+  of NoteType:
+    return a.note.sref == b.note.sref and a.inner.asShape == b.inner.asShape
   of IntegerType, StringType, NumberType, BoolType, NullType, JsonType, ConstValueType:
     return true
 
@@ -198,25 +281,18 @@ proc `$`*(typ: TypeDef): string =
   of NoteType:
     result = fmt"(Note {typ.note.sref} {typ.inner})"
 
+  if not typ.validation.isNil:
+    result = fmt"({result} {typ.validation})"
+
   if not typ.sref.isNil:
     result = fmt"({typ.sref} {result})"
 
-proc withRef*(typ: TypeDef, sref: SchemaRef): TypeDef =
-  ## Labels a type with the reference it was reached through
+proc copyType*(typ: TypeDef): TypeDef =
+  ## A copy that can be relabelled or reconstrained without disturbing the original,
+  ## which matters because a memoized type is shared by everything that reached it
   ##
-  ## When `typ` is already labelled it gets copied, because a labelled type is one that
-  ## is memoized under its own reference and relabelling it in place would corrupt that
-  ## entry. Note that the copy has to be built field by field: `result[] = typ[]` looks
-  ## like it would do the job, but the VM aliases the two bodies instead of copying.
-  if typ.sref.isNil:
-    typ.sref = sref
-    return typ
-
-  # Relabelling would take away the name an edge inside points at. The old name serves just
-  # as well, unless an edge needs the new one too.
-  if typ.isEdgeTarget and not typ.closesOnto(sref):
-    return typ
-
+  ## Built field by field: `result[] = typ[]` looks like it would do the job, but the VM
+  ## aliases the two bodies instead of copying.
   result =
     case typ.kind
     of ObjType:
@@ -243,6 +319,25 @@ proc withRef*(typ: TypeDef, sref: SchemaRef): TypeDef =
       TypeDef(kind: typ.kind)
 
   result.id = typ.id
+  result.validation = typ.validation
+  result.sref = typ.sref
+
+proc withRef*(typ: TypeDef, sref: SchemaRef): TypeDef =
+  ## Labels a type with the reference it was reached through
+  ##
+  ## When `typ` is already labelled it gets copied, because a labelled type is one that
+  ## is memoized under its own reference and relabelling it in place would corrupt that
+  ## entry.
+  if typ.sref.isNil:
+    typ.sref = sref
+    return typ
+
+  # Relabelling would take away the name an edge inside points at. The old name serves just
+  # as well, unless an edge needs the new one too.
+  if typ.isEdgeTarget and not typ.closesOnto(sref):
+    return typ
+
+  result = typ.copyType
   result.sref = sref
   if typ.isEdgeTarget:
     result = result.withNote(typ)
