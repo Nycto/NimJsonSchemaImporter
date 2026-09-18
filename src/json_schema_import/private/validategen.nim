@@ -176,17 +176,27 @@ proc walk(typ: TypeDef, access, location: NimNode): NimNode =
 proc buildObjValidate(typ: TypeDef): NimNode =
   result = newStmtList()
   result.add(typ.assertions(value, path))
-  for _, (propName, subtype, _) in typ.properties:
+  for _, (propName, subtype, required) in typ.properties:
     if not subtype.asserts:
       continue
     let prop = safePropName(propName)
-    result.add(
-      subtype.walk(
-        newDotExpr(value, prop),
-        quote do:
-          `path` & "/" & `propName`,
-      )
+    let access = newDotExpr(value, prop)
+    var checks = subtype.walk(
+      access,
+      quote do:
+        `path` & "/" & `propName`,
     )
+
+    # A property with no `Option` to speak of says it is absent by being empty, and an
+    # absent value asserts nothing. That is the reading the encoders take of one too,
+    # so a value that decodes is held to exactly what it would encode back to.
+    if not required and classify(subtype, required) == pcSelfOptional:
+      let present = infix(newCall(bindSym"len", access), ">", newLit(0))
+      checks = quote:
+        if `present`:
+          `checks`
+
+    result.add(checks)
 
 proc buildUnionValidate(typ: TypeDef): NimNode =
   result = nnkCaseStmt.newTree(newDotExpr(value, ident("kind")))

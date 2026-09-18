@@ -244,6 +244,29 @@ suite "Describing assertions":
     check("""{"minLength": "three"}""".parse.kinds == @[vkAny])
     check("""{"pattern": 3}""".parse.kinds == @[vkAny])
 
+  test "Item keywords describe an array":
+    check("""{"minItems": 1}""".parse.kinds == @[vkArray])
+    check("""{"minItems": 1}""".asserts == @["minItems: 1"])
+    check("""{"uniqueItems": true}""".parse.kinds == @[vkArray])
+    check("""{"uniqueItems": true}""".asserts == @["uniqueItems"])
+
+  test "Asking for no uniqueness asks for nothing":
+    check("""{"uniqueItems": false}""".parse.kinds == @[vkAny])
+
+  test "Property keywords describe an object":
+    check("""{"maxProperties": 2}""".parse.kinds == @[vkObject])
+    check(
+      """{"minProperties": 1, "maxProperties": 2}""".asserts ==
+        @["(minProperties: 1 and maxProperties: 2)"]
+    )
+
+  test "A count keyword leaves the shape beside it alone":
+    let schema = """
+      {"type": "object", "properties": {"a": {"type": "string"}}, "minProperties": 1}
+    """
+    check(schema.parse.variants[0].properties.len == 1)
+    check(schema.asserts == @["minProperties: 1"])
+
   test "A whole number spelled as a decimal still counts":
     check("""{"maxLength": 2.0}""".asserts == @["maxLength: 2"])
     check("""{"minLength": 1.0, "maxLength": 2.0}""".parse.kinds == @[vkString])

@@ -489,6 +489,14 @@ proc stringify(_: typedesc[File_system]; value: File_system): string =
 proc `$`*(value: File_system): string =
   stringify(File_system, value)
 
+proc validate*(_: typedesc[File_system]; value: File_system;
+               path: string = "File_system") =
+  if len(value.options) > 0:
+    if not (satisfiesMinItems(value.options, 1)):
+      invalid(path & "/" & "options", "minItems: 1")
+    if not (satisfiesUniqueItems(value.options)):
+      invalid(path & "/" & "options", "uniqueItems")
+  
 proc fromJsonHook*(target: var File_system; source: JsonNode) =
   assert(hasKey(source, "storage"),
          "storage" & " is missing while decoding " & "File_system")

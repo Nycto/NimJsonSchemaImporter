@@ -199,6 +199,16 @@ suite "Lowering constraints":
     discard Description(variants: @[first, str(maxLen)]).lower
     check(describe(first).held.validation == minLen)
 
+  test "A container hands its constraint on the same way a scalar does":
+    let counted = countAssertion(MinItemsValid, 1)
+    check(
+      describe(Variant(kind: vkArray, validation: counted)).held.validation == counted
+    )
+    let sized = countAssertion(MinPropsValid, 1)
+    let mapped = describe(Variant(kind: vkObject, validation: sized)).held
+    check(mapped.kind == MapType)
+    check(mapped.validation == sized)
+
   test "Arms of different types stay apart, each keeping its own":
     let lowered = Description(variants: @[str(minLen), Variant(kind: vkInteger)]).held
     check(lowered.kind == UnionType)

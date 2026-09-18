@@ -1,4 +1,4 @@
-import std/[unittest, json, jsonutils, options, tables]
+import std/[unittest, json, jsonutils, options, tables, typetraits]
 import json_schema_import, json_schema_import/private/validate
 
 suite "Length assertions":
@@ -170,3 +170,89 @@ suite "Validating while decoding":
     person.name = "ab"
     expect ValueError:
       validate(Person, person)
+
+jsonSchema(
+  JsonSchemaConfig(rootTypeName: "Counted"),
+  %*{
+    "type": "object",
+    "required": ["names", "pair"],
+    "properties": {
+      "names": {"type": "array", "minItems": 1, "maxItems": 3, "uniqueItems": true},
+      "pair": {"type": "object", "minProperties": 1, "maxProperties": 2},
+      "spare": {"type": "array", "minItems": 2},
+      "listed": {
+        "type": "object",
+        "minProperties": 2,
+        "required": ["a"],
+        "properties": {"a": {"type": "string"}, "b": {"type": "string"}},
+      },
+    },
+  },
+)
+
+proc counted(props: varargs[(string, JsonNode)]): string =
+  ## An instance satisfying everything, with the named properties written over it
+  var node = %*{"names": ["a"], "pair": {"x": 1}}
+  for (key, value) in props:
+    node[key] = value
+  return $node
+
+proc countRejects(instance, because: string) =
+  try:
+    discard jsonTo(instance.parseJson, Counted)
+    check(false)
+  except ValueError as e:
+    check(e.msg == because)
+
+suite "Counting what a value holds":
+  test "A seq is held to how many elements it has":
+    check(jsonTo(counted().parseJson, Counted).names == @[%*"a"])
+    countRejects(counted({"names": %*[]}), "Counted/names does not satisfy minItems: 1")
+    countRejects(
+      counted({"names": %*["a", "b", "c", "d"]}),
+      "Counted/names does not satisfy maxItems: 3",
+    )
+
+  test "A seq is held to whether its elements repeat":
+    countRejects(
+      counted({"names": %*["a", "a"]}), "Counted/names does not satisfy uniqueItems"
+    )
+
+  test "A map is held to how many entries it has":
+    countRejects(
+      counted({"pair": %*{}}), "Counted/pair does not satisfy minProperties: 1"
+    )
+    countRejects(
+      counted({"pair": %*{"x": 1, "y": 2, "z": 3}}),
+      "Counted/pair does not satisfy maxProperties: 2",
+    )
+
+  test "A listed object counts the properties it actually holds":
+    check(
+      jsonTo(counted({"listed": %*{"a": "x", "b": "y"}}).parseJson, Counted).listed.isSome
+    )
+    countRejects(
+      counted({"listed": %*{"a": "x"}}), "Listed does not satisfy minProperties: 2"
+    )
+
+  test "An optional list says it is absent by being empty, so asserts nothing":
+    check(jsonTo(counted().parseJson, Counted).spare.len == 0)
+    countRejects(
+      counted({"spare": %*["a"]}), "Counted/spare does not satisfy minItems: 2"
+    )
+
+jsonSchema(
+  JsonSchemaConfig(rootTypeName: "Names"),
+  %*{"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true},
+)
+
+suite "A root counting what it holds":
+  test "It is a type of its own, since an alias could carry no check":
+    check(not (Names is seq[string]))
+    check(jsonTo(%*["a"], Names).distinctBase.len == 1)
+
+  test "And is held to what it counts":
+    expect ValueError:
+      discard jsonTo(%*[], Names)
+    expect ValueError:
+      discard jsonTo(%*["a", "a"], Names)

@@ -171,6 +171,12 @@ const BOUND_KEYWORDS: seq[(string, BoundKind)] = @{
   "multipleOf": MultipleOfValid,
 }
 
+const ITEM_KEYWORDS: seq[(string, CountKind)] =
+  @{"minItems": MinItemsValid, "maxItems": MaxItemsValid}
+
+const PROP_KEYWORDS: seq[(string, CountKind)] =
+  @{"minProperties": MinPropsValid, "maxProperties": MaxPropsValid}
+
 proc count(node: JsonNode, keyword: string): Option[int] =
   ## A count keyword, which the schema lets be written as a whole number of any
   ## spelling, so `2` and `2.0` name the same limit
@@ -203,6 +209,13 @@ proc bounds(node: JsonNode): ValidateNode =
     if not value.isNil and value.kind in {JInt, JFloat}:
       result = allOf(result, boundAssertion(kind, value.getFloat))
 
+proc counts(node: JsonNode, keywords: seq[(string, CountKind)]): ValidateNode =
+  ## Conjoins whichever counting keywords are written on a node
+  for (keyword, kind) in keywords:
+    let limit = node.count(keyword)
+    if limit.isSome:
+      result = allOf(result, countAssertion(kind, limit.unsafeGet))
+
 proc validationConstraints(node: JsonNode): seq[Variant] =
   ## What the assertion keywords say: nothing about shape beyond the type they imply,
   ## and everything about the values that type is allowed to hold
@@ -216,6 +229,17 @@ proc validationConstraints(node: JsonNode): seq[Variant] =
   let numbers = node.bounds
   if not numbers.isNil:
     result.add(Variant(kind: vkNumber, validation: numbers))
+
+  var arrays = node.counts(ITEM_KEYWORDS)
+  let unique = node{"uniqueItems"}
+  if not unique.isNil and unique.kind == JBool and unique.getBool:
+    arrays = allOf(arrays, ValidateNode(kind: UniqueItemsValid))
+  if not arrays.isNil:
+    result.add(Variant(kind: vkArray, validation: arrays))
+
+  let objects = node.counts(PROP_KEYWORDS)
+  if not objects.isNil:
+    result.add(Variant(kind: vkObject, validation: objects))
 
 proc constrains(constraint, variant: Variant): bool =
   ## Whether a keyword's constraint applies to a type `type` allowed
