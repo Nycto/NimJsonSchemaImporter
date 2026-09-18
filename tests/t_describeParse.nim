@@ -1,6 +1,6 @@
 import
   std/[unittest, json, sets, options, sequtils, tables, strutils],
-  json_schema_import/private/[describe, describeparse, schemaRef]
+  json_schema_import/private/[constraints, describe, describeparse, schemaRef]
 
 proc parse(schema: string): Description =
   describeSchema(schema.parseJson, nil)
@@ -193,3 +193,60 @@ suite "Describing combinators":
       discard """{"allOf": []}""".parse
     expect ValueError:
       discard """{"oneOf": []}""".parse
+
+suite "Describing assertions":
+  proc asserts(schema: string): seq[string] =
+    for variant in schema.parse.variants:
+      result.add($variant.validation)
+
+  test "Length keywords describe a string":
+    check("""{"minLength": 3}""".parse.kinds == @[vkString])
+    check("""{"minLength": 3}""".asserts == @["minLength: 3"])
+    check(
+      """{"minLength": 3, "maxLength": 5}""".asserts ==
+        @["(minLength: 3 and maxLength: 5)"]
+    )
+
+  test "A pattern describes a string":
+    check("""{"pattern": "^a"}""".parse.kinds == @[vkString])
+    check("""{"pattern": "^a"}""".asserts == @["pattern: \"^a\""])
+
+  test "Numeric keywords describe a number":
+    check("""{"minimum": 2}""".parse.kinds == @[vkNumber])
+    check("""{"minimum": 2}""".asserts == @["minimum: 2"])
+    check("""{"multipleOf": 0.5}""".asserts == @["multipleOf: 0.5"])
+
+  test "A written type keeps its own shape and takes the assertion":
+    check("""{"type": "string", "minLength": 3}""".parse.kinds == @[vkString])
+    check("""{"type": "string", "minLength": 3}""".asserts == @["minLength: 3"])
+
+  test "An integer is a number, so a bound written for one holds it":
+    let schema = """{"type": "integer", "minimum": 2}"""
+    check(schema.parse.kinds == @[vkInteger])
+    check(schema.asserts == @["minimum: 2"])
+
+  test "An assertion narrows only the type it is about":
+    let schema = """{"type": ["string", "integer"], "minLength": 3}"""
+    check(schema.parse.kinds == @[vkString, vkInteger])
+    check(schema.asserts == @["minLength: 3", "anything"])
+
+  test "allOf conjoins what each branch asserts":
+    let schema = """
+      {"type": "string", "allOf": [{"minLength": 3}, {"maxLength": 5}]}
+    """
+    check(schema.asserts == @["(minLength: 3 and maxLength: 5)"])
+
+  test "Alternatives each keep their own":
+    let schema = """{"anyOf": [{"minLength": 3}, {"maxLength": 5}]}"""
+    check(schema.asserts == @["minLength: 3", "maxLength: 5"])
+
+  test "A keyword written with a value of the wrong type says nothing":
+    check("""{"minLength": "three"}""".parse.kinds == @[vkAny])
+    check("""{"pattern": 3}""".parse.kinds == @[vkAny])
+
+  test "A whole number spelled as a decimal still counts":
+    check("""{"maxLength": 2.0}""".asserts == @["maxLength: 2"])
+    check("""{"minLength": 1.0, "maxLength": 2.0}""".parse.kinds == @[vkString])
+
+  test "A count that is not whole says nothing, since no length could equal it":
+    check("""{"maxLength": 2.5}""".parse.kinds == @[vkAny])

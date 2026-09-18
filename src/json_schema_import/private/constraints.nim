@@ -26,6 +26,18 @@ type
     of MinimumValid, MaximumValid, ExclusiveMinValid, ExclusiveMaxValid, MultipleOfValid:
       bound*: BiggestFloat
 
+type
+  LengthKind* = range[MinLenValid .. MaxLenValid]
+  BoundKind* = range[MinimumValid .. MultipleOfValid]
+
+proc lengthAssertion*(kind: LengthKind, len: int): ValidateNode =
+  ## Builds a length node from a kind only known at runtime
+  return ValidateNode(kind: kind, len: len)
+
+proc boundAssertion*(kind: BoundKind, bound: BiggestFloat): ValidateNode =
+  ## Builds a numeric node from a kind only known at runtime
+  return ValidateNode(kind: kind, bound: bound)
+
 proc allOf*(a, b: ValidateNode): ValidateNode =
   ## Both sides, where a side asserting nothing leaves the other alone
   if a.isNil:

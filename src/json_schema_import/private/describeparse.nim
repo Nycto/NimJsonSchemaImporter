@@ -1,6 +1,7 @@
 import
-  std/[json, sets, tables, strformat, uri, options],
+  std/[json, math, sets, tables, strformat, uri, options],
   describe,
+  constraints,
   schemaRef,
   history,
   ../config
@@ -159,17 +160,76 @@ proc scalarConstraints(node: JsonNode): seq[Variant] =
   if "const" in node:
     result.add(Variant(kind: vkConst, value: node{"const"}))
 
+const LENGTH_KEYWORDS: seq[(string, LengthKind)] =
+  @{"minLength": MinLenValid, "maxLength": MaxLenValid}
+
+const BOUND_KEYWORDS: seq[(string, BoundKind)] = @{
+  "minimum": MinimumValid,
+  "maximum": MaximumValid,
+  "exclusiveMinimum": ExclusiveMinValid,
+  "exclusiveMaximum": ExclusiveMaxValid,
+  "multipleOf": MultipleOfValid,
+}
+
+proc count(node: JsonNode, keyword: string): Option[int] =
+  ## A count keyword, which the schema lets be written as a whole number of any
+  ## spelling, so `2` and `2.0` name the same limit
+  let value = node{keyword}
+  if value.isNil:
+    return none(int)
+  case value.kind
+  of JInt:
+    some(value.getInt)
+  of JFloat:
+    let raw = value.getFloat
+    if raw == raw.trunc and raw.abs <= high(int).BiggestFloat:
+      some(raw.int)
+    else:
+      none(int)
+  else:
+    none(int)
+
+proc lengths(node: JsonNode): ValidateNode =
+  ## Conjoins whichever length keywords are written on a node
+  for (keyword, kind) in LENGTH_KEYWORDS:
+    let len = node.count(keyword)
+    if len.isSome:
+      result = allOf(result, lengthAssertion(kind, len.unsafeGet))
+
+proc bounds(node: JsonNode): ValidateNode =
+  ## Conjoins whichever numeric keywords are written on a node
+  for (keyword, kind) in BOUND_KEYWORDS:
+    let value = node{keyword}
+    if not value.isNil and value.kind in {JInt, JFloat}:
+      result = allOf(result, boundAssertion(kind, value.getFloat))
+
+proc validationConstraints(node: JsonNode): seq[Variant] =
+  ## What the assertion keywords say: nothing about shape beyond the type they imply,
+  ## and everything about the values that type is allowed to hold
+  var strings = node.lengths
+  let pattern = node{"pattern"}
+  if not pattern.isNil and pattern.kind == JString:
+    strings = allOf(strings, ValidateNode(kind: PatternValid, pattern: pattern.getStr))
+  if not strings.isNil:
+    result.add(Variant(kind: vkString, validation: strings))
+
+  let numbers = node.bounds
+  if not numbers.isNil:
+    result.add(Variant(kind: vkNumber, validation: numbers))
+
 proc constrains(constraint, variant: Variant): bool =
   ## Whether a keyword's constraint applies to a type `type` allowed
   constraint.kind == variant.kind or
-    (constraint.kind == vkConst and not intersectVariant(variant, constraint).isNil)
+    (constraint.kind == vkConst and not intersectVariant(variant, constraint).isNil) or
+  # An integer is a number, so what bounds a number bounds it too
+  (constraint.kind == vkNumber and variant.kind == vkInteger)
 
 proc ownDescription(
     node: JsonNode, ctx: DescribeContext, history: History
 ): Description =
   ## What the keywords written on the node itself say, ignoring references and combinators,
   ## or nil when they say nothing at all
-  var constraints = node.scalarConstraints
+  var constraints = node.scalarConstraints & node.validationConstraints
   for constraint in [
     node.objectConstraint(ctx, history), node.arrayConstraint(ctx, history)
   ]:
