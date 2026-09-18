@@ -39,6 +39,8 @@ proc fromJsonHook*(target: var Ref_siblingsEntry; source: JsonNode) =
   assert(hasKey(source, "name"),
          "name" & " is missing while decoding " & "Ref_siblingsEntry")
   target.name = jsonTo(source{"name"}, typeof(target.name))
+  when not defined(jsonSchemaNoValidate):
+    validate(Ref_siblingsEntry, target)
 
 proc toJsonHook*(source: Ref_siblingsEntry): JsonNode =
   result = newJObject()
@@ -64,6 +66,8 @@ proc fromStream*(typ: typedesc[Ref_siblingsEntry];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Ref_siblingsEntry, result)
 
 proc equals(_: typedesc[Ref_siblingsNarrowed]; a, b: Ref_siblingsNarrowed): bool =
   equals(typeof(a.name), a.name, b.name) and
@@ -87,6 +91,8 @@ proc fromJsonHook*(target: var Ref_siblingsNarrowed; source: JsonNode) =
   assert(hasKey(source, "count"),
          "count" & " is missing while decoding " & "Ref_siblingsNarrowed")
   target.count = jsonTo(source{"count"}, typeof(target.count))
+  when not defined(jsonSchemaNoValidate):
+    validate(Ref_siblingsNarrowed, target)
 
 proc toJsonHook*(source: Ref_siblingsNarrowed): JsonNode =
   result = newJObject()
@@ -120,6 +126,8 @@ proc fromStream*(typ: typedesc[Ref_siblingsNarrowed];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(Ref_siblingsNarrowed, result)
 
 proc equals(_: typedesc[Ref_siblings]; a, b: Ref_siblings): bool =
   equals(typeof(a.plain), a.plain, b.plain) and
@@ -153,6 +161,8 @@ proc fromJsonHook*(target: var Ref_siblings; source: JsonNode) =
   assert(hasKey(source, "tagged"),
          "tagged" & " is missing while decoding " & "Ref_siblings")
   target.tagged = jsonTo(source{"tagged"}, typeof(target.tagged))
+  when not defined(jsonSchemaNoValidate):
+    validate(Ref_siblings, target)
 
 proc toJsonHook*(source: Ref_siblings): JsonNode =
   result = newJObject()
@@ -201,5 +211,7 @@ proc fromStream*(typ: typedesc[Ref_siblings]; source: var JsonParser): Ref_sibli
     else:
       skipValue(source)
   assert(card(seen) == 4)
+  when not defined(jsonSchemaNoValidate):
+    validate(Ref_siblings, result)
 
 {.pop.}

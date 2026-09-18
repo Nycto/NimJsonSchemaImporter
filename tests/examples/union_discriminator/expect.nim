@@ -49,6 +49,8 @@ proc fromJsonHook*(target: var Union_discriminatorShape; source: JsonNode) =
   assert(hasKey(source, "name"),
          "name" & " is missing while decoding " & "Union_discriminatorShape")
   target.name = jsonTo(source{"name"}, typeof(target.name))
+  when not defined(jsonSchemaNoValidate):
+    validate(Union_discriminatorShape, target)
 
 proc toJsonHook*(source: Union_discriminatorShape): JsonNode =
   result = newJObject()
@@ -82,6 +84,8 @@ proc fromStream*(typ: typedesc[Union_discriminatorShape];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(Union_discriminatorShape, result)
 
 converter forUnion_discriminatorUnion*(value: Union_discriminatorShape): Union_discriminatorUnion =
   return Union_discriminatorUnion(kind: 0, key0: value)
@@ -110,6 +114,8 @@ proc fromJsonHook*(target: var Union_discriminatorShape2; source: JsonNode) =
   assert(hasKey(source, "name"),
          "name" & " is missing while decoding " & "Union_discriminatorShape2")
   target.name = jsonTo(source{"name"}, typeof(target.name))
+  when not defined(jsonSchemaNoValidate):
+    validate(Union_discriminatorShape2, target)
 
 proc toJsonHook*(source: Union_discriminatorShape2): JsonNode =
   result = newJObject()
@@ -143,6 +149,8 @@ proc fromStream*(typ: typedesc[Union_discriminatorShape2];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(Union_discriminatorShape2, result)
 
 converter forUnion_discriminatorUnion*(value: Union_discriminatorShape2): Union_discriminatorUnion =
   return Union_discriminatorUnion(kind: 1, key1: value)
@@ -182,7 +190,9 @@ proc fromJsonHook*(target: var Union_discriminatorUnion; source: JsonNode) =
                                       key1: jsonTo(source, typeof(target.key1)))
   else:
     raise newException(ValueError, "Unable to deserialize json node to Union_discriminatorUnion")
-  
+  when not defined(jsonSchemaNoValidate):
+    validate(Union_discriminatorUnion, target)
+
 proc toJsonHook*(source: Union_discriminatorUnion): JsonNode =
   case source.kind
   of 0:
@@ -244,6 +254,8 @@ proc fromJsonHook*(target: var Union_discriminator; source: JsonNode) =
   assert(hasKey(source, "shape"),
          "shape" & " is missing while decoding " & "Union_discriminator")
   target.shape = jsonTo(source{"shape"}, typeof(target.shape))
+  when not defined(jsonSchemaNoValidate):
+    validate(Union_discriminator, target)
 
 proc toJsonHook*(source: Union_discriminator): JsonNode =
   result = newJObject()
@@ -269,5 +281,7 @@ proc fromStream*(typ: typedesc[Union_discriminator];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Union_discriminator, result)
 
 {.pop.}

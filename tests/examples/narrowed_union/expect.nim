@@ -59,6 +59,8 @@ proc fromJsonHook*(target: var Narrowed_unionNarrowed; source: JsonNode) =
   assert(hasKey(source, "a"),
          "a" & " is missing while decoding " & "Narrowed_unionNarrowed")
   target.a = jsonTo(source{"a"}, typeof(target.a))
+  when not defined(jsonSchemaNoValidate):
+    validate(Narrowed_unionNarrowed, target)
 
 proc toJsonHook*(source: Narrowed_unionNarrowed): JsonNode =
   result = newJObject()
@@ -92,6 +94,8 @@ proc fromStream*(typ: typedesc[Narrowed_unionNarrowed];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(Narrowed_unionNarrowed, result)
 
 converter forNarrowed_unionUnion*(value: Narrowed_unionNarrowed): Narrowed_unionUnion =
   return Narrowed_unionUnion(kind: 0, key0: value)
@@ -118,6 +122,8 @@ proc fromJsonHook*(target: var Narrowed_unionNarrowed2; source: JsonNode) =
   assert(hasKey(source, "b"),
          "b" & " is missing while decoding " & "Narrowed_unionNarrowed2")
   target.b = jsonTo(source{"b"}, typeof(target.b))
+  when not defined(jsonSchemaNoValidate):
+    validate(Narrowed_unionNarrowed2, target)
 
 proc toJsonHook*(source: Narrowed_unionNarrowed2): JsonNode =
   result = newJObject()
@@ -151,6 +157,8 @@ proc fromStream*(typ: typedesc[Narrowed_unionNarrowed2];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(Narrowed_unionNarrowed2, result)
 
 converter forNarrowed_unionUnion*(value: Narrowed_unionNarrowed2): Narrowed_unionUnion =
   return Narrowed_unionUnion(kind: 1, key1: value)
@@ -188,7 +196,9 @@ proc fromJsonHook*(target: var Narrowed_unionUnion; source: JsonNode) =
   else:
     raise newException(ValueError,
                        "Unable to deserialize json node to Narrowed_unionUnion")
-  
+  when not defined(jsonSchemaNoValidate):
+    validate(Narrowed_unionUnion, target)
+
 proc toJsonHook*(source: Narrowed_unionUnion): JsonNode =
   case source.kind
   of 0:
@@ -255,6 +265,8 @@ proc fromJsonHook*(target: var Narrowed_unionNarrowedArray; source: JsonNode) =
   assert(hasKey(source, "y"),
          "y" & " is missing while decoding " & "Narrowed_unionNarrowedArray")
   target.y = jsonTo(source{"y"}, typeof(target.y))
+  when not defined(jsonSchemaNoValidate):
+    validate(Narrowed_unionNarrowedArray, target)
 
 proc toJsonHook*(source: Narrowed_unionNarrowedArray): JsonNode =
   result = newJObject()
@@ -288,6 +300,8 @@ proc fromStream*(typ: typedesc[Narrowed_unionNarrowedArray];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(Narrowed_unionNarrowedArray, result)
 
 proc equals(_: typedesc[Narrowed_unionNarrowedMap];
             a, b: Narrowed_unionNarrowedMap): bool =
@@ -312,6 +326,8 @@ proc fromJsonHook*(target: var Narrowed_unionNarrowedMap; source: JsonNode) =
   assert(hasKey(source, "n"),
          "n" & " is missing while decoding " & "Narrowed_unionNarrowedMap")
   target.n = jsonTo(source{"n"}, typeof(target.n))
+  when not defined(jsonSchemaNoValidate):
+    validate(Narrowed_unionNarrowedMap, target)
 
 proc toJsonHook*(source: Narrowed_unionNarrowedMap): JsonNode =
   result = newJObject()
@@ -345,6 +361,8 @@ proc fromStream*(typ: typedesc[Narrowed_unionNarrowedMap];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(Narrowed_unionNarrowedMap, result)
 
 proc equals(_: typedesc[Narrowed_union]; a, b: Narrowed_union): bool =
   equals(typeof(a.narrowed), a.narrowed, b.narrowed) and
@@ -374,6 +392,8 @@ proc fromJsonHook*(target: var Narrowed_union; source: JsonNode) =
   if hasKey(source, "narrowedMap") and source{"narrowedMap"}.kind != JNull:
     target.narrowedMap = jsonTo(source{"narrowedMap"},
                                 typeof(target.narrowedMap))
+  when not defined(jsonSchemaNoValidate):
+    validate(Narrowed_union, target)
 
 proc toJsonHook*(source: Narrowed_union): JsonNode =
   result = newJObject()
@@ -428,5 +448,7 @@ proc fromStream*(typ: typedesc[Narrowed_union];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Narrowed_union, result)
 
 {.pop.}

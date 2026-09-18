@@ -45,6 +45,8 @@ proc `$`*(value: Enum_value_collisionBasicAuth): string =
 proc fromJsonHook*(target: var Enum_value_collisionBasicAuth; source: JsonNode) =
   if hasKey(source, "user") and source{"user"}.kind != JNull:
     target.user = some(jsonTo(source{"user"}, typeof(unsafeGet(target.user))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Enum_value_collisionBasicAuth, target)
 
 proc toJsonHook*(source: Enum_value_collisionBasicAuth): JsonNode =
   result = newJObject()
@@ -71,6 +73,8 @@ proc fromStream*(typ: typedesc[Enum_value_collisionBasicAuth];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(Enum_value_collisionBasicAuth, result)
 
 proc equals(_: typedesc[Enum_value_collisionFeature];
             a, b: Enum_value_collisionFeature): bool =
@@ -90,6 +94,8 @@ proc `$`*(value: Enum_value_collisionFeature): string =
 proc fromJsonHook*(target: var Enum_value_collisionFeature; source: JsonNode) =
   if hasKey(source, "name") and source{"name"}.kind != JNull:
     target.name = some(jsonTo(source{"name"}, typeof(unsafeGet(target.name))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Enum_value_collisionFeature, target)
 
 proc toJsonHook*(source: Enum_value_collisionFeature): JsonNode =
   result = newJObject()
@@ -116,6 +122,8 @@ proc fromStream*(typ: typedesc[Enum_value_collisionFeature];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(Enum_value_collisionFeature, result)
 
 proc equals(_: typedesc[Enum_value_collision]; a, b: Enum_value_collision): bool =
   equals(typeof(a.kind), a.kind, b.kind) and
@@ -152,6 +160,8 @@ proc fromJsonHook*(target: var Enum_value_collision; source: JsonNode) =
                                 typeof(unsafeGet(target.scheme))))
   if hasKey(source, "mode") and source{"mode"}.kind != JNull:
     target.mode = some(jsonTo(source{"mode"}, typeof(unsafeGet(target.mode))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Enum_value_collision, target)
 
 proc toJsonHook*(source: Enum_value_collision): JsonNode =
   result = newJObject()
@@ -215,5 +225,7 @@ proc fromStream*(typ: typedesc[Enum_value_collision];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(Enum_value_collision, result)
 
 {.pop.}

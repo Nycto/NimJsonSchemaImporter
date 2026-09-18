@@ -31,6 +31,8 @@ proc `$`*(value: Unconstrained_objectClosed): string =
 
 proc fromJsonHook*(target: var Unconstrained_objectClosed; source: JsonNode) =
   discard
+  when not defined(jsonSchemaNoValidate):
+    validate(Unconstrained_objectClosed, target)
 
 proc toJsonHook*(source: Unconstrained_objectClosed): JsonNode =
   result = newJObject()
@@ -48,6 +50,8 @@ proc fromStream*(typ: typedesc[Unconstrained_objectClosed];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(Unconstrained_objectClosed, result)
 
 proc equals(_: typedesc[Unconstrained_object]; a, b: Unconstrained_object): bool =
   equals(typeof(a.name), a.name, b.name) and
@@ -79,6 +83,8 @@ proc fromJsonHook*(target: var Unconstrained_object; source: JsonNode) =
   target.closed = jsonTo(source{"closed"}, typeof(target.closed))
   if hasKey(source, "patterned") and source{"patterned"}.kind != JNull:
     target.patterned = jsonTo(source{"patterned"}, typeof(target.patterned))
+  when not defined(jsonSchemaNoValidate):
+    validate(Unconstrained_object, target)
 
 proc toJsonHook*(source: Unconstrained_object): JsonNode =
   result = newJObject()
@@ -142,5 +148,7 @@ proc fromStream*(typ: typedesc[Unconstrained_object];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(Unconstrained_object, result)
 
 {.pop.}

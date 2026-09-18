@@ -37,6 +37,8 @@ proc fromJsonHook*(target: var BlogAuthor; source: JsonNode) =
                                   typeof(unsafeGet(target.username))))
   if hasKey(source, "email") and source{"email"}.kind != JNull:
     target.email = some(jsonTo(source{"email"}, typeof(unsafeGet(target.email))))
+  when not defined(jsonSchemaNoValidate):
+    validate(BlogAuthor, target)
 
 proc toJsonHook*(source: BlogAuthor): JsonNode =
   result = newJObject()
@@ -72,6 +74,8 @@ proc fromStream*(typ: typedesc[BlogAuthor]; source: var JsonParser): BlogAuthor 
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(BlogAuthor, result)
 
 proc equals(_: typedesc[Blog]; a, b: Blog): bool =
   equals(typeof(a.title), a.title, b.title) and
@@ -110,6 +114,8 @@ proc fromJsonHook*(target: var Blog; source: JsonNode) =
   target.author = jsonTo(source{"author"}, typeof(target.author))
   if hasKey(source, "tags") and source{"tags"}.kind != JNull:
     target.tags = jsonTo(source{"tags"}, typeof(target.tags))
+  when not defined(jsonSchemaNoValidate):
+    validate(Blog, target)
 
 proc toJsonHook*(source: Blog): JsonNode =
   result = newJObject()
@@ -174,5 +180,7 @@ proc fromStream*(typ: typedesc[Blog]; source: var JsonParser): Blog =
     else:
       skipValue(source)
   assert(card(seen) == 3)
+  when not defined(jsonSchemaNoValidate):
+    validate(Blog, result)
 
 {.pop.}

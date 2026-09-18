@@ -34,6 +34,8 @@ proc `$`*(value: Open_objectPartlyOpen): string =
 proc fromJsonHook*(target: var Open_objectPartlyOpen; source: JsonNode) =
   if hasKey(source, "known") and source{"known"}.kind != JNull:
     target.known = some(jsonTo(source{"known"}, typeof(unsafeGet(target.known))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Open_objectPartlyOpen, target)
 
 proc toJsonHook*(source: Open_objectPartlyOpen): JsonNode =
   result = newJObject()
@@ -60,6 +62,8 @@ proc fromStream*(typ: typedesc[Open_objectPartlyOpen];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(Open_objectPartlyOpen, result)
 
 proc equals(_: typedesc[Open_objectClosed]; a, b: Open_objectClosed): bool =
   equals(typeof(a.alsoKnown), a.alsoKnown, b.alsoKnown)
@@ -78,6 +82,8 @@ proc fromJsonHook*(target: var Open_objectClosed; source: JsonNode) =
   if hasKey(source, "alsoKnown") and source{"alsoKnown"}.kind != JNull:
     target.alsoKnown = some(jsonTo(source{"alsoKnown"},
                                    typeof(unsafeGet(target.alsoKnown))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Open_objectClosed, target)
 
 proc toJsonHook*(source: Open_objectClosed): JsonNode =
   result = newJObject()
@@ -105,6 +111,8 @@ proc fromStream*(typ: typedesc[Open_objectClosed];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(Open_objectClosed, result)
 
 proc equals(_: typedesc[Open_object]; a, b: Open_object): bool =
   equals(typeof(a.partlyOpen), a.partlyOpen, b.partlyOpen) and
@@ -132,6 +140,8 @@ proc fromJsonHook*(target: var Open_object; source: JsonNode) =
   target.closed = jsonTo(source{"closed"}, typeof(target.closed))
   if hasKey(source, "anyValue") and source{"anyValue"}.kind != JNull:
     target.anyValue = jsonTo(source{"anyValue"}, typeof(target.anyValue))
+  when not defined(jsonSchemaNoValidate):
+    validate(Open_object, target)
 
 proc toJsonHook*(source: Open_object): JsonNode =
   result = newJObject()
@@ -179,5 +189,7 @@ proc fromStream*(typ: typedesc[Open_object]; source: var JsonParser): Open_objec
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(Open_object, result)
 
 {.pop.}

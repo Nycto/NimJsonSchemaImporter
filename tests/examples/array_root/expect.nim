@@ -31,6 +31,8 @@ proc fromJsonHook*(target: var Array_root2; source: JsonNode) =
   target.name = jsonTo(source{"name"}, typeof(target.name))
   if hasKey(source, "count") and source{"count"}.kind != JNull:
     target.count = some(jsonTo(source{"count"}, typeof(unsafeGet(target.count))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Array_root2, target)
 
 proc toJsonHook*(source: Array_root2): JsonNode =
   result = newJObject()
@@ -64,5 +66,7 @@ proc fromStream*(typ: typedesc[Array_root2]; source: var JsonParser): Array_root
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Array_root2, result)
 
 {.pop.}

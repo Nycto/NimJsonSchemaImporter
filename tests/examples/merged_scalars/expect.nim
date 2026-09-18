@@ -63,6 +63,8 @@ proc fromJsonHook*(target: var Merged_scalars; source: JsonNode) =
   target.bareFormat = jsonTo(source{"bareFormat"}, typeof(target.bareFormat))
   if hasKey(source, "openMap") and source{"openMap"}.kind != JNull:
     target.openMap = jsonTo(source{"openMap"}, typeof(target.openMap))
+  when not defined(jsonSchemaNoValidate):
+    validate(Merged_scalars, target)
 
 proc toJsonHook*(source: Merged_scalars): JsonNode =
   result = newJObject()
@@ -143,5 +145,7 @@ proc fromStream*(typ: typedesc[Merged_scalars];
     else:
       skipValue(source)
   assert(card(seen) == 6)
+  when not defined(jsonSchemaNoValidate):
+    validate(Merged_scalars, result)
 
 {.pop.}

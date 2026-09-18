@@ -56,6 +56,8 @@ proc fromJsonHook*(target: var Complex_objectAddress; source: JsonNode) =
   assert(hasKey(source, "postalCode"),
          "postalCode" & " is missing while decoding " & "Complex_objectAddress")
   target.postalCode = jsonTo(source{"postalCode"}, typeof(target.postalCode))
+  when not defined(jsonSchemaNoValidate):
+    validate(Complex_objectAddress, target)
 
 proc toJsonHook*(source: Complex_objectAddress): JsonNode =
   result = newJObject()
@@ -105,6 +107,8 @@ proc fromStream*(typ: typedesc[Complex_objectAddress];
     else:
       skipValue(source)
   assert(card(seen) == 4)
+  when not defined(jsonSchemaNoValidate):
+    validate(Complex_objectAddress, result)
 
 proc equals(_: typedesc[Complex_object]; a, b: Complex_object): bool =
   equals(typeof(a.name), a.name, b.name) and equals(typeof(a.age), a.age, b.age) and
@@ -141,6 +145,8 @@ proc fromJsonHook*(target: var Complex_object; source: JsonNode) =
                                  typeof(unsafeGet(target.address))))
   if hasKey(source, "hobbies") and source{"hobbies"}.kind != JNull:
     target.hobbies = jsonTo(source{"hobbies"}, typeof(target.hobbies))
+  when not defined(jsonSchemaNoValidate):
+    validate(Complex_object, target)
 
 proc toJsonHook*(source: Complex_object): JsonNode =
   result = newJObject()
@@ -196,5 +202,7 @@ proc fromStream*(typ: typedesc[Complex_object]; source: var JsonParser): Complex
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(Complex_object, result)
 
 {.pop.}

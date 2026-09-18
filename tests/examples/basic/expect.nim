@@ -41,6 +41,8 @@ proc fromJsonHook*(target: var Basic; source: JsonNode) =
                                   typeof(unsafeGet(target.lastName))))
   if hasKey(source, "age") and source{"age"}.kind != JNull:
     target.age = some(jsonTo(source{"age"}, typeof(unsafeGet(target.age))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Basic, target)
 
 proc toJsonHook*(source: Basic): JsonNode =
   result = newJObject()
@@ -86,5 +88,7 @@ proc fromStream*(typ: typedesc[Basic]; source: var JsonParser): Basic =
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(Basic, result)
 
 {.pop.}

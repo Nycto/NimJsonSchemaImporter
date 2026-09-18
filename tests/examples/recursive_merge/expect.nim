@@ -39,6 +39,8 @@ proc `$`*(value: Recursive_mergeNode): string =
 proc fromJsonHook*(target: var Recursive_mergeNode; source: JsonNode) =
   if hasKey(source, "next") and source{"next"}.kind != JNull:
     target.next = some(jsonTo(source{"next"}, typeof(unsafeGet(target.next))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Recursive_mergeNode, target)
 
 proc toJsonHook*(source: Recursive_mergeNode): JsonNode =
   result = newJObject()
@@ -65,6 +67,8 @@ proc fromStream*(typ: typedesc[Recursive_mergeNode];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(Recursive_mergeNode, result)
 
 proc equals(_: typedesc[Recursive_merge]; a, b: Recursive_merge): bool =
   equals(typeof(a.next), a.next, b.next) and
@@ -87,6 +91,8 @@ proc fromJsonHook*(target: var Recursive_merge; source: JsonNode) =
   assert(hasKey(source, "name"),
          "name" & " is missing while decoding " & "Recursive_merge")
   target.name = jsonTo(source{"name"}, typeof(target.name))
+  when not defined(jsonSchemaNoValidate):
+    validate(Recursive_merge, target)
 
 proc toJsonHook*(source: Recursive_merge): JsonNode =
   result = newJObject()
@@ -121,5 +127,7 @@ proc fromStream*(typ: typedesc[Recursive_merge];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Recursive_merge, result)
 
 {.pop.}

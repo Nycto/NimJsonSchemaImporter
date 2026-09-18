@@ -41,6 +41,8 @@ proc fromJsonHook*(target: var HealthEmergencyContact; source: JsonNode) =
                                   typeof(unsafeGet(target.username))))
   if hasKey(source, "email") and source{"email"}.kind != JNull:
     target.email = some(jsonTo(source{"email"}, typeof(unsafeGet(target.email))))
+  when not defined(jsonSchemaNoValidate):
+    validate(HealthEmergencyContact, target)
 
 proc toJsonHook*(source: HealthEmergencyContact): JsonNode =
   result = newJObject()
@@ -77,6 +79,8 @@ proc fromStream*(typ: typedesc[HealthEmergencyContact];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(HealthEmergencyContact, result)
 
 proc equals(_: typedesc[Health]; a, b: Health): bool =
   equals(typeof(a.patientName), a.patientName, b.patientName) and
@@ -125,6 +129,8 @@ proc fromJsonHook*(target: var Health; source: JsonNode) =
       source{"emergencyContact"}.kind != JNull:
     target.emergencyContact = some(jsonTo(source{"emergencyContact"},
         typeof(unsafeGet(target.emergencyContact))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Health, target)
 
 proc toJsonHook*(source: Health): JsonNode =
   result = newJObject()
@@ -217,5 +223,7 @@ proc fromStream*(typ: typedesc[Health]; source: var JsonParser): Health =
     else:
       skipValue(source)
   assert(card(seen) == 3)
+  when not defined(jsonSchemaNoValidate):
+    validate(Health, result)
 
 {.pop.}

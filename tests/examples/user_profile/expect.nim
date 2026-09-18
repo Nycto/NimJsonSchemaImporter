@@ -58,6 +58,8 @@ proc fromJsonHook*(target: var User_profile; source: JsonNode) =
                                   typeof(unsafeGet(target.location))))
   if hasKey(source, "interests") and source{"interests"}.kind != JNull:
     target.interests = jsonTo(source{"interests"}, typeof(target.interests))
+  when not defined(jsonSchemaNoValidate):
+    validate(User_profile, target)
 
 proc toJsonHook*(source: User_profile): JsonNode =
   result = newJObject()
@@ -133,5 +135,7 @@ proc fromStream*(typ: typedesc[User_profile]; source: var JsonParser): User_prof
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(User_profile, result)
 
 {.pop.}

@@ -91,7 +91,9 @@ proc fromJsonHook*(target: var UnionUnion; source: JsonNode) =
   else:
     raise newException(ValueError,
                        "Unable to deserialize json node to UnionUnion")
-  
+  when not defined(jsonSchemaNoValidate):
+    validate(UnionUnion, target)
+
 proc toJsonHook*(source: UnionUnion): JsonNode =
   case source.kind
   of 0:
@@ -187,6 +189,8 @@ proc `$`*(value: UnionKey3): string =
 proc fromJsonHook*(target: var UnionKey3; source: JsonNode) =
   if hasKey(source, "foo") and source{"foo"}.kind != JNull:
     target.foo = some(jsonTo(source{"foo"}, typeof(unsafeGet(target.foo))))
+  when not defined(jsonSchemaNoValidate):
+    validate(UnionKey3, target)
 
 proc toJsonHook*(source: UnionKey3): JsonNode =
   result = newJObject()
@@ -212,6 +216,8 @@ proc fromStream*(typ: typedesc[UnionKey3]; source: var JsonParser): UnionKey3 =
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(UnionKey3, result)
 
 converter forUnionKey3Union*(value: UnionKey3): UnionKey3Union =
   return UnionKey3Union(kind: 0, key0: value)
@@ -276,7 +282,9 @@ proc fromJsonHook*(target: var UnionKey3Union; source: JsonNode) =
   else:
     raise newException(ValueError,
                        "Unable to deserialize json node to UnionKey3Union")
-  
+  when not defined(jsonSchemaNoValidate):
+    validate(UnionKey3Union, target)
+
 proc toJsonHook*(source: UnionKey3Union): JsonNode =
   case source.kind
   of 0:
@@ -424,6 +432,8 @@ proc fromJsonHook*(target: var Union; source: JsonNode) =
   assert(hasKey(source, "key3"),
          "key3" & " is missing while decoding " & "Union")
   target.key3 = jsonTo(source{"key3"}, typeof(target.key3))
+  when not defined(jsonSchemaNoValidate):
+    validate(Union, target)
 
 proc toJsonHook*(source: Union): JsonNode =
   result = newJObject()
@@ -470,5 +480,7 @@ proc fromStream*(typ: typedesc[Union]; source: var JsonParser): Union =
     else:
       skipValue(source)
   assert(card(seen) == 3)
+  when not defined(jsonSchemaNoValidate):
+    validate(Union, result)
 
 {.pop.}

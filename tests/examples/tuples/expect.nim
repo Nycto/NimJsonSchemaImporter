@@ -43,6 +43,8 @@ proc fromJsonHook*(target: var TuplesRecord; source: JsonNode) =
   assert(hasKey(source, "tag"),
          "tag" & " is missing while decoding " & "TuplesRecord")
   target.tag = jsonTo(source{"tag"}, typeof(target.tag))
+  when not defined(jsonSchemaNoValidate):
+    validate(TuplesRecord, target)
 
 proc toJsonHook*(source: TuplesRecord): JsonNode =
   result = newJObject()
@@ -67,6 +69,8 @@ proc fromStream*(typ: typedesc[TuplesRecord]; source: var JsonParser): TuplesRec
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(TuplesRecord, result)
 
 proc equals(_: typedesc[TuplesTagged]; a, b: TuplesTagged): bool =
   true
@@ -128,7 +132,9 @@ proc fromJsonHook*(target: var TuplesUnion; source: JsonNode) =
   else:
     raise newException(ValueError,
                        "Unable to deserialize json node to TuplesUnion")
-  
+  when not defined(jsonSchemaNoValidate):
+    validate(TuplesUnion, target)
+
 proc toJsonHook*(source: TuplesUnion): JsonNode =
   case source.kind
   of 0:
@@ -242,6 +248,8 @@ proc fromJsonHook*(target: var Tuples; source: JsonNode) =
   target.either = jsonTo(source{"either"}, typeof(target.either))
   if hasKey(source, "span") and source{"span"}.kind != JNull:
     target.span = some(jsonTo(source{"span"}, typeof(unsafeGet(target.span))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Tuples, target)
 
 proc toJsonHook*(source: Tuples): JsonNode =
   result = newJObject()
@@ -346,5 +354,7 @@ proc fromStream*(typ: typedesc[Tuples]; source: var JsonParser): Tuples =
     else:
       skipValue(source)
   assert(card(seen) == 7)
+  when not defined(jsonSchemaNoValidate):
+    validate(Tuples, result)
 
 {.pop.}

@@ -47,7 +47,9 @@ proc fromJsonHook*(target: var Union_root; source: JsonNode) =
   else:
     raise newException(ValueError,
                        "Unable to deserialize json node to Union_root")
-  
+  when not defined(jsonSchemaNoValidate):
+    validate(Union_root, target)
+
 proc toJsonHook*(source: Union_root): JsonNode =
   case source.kind
   of 0:

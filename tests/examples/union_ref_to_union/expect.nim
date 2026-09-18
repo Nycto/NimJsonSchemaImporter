@@ -82,7 +82,9 @@ proc fromJsonHook*(target: var Union_ref_to_unionItems; source: JsonNode) =
                                      key1: jsonTo(source, typeof(target.key1)))
   else:
     raise newException(ValueError, "Unable to deserialize json node to Union_ref_to_unionItems")
-  
+  when not defined(jsonSchemaNoValidate):
+    validate(Union_ref_to_unionItems, target)
+
 proc toJsonHook*(source: Union_ref_to_unionItems): JsonNode =
   case source.kind
   of 0:
@@ -161,6 +163,8 @@ proc fromJsonHook*(target: var Union_ref_to_unionUnion; source: JsonNode) =
     target.`$ref` = some(jsonTo(source{"$ref"}, typeof(unsafeGet(target.`$ref`))))
   if hasKey(source, "items") and source{"items"}.kind != JNull:
     target.items = some(jsonTo(source{"items"}, typeof(unsafeGet(target.items))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Union_ref_to_unionUnion, target)
 
 proc toJsonHook*(source: Union_ref_to_unionUnion): JsonNode =
   result = newJObject()
@@ -204,6 +208,8 @@ proc fromStream*(typ: typedesc[Union_ref_to_unionUnion];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Union_ref_to_unionUnion, result)
 
 converter forUnion_ref_to_union*(value: Union_ref_to_unionUnion): Union_ref_to_union =
   return Union_ref_to_union(kind: 0, key0: value)
@@ -235,6 +241,8 @@ proc fromJsonHook*(target: var Union_ref_to_unionUnion2; source: JsonNode) =
   target.`$ref` = jsonTo(source{"$ref"}, typeof(target.`$ref`))
   if hasKey(source, "items") and source{"items"}.kind != JNull:
     target.items = some(jsonTo(source{"items"}, typeof(unsafeGet(target.items))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Union_ref_to_unionUnion2, target)
 
 proc toJsonHook*(source: Union_ref_to_unionUnion2): JsonNode =
   result = newJObject()
@@ -278,6 +286,8 @@ proc fromStream*(typ: typedesc[Union_ref_to_unionUnion2];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Union_ref_to_unionUnion2, result)
 
 converter forUnion_ref_to_union*(value: Union_ref_to_unionUnion2): Union_ref_to_union =
   return Union_ref_to_union(kind: 1, key1: value)
@@ -314,7 +324,9 @@ proc fromJsonHook*(target: var Union_ref_to_union; source: JsonNode) =
   else:
     raise newException(ValueError,
                        "Unable to deserialize json node to Union_ref_to_union")
-  
+  when not defined(jsonSchemaNoValidate):
+    validate(Union_ref_to_union, target)
+
 proc toJsonHook*(source: Union_ref_to_union): JsonNode =
   case source.kind
   of 0:

@@ -1,4 +1,5 @@
-import std/[unittest], json_schema_import/private/validate
+import std/[unittest, json, jsonutils, options, tables]
+import json_schema_import, json_schema_import/private/validate
 
 suite "Length assertions":
   test "Lengths count characters, not bytes":
@@ -51,3 +52,81 @@ suite "Reporting a failure":
       invalid("/name", "minLength: 3")
     except ValueError as e:
       check(e.msg == "/name does not satisfy minLength: 3")
+
+jsonSchema(
+  JsonSchemaConfig(rootTypeName: "Person"),
+  %*{
+    "type": "object",
+    "required": ["name"],
+    "properties": {
+      "name": {"type": "string", "minLength": 3, "maxLength": 6},
+      "age": {"type": "integer", "minimum": 0},
+      "tags": {"type": "array", "items": {"type": "string", "pattern": "^[a-z]+$"}},
+      "scores":
+        {"type": "object", "additionalProperties": {"type": "number", "multipleOf": 5}},
+      "nested":
+        {"type": "object", "properties": {"code": {"type": "string", "minLength": 2}}},
+    },
+  },
+)
+
+proc decode(instance: string): Person =
+  jsonTo(instance.parseJson, Person)
+
+proc rejects(instance, because: string) =
+  try:
+    discard instance.decode
+    check(false)
+  except ValueError as e:
+    check(e.msg == because)
+
+jsonSchema(
+  JsonSchemaConfig(rootTypeName: "Unholdable"),
+  %*{"type": "string", "pattern": "^\\p{Letter}+$"},
+)
+
+suite "A pattern the regex engine cannot hold":
+  test "Asserts nothing, rather than failing the build":
+    check(jsonTo(%*"abc", Unholdable) == "abc")
+    check(jsonTo(%*"123", Unholdable) == "123")
+
+  test "So the type keeps its alias, having nothing to assert":
+    check(Unholdable is string)
+
+suite "Validating while decoding":
+  test "A value satisfying everything decodes":
+    check(""" {"name": "abcd"} """.decode.name == "abcd")
+
+  test "A string is held to its length":
+    rejects(""" {"name": "ab"} """, "Person/name does not satisfy minLength: 3")
+    rejects(""" {"name": "abcdefg"} """, "Person/name does not satisfy maxLength: 6")
+
+  test "An absent optional asserts nothing, a present one does":
+    check(""" {"name": "abcd"} """.decode.age.isNone)
+    rejects(
+      """ {"name": "abcd", "age": -1} """, "Person/age does not satisfy minimum: 0"
+    )
+
+  test "Every element of a seq is held to what its items say":
+    rejects(
+      """ {"name": "abcd", "tags": ["ok", "N0"]} """,
+      "Person/tags/1 does not satisfy pattern: \"^[a-z]+$\"",
+    )
+
+  test "Every entry of a map is held to what its values say":
+    rejects(
+      """ {"name": "abcd", "scores": {"a": 10, "b": 7}} """,
+      "Person/scores/b does not satisfy multipleOf: 5",
+    )
+
+  test "A nested object reports against its own type, having validated itself":
+    rejects(
+      """ {"name": "abcd", "nested": {"code": "x"}} """,
+      "Nested/code does not satisfy minLength: 2",
+    )
+
+  test "Validating a value directly says the same thing":
+    var person = """ {"name": "abcd"} """.decode
+    person.name = "ab"
+    expect ValueError:
+      validate(Person, person)

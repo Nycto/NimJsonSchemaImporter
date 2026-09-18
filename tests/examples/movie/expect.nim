@@ -55,6 +55,8 @@ proc fromJsonHook*(target: var Movie; source: JsonNode) =
                                   typeof(unsafeGet(target.duration))))
   if hasKey(source, "cast") and source{"cast"}.kind != JNull:
     target.`cast` = jsonTo(source{"cast"}, typeof(target.`cast`))
+  when not defined(jsonSchemaNoValidate):
+    validate(Movie, target)
 
 proc toJsonHook*(source: Movie): JsonNode =
   result = newJObject()
@@ -128,5 +130,7 @@ proc fromStream*(typ: typedesc[Movie]; source: var JsonParser): Movie =
     else:
       skipValue(source)
   assert(card(seen) == 3)
+  when not defined(jsonSchemaNoValidate):
+    validate(Movie, result)
 
 {.pop.}

@@ -42,6 +42,8 @@ proc fromJsonHook*(target: var EcommerceProductSchema; source: JsonNode) =
     target.name = some(jsonTo(source{"name"}, typeof(unsafeGet(target.name))))
   if hasKey(source, "price") and source{"price"}.kind != JNull:
     target.price = some(jsonTo(source{"price"}, typeof(unsafeGet(target.price))))
+  when not defined(jsonSchemaNoValidate):
+    validate(EcommerceProductSchema, target)
 
 proc toJsonHook*(source: EcommerceProductSchema): JsonNode =
   result = newJObject()
@@ -77,6 +79,8 @@ proc fromStream*(typ: typedesc[EcommerceProductSchema];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(EcommerceProductSchema, result)
 
 proc equals(_: typedesc[Ecommerce]; a, b: Ecommerce): bool =
   equals(typeof(a.orderId), a.orderId, b.orderId) and
@@ -99,6 +103,8 @@ proc fromJsonHook*(target: var Ecommerce; source: JsonNode) =
                                  typeof(unsafeGet(target.orderId))))
   if hasKey(source, "items") and source{"items"}.kind != JNull:
     target.items = jsonTo(source{"items"}, typeof(target.items))
+  when not defined(jsonSchemaNoValidate):
+    validate(Ecommerce, target)
 
 proc toJsonHook*(source: Ecommerce): JsonNode =
   result = newJObject()
@@ -138,5 +144,7 @@ proc fromStream*(typ: typedesc[Ecommerce]; source: var JsonParser): Ecommerce =
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(Ecommerce, result)
 
 {.pop.}

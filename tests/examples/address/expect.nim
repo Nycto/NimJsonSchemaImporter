@@ -65,6 +65,8 @@ proc fromJsonHook*(target: var Address; source: JsonNode) =
   assert(hasKey(source, "countryName"),
          "countryName" & " is missing while decoding " & "Address")
   target.countryName = jsonTo(source{"countryName"}, typeof(target.countryName))
+  when not defined(jsonSchemaNoValidate):
+    validate(Address, target)
 
 proc toJsonHook*(source: Address): JsonNode =
   result = newJObject()
@@ -145,5 +147,7 @@ proc fromStream*(typ: typedesc[Address]; source: var JsonParser): Address =
     else:
       skipValue(source)
   assert(card(seen) == 3)
+  when not defined(jsonSchemaNoValidate):
+    validate(Address, result)
 
 {.pop.}

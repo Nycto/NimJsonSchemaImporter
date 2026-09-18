@@ -42,6 +42,8 @@ proc fromJsonHook*(target: var All_ofCombined; source: JsonNode) =
   assert(hasKey(source, "b"),
          "b" & " is missing while decoding " & "All_ofCombined")
   target.b = jsonTo(source{"b"}, typeof(target.b))
+  when not defined(jsonSchemaNoValidate):
+    validate(All_ofCombined, target)
 
 proc toJsonHook*(source: All_ofCombined): JsonNode =
   result = newJObject()
@@ -75,6 +77,8 @@ proc fromStream*(typ: typedesc[All_ofCombined];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(All_ofCombined, result)
 
 proc equals(_: typedesc[All_ofExtended]; a, b: All_ofExtended): bool =
   equals(typeof(a.extra), a.extra, b.extra) and
@@ -98,6 +102,8 @@ proc fromJsonHook*(target: var All_ofExtended; source: JsonNode) =
   assert(hasKey(source, "name"),
          "name" & " is missing while decoding " & "All_ofExtended")
   target.name = jsonTo(source{"name"}, typeof(target.name))
+  when not defined(jsonSchemaNoValidate):
+    validate(All_ofExtended, target)
 
 proc toJsonHook*(source: All_ofExtended): JsonNode =
   result = newJObject()
@@ -131,6 +137,8 @@ proc fromStream*(typ: typedesc[All_ofExtended];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(All_ofExtended, result)
 
 proc equals(_: typedesc[All_of]; a, b: All_of): bool =
   equals(typeof(a.combined), a.combined, b.combined) and
@@ -159,6 +167,8 @@ proc fromJsonHook*(target: var All_of; source: JsonNode) =
   assert(hasKey(source, "narrowed"),
          "narrowed" & " is missing while decoding " & "All_of")
   target.narrowed = jsonTo(source{"narrowed"}, typeof(target.narrowed))
+  when not defined(jsonSchemaNoValidate):
+    validate(All_of, target)
 
 proc toJsonHook*(source: All_of): JsonNode =
   result = newJObject()
@@ -199,5 +209,7 @@ proc fromStream*(typ: typedesc[All_of]; source: var JsonParser): All_of =
     else:
       skipValue(source)
   assert(card(seen) == 3)
+  when not defined(jsonSchemaNoValidate):
+    validate(All_of, result)
 
 {.pop.}

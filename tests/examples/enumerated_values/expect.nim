@@ -25,6 +25,8 @@ proc `$`*(value: Enumerated_values): string =
 proc fromJsonHook*(target: var Enumerated_values; source: JsonNode) =
   if hasKey(source, "data") and source{"data"}.kind != JNull:
     target.data = some(jsonTo(source{"data"}, typeof(unsafeGet(target.data))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Enumerated_values, target)
 
 proc toJsonHook*(source: Enumerated_values): JsonNode =
   result = newJObject()
@@ -51,5 +53,7 @@ proc fromStream*(typ: typedesc[Enumerated_values];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(Enumerated_values, result)
 
 {.pop.}

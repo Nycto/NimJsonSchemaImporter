@@ -1,4 +1,4 @@
-import types, util, std/[macros, tables, json, options, streams]
+import types, util, validategen, std/[macros, tables, json, options, streams]
 
 let source {.compileTime.} = ident("source")
 let target {.compileTime.} = ident("target")
@@ -99,12 +99,15 @@ proc buildSaxObjDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
 
   let maxIndex = max(requiredCount - 1, 1).newLit
 
+  let checked = validateDecoded(typeName, ident("result"))
+
   return quote:
     proc fromStream*(typ: typedesc[`typeName`], `source`: var JsonParser): `typeName` =
       var `seen`: set[0 .. `maxIndex`]
       for `key` in objectKeys(`source`):
         `cases`
       assert(card(`seen`) == `requiredCount`)
+      `checked`
 
 proc buildSaxConstEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
   ## Builds the `toStream` proc for a fixed value, which is just the value itself

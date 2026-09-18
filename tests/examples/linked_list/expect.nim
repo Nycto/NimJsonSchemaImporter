@@ -38,6 +38,8 @@ proc fromJsonHook*(target: var Linked_list; source: JsonNode) =
   target.value = jsonTo(source{"value"}, typeof(target.value))
   if hasKey(source, "next") and source{"next"}.kind != JNull:
     target.next = some(jsonTo(source{"next"}, typeof(unsafeGet(target.next))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Linked_list, target)
 
 proc toJsonHook*(source: Linked_list): JsonNode =
   result = newJObject()
@@ -71,5 +73,7 @@ proc fromStream*(typ: typedesc[Linked_list]; source: var JsonParser): Linked_lis
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Linked_list, result)
 
 {.pop.}

@@ -1,5 +1,5 @@
 import std/[macros, tables, sets, json, jsonutils, options, sequtils]
-import types, schemaRef, util, history
+import types, schemaRef, util, history, validategen
 
 type RefTypes* = Table[SchemaRef, TypeDef]
   ## The named types an edge can close onto, looked up by the reference naming them
@@ -171,10 +171,12 @@ proc buildUnionDecoder*(typ: TypeDef, typeName: NimNode, refs: RefTypes): NimNod
     raise newException(ValueError, `errorMessage`)
 
   branches.add(nnkElse.newTree(throw))
+  let checked = validateDecoded(typeName, target)
 
   return quote:
     proc fromJsonHook*(`target`: var `typeName`, `source`: JsonNode) =
       `branches`
+      `checked`
 
 proc buildUnionEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
   ## Builds the `toJsonHook` function for encoding a union
@@ -237,10 +239,12 @@ proc buildObjectDecoder*(typ: TypeDef, typeName: NimNode): NimNode =
             some(jsonTo(`source`{`key`}, typeof(unsafeGet(`target`.`safeKey`))))
 
   let body = decodeKeys.orDiscard
+  let checked = validateDecoded(typeName, target)
 
   return quote:
     proc fromJsonHook*(`target`: var `typeName`, `source`: JsonNode) =
       `body`
+      `checked`
 
 proc buildObjectEncoder*(typ: TypeDef, typeName: NimNode): NimNode =
   var encodeKeys = newStmtList()

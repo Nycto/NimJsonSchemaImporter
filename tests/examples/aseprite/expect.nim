@@ -133,6 +133,8 @@ proc fromJsonHook*(target: var AsepriteRectangle; source: JsonNode) =
   assert(hasKey(source, "y"),
          "y" & " is missing while decoding " & "AsepriteRectangle")
   target.y = jsonTo(source{"y"}, typeof(target.y))
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteRectangle, target)
 
 proc toJsonHook*(source: AsepriteRectangle): JsonNode =
   result = newJObject()
@@ -182,6 +184,8 @@ proc fromStream*(typ: typedesc[AsepriteRectangle];
     else:
       skipValue(source)
   assert(card(seen) == 4)
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteRectangle, result)
 
 proc equals(_: typedesc[AsepriteSize]; a, b: AsepriteSize): bool =
   equals(typeof(a.h), a.h, b.h) and equals(typeof(a.w), a.w, b.w)
@@ -203,6 +207,8 @@ proc fromJsonHook*(target: var AsepriteSize; source: JsonNode) =
   assert(hasKey(source, "w"),
          "w" & " is missing while decoding " & "AsepriteSize")
   target.w = jsonTo(source{"w"}, typeof(target.w))
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteSize, target)
 
 proc toJsonHook*(source: AsepriteSize): JsonNode =
   result = newJObject()
@@ -235,6 +241,8 @@ proc fromStream*(typ: typedesc[AsepriteSize]; source: var JsonParser): AsepriteS
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteSize, result)
 
 proc equals(_: typedesc[AsepriteFrame]; a, b: AsepriteFrame): bool =
   equals(typeof(a.duration), a.duration, b.duration) and
@@ -279,6 +287,8 @@ proc fromJsonHook*(target: var AsepriteFrame; source: JsonNode) =
   assert(hasKey(source, "trimmed"),
          "trimmed" & " is missing while decoding " & "AsepriteFrame")
   target.trimmed = jsonTo(source{"trimmed"}, typeof(target.trimmed))
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteFrame, target)
 
 proc toJsonHook*(source: AsepriteFrame): JsonNode =
   result = newJObject()
@@ -344,6 +354,8 @@ proc fromStream*(typ: typedesc[AsepriteFrame]; source: var JsonParser): Aseprite
     else:
       skipValue(source)
   assert(card(seen) == 6)
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteFrame, result)
 
 converter forAsepriteUnion*(value: OrderedTable[string, AsepriteFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 0, key0: value)
@@ -398,6 +410,8 @@ proc fromJsonHook*(target: var AsepriteArrayFrame; source: JsonNode) =
   assert(hasKey(source, "trimmed"),
          "trimmed" & " is missing while decoding " & "AsepriteArrayFrame")
   target.trimmed = jsonTo(source{"trimmed"}, typeof(target.trimmed))
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteArrayFrame, target)
 
 proc toJsonHook*(source: AsepriteArrayFrame): JsonNode =
   result = newJObject()
@@ -472,6 +486,8 @@ proc fromStream*(typ: typedesc[AsepriteArrayFrame];
     else:
       skipValue(source)
   assert(card(seen) == 7)
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteArrayFrame, result)
 
 converter forAsepriteUnion*(value: seq[AsepriteArrayFrame]): AsepriteUnion =
   return AsepriteUnion(kind: 1, key1: value)
@@ -506,7 +522,9 @@ proc fromJsonHook*(target: var AsepriteUnion; source: JsonNode) =
   else:
     raise newException(ValueError,
                        "Unable to deserialize json node to AsepriteUnion")
-  
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteUnion, target)
+
 proc toJsonHook*(source: AsepriteUnion): JsonNode =
   case source.kind
   of 0:
@@ -614,6 +632,8 @@ proc fromJsonHook*(target: var AsepriteFrameTag; source: JsonNode) =
   assert(hasKey(source, "to"),
          "to" & " is missing while decoding " & "AsepriteFrameTag")
   target.to = jsonTo(source{"to"}, typeof(target.to))
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteFrameTag, target)
 
 proc toJsonHook*(source: AsepriteFrameTag): JsonNode =
   result = newJObject()
@@ -663,6 +683,8 @@ proc fromStream*(typ: typedesc[AsepriteFrameTag];
     else:
       skipValue(source)
   assert(card(seen) == 4)
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteFrameTag, result)
 
 proc equals(_: typedesc[AsepriteLayer]; a, b: AsepriteLayer): bool =
   equals(typeof(a.blendMode), a.blendMode, b.blendMode) and
@@ -709,6 +731,8 @@ proc fromJsonHook*(target: var AsepriteLayer; source: JsonNode) =
   if hasKey(source, "opacity") and source{"opacity"}.kind != JNull:
     target.opacity = some(jsonTo(source{"opacity"},
                                  typeof(unsafeGet(target.opacity))))
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteLayer, target)
 
 proc toJsonHook*(source: AsepriteLayer): JsonNode =
   result = newJObject()
@@ -779,6 +803,8 @@ proc fromStream*(typ: typedesc[AsepriteLayer]; source: var JsonParser): Aseprite
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteLayer, result)
 
 proc equals(_: typedesc[AsepritePoint]; a, b: AsepritePoint): bool =
   equals(typeof(a.x), a.x, b.x) and equals(typeof(a.y), a.y, b.y)
@@ -800,6 +826,8 @@ proc fromJsonHook*(target: var AsepritePoint; source: JsonNode) =
   assert(hasKey(source, "y"),
          "y" & " is missing while decoding " & "AsepritePoint")
   target.y = jsonTo(source{"y"}, typeof(target.y))
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepritePoint, target)
 
 proc toJsonHook*(source: AsepritePoint): JsonNode =
   result = newJObject()
@@ -832,6 +860,8 @@ proc fromStream*(typ: typedesc[AsepritePoint]; source: var JsonParser): Aseprite
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepritePoint, result)
 
 proc equals(_: typedesc[AsepriteSliceKey]; a, b: AsepriteSliceKey): bool =
   equals(typeof(a.bounds), a.bounds, b.bounds) and
@@ -864,6 +894,8 @@ proc fromJsonHook*(target: var AsepriteSliceKey; source: JsonNode) =
   target.frame = jsonTo(source{"frame"}, typeof(target.frame))
   if hasKey(source, "pivot") and source{"pivot"}.kind != JNull:
     target.pivot = some(jsonTo(source{"pivot"}, typeof(unsafeGet(target.pivot))))
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteSliceKey, target)
 
 proc toJsonHook*(source: AsepriteSliceKey): JsonNode =
   result = newJObject()
@@ -915,6 +947,8 @@ proc fromStream*(typ: typedesc[AsepriteSliceKey];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteSliceKey, result)
 
 proc equals(_: typedesc[AsepriteSlice]; a, b: AsepriteSlice): bool =
   equals(typeof(a.color), a.color, b.color) and
@@ -951,6 +985,8 @@ proc fromJsonHook*(target: var AsepriteSlice; source: JsonNode) =
   assert(hasKey(source, "name"),
          "name" & " is missing while decoding " & "AsepriteSlice")
   target.name = jsonTo(source{"name"}, typeof(target.name))
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteSlice, target)
 
 proc toJsonHook*(source: AsepriteSlice): JsonNode =
   result = newJObject()
@@ -1007,6 +1043,8 @@ proc fromStream*(typ: typedesc[AsepriteSlice]; source: var JsonParser): Aseprite
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteSlice, result)
 
 proc equals(_: typedesc[AsepriteMeta]; a, b: AsepriteMeta): bool =
   equals(typeof(a.app), a.app, b.app) and
@@ -1062,6 +1100,8 @@ proc fromJsonHook*(target: var AsepriteMeta; source: JsonNode) =
   assert(hasKey(source, "version"),
          "version" & " is missing while decoding " & "AsepriteMeta")
   target.version = jsonTo(source{"version"}, typeof(target.version))
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteMeta, target)
 
 proc toJsonHook*(source: AsepriteMeta): JsonNode =
   result = newJObject()
@@ -1168,6 +1208,8 @@ proc fromStream*(typ: typedesc[AsepriteMeta]; source: var JsonParser): AsepriteM
     else:
       skipValue(source)
   assert(card(seen) == 6)
+  when not defined(jsonSchemaNoValidate):
+    validate(AsepriteMeta, result)
 
 proc equals(_: typedesc[Aseprite]; a, b: Aseprite): bool =
   equals(typeof(a.frames), a.frames, b.frames) and
@@ -1191,6 +1233,8 @@ proc fromJsonHook*(target: var Aseprite; source: JsonNode) =
   assert(hasKey(source, "meta"),
          "meta" & " is missing while decoding " & "Aseprite")
   target.meta = jsonTo(source{"meta"}, typeof(target.meta))
+  when not defined(jsonSchemaNoValidate):
+    validate(Aseprite, target)
 
 proc toJsonHook*(source: Aseprite): JsonNode =
   result = newJObject()
@@ -1223,5 +1267,7 @@ proc fromStream*(typ: typedesc[Aseprite]; source: var JsonParser): Aseprite =
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(Aseprite, result)
 
 {.pop.}

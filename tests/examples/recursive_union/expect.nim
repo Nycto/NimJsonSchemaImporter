@@ -63,7 +63,9 @@ proc fromJsonHook*(target: var Recursive_unionUnion; source: JsonNode) =
                                   key1: jsonTo(source, typeof(target.key1)))
   else:
     raise newException(ValueError, "Unable to deserialize json node to Recursive_unionUnion")
-  
+  when not defined(jsonSchemaNoValidate):
+    validate(Recursive_unionUnion, target)
+
 proc toJsonHook*(source: Recursive_unionUnion): JsonNode =
   case source.kind
   of 0:
@@ -140,6 +142,8 @@ proc fromJsonHook*(target: var Recursive_union; source: JsonNode) =
     target.child = some(jsonTo(source{"child"}, typeof(unsafeGet(target.child))))
   if hasKey(source, "index") and source{"index"}.kind != JNull:
     target.index = jsonTo(source{"index"}, typeof(target.index))
+  when not defined(jsonSchemaNoValidate):
+    validate(Recursive_union, target)
 
 proc toJsonHook*(source: Recursive_union): JsonNode =
   result = newJObject()
@@ -189,5 +193,7 @@ proc fromStream*(typ: typedesc[Recursive_union];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Recursive_union, result)
 
 {.pop.}

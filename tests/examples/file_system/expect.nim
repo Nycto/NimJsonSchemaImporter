@@ -79,6 +79,8 @@ proc fromJsonHook*(target: var File_systemDiskDevice; source: JsonNode) =
   assert(hasKey(source, "device"),
          "device" & " is missing while decoding " & "File_systemDiskDevice")
   target.device = jsonTo(source{"device"}, typeof(target.device))
+  when not defined(jsonSchemaNoValidate):
+    validate(File_systemDiskDevice, target)
 
 proc toJsonHook*(source: File_systemDiskDevice): JsonNode =
   result = newJObject()
@@ -112,6 +114,8 @@ proc fromStream*(typ: typedesc[File_systemDiskDevice];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(File_systemDiskDevice, result)
 
 converter forFile_systemUnion*(value: File_systemDiskDevice): File_systemUnion =
   return File_systemUnion(kind: 0, key0: value)
@@ -143,6 +147,8 @@ proc fromJsonHook*(target: var File_systemDiskUUID; source: JsonNode) =
   assert(hasKey(source, "label"),
          "label" & " is missing while decoding " & "File_systemDiskUUID")
   target.label = jsonTo(source{"label"}, typeof(target.label))
+  when not defined(jsonSchemaNoValidate):
+    validate(File_systemDiskUUID, target)
 
 proc toJsonHook*(source: File_systemDiskUUID): JsonNode =
   result = newJObject()
@@ -176,6 +182,8 @@ proc fromStream*(typ: typedesc[File_systemDiskUUID];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(File_systemDiskUUID, result)
 
 converter forFile_systemUnion*(value: File_systemDiskUUID): File_systemUnion =
   return File_systemUnion(kind: 1, key1: value)
@@ -212,6 +220,8 @@ proc fromJsonHook*(target: var File_systemNfs; source: JsonNode) =
   assert(hasKey(source, "server"),
          "server" & " is missing while decoding " & "File_systemNfs")
   target.server = jsonTo(source{"server"}, typeof(target.server))
+  when not defined(jsonSchemaNoValidate):
+    validate(File_systemNfs, target)
 
 proc toJsonHook*(source: File_systemNfs): JsonNode =
   result = newJObject()
@@ -252,6 +262,8 @@ proc fromStream*(typ: typedesc[File_systemNfs]; source: var JsonParser): File_sy
     else:
       skipValue(source)
   assert(card(seen) == 3)
+  when not defined(jsonSchemaNoValidate):
+    validate(File_systemNfs, result)
 
 converter forFile_systemUnion*(value: File_systemNfs): File_systemUnion =
   return File_systemUnion(kind: 2, key2: value)
@@ -285,6 +297,8 @@ proc fromJsonHook*(target: var File_systemTmpfs; source: JsonNode) =
   assert(hasKey(source, "sizeInMB"),
          "sizeInMB" & " is missing while decoding " & "File_systemTmpfs")
   target.sizeInMB = jsonTo(source{"sizeInMB"}, typeof(target.sizeInMB))
+  when not defined(jsonSchemaNoValidate):
+    validate(File_systemTmpfs, target)
 
 proc toJsonHook*(source: File_systemTmpfs): JsonNode =
   result = newJObject()
@@ -318,6 +332,8 @@ proc fromStream*(typ: typedesc[File_systemTmpfs];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(File_systemTmpfs, result)
 
 converter forFile_systemUnion*(value: File_systemTmpfs): File_systemUnion =
   return File_systemUnion(kind: 3, key3: value)
@@ -369,7 +385,9 @@ proc fromJsonHook*(target: var File_systemUnion; source: JsonNode) =
   else:
     raise newException(ValueError,
                        "Unable to deserialize json node to File_systemUnion")
-  
+  when not defined(jsonSchemaNoValidate):
+    validate(File_systemUnion, target)
+
 proc toJsonHook*(source: File_systemUnion): JsonNode =
   case source.kind
   of 0:
@@ -483,6 +501,8 @@ proc fromJsonHook*(target: var File_system; source: JsonNode) =
   if hasKey(source, "readonly") and source{"readonly"}.kind != JNull:
     target.readonly = some(jsonTo(source{"readonly"},
                                   typeof(unsafeGet(target.readonly))))
+  when not defined(jsonSchemaNoValidate):
+    validate(File_system, target)
 
 proc toJsonHook*(source: File_system): JsonNode =
   result = newJObject()
@@ -540,5 +560,7 @@ proc fromStream*(typ: typedesc[File_system]; source: var JsonParser): File_syste
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(File_system, result)
 
 {.pop.}

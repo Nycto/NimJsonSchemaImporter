@@ -177,3 +177,16 @@ proc buildValidate*(typ: TypeDef, typeName: NimNode): NimNode =
   return genAst(typeName, body, value, path, root):
     proc validate*(_: typedesc[typeName], value: typeName, path: string = root) =
       body
+
+proc validateDecoded*(typeName, value: NimNode): NimNode =
+  ## The call a generated decoder makes once it holds a whole value of its own type
+  ##
+  ## Nested values were validated by their own decoders on the way up, so this only
+  ## ever has to assert what this type says about itself.
+  ## The call is built from a fresh ident rather than quoted. This module imports
+  ## `validate` for the predicates, and both `quote` and `genAst` would bind the name
+  ## here, to the generic no-op -- leaving every decoder silently validating nothing.
+  ## Spelled this way it resolves where the code lands, against the generated proc.
+  let call = newCall(ident("validate"), typeName, value)
+  let enabled = prefix(newCall(ident("defined"), ident("jsonSchemaNoValidate")), "not")
+  return nnkWhenStmt.newTree(nnkElifBranch.newTree(enabled, newStmtList(call)))

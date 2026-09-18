@@ -46,6 +46,8 @@ proc fromJsonHook*(target: var Recursive_tree; source: JsonNode) =
                                 typeof(unsafeGet(target.weight))))
   if hasKey(source, "children") and source{"children"}.kind != JNull:
     target.children = jsonTo(source{"children"}, typeof(target.children))
+  when not defined(jsonSchemaNoValidate):
+    validate(Recursive_tree, target)
 
 proc toJsonHook*(source: Recursive_tree): JsonNode =
   result = newJObject()
@@ -94,5 +96,7 @@ proc fromStream*(typ: typedesc[Recursive_tree];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Recursive_tree, result)
 
 {.pop.}

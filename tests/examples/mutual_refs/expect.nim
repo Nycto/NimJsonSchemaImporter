@@ -49,6 +49,8 @@ proc fromJsonHook*(target: var Mutual_refsAnswer; source: JsonNode) =
   if hasKey(source, "followUp") and source{"followUp"}.kind != JNull:
     target.followUp = some(jsonTo(source{"followUp"},
                                   typeof(unsafeGet(target.followUp))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Mutual_refsAnswer, target)
 
 proc toJsonHook*(source: Mutual_refsAnswer): JsonNode =
   result = newJObject()
@@ -84,6 +86,8 @@ proc fromStream*(typ: typedesc[Mutual_refsAnswer];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Mutual_refsAnswer, result)
 
 proc equals(_: typedesc[Mutual_refsQuestion]; a, b: Mutual_refsQuestion): bool =
   equals(typeof(a.prompt), a.prompt, b.prompt) and
@@ -107,6 +111,8 @@ proc fromJsonHook*(target: var Mutual_refsQuestion; source: JsonNode) =
   if hasKey(source, "answer") and source{"answer"}.kind != JNull:
     target.answer = some(jsonTo(source{"answer"},
                                 typeof(unsafeGet(target.answer))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Mutual_refsQuestion, target)
 
 proc toJsonHook*(source: Mutual_refsQuestion): JsonNode =
   result = newJObject()
@@ -141,6 +147,8 @@ proc fromStream*(typ: typedesc[Mutual_refsQuestion];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Mutual_refsQuestion, result)
 
 proc equals(_: typedesc[Mutual_refs]; a, b: Mutual_refs): bool =
   equals(typeof(a.top), a.top, b.top)
@@ -158,6 +166,8 @@ proc fromJsonHook*(target: var Mutual_refs; source: JsonNode) =
   assert(hasKey(source, "top"),
          "top" & " is missing while decoding " & "Mutual_refs")
   target.top = jsonTo(source{"top"}, typeof(target.top))
+  when not defined(jsonSchemaNoValidate):
+    validate(Mutual_refs, target)
 
 proc toJsonHook*(source: Mutual_refs): JsonNode =
   result = newJObject()
@@ -182,5 +192,7 @@ proc fromStream*(typ: typedesc[Mutual_refs]; source: var JsonParser): Mutual_ref
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Mutual_refs, result)
 
 {.pop.}

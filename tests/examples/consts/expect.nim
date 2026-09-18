@@ -30,6 +30,8 @@ proc fromJsonHook*(target: var Consts; source: JsonNode) =
       source{"nonConstField"}.kind != JNull:
     target.nonConstField = some(jsonTo(source{"nonConstField"},
                                        typeof(unsafeGet(target.nonConstField))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Consts, target)
 
 proc toJsonHook*(source: Consts): JsonNode =
   result = newJObject()
@@ -101,5 +103,7 @@ proc fromStream*(typ: typedesc[Consts]; source: var JsonParser): Consts =
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(Consts, result)
 
 {.pop.}

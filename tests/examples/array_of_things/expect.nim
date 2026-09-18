@@ -37,6 +37,8 @@ proc fromJsonHook*(target: var Array_of_thingsVeggie; source: JsonNode) =
   assert(hasKey(source, "veggieLike"),
          "veggieLike" & " is missing while decoding " & "Array_of_thingsVeggie")
   target.veggieLike = jsonTo(source{"veggieLike"}, typeof(target.veggieLike))
+  when not defined(jsonSchemaNoValidate):
+    validate(Array_of_thingsVeggie, target)
 
 proc toJsonHook*(source: Array_of_thingsVeggie): JsonNode =
   result = newJObject()
@@ -70,6 +72,8 @@ proc fromStream*(typ: typedesc[Array_of_thingsVeggie];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(Array_of_thingsVeggie, result)
 
 proc equals(_: typedesc[Array_of_things]; a, b: Array_of_things): bool =
   equals(typeof(a.fruits), a.fruits, b.fruits) and
@@ -91,6 +95,8 @@ proc fromJsonHook*(target: var Array_of_things; source: JsonNode) =
     target.fruits = jsonTo(source{"fruits"}, typeof(target.fruits))
   if hasKey(source, "vegetables") and source{"vegetables"}.kind != JNull:
     target.vegetables = jsonTo(source{"vegetables"}, typeof(target.vegetables))
+  when not defined(jsonSchemaNoValidate):
+    validate(Array_of_things, target)
 
 proc toJsonHook*(source: Array_of_things): JsonNode =
   result = newJObject()
@@ -136,5 +142,7 @@ proc fromStream*(typ: typedesc[Array_of_things];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(Array_of_things, result)
 
 {.pop.}

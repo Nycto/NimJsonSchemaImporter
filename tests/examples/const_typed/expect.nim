@@ -39,6 +39,8 @@ proc fromJsonHook*(target: var Const_typedShape; source: JsonNode) =
   assert(hasKey(source, "radius"),
          "radius" & " is missing while decoding " & "Const_typedShape")
   target.radius = jsonTo(source{"radius"}, typeof(target.radius))
+  when not defined(jsonSchemaNoValidate):
+    validate(Const_typedShape, target)
 
 proc toJsonHook*(source: Const_typedShape): JsonNode =
   result = newJObject()
@@ -69,6 +71,8 @@ proc fromStream*(typ: typedesc[Const_typedShape];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Const_typedShape, result)
 
 converter forConst_typedUnion*(value: Const_typedShape): Const_typedUnion =
   return Const_typedUnion(kind: 0, key0: value)
@@ -90,6 +94,8 @@ proc fromJsonHook*(target: var Const_typedShape2; source: JsonNode) =
   assert(hasKey(source, "side"),
          "side" & " is missing while decoding " & "Const_typedShape2")
   target.side = jsonTo(source{"side"}, typeof(target.side))
+  when not defined(jsonSchemaNoValidate):
+    validate(Const_typedShape2, target)
 
 proc toJsonHook*(source: Const_typedShape2): JsonNode =
   result = newJObject()
@@ -120,6 +126,8 @@ proc fromStream*(typ: typedesc[Const_typedShape2];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Const_typedShape2, result)
 
 converter forConst_typedUnion*(value: Const_typedShape2): Const_typedUnion =
   return Const_typedUnion(kind: 1, key1: value)
@@ -156,7 +164,9 @@ proc fromJsonHook*(target: var Const_typedUnion; source: JsonNode) =
   else:
     raise newException(ValueError,
                        "Unable to deserialize json node to Const_typedUnion")
-  
+  when not defined(jsonSchemaNoValidate):
+    validate(Const_typedUnion, target)
+
 proc toJsonHook*(source: Const_typedUnion): JsonNode =
   case source.kind
   of 0:
@@ -216,6 +226,8 @@ proc fromJsonHook*(target: var Const_typed; source: JsonNode) =
   assert(hasKey(source, "shape"),
          "shape" & " is missing while decoding " & "Const_typed")
   target.shape = jsonTo(source{"shape"}, typeof(target.shape))
+  when not defined(jsonSchemaNoValidate):
+    validate(Const_typed, target)
 
 proc toJsonHook*(source: Const_typed): JsonNode =
   result = newJObject()
@@ -245,5 +257,7 @@ proc fromStream*(typ: typedesc[Const_typed]; source: var JsonParser): Const_type
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Const_typed, result)
 
 {.pop.}

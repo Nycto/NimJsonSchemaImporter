@@ -36,6 +36,8 @@ proc fromJsonHook*(target: var Nullable_mergeNullableObject; source: JsonNode) =
   assert(hasKey(source, "inner"), "inner" & " is missing while decoding " &
       "Nullable_mergeNullableObject")
   target.inner = jsonTo(source{"inner"}, typeof(target.inner))
+  when not defined(jsonSchemaNoValidate):
+    validate(Nullable_mergeNullableObject, target)
 
 proc toJsonHook*(source: Nullable_mergeNullableObject): JsonNode =
   result = newJObject()
@@ -61,6 +63,8 @@ proc fromStream*(typ: typedesc[Nullable_mergeNullableObject];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Nullable_mergeNullableObject, result)
 
 proc equals(_: typedesc[Nullable_merge]; a, b: Nullable_merge): bool =
   equals(typeof(a.nullableEnum), a.nullableEnum, b.nullableEnum) and
@@ -93,6 +97,8 @@ proc fromJsonHook*(target: var Nullable_merge; source: JsonNode) =
          "nullableObject" & " is missing while decoding " & "Nullable_merge")
   target.nullableObject = jsonTo(source{"nullableObject"},
                                  typeof(target.nullableObject))
+  when not defined(jsonSchemaNoValidate):
+    validate(Nullable_merge, target)
 
 proc toJsonHook*(source: Nullable_merge): JsonNode =
   result = newJObject()
@@ -143,5 +149,7 @@ proc fromStream*(typ: typedesc[Nullable_merge];
     else:
       skipValue(source)
   assert(card(seen) == 3)
+  when not defined(jsonSchemaNoValidate):
+    validate(Nullable_merge, result)
 
 {.pop.}

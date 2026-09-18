@@ -36,6 +36,8 @@ proc fromJsonHook*(target: var Bool_schemaClosedBag; source: JsonNode) =
   assert(hasKey(source, "named"),
          "named" & " is missing while decoding " & "Bool_schemaClosedBag")
   target.named = jsonTo(source{"named"}, typeof(target.named))
+  when not defined(jsonSchemaNoValidate):
+    validate(Bool_schemaClosedBag, target)
 
 proc toJsonHook*(source: Bool_schemaClosedBag): JsonNode =
   result = newJObject()
@@ -61,6 +63,8 @@ proc fromStream*(typ: typedesc[Bool_schemaClosedBag];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Bool_schemaClosedBag, result)
 
 proc equals(_: typedesc[Bool_schema]; a, b: Bool_schema): bool =
   equals(typeof(a.anything), a.anything, b.anything) and
@@ -112,6 +116,8 @@ proc fromJsonHook*(target: var Bool_schema; source: JsonNode) =
   assert(hasKey(source, "closedBag"),
          "closedBag" & " is missing while decoding " & "Bool_schema")
   target.closedBag = jsonTo(source{"closedBag"}, typeof(target.closedBag))
+  when not defined(jsonSchemaNoValidate):
+    validate(Bool_schema, target)
 
 proc toJsonHook*(source: Bool_schema): JsonNode =
   result = newJObject()
@@ -209,5 +215,7 @@ proc fromStream*(typ: typedesc[Bool_schema]; source: var JsonParser): Bool_schem
     else:
       skipValue(source)
   assert(card(seen) == 5)
+  when not defined(jsonSchemaNoValidate):
+    validate(Bool_schema, result)
 
 {.pop.}

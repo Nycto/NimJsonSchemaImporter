@@ -29,6 +29,8 @@ proc `$`*(value: Optional_empty_objectCustom): string =
 
 proc fromJsonHook*(target: var Optional_empty_objectCustom; source: JsonNode) =
   discard
+  when not defined(jsonSchemaNoValidate):
+    validate(Optional_empty_objectCustom, target)
 
 proc toJsonHook*(source: Optional_empty_objectCustom): JsonNode =
   result = newJObject()
@@ -46,6 +48,8 @@ proc fromStream*(typ: typedesc[Optional_empty_objectCustom];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(Optional_empty_objectCustom, result)
 
 proc equals(_: typedesc[Optional_empty_object]; a, b: Optional_empty_object): bool =
   equals(typeof(a.name), a.name, b.name) and
@@ -69,6 +73,8 @@ proc fromJsonHook*(target: var Optional_empty_object; source: JsonNode) =
   if hasKey(source, "custom") and source{"custom"}.kind != JNull:
     target.custom = some(jsonTo(source{"custom"},
                                 typeof(unsafeGet(target.custom))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Optional_empty_object, target)
 
 proc toJsonHook*(source: Optional_empty_object): JsonNode =
   result = newJObject()
@@ -103,5 +109,7 @@ proc fromStream*(typ: typedesc[Optional_empty_object];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Optional_empty_object, result)
 
 {.pop.}

@@ -550,6 +550,8 @@ proc fromJsonHook*(target: var LdtkNeighbourLevel; source: JsonNode) =
   assert(hasKey(source, "dir"),
          "dir" & " is missing while decoding " & "LdtkNeighbourLevel")
   target.dir = jsonTo(source{"dir"}, typeof(target.dir))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkNeighbourLevel, target)
 
 proc toJsonHook*(source: LdtkNeighbourLevel): JsonNode =
   result = newJObject()
@@ -593,6 +595,8 @@ proc fromStream*(typ: typedesc[LdtkNeighbourLevel];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkNeighbourLevel, result)
 
 proc equals(_: typedesc[LdtkLevelBgPosInfos]; a, b: LdtkLevelBgPosInfos): bool =
   equals(typeof(a.cropRect), a.cropRect, b.cropRect) and
@@ -618,6 +622,8 @@ proc fromJsonHook*(target: var LdtkLevelBgPosInfos; source: JsonNode) =
     target.scale = jsonTo(source{"scale"}, typeof(target.scale))
   if hasKey(source, "topLeftPx") and source{"topLeftPx"}.kind != JNull:
     target.topLeftPx = jsonTo(source{"topLeftPx"}, typeof(target.topLeftPx))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkLevelBgPosInfos, target)
 
 proc toJsonHook*(source: LdtkLevelBgPosInfos): JsonNode =
   result = newJObject()
@@ -677,6 +683,8 @@ proc fromStream*(typ: typedesc[LdtkLevelBgPosInfos];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkLevelBgPosInfos, result)
 
 proc equals(_: typedesc[LdtkTilesetRect]; a, b: LdtkTilesetRect): bool =
   equals(typeof(a.tilesetUid), a.tilesetUid, b.tilesetUid) and
@@ -715,6 +723,8 @@ proc fromJsonHook*(target: var LdtkTilesetRect; source: JsonNode) =
   assert(hasKey(source, "w"),
          "w" & " is missing while decoding " & "LdtkTilesetRect")
   target.w = jsonTo(source{"w"}, typeof(target.w))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkTilesetRect, target)
 
 proc toJsonHook*(source: LdtkTilesetRect): JsonNode =
   result = newJObject()
@@ -772,6 +782,8 @@ proc fromStream*(typ: typedesc[LdtkTilesetRect];
     else:
       skipValue(source)
   assert(card(seen) == 5)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkTilesetRect, result)
 
 proc equals(_: typedesc[LdtkFieldInstance]; a, b: LdtkFieldInstance): bool =
   equals(typeof(a.`type`), a.`type`, b.`type`) and
@@ -816,6 +828,8 @@ proc fromJsonHook*(target: var LdtkFieldInstance; source: JsonNode) =
   assert(hasKey(source, "__value"),
          "__value" & " is missing while decoding " & "LdtkFieldInstance")
   target.value = jsonTo(source{"__value"}, typeof(target.value))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkFieldInstance, target)
 
 proc toJsonHook*(source: LdtkFieldInstance): JsonNode =
   result = newJObject()
@@ -889,6 +903,8 @@ proc fromStream*(typ: typedesc[LdtkFieldInstance];
     else:
       skipValue(source)
   assert(card(seen) == 4)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkFieldInstance, result)
 
 proc equals(_: typedesc[LdtkTile]; a, b: LdtkTile): bool =
   equals(typeof(a.t), a.t, b.t) and equals(typeof(a.d), a.d, b.d) and
@@ -924,6 +940,8 @@ proc fromJsonHook*(target: var LdtkTile; source: JsonNode) =
   target.f = jsonTo(source{"f"}, typeof(target.f))
   if hasKey(source, "src") and source{"src"}.kind != JNull:
     target.src = jsonTo(source{"src"}, typeof(target.src))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkTile, target)
 
 proc toJsonHook*(source: LdtkTile): JsonNode =
   result = newJObject()
@@ -1006,6 +1024,8 @@ proc fromStream*(typ: typedesc[LdtkTile]; source: var JsonParser): LdtkTile =
     else:
       skipValue(source)
   assert(card(seen) == 3)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkTile, result)
 
 proc equals(_: typedesc[LdtkEntityInstance]; a, b: LdtkEntityInstance): bool =
   equals(typeof(a.iid), a.iid, b.iid) and
@@ -1086,6 +1106,8 @@ proc fromJsonHook*(target: var LdtkEntityInstance; source: JsonNode) =
   assert(hasKey(source, "width"),
          "width" & " is missing while decoding " & "LdtkEntityInstance")
   target.width = jsonTo(source{"width"}, typeof(target.width))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkEntityInstance, target)
 
 proc toJsonHook*(source: LdtkEntityInstance): JsonNode =
   result = newJObject()
@@ -1248,6 +1270,8 @@ proc fromStream*(typ: typedesc[LdtkEntityInstance];
     else:
       skipValue(source)
   assert(card(seen) == 6)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkEntityInstance, result)
 
 proc equals(_: typedesc[LdtkIntGridValueInstance];
             a, b: LdtkIntGridValueInstance): bool =
@@ -1273,6 +1297,8 @@ proc fromJsonHook*(target: var LdtkIntGridValueInstance; source: JsonNode) =
   assert(hasKey(source, "coordId"),
          "coordId" & " is missing while decoding " & "LdtkIntGridValueInstance")
   target.coordId = jsonTo(source{"coordId"}, typeof(target.coordId))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkIntGridValueInstance, target)
 
 proc toJsonHook*(source: LdtkIntGridValueInstance): JsonNode =
   result = newJObject()
@@ -1306,6 +1332,8 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueInstance];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkIntGridValueInstance, result)
 
 proc equals(_: typedesc[LdtkLayerInstance]; a, b: LdtkLayerInstance): bool =
   equals(typeof(a.cHei), a.cHei, b.cHei) and
@@ -1455,6 +1483,8 @@ proc fromJsonHook*(target: var LdtkLayerInstance; source: JsonNode) =
     target.gridTiles = jsonTo(source{"gridTiles"}, typeof(target.gridTiles))
   if hasKey(source, "intGrid") and source{"intGrid"}.kind != JNull:
     target.intGrid = jsonTo(source{"intGrid"}, typeof(target.intGrid))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkLayerInstance, target)
 
 proc toJsonHook*(source: LdtkLayerInstance): JsonNode =
   result = newJObject()
@@ -1706,6 +1736,8 @@ proc fromStream*(typ: typedesc[LdtkLayerInstance];
     else:
       skipValue(source)
   assert(card(seen) == 15)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkLayerInstance, result)
 
 proc equals(_: typedesc[LdtkLevel]; a, b: LdtkLevel): bool =
   equals(typeof(a.neighbours), a.neighbours, b.neighbours) and
@@ -1830,6 +1862,8 @@ proc fromJsonHook*(target: var LdtkLevel; source: JsonNode) =
   assert(hasKey(source, "worldDepth"),
          "worldDepth" & " is missing while decoding " & "LdtkLevel")
   target.worldDepth = jsonTo(source{"worldDepth"}, typeof(target.worldDepth))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkLevel, target)
 
 proc toJsonHook*(source: LdtkLevel): JsonNode =
   result = newJObject()
@@ -2041,6 +2075,8 @@ proc fromStream*(typ: typedesc[LdtkLevel]; source: var JsonParser): LdtkLevel =
     else:
       skipValue(source)
   assert(card(seen) == 13)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkLevel, result)
 
 proc equals(_: typedesc[LdtkWorld]; a, b: LdtkWorld): bool =
   equals(typeof(a.worldGridWidth), a.worldGridWidth, b.worldGridWidth) and
@@ -2102,6 +2138,8 @@ proc fromJsonHook*(target: var LdtkWorld; source: JsonNode) =
   assert(hasKey(source, "identifier"),
          "identifier" & " is missing while decoding " & "LdtkWorld")
   target.identifier = jsonTo(source{"identifier"}, typeof(target.identifier))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkWorld, target)
 
 proc toJsonHook*(source: LdtkWorld): JsonNode =
   result = newJObject()
@@ -2193,6 +2231,8 @@ proc fromStream*(typ: typedesc[LdtkWorld]; source: var JsonParser): LdtkWorld =
     else:
       skipValue(source)
   assert(card(seen) == 7)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkWorld, result)
 
 proc equals(_: typedesc[LdtkEntityReferenceInfos];
             a, b: LdtkEntityReferenceInfos): bool =
@@ -2229,6 +2269,8 @@ proc fromJsonHook*(target: var LdtkEntityReferenceInfos; source: JsonNode) =
   assert(hasKey(source, "levelIid"), "levelIid" & " is missing while decoding " &
       "LdtkEntityReferenceInfos")
   target.levelIid = jsonTo(source{"levelIid"}, typeof(target.levelIid))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkEntityReferenceInfos, target)
 
 proc toJsonHook*(source: LdtkEntityReferenceInfos): JsonNode =
   result = newJObject()
@@ -2278,6 +2320,8 @@ proc fromStream*(typ: typedesc[LdtkEntityReferenceInfos];
     else:
       skipValue(source)
   assert(card(seen) == 4)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkEntityReferenceInfos, result)
 
 proc equals(_: typedesc[LdtkTocInstanceData]; a, b: LdtkTocInstanceData): bool =
   equals(typeof(a.worldX), a.worldX, b.worldX) and
@@ -2321,6 +2365,8 @@ proc fromJsonHook*(target: var LdtkTocInstanceData; source: JsonNode) =
   assert(hasKey(source, "iids"),
          "iids" & " is missing while decoding " & "LdtkTocInstanceData")
   target.iids = jsonTo(source{"iids"}, typeof(target.iids))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkTocInstanceData, target)
 
 proc toJsonHook*(source: LdtkTocInstanceData): JsonNode =
   result = newJObject()
@@ -2386,6 +2432,8 @@ proc fromStream*(typ: typedesc[LdtkTocInstanceData];
     else:
       skipValue(source)
   assert(card(seen) == 6)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkTocInstanceData, result)
 
 proc equals(_: typedesc[LdtkTableOfContentEntry]; a, b: LdtkTableOfContentEntry): bool =
   equals(typeof(a.identifier), a.identifier, b.identifier) and
@@ -2416,6 +2464,8 @@ proc fromJsonHook*(target: var LdtkTableOfContentEntry; source: JsonNode) =
                                   typeof(target.instancesData))
   if hasKey(source, "instances") and source{"instances"}.kind != JNull:
     target.instances = jsonTo(source{"instances"}, typeof(target.instances))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkTableOfContentEntry, target)
 
 proc toJsonHook*(source: LdtkTableOfContentEntry): JsonNode =
   result = newJObject()
@@ -2469,6 +2519,8 @@ proc fromStream*(typ: typedesc[LdtkTableOfContentEntry];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkTableOfContentEntry, result)
 
 proc equals(_: typedesc[LdtkCustomCommand]; a, b: LdtkCustomCommand): bool =
   equals(typeof(a.`when`), a.`when`, b.`when`) and
@@ -2492,6 +2544,8 @@ proc fromJsonHook*(target: var LdtkCustomCommand; source: JsonNode) =
   assert(hasKey(source, "command"),
          "command" & " is missing while decoding " & "LdtkCustomCommand")
   target.command = jsonTo(source{"command"}, typeof(target.command))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkCustomCommand, target)
 
 proc toJsonHook*(source: LdtkCustomCommand): JsonNode =
   result = newJObject()
@@ -2525,6 +2579,8 @@ proc fromStream*(typ: typedesc[LdtkCustomCommand];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkCustomCommand, result)
 
 proc equals(_: typedesc[LdtkTileCustomMetadata]; a, b: LdtkTileCustomMetadata): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -2549,6 +2605,8 @@ proc fromJsonHook*(target: var LdtkTileCustomMetadata; source: JsonNode) =
   assert(hasKey(source, "data"),
          "data" & " is missing while decoding " & "LdtkTileCustomMetadata")
   target.data = jsonTo(source{"data"}, typeof(target.data))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkTileCustomMetadata, target)
 
 proc toJsonHook*(source: LdtkTileCustomMetadata): JsonNode =
   result = newJObject()
@@ -2582,6 +2640,8 @@ proc fromStream*(typ: typedesc[LdtkTileCustomMetadata];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkTileCustomMetadata, result)
 
 proc equals(_: typedesc[LdtkEnumTagValue]; a, b: LdtkEnumTagValue): bool =
   equals(typeof(a.tileIds), a.tileIds, b.tileIds) and
@@ -2604,6 +2664,8 @@ proc fromJsonHook*(target: var LdtkEnumTagValue; source: JsonNode) =
   assert(hasKey(source, "enumValueId"),
          "enumValueId" & " is missing while decoding " & "LdtkEnumTagValue")
   target.enumValueId = jsonTo(source{"enumValueId"}, typeof(target.enumValueId))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkEnumTagValue, target)
 
 proc toJsonHook*(source: LdtkEnumTagValue): JsonNode =
   result = newJObject()
@@ -2643,6 +2705,8 @@ proc fromStream*(typ: typedesc[LdtkEnumTagValue];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkEnumTagValue, result)
 
 proc equals(_: typedesc[LdtkTilesetDef]; a, b: LdtkTilesetDef): bool =
   equals(typeof(a.cachedPixelData), a.cachedPixelData, b.cachedPixelData) and
@@ -2745,6 +2809,8 @@ proc fromJsonHook*(target: var LdtkTilesetDef; source: JsonNode) =
          "tileGridSize" & " is missing while decoding " & "LdtkTilesetDef")
   target.tileGridSize = jsonTo(source{"tileGridSize"},
                                typeof(target.tileGridSize))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkTilesetDef, target)
 
 proc toJsonHook*(source: LdtkTilesetDef): JsonNode =
   result = newJObject()
@@ -2940,6 +3006,8 @@ proc fromStream*(typ: typedesc[LdtkTilesetDef];
     else:
       skipValue(source)
   assert(card(seen) == 9)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkTilesetDef, result)
 
 proc equals(_: typedesc[LdtkIntGridValueGroupDef];
             a, b: LdtkIntGridValueGroupDef): bool =
@@ -2969,6 +3037,8 @@ proc fromJsonHook*(target: var LdtkIntGridValueGroupDef; source: JsonNode) =
   if hasKey(source, "identifier") and source{"identifier"}.kind != JNull:
     target.identifier = some(jsonTo(source{"identifier"},
                                     typeof(unsafeGet(target.identifier))))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkIntGridValueGroupDef, target)
 
 proc toJsonHook*(source: LdtkIntGridValueGroupDef): JsonNode =
   result = newJObject()
@@ -3013,6 +3083,8 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueGroupDef];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkIntGridValueGroupDef, result)
 
 proc equals(_: typedesc[LdtkIntGridValueDef]; a, b: LdtkIntGridValueDef): bool =
   equals(typeof(a.tile), a.tile, b.tile) and
@@ -3050,6 +3122,8 @@ proc fromJsonHook*(target: var LdtkIntGridValueDef; source: JsonNode) =
   assert(hasKey(source, "groupUid"),
          "groupUid" & " is missing while decoding " & "LdtkIntGridValueDef")
   target.groupUid = jsonTo(source{"groupUid"}, typeof(target.groupUid))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkIntGridValueDef, target)
 
 proc toJsonHook*(source: LdtkIntGridValueDef): JsonNode =
   result = newJObject()
@@ -3110,6 +3184,8 @@ proc fromStream*(typ: typedesc[LdtkIntGridValueDef];
     else:
       skipValue(source)
   assert(card(seen) == 3)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkIntGridValueDef, result)
 
 proc equals(_: typedesc[LdtkAutoRuleDef]; a, b: LdtkAutoRuleDef): bool =
   equals(typeof(a.flipX), a.flipX, b.flipX) and
@@ -3290,6 +3366,8 @@ proc fromJsonHook*(target: var LdtkAutoRuleDef; source: JsonNode) =
   assert(hasKey(source, "xOffset"),
          "xOffset" & " is missing while decoding " & "LdtkAutoRuleDef")
   target.xOffset = jsonTo(source{"xOffset"}, typeof(target.xOffset))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkAutoRuleDef, target)
 
 proc toJsonHook*(source: LdtkAutoRuleDef): JsonNode =
   result = newJObject()
@@ -3580,6 +3658,8 @@ proc fromStream*(typ: typedesc[LdtkAutoRuleDef];
     else:
       skipValue(source)
   assert(card(seen) == 27)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkAutoRuleDef, result)
 
 proc equals(_: typedesc[LdtkAutoLayerRuleGroup]; a, b: LdtkAutoLayerRuleGroup): bool =
   equals(typeof(a.name), a.name, b.name) and
@@ -3655,6 +3735,8 @@ proc fromJsonHook*(target: var LdtkAutoLayerRuleGroup; source: JsonNode) =
   target.active = jsonTo(source{"active"}, typeof(target.active))
   if hasKey(source, "rules") and source{"rules"}.kind != JNull:
     target.rules = jsonTo(source{"rules"}, typeof(target.rules))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkAutoLayerRuleGroup, target)
 
 proc toJsonHook*(source: LdtkAutoLayerRuleGroup): JsonNode =
   result = newJObject()
@@ -3778,6 +3860,8 @@ proc fromStream*(typ: typedesc[LdtkAutoLayerRuleGroup];
     else:
       skipValue(source)
   assert(card(seen) == 6)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkAutoLayerRuleGroup, result)
 
 proc equals(_: typedesc[LdtkLayerDef]; a, b: LdtkLayerDef): bool =
   equals(typeof(a.pxOffsetX), a.pxOffsetX, b.pxOffsetX) and
@@ -4003,6 +4087,8 @@ proc fromJsonHook*(target: var LdtkLayerDef; source: JsonNode) =
     target.autoTilesKilledByOtherLayerUid = some(jsonTo(
         source{"autoTilesKilledByOtherLayerUid"},
         typeof(unsafeGet(target.autoTilesKilledByOtherLayerUid))))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkLayerDef, target)
 
 proc toJsonHook*(source: LdtkLayerDef): JsonNode =
   result = newJObject()
@@ -4345,6 +4431,8 @@ proc fromStream*(typ: typedesc[LdtkLayerDef]; source: var JsonParser): LdtkLayer
     else:
       skipValue(source)
   assert(card(seen) == 21)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkLayerDef, result)
 
 proc equals(_: typedesc[LdtkFieldDef]; a, b: LdtkFieldDef): bool =
   equals(typeof(a.acceptFileTypes), a.acceptFileTypes, b.acceptFileTypes) and
@@ -4577,6 +4665,8 @@ proc fromJsonHook*(target: var LdtkFieldDef; source: JsonNode) =
       source{"arrayMaxLength"}.kind != JNull:
     target.arrayMaxLength = some(jsonTo(source{"arrayMaxLength"}, typeof(
         unsafeGet(target.arrayMaxLength))))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkFieldDef, target)
 
 proc toJsonHook*(source: LdtkFieldDef): JsonNode =
   result = newJObject()
@@ -4917,6 +5007,8 @@ proc fromStream*(typ: typedesc[LdtkFieldDef]; source: var JsonParser): LdtkField
     else:
       skipValue(source)
   assert(card(seen) == 20)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkFieldDef, result)
 
 proc equals(_: typedesc[LdtkEnumDefValues]; a, b: LdtkEnumDefValues): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -4956,6 +5048,8 @@ proc fromJsonHook*(target: var LdtkEnumDefValues; source: JsonNode) =
       source{"__tileSrcRect"}.kind != JNull:
     target.tileSrcRect = jsonTo(source{"__tileSrcRect"},
                                 typeof(target.tileSrcRect))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkEnumDefValues, target)
 
 proc toJsonHook*(source: LdtkEnumDefValues): JsonNode =
   result = newJObject()
@@ -5022,6 +5116,8 @@ proc fromStream*(typ: typedesc[LdtkEnumDefValues];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkEnumDefValues, result)
 
 proc equals(_: typedesc[LdtkEnumDef]; a, b: LdtkEnumDef): bool =
   equals(typeof(a.externalFileChecksum), a.externalFileChecksum,
@@ -5075,6 +5171,8 @@ proc fromJsonHook*(target: var LdtkEnumDef; source: JsonNode) =
   target.identifier = jsonTo(source{"identifier"}, typeof(target.identifier))
   if hasKey(source, "tags") and source{"tags"}.kind != JNull:
     target.tags = jsonTo(source{"tags"}, typeof(target.tags))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkEnumDef, target)
 
 proc toJsonHook*(source: LdtkEnumDef): JsonNode =
   result = newJObject()
@@ -5166,6 +5264,8 @@ proc fromStream*(typ: typedesc[LdtkEnumDef]; source: var JsonParser): LdtkEnumDe
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkEnumDef, result)
 
 proc equals(_: typedesc[LdtkEntityDef]; a, b: LdtkEntityDef): bool =
   equals(typeof(a.tileId), a.tileId, b.tileId) and
@@ -5355,6 +5455,8 @@ proc fromJsonHook*(target: var LdtkEntityDef; source: JsonNode) =
   assert(hasKey(source, "width"),
          "width" & " is missing while decoding " & "LdtkEntityDef")
   target.width = jsonTo(source{"width"}, typeof(target.width))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkEntityDef, target)
 
 proc toJsonHook*(source: LdtkEntityDef): JsonNode =
   result = newJObject()
@@ -5679,6 +5781,8 @@ proc fromStream*(typ: typedesc[LdtkEntityDef]; source: var JsonParser): LdtkEnti
     else:
       skipValue(source)
   assert(card(seen) == 22)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkEntityDef, result)
 
 proc equals(_: typedesc[LdtkDefinitions]; a, b: LdtkDefinitions): bool =
   equals(typeof(a.tilesets), a.tilesets, b.tilesets) and
@@ -5720,6 +5824,8 @@ proc fromJsonHook*(target: var LdtkDefinitions; source: JsonNode) =
       source{"externalEnums"}.kind != JNull:
     target.externalEnums = jsonTo(source{"externalEnums"},
                                   typeof(target.externalEnums))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkDefinitions, target)
 
 proc toJsonHook*(source: LdtkDefinitions): JsonNode =
   result = newJObject()
@@ -5821,6 +5927,8 @@ proc fromStream*(typ: typedesc[LdtkDefinitions];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkDefinitions, result)
 
 proc equals(_: typedesc[LdtkGridPoint]; a, b: LdtkGridPoint): bool =
   equals(typeof(a.cy), a.cy, b.cy) and equals(typeof(a.cx), a.cx, b.cx)
@@ -5842,6 +5950,8 @@ proc fromJsonHook*(target: var LdtkGridPoint; source: JsonNode) =
   assert(hasKey(source, "cx"),
          "cx" & " is missing while decoding " & "LdtkGridPoint")
   target.cx = jsonTo(source{"cx"}, typeof(target.cx))
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkGridPoint, target)
 
 proc toJsonHook*(source: LdtkGridPoint): JsonNode =
   result = newJObject()
@@ -5874,6 +5984,8 @@ proc fromStream*(typ: typedesc[LdtkGridPoint]; source: var JsonParser): LdtkGrid
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(LdtkGridPoint, result)
 
 proc equals(_: typedesc[Ldtk_FORCED_REFS]; a, b: Ldtk_FORCED_REFS): bool =
   equals(typeof(a.TilesetRect), a.TilesetRect, b.TilesetRect) and
@@ -6061,6 +6173,8 @@ proc fromJsonHook*(target: var Ldtk_FORCED_REFS; source: JsonNode) =
       source{"IntGridValueDef"}.kind != JNull:
     target.IntGridValueDef = some(jsonTo(source{"IntGridValueDef"},
         typeof(unsafeGet(target.IntGridValueDef))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Ldtk_FORCED_REFS, target)
 
 proc toJsonHook*(source: Ldtk_FORCED_REFS): JsonNode =
   result = newJObject()
@@ -6360,6 +6474,8 @@ proc fromStream*(typ: typedesc[Ldtk_FORCED_REFS];
     else:
       skipValue(source)
   assert(card(seen) == 0)
+  when not defined(jsonSchemaNoValidate):
+    validate(Ldtk_FORCED_REFS, result)
 
 proc equals(_: typedesc[Ldtk]; a, b: Ldtk): bool =
   equals(typeof(a.backupLimit), a.backupLimit, b.backupLimit) and
@@ -6604,6 +6720,8 @@ proc fromJsonHook*(target: var Ldtk; source: JsonNode) =
       source{"backupRelPath"}.kind != JNull:
     target.backupRelPath = some(jsonTo(source{"backupRelPath"},
                                        typeof(unsafeGet(target.backupRelPath))))
+  when not defined(jsonSchemaNoValidate):
+    validate(Ldtk, target)
 
 proc toJsonHook*(source: Ldtk): JsonNode =
   result = newJObject()
@@ -6979,5 +7097,7 @@ proc fromStream*(typ: typedesc[Ldtk]; source: var JsonParser): Ldtk =
     else:
       skipValue(source)
   assert(card(seen) == 23)
+  when not defined(jsonSchemaNoValidate):
+    validate(Ldtk, result)
 
 {.pop.}

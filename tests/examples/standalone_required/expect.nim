@@ -43,6 +43,8 @@ proc fromJsonHook*(target: var Standalone_requiredSplit; source: JsonNode) =
   assert(hasKey(source, "a"),
          "a" & " is missing while decoding " & "Standalone_requiredSplit")
   target.a = jsonTo(source{"a"}, typeof(target.a))
+  when not defined(jsonSchemaNoValidate):
+    validate(Standalone_requiredSplit, target)
 
 proc toJsonHook*(source: Standalone_requiredSplit): JsonNode =
   result = newJObject()
@@ -68,6 +70,8 @@ proc fromStream*(typ: typedesc[Standalone_requiredSplit];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Standalone_requiredSplit, result)
 
 proc equals(_: typedesc[Standalone_requiredTightened];
             a, b: Standalone_requiredTightened): bool =
@@ -88,6 +92,8 @@ proc fromJsonHook*(target: var Standalone_requiredTightened; source: JsonNode) =
   assert(hasKey(source, "name"), "name" & " is missing while decoding " &
       "Standalone_requiredTightened")
   target.name = jsonTo(source{"name"}, typeof(target.name))
+  when not defined(jsonSchemaNoValidate):
+    validate(Standalone_requiredTightened, target)
 
 proc toJsonHook*(source: Standalone_requiredTightened): JsonNode =
   result = newJObject()
@@ -113,6 +119,8 @@ proc fromStream*(typ: typedesc[Standalone_requiredTightened];
     else:
       skipValue(source)
   assert(card(seen) == 1)
+  when not defined(jsonSchemaNoValidate):
+    validate(Standalone_requiredTightened, result)
 
 proc equals(_: typedesc[Standalone_requiredUntyped];
             a, b: Standalone_requiredUntyped): bool =
@@ -138,6 +146,8 @@ proc fromJsonHook*(target: var Standalone_requiredUntyped; source: JsonNode) =
   assert(hasKey(source, "anything"), "anything" & " is missing while decoding " &
       "Standalone_requiredUntyped")
   target.anything = jsonTo(source{"anything"}, typeof(target.anything))
+  when not defined(jsonSchemaNoValidate):
+    validate(Standalone_requiredUntyped, target)
 
 proc toJsonHook*(source: Standalone_requiredUntyped): JsonNode =
   result = newJObject()
@@ -171,6 +181,8 @@ proc fromStream*(typ: typedesc[Standalone_requiredUntyped];
     else:
       skipValue(source)
   assert(card(seen) == 2)
+  when not defined(jsonSchemaNoValidate):
+    validate(Standalone_requiredUntyped, result)
 
 proc equals(_: typedesc[Standalone_required]; a, b: Standalone_required): bool =
   equals(typeof(a.split), a.split, b.split) and
@@ -199,6 +211,8 @@ proc fromJsonHook*(target: var Standalone_required; source: JsonNode) =
   assert(hasKey(source, "untyped"),
          "untyped" & " is missing while decoding " & "Standalone_required")
   target.untyped = jsonTo(source{"untyped"}, typeof(target.untyped))
+  when not defined(jsonSchemaNoValidate):
+    validate(Standalone_required, target)
 
 proc toJsonHook*(source: Standalone_required): JsonNode =
   result = newJObject()
@@ -240,5 +254,7 @@ proc fromStream*(typ: typedesc[Standalone_required];
     else:
       skipValue(source)
   assert(card(seen) == 3)
+  when not defined(jsonSchemaNoValidate):
+    validate(Standalone_required, result)
 
 {.pop.}
