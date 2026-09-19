@@ -1,4 +1,4 @@
-import types, util, std/[macros, genasts, tables, typetraits]
+import types, util, std/[macros, genasts, tables]
 
 let a {.compileTime.} = ident("a")
 let b {.compileTime.} = ident("b")
@@ -35,9 +35,9 @@ proc buildUnionEquals(typ: TypeDef, typeName: NimNode): NimNode =
     cases
 
 proc buildDistinctEquals(typeName: NimNode): NimNode =
-  ## A distinct is equal by what it wraps, reached through `distinctBase`
+  ## A distinct is equal by what it wraps, reached through `baseOf`
   return genAst(typeName, a, b):
-    equals(distinctBase(typeName), distinctBase(typeName)(a), distinctBase(typeName)(b))
+    equals(baseOf(typeName), baseOf(typeName)(a), baseOf(typeName)(b))
 
 proc buildEquals*(typ: TypeDef, typeName: NimNode): NimNode =
   let body =

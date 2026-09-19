@@ -1,4 +1,4 @@
-import std/[macros, tables, sets, json, jsonutils, options, sequtils, typetraits]
+import std/[macros, tables, sets, json, jsonutils, options, sequtils]
 import types, schemaRef, util, history, validategen
 
 type RefTypes* = Table[SchemaRef, TypeDef]
@@ -254,10 +254,10 @@ proc buildDistinctSerde*(typ: TypeDef, typeName: NimNode): NimNode =
   let checked = validateDecoded(typeName, target)
   return quote:
     proc toJsonHook*(source: `typeName`): JsonNode =
-      return toJson(distinctBase(`typeName`)(source))
+      return toJson(baseOf(`typeName`)(source))
 
     proc fromJsonHook*(`target`: var `typeName`, source: JsonNode) =
-      `target` = `typeName`(jsonTo(source, distinctBase(`typeName`)))
+      `target` = `typeName`(jsonTo(source, baseOf(`typeName`)))
       `checked`
 
 proc buildObjectEncoder*(typ: TypeDef, typeName: NimNode): NimNode =

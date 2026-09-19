@@ -1,4 +1,4 @@
-import types, util, constraints, validate, std/typetraits
+import types, util, constraints, validate
 import std/[macros, genasts, sequtils, tables, options]
 
 let value {.compileTime.} = ident("value")
@@ -212,7 +212,7 @@ proc buildUnionValidate(typ: TypeDef): NimNode =
 proc buildDistinctValidate(typ: TypeDef, typeName: NimNode): NimNode =
   ## A distinct has no properties to walk: its assertions sit on what it wraps, so the
   ## walk starts at the wrapped value rather than at a field
-  let base = newCall(bindSym("distinctBase"), typeName)
+  let base = newCall(bindSym("baseOf"), typeName)
   return typ.base.walk(newCall(base, value), path)
 
 proc buildValidate*(typ: TypeDef, typeName: NimNode): NimNode =

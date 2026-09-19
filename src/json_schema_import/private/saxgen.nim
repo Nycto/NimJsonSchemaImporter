@@ -1,5 +1,4 @@
-import
-  types, util, validategen, std/[macros, tables, json, options, streams, typetraits]
+import types, util, validategen, std/[macros, tables, json, options, streams]
 
 let source {.compileTime.} = ident("source")
 let target {.compileTime.} = ident("target")
@@ -115,10 +114,10 @@ proc buildSaxDistinctSerde*(typ: TypeDef, typeName: NimNode): NimNode =
   let checked = validateDecoded(typeName, ident("result"))
   return quote:
     proc `toStream`*(`source`: `typeName`, `target`: Stream) =
-      `toStream`(distinctBase(`typeName`)(`source`), `target`)
+      `toStream`(baseOf(`typeName`)(`source`), `target`)
 
     proc fromStream*(typ: typedesc[`typeName`], `source`: var JsonParser): `typeName` =
-      result = `typeName`(fromStream(distinctBase(`typeName`), `source`))
+      result = `typeName`(fromStream(baseOf(`typeName`), `source`))
       `checked`
 
 proc buildSaxConstEncoder*(typ: TypeDef, typeName: NimNode): NimNode =

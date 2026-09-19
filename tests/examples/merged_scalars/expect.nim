@@ -3,6 +3,7 @@ import std/[json, jsonutils, tables, options, typetraits]
 import json_schema_import/private/stringify as jsonSchemaStringify
 import json_schema_import/private/validate as jsonSchemaValidate
 import json_schema_import/private/[equality, bin, sax, empty]
+from json_schema_import/private/util import baseOf
 
 type
   Merged_scalarsTypedEnum* {.pure.} = enum

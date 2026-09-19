@@ -104,6 +104,7 @@ proc formatCodeDump*(code: NimNode): string =
   result &= "import json_schema_import/private/stringify as jsonSchemaStringify\n"
   result &= "import json_schema_import/private/validate as jsonSchemaValidate\n"
   result &= "import json_schema_import/private/[equality, bin, sax, empty]\n"
+  result &= "from json_schema_import/private/util import baseOf\n"
   result &= code.repr.replace(re2"\`gensym_?\d+", "")
   result &= "\n{.pop.}\n"
 
@@ -137,3 +138,8 @@ proc asDeclarations*(node: NimNode): NimNode =
       result.add(child.asDeclarations)
   else:
     discard
+
+macro baseOf*(T: typedesc): typedesc =
+  ## The type a distinct wraps. Stands in for `distinctBase`, which in Nim 2.2 loses the
+  ## generic parameters of a wrapped object like `OrderedTable[string, JsonNode]`
+  T.getTypeImpl[1].getTypeImpl[0]
