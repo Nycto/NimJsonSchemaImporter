@@ -31,7 +31,8 @@ proc cacheDir(): string {.compileTime.} =
 proc cacheKey*(schema: string, conf: JsonSchemaConfig): string {.compileTime.} =
   ## Builds a key covering everything the generated code depends on
   let accum =
-    schema.hash !& conf.cacheKeyHash !& NimVersion.hash !& json_schema_version.hash
+    schema.hash !& conf.cacheKeyHash !& NimVersion.hash !& json_schema_version.hash !&
+    jsonSchemaNoValidate.hash
   return cast[uint](!$accum).toHex
 
 proc inlineSchemaName*(conf: JsonSchemaConfig): string {.compileTime.} =

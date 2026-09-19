@@ -1,5 +1,9 @@
 import std/[macros, json, sets, strformat, strutils, tables], regex, types
 
+const jsonSchemaNoValidate* {.booldefine.} = false
+  ## Compiles validation out, set with `-d:jsonSchemaNoValidate`. It changes the
+  ## generated types as well as the calls, so the cache key has to include it.
+
 type SomeTable*[K, V] = Table[K, V] | OrderedTable[K, V]
 
 proc unionKey*(i: int): NimNode =
